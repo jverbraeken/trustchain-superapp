@@ -14,6 +14,7 @@ import nl.tudelft.trustchain.trader.ui.TrustChainTraderActivity
 import nl.tudelft.trustchain.payloadgenerator.ui.TrustChainPayloadGeneratorActivity
 import nl.tudelft.trustchain.peerchat.PeerChatActivity
 import nl.tudelft.trustchain.voting.VotingActivity
+import nl.tudelft.trustchain.fedml.ui.FedMLActivity
 
 enum class AppDefinition(
     @DrawableRes val icon: Int,
@@ -80,5 +81,11 @@ enum class AppDefinition(
         "MusicDAO",
         R.color.black,
         MusicService::class.java
+    ),
+    FEDML(
+        R.drawable.ic_device_hub_black_24dp,
+        "Federated ML Platform",
+        R.color.red,
+        FedMLActivity::class.java
     )
 }

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/peersFragment"
+        android:icon="@drawable/ic_device_hub_black_24dp"
+        android:title="@string/peers" />
+    <item
+        android:id="@+id/usersFragment"
+        android:icon="@drawable/ic_insert_link_black_24dp"
+        android:title="@string/chains" />
+    <item
+        android:id="@+id/latestBlocksFragment"
+        android:icon="@drawable/ic_grid_on_black_24dp"
+        android:title="@string/blocks" />
+    <item
+        android:id="@+id/myChainFragment"
+        android:icon="@drawable/ic_person_black_24dp"
+        android:title="@string/my_chain" />
+</menu>
