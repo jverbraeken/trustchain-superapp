@@ -33,6 +33,7 @@ import nl.tudelft.trustchain.common.DemoCommunity
 import nl.tudelft.trustchain.app.service.TrustChainService
 import nl.tudelft.trustchain.common.MarketCommunity
 import nl.tudelft.trustchain.currencyii.CoinCommunity
+import nl.tudelft.trustchain.explorer.ipv8.FedMLCommunity
 import nl.tudelft.trustchain.peerchat.community.PeerChatCommunity
 import nl.tudelft.trustchain.peerchat.db.PeerChatStore
 import nl.tudelft.trustchain.voting.VotingCommunity
@@ -199,6 +200,17 @@ class TrustChainApplication : Application() {
         val randomWalk = RandomWalk.Factory()
         return OverlayConfiguration(
             MusicCommunity.Factory(settings, store),
+            listOf(randomWalk)
+        )
+    }
+
+    private fun createFedMLCommunity(): OverlayConfiguration<FedMLCommunity> {
+        val settings = TrustChainSettings()
+        val driver = AndroidSqliteDriver(Database.Schema, this, "fedml.db")
+        val store = TrustChainSQLiteStore(Database(driver))
+        val randomWalk = RandomWalk.Factory()
+        return OverlayConfiguration(
+            FedMLCommunity.Factory(settings, store),
             listOf(randomWalk)
         )
     }
