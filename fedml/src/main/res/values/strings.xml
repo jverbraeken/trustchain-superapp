@@ -1,9 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="peers">Peers</string>
-    <string name="chains">Chains</string>
-    <string name="blocks">Blocks</string>
-    <string name="my_chain">My Chain</string>
-    <string name="new_block">New Block</string>
-    <string name="crawl">Crawl</string>
 </resources>
