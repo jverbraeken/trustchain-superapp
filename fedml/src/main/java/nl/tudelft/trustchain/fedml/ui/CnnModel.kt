@@ -14,21 +14,15 @@ package nl.tudelft.trustchain.fedml.ui
 //
 //
 //internal class CnnModel(
-//    dataSetService: CifarDataSetService,
-//    properties: CnnModelProperties
-//) {
-//    private val dataSetService: CifarDataSetService
-//    private val network: MultiLayerNetwork
+//    private val dataSetService: CifarDataSetService,
 //    private val properties: CnnModelProperties
+//) {
+//    private val network: MultiLayerNetwork
 //
 //    init {
-//        this.dataSetService = dataSetService
-//        this.properties = properties
 //        val configuration: MultiLayerConfiguration = NeuralNetConfiguration.Builder()
 //            .seed(1611)
 //            .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
-//            .learningRate(properties.learningRate)
-//            .regularization(true)
 //            .updater(properties.optimizer)
 //            .list()
 //            .layer(0, conv5x5())
@@ -38,8 +32,6 @@ package nl.tudelft.trustchain.fedml.ui
 //            .layer(4, conv3x3Stride1Padding1())
 //            .layer(5, pooling2x2Stride1())
 //            .layer(6, dense())
-//            .pretrain(false)
-//            .backprop(true)
 //            .setInputType(dataSetService.inputType)
 //            .build()
 //        network = MultiLayerNetwork(configuration)
@@ -50,13 +42,13 @@ package nl.tudelft.trustchain.fedml.ui
 //        val epochsNum: Int = properties.epochsNum
 //        for (i in 1..epochsNum) {
 ////            log.info("Epoch {} / {}", epoch, epochsNum)
-//            network.fit(dataSetService.trainIterator)
+////            network.fit(dataSetService.trainIterator)
 //        }
 //    }
 //
-//    fun evaluate(): Evaluation {
-//        return network.evaluate(dataSetService.testIterator)
-//    }
+////    fun evaluate(): Evaluation {
+////        return network.evaluate(dataSetService.testIterator)
+////    }
 //
 //    private fun conv5x5(): ConvolutionLayer {
 //        return ConvolutionLayer.Builder(5, 5)

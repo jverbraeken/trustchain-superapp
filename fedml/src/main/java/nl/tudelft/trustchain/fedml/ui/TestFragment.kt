@@ -7,7 +7,7 @@ import nl.tudelft.trustchain.common.util.viewBinding
 import nl.tudelft.trustchain.fedml.R
 import nl.tudelft.trustchain.fedml.databinding.FragmentTestBinding
 import nl.tudelft.trustchain.fedml.ipv8.FedMLCommunity
-//import org.deeplearning4j.eval.Evaluation;
+//import org.deeplearning4j.eval.Evaluation
 
 class TestFragment : BaseFragment(R.layout.fragment_test) {
     private val binding by viewBinding(FragmentTestBinding::bind)
@@ -20,6 +20,8 @@ class TestFragment : BaseFragment(R.layout.fragment_test) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.btnInitiate.setOnClickListener {
             getCommunity().sendMessage()
+            val tmp = CifarDataSetService()
+            tmp.c()
         }
 
 //        val network = CnnModel(CifarDataSetService(), CnnModelProperties())

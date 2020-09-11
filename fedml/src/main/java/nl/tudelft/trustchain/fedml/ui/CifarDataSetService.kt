@@ -1,24 +1,30 @@
 package nl.tudelft.trustchain.fedml.ui
 
-//import org.deeplearning4j.datasets.iterator.impl.CifarDataSetIterator
-//import org.deeplearning4j.nn.conf.inputs.InputType
-//
-//
-//class CifarDataSetService {
+import org.deeplearning4j.nn.conf.inputs.InputType
+import java.io.InputStream
+
+
+class CifarDataSetService(val name: String = "ABC") {
 //    val inputType: InputType = InputType.convolutional(32, 32, 3)
-//    val trainIterator: CifarDataSetIterator
-//    val testIterator: CifarDataSetIterator
+//    val trainIterator: Cifar10DataSetIterator = Cifar10DataSetIterator(16)
+//    val testIterator: Cifar10DataSetIterator = Cifar10DataSetIterator(8)
 //    private val trainImagesNum = 512
 //    private val testImagesNum = 128
 //    private val trainBatch = 16
 //    private val testBatch = 8
 //
 //    fun labels(): List<String> {
+//        return ArrayList()
 //        return trainIterator.labels
 //    }
-//
-//    init {
-//        trainIterator = CifarDataSetIterator(trainBatch, trainImagesNum, true)
-//        testIterator = CifarDataSetIterator(testBatch, testImagesNum, false)
-//    }
-//}
+
+    init {
+        val file = "res/mnist_png/training"
+        val stream: InputStream = this.javaClass.classLoader?.getResourceAsStream(file)!!
+        print(stream)
+    }
+
+    fun c(): Unit {
+
+    }
+}

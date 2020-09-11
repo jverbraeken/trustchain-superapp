@@ -41,16 +41,16 @@ android {
         allWarningsAsErrors = true
     }
 
-    viewBinding {
-        enabled = true
-    }
-
     testOptions {
         unitTests.returnDefaultValues = true
     }
 
     lintOptions {
         abortOnError false
+    }
+
+    buildFeatures {
+        viewBinding = true
     }
 }
 

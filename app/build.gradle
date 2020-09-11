@@ -45,6 +45,15 @@ android {
         variant.getRuntimeConfiguration().exclude group: 'org.nd4j', module: 'guava'
     }
 
+    lintOptions {
+        abortOnError false
+        checkAllWarnings false
+        checkReleaseBuilds false
+        ignoreWarnings = true
+        quiet true
+        tasks.lint.enabled false
+    }
+
     defaultConfig {
         applicationId "nl.tudelft.trustchain"
         minSdkVersion 22

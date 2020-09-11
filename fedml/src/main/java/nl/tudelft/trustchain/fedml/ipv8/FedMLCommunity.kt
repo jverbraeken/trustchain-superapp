@@ -43,8 +43,6 @@ class FedMLCommunity(
 
     object MessageId {
         const val THALIS_MESSAGE = 222
-        const val TORRENT_MESSAGE = 223
-        const val PUNCTURE_TEST = 251
     }
 
     fun sendMessage() {
