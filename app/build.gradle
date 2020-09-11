@@ -33,6 +33,18 @@ android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
 
+    packagingOptions {
+        exclude 'META-INF/kotlinx-coroutines-core.kotlin_module'
+        pickFirst 'google/protobuf/**'
+    }
+
+    applicationVariants.all { variant ->
+        variant.getRuntimeConfiguration().exclude group: 'com.google.code.findbugs', module: 'jsr305'
+//        variant.getRuntimeConfiguration().exclude group: 'net.java.dev.jna', module: 'jna'
+        variant.getRuntimeConfiguration().exclude group: 'com.google.guava', module: 'guava'
+        variant.getRuntimeConfiguration().exclude group: 'org.nd4j', module: 'guava'
+    }
+
     defaultConfig {
         applicationId "nl.tudelft.trustchain"
         minSdkVersion 22
@@ -73,10 +85,6 @@ android {
 
     buildFeatures {
         viewBinding = true
-    }
-
-    packagingOptions {
-        exclude 'META-INF/kotlinx-coroutines-core.kotlin_module'
     }
 }
 
