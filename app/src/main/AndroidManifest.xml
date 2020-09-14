@@ -20,6 +20,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup">
+        <!--        android:largeHeap="true"-->
 
         <activity
             android:name=".ui.dashboard.DashboardActivity"

@@ -32,6 +32,7 @@ static def generateVersionCode() {
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
+//    ndkVersion "21.3.6528147"
 
     packagingOptions {
         exclude 'META-INF/kotlinx-coroutines-core.kotlin_module'
@@ -63,6 +64,14 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+
+//    externalNativeBuild {
+//        cmake {
+//            path "CMakeLists.txt"
+//            cppFlags "-std=c++14 -fexceptions -frtti"
+//            arguments "-DANDROID_ARM_NEON=TRUE",'-DANDROID_STL=c++_shared'
+//        }
+//    }
 
     signingConfigs {
         release {
@@ -162,3 +171,4 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
         "-Xopt-in=kotlin.RequiresOptIn"
     ]
 }
+

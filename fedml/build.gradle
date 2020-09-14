@@ -57,6 +57,12 @@ android {
     buildFeatures {
         viewBinding = true
     }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['src/main/jniLibs']
+        }
+    }
 }
 
 dependencies {
@@ -90,13 +96,56 @@ dependencies {
     implementation 'com.github.tony19:logback-android:2.0.0'
 
     implementation 'com.mattskala:itemadapter:0.3'
-    implementation('org.deeplearning4j:deeplearning4j-core:1.0.0-beta7') {
+//    implementation('org.deeplearning4j:deeplearning4j-core:1.0.0-beta7') {
+//        exclude group: "net.java.dev.jna", module: "jna"
+//    }
+//    implementation('org.nd4j:nd4j-api:1.0.0-beta7') {
+//        exclude group: "net.java.dev.jna", module: "jna"
+//    }
+//    implementation('org.deeplearning4j:deeplearning4j-nn:1.0.0-beta7') {
+//        exclude group: "net.java.dev.jna", module: "jna"
+//    }
+//    implementation 'org.nd4j:nd4j-native:1.0.0-beta7'
+    implementation (group: 'org.deeplearning4j', name: 'deeplearning4j-core', version: '1.0.0-beta7') {
+        exclude group: 'org.bytedeco', module: 'opencv-platform'
+        exclude group: 'org.bytedeco', module: 'leptonica-platform'
+        exclude group: 'org.bytedeco', module: 'hdf5-platform'
         exclude group: "net.java.dev.jna", module: "jna"
     }
-    implementation('org.nd4j:nd4j-api:1.0.0-beta7') {
+    implementation (group: 'org.nd4j', name: 'nd4j-native', version: '1.0.0-beta7') {
         exclude group: "net.java.dev.jna", module: "jna"
     }
-    implementation('org.deeplearning4j:deeplearning4j-nn:1.0.0-beta7') {
+    implementation (group: 'org.nd4j', name: 'nd4j-native', version: '1.0.0-beta7', classifier: "android-arm") {
+        exclude group: "net.java.dev.jna", module: "jna"
+    }
+    implementation (group: 'org.nd4j', name: 'nd4j-native', version: '1.0.0-beta7', classifier: "android-arm64") {
+        exclude group: "net.java.dev.jna", module: "jna"
+    }
+    implementation (group: 'org.bytedeco', name: 'openblas', version: '0.3.9-1.5.3') {
+        exclude group: "net.java.dev.jna", module: "jna"
+    }
+    implementation (group: 'org.bytedeco', name: 'openblas', version: '0.3.9-1.5.3', classifier: "android-arm") {
+        exclude group: "net.java.dev.jna", module: "jna"
+    }
+    implementation (group: 'org.bytedeco', name: 'openblas', version: '0.3.9-1.5.3', classifier: "android-arm64") {
+        exclude group: "net.java.dev.jna", module: "jna"
+    }
+    implementation (group: 'org.bytedeco', name: 'opencv', version: '4.3.0-1.5.3') {
+        exclude group: "net.java.dev.jna", module: "jna"
+    }
+    implementation (group: 'org.bytedeco', name: 'opencv', version: '4.3.0-1.5.3', classifier: "android-arm") {
+        exclude group: "net.java.dev.jna", module: "jna"
+    }
+    implementation (group: 'org.bytedeco', name: 'opencv', version: '4.3.0-1.5.3', classifier: "android-arm64") {
+        exclude group: "net.java.dev.jna", module: "jna"
+    }
+    implementation (group: 'org.bytedeco', name: 'leptonica', version: '1.79.0-1.5.3') {
+        exclude group: "net.java.dev.jna", module: "jna"
+    }
+    implementation (group: 'org.bytedeco', name: 'leptonica', version: '1.79.0-1.5.3', classifier: "android-arm") {
+        exclude group: "net.java.dev.jna", module: "jna"
+    }
+    implementation (group: 'org.bytedeco', name: 'leptonica', version: '1.79.0-1.5.3', classifier: "android-arm64") {
         exclude group: "net.java.dev.jna", module: "jna"
     }
 

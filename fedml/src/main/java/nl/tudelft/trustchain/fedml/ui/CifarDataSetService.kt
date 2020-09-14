@@ -4,7 +4,7 @@ import org.deeplearning4j.nn.conf.inputs.InputType
 import java.io.InputStream
 
 
-class CifarDataSetService(val name: String = "ABC") {
+class CifarDataSetService {
 //    val inputType: InputType = InputType.convolutional(32, 32, 3)
 //    val trainIterator: Cifar10DataSetIterator = Cifar10DataSetIterator(16)
 //    val testIterator: Cifar10DataSetIterator = Cifar10DataSetIterator(8)
