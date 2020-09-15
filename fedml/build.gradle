@@ -17,10 +17,11 @@ android {
     buildToolsVersion "29.0.3"
 
     defaultConfig {
-        minSdkVersion 22
+        minSdkVersion 29
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
@@ -58,14 +59,25 @@ android {
         viewBinding = true
     }
 
-    sourceSets {
-        main {
-            jniLibs.srcDirs = ['src/main/jniLibs']
-        }
+//    sourceSets {
+//        main {
+//            jniLibs.srcDirs = ['src/main/jniLibs']
+//        }
+//    }
+
+    configurations {
+        all*.exclude module: 'protobuf'
     }
 }
 
 dependencies {
+    def dl4jVersion = '1.0.0-beta7'
+    def openblasVersion = '0.3.9-1.5.3'
+    def opencvVersion = '4.3.0-1.5.3'
+    def leptonicaVersion = '1.79.0-1.5.3'
+
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
     api project(':common')
 
     // AndroidX
@@ -106,48 +118,134 @@ dependencies {
 //        exclude group: "net.java.dev.jna", module: "jna"
 //    }
 //    implementation 'org.nd4j:nd4j-native:1.0.0-beta7'
-    implementation (group: 'org.deeplearning4j', name: 'deeplearning4j-core', version: '1.0.0-beta7') {
+    implementation (group: 'org.deeplearning4j', name: 'deeplearning4j-core', version: dl4jVersion) {
         exclude group: 'org.bytedeco', module: 'opencv-platform'
         exclude group: 'org.bytedeco', module: 'leptonica-platform'
         exclude group: 'org.bytedeco', module: 'hdf5-platform'
+        exclude group: 'org.nd4j', module: 'nd4j-base64'
+        exclude group: 'org.nd4j', module: 'nd4j-api'
         exclude group: "net.java.dev.jna", module: "jna"
+        exclude group: 'com.google.guava', module: 'guava'
+        exclude group: 'org.bytedeco.javacpp-presets', module: 'opencv'
+        exclude group: 'org.deeplearning4j', module: 'deeplearning4j-util'
     }
-    implementation (group: 'org.nd4j', name: 'nd4j-native', version: '1.0.0-beta7') {
+    implementation (group: 'org.nd4j', name: 'nd4j-native', version: dl4jVersion) {
         exclude group: "net.java.dev.jna", module: "jna"
+        exclude group: 'com.google.guava', module: 'guava'
+        exclude group: 'org.bytedeco.javacpp-presets', module: 'opencv'
+        exclude group: 'org.deeplearning4j', module: 'deeplearning4j-util'
     }
-    implementation (group: 'org.nd4j', name: 'nd4j-native', version: '1.0.0-beta7', classifier: "android-arm") {
+    implementation (group: 'org.nd4j', name: 'nd4j-native', version: dl4jVersion, classifier: "android-arm") {
         exclude group: "net.java.dev.jna", module: "jna"
+        exclude group: 'com.google.guava', module: 'guava'
+        exclude group: 'org.bytedeco.javacpp-presets', module: 'opencv'
+        exclude group: 'org.deeplearning4j', module: 'deeplearning4j-util'
     }
-    implementation (group: 'org.nd4j', name: 'nd4j-native', version: '1.0.0-beta7', classifier: "android-arm64") {
+    implementation (group: 'org.nd4j', name: 'nd4j-native', version: dl4jVersion, classifier: "android-arm64") {
         exclude group: "net.java.dev.jna", module: "jna"
+        exclude group: 'com.google.guava', module: 'guava'
+        exclude group: 'org.bytedeco.javacpp-presets', module: 'opencv'
+        exclude group: 'org.deeplearning4j', module: 'deeplearning4j-util'
     }
-    implementation (group: 'org.bytedeco', name: 'openblas', version: '0.3.9-1.5.3') {
+    implementation (group: 'org.nd4j', name: 'nd4j-native', version: dl4jVersion, classifier: "android-x86") {
         exclude group: "net.java.dev.jna", module: "jna"
+        exclude group: 'com.google.guava', module: 'guava'
+        exclude group: 'org.bytedeco.javacpp-presets', module: 'opencv'
+        exclude group: 'org.deeplearning4j', module: 'deeplearning4j-util'
     }
-    implementation (group: 'org.bytedeco', name: 'openblas', version: '0.3.9-1.5.3', classifier: "android-arm") {
+    implementation (group: 'org.nd4j', name: 'nd4j-native', version: dl4jVersion, classifier: "android-x86_64") {
         exclude group: "net.java.dev.jna", module: "jna"
+        exclude group: 'com.google.guava', module: 'guava'
+        exclude group: 'org.bytedeco.javacpp-presets', module: 'opencv'
+        exclude group: 'org.deeplearning4j', module: 'deeplearning4j-util'
     }
-    implementation (group: 'org.bytedeco', name: 'openblas', version: '0.3.9-1.5.3', classifier: "android-arm64") {
+    implementation (group: 'org.bytedeco', name: 'openblas', version: openblasVersion) {
         exclude group: "net.java.dev.jna", module: "jna"
+        exclude group: 'com.google.guava', module: 'guava'
+        exclude group: 'org.deeplearning4j', module: 'deeplearning4j-util'
     }
-    implementation (group: 'org.bytedeco', name: 'opencv', version: '4.3.0-1.5.3') {
+    implementation (group: 'org.bytedeco', name: 'openblas', version: openblasVersion, classifier: "android-arm") {
         exclude group: "net.java.dev.jna", module: "jna"
+        exclude group: 'com.google.guava', module: 'guava'
+        exclude group: 'org.deeplearning4j', module: 'deeplearning4j-util'
     }
-    implementation (group: 'org.bytedeco', name: 'opencv', version: '4.3.0-1.5.3', classifier: "android-arm") {
+    implementation (group: 'org.bytedeco', name: 'openblas', version: openblasVersion, classifier: "android-arm64") {
         exclude group: "net.java.dev.jna", module: "jna"
+        exclude group: 'com.google.guava', module: 'guava'
+        exclude group: 'org.deeplearning4j', module: 'deeplearning4j-util'
     }
-    implementation (group: 'org.bytedeco', name: 'opencv', version: '4.3.0-1.5.3', classifier: "android-arm64") {
+    implementation (group: 'org.bytedeco', name: 'openblas', version: openblasVersion, classifier: "android-x86") {
         exclude group: "net.java.dev.jna", module: "jna"
+        exclude group: 'com.google.guava', module: 'guava'
+        exclude group: 'org.deeplearning4j', module: 'deeplearning4j-util'
     }
-    implementation (group: 'org.bytedeco', name: 'leptonica', version: '1.79.0-1.5.3') {
+    implementation (group: 'org.bytedeco', name: 'openblas', version: openblasVersion, classifier: "android-x86_64") {
         exclude group: "net.java.dev.jna", module: "jna"
+        exclude group: 'com.google.guava', module: 'guava'
+        exclude group: 'org.deeplearning4j', module: 'deeplearning4j-util'
     }
-    implementation (group: 'org.bytedeco', name: 'leptonica', version: '1.79.0-1.5.3', classifier: "android-arm") {
+    implementation (group: 'org.bytedeco', name: 'opencv', version: opencvVersion) {
         exclude group: "net.java.dev.jna", module: "jna"
+        exclude group: 'com.google.guava', module: 'guava'
+        exclude group: 'org.bytedeco.javacpp-presets', module: 'opencv'
+        exclude group: 'org.deeplearning4j', module: 'deeplearning4j-util'
     }
-    implementation (group: 'org.bytedeco', name: 'leptonica', version: '1.79.0-1.5.3', classifier: "android-arm64") {
+    implementation (group: 'org.bytedeco', name: 'opencv', version: opencvVersion, classifier: "android-arm") {
         exclude group: "net.java.dev.jna", module: "jna"
+        exclude group: 'com.google.guava', module: 'guava'
+        exclude group: 'org.bytedeco.javacpp-presets', module: 'opencv'
+        exclude group: 'org.deeplearning4j', module: 'deeplearning4j-util'
     }
+    implementation (group: 'org.bytedeco', name: 'opencv', version: opencvVersion, classifier: "android-arm64") {
+        exclude group: "net.java.dev.jna", module: "jna"
+        exclude group: 'com.google.guava', module: 'guava'
+        exclude group: 'org.bytedeco.javacpp-presets', module: 'opencv'
+        exclude group: 'org.deeplearning4j', module: 'deeplearning4j-util'
+    }
+    implementation (group: 'org.bytedeco', name: 'opencv', version: opencvVersion, classifier: "android-x86") {
+        exclude group: "net.java.dev.jna", module: "jna"
+        exclude group: 'com.google.guava', module: 'guava'
+        exclude group: 'org.bytedeco.javacpp-presets', module: 'opencv'
+        exclude group: 'org.deeplearning4j', module: 'deeplearning4j-util'
+    }
+    implementation (group: 'org.bytedeco', name: 'opencv', version: opencvVersion, classifier: "android-x86_64") {
+        exclude group: "net.java.dev.jna", module: "jna"
+        exclude group: 'com.google.guava', module: 'guava'
+        exclude group: 'org.bytedeco.javacpp-presets', module: 'opencv'
+        exclude group: 'org.deeplearning4j', module: 'deeplearning4j-util'
+    }
+    implementation (group: 'org.bytedeco', name: 'leptonica', version: leptonicaVersion) {
+        exclude group: "net.java.dev.jna", module: "jna"
+        exclude group: 'com.google.guava', module: 'guava'
+        exclude group: 'org.bytedeco.javacpp-presets', module: 'opencv'
+        exclude group: 'org.deeplearning4j', module: 'deeplearning4j-util'
+    }
+    implementation (group: 'org.bytedeco', name: 'leptonica', version: leptonicaVersion, classifier: "android-arm") {
+        exclude group: "net.java.dev.jna", module: "jna"
+        exclude group: 'com.google.guava', module: 'guava'
+        exclude group: 'org.bytedeco.javacpp-presets', module: 'opencv'
+        exclude group: 'org.deeplearning4j', module: 'deeplearning4j-util'
+    }
+    implementation (group: 'org.bytedeco', name: 'leptonica', version: leptonicaVersion, classifier: "android-arm64") {
+        exclude group: "net.java.dev.jna", module: "jna"
+        exclude group: 'com.google.guava', module: 'guava'
+        exclude group: 'org.bytedeco.javacpp-presets', module: 'opencv'
+        exclude group: 'org.deeplearning4j', module: 'deeplearning4j-util'
+    }
+    implementation (group: 'org.bytedeco', name: 'leptonica', version: leptonicaVersion, classifier: "android-x86") {
+        exclude group: "net.java.dev.jna", module: "jna"
+        exclude group: 'com.google.guava', module: 'guava'
+        exclude group: 'org.bytedeco.javacpp-presets', module: 'opencv'
+        exclude group: 'org.deeplearning4j', module: 'deeplearning4j-util'
+    }
+    implementation (group: 'org.bytedeco', name: 'leptonica', version: leptonicaVersion, classifier: "android-x86_64") {
+        exclude group: "net.java.dev.jna", module: "jna"
+        exclude group: 'com.google.guava', module: 'guava'
+        exclude group: 'org.bytedeco.javacpp-presets', module: 'opencv'
+        exclude group: 'org.deeplearning4j', module: 'deeplearning4j-util'
+    }
+
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.4'
 
     // Testing
     testImplementation 'junit:junit:4.12'

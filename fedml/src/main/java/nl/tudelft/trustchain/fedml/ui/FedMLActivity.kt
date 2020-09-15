@@ -32,7 +32,7 @@ class FedMLActivity : BaseActivity() {
 
     companion object {
         init {
-            System.loadLibrary("c++_shared")
+//            System.loadLibrary("c++_shared")
         }
     }
 }

@@ -14,6 +14,8 @@ import org.datavec.api.split.FileSplit
 import org.datavec.image.loader.NativeImageLoader
 import org.datavec.image.recordreader.ImageRecordReader
 import org.deeplearning4j.datasets.datavec.RecordReaderDataSetIterator
+import org.deeplearning4j.datasets.iterator.impl.MnistDataSetIterator
+//import org.deeplearning4j.eval.Evaluation
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration
 import org.deeplearning4j.nn.conf.inputs.InputType
 import org.deeplearning4j.nn.conf.layers.ConvolutionLayer
@@ -22,15 +24,10 @@ import org.deeplearning4j.nn.conf.layers.OutputLayer
 import org.deeplearning4j.nn.conf.layers.SubsamplingLayer
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.deeplearning4j.nn.weights.WeightInit
-import org.deeplearning4j.optimize.api.InvocationType
-import org.deeplearning4j.optimize.listeners.EvaluativeListener
-import org.deeplearning4j.optimize.listeners.ScoreIterationListener
 import org.nd4j.linalg.activations.Activation
 import org.nd4j.linalg.dataset.api.preprocessor.ImagePreProcessingScaler
 import org.nd4j.linalg.learning.config.Nesterovs
 import org.nd4j.linalg.lossfunctions.LossFunctions
-import org.nd4j.linalg.schedule.MapSchedule
-import org.nd4j.linalg.schedule.ScheduleType
 import java.io.*
 import java.util.*
 import kotlin.collections.HashMap
@@ -59,7 +56,7 @@ class TestFragment : BaseFragment(R.layout.fragment_test) {
             trainRR.initialize(trainSplit)
             val trainIter = RecordReaderDataSetIterator(trainRR, 54, 1, 10)
 
-            val scaler = ImagePreProcessingScaler(0.0, 1.0)
+            val scaler = ImagePreProcessingScaler()
             scaler.fit(trainIter)
             trainIter.preProcessor = scaler
 
@@ -70,6 +67,9 @@ class TestFragment : BaseFragment(R.layout.fragment_test) {
             val testIter = RecordReaderDataSetIterator(testRR, 54, 1, 10)
             testIter.preProcessor = scaler
 
+//            val mnistTrain = MnistDataSetIterator(54, true, 1234)
+//            val mnistTest = MnistDataSetIterator(54, false, 1234)
+
             val lrSchedule = HashMap<Int, Double>()
             lrSchedule.put(0, 0.06)
             lrSchedule.put(200, 0.05)
@@ -79,44 +79,71 @@ class TestFragment : BaseFragment(R.layout.fragment_test) {
 
             val conf = NeuralNetConfiguration.Builder()
                 .seed(1234)
-                .l2(0.0005)
-                .updater(Nesterovs(MapSchedule(ScheduleType.ITERATION, lrSchedule)))
+                .l2(1e-4)
+                .updater(Nesterovs(0.006, 0.9))
                 .weightInit(WeightInit.XAVIER)
                 .list()
-                .layer(ConvolutionLayer.Builder(5, 5)
+                .layer(0,
+                    ConvolutionLayer.Builder(5, 5)
                     .nIn(1)
                     .stride(1, 1)
                     .nOut(20)
                     .activation(Activation.IDENTITY)
                     .build())
-                .layer(SubsamplingLayer.Builder(SubsamplingLayer.PoolingType.MAX)
+                .layer(1,
+                    SubsamplingLayer.Builder(SubsamplingLayer.PoolingType.MAX)
                     .kernelSize(2, 2)
                     .stride(2, 2)
                     .build())
-                .layer(ConvolutionLayer.Builder(5, 5)
+                .layer(2, ConvolutionLayer.Builder(5, 5)
                     .stride(1, 1)
                     .nOut(50)
+                    .activation(Activation.IDENTITY)
                     .build())
-                .layer(SubsamplingLayer.Builder(SubsamplingLayer.PoolingType.MAX)
+                .layer(3, SubsamplingLayer.Builder(SubsamplingLayer.PoolingType.MAX)
                     .kernelSize(2, 2)
                     .stride(2, 2)
                     .build())
-                .layer(DenseLayer.Builder()
+                .layer(4, DenseLayer.Builder()
                     .activation(Activation.RELU)
                     .nOut(500)
                     .build())
-                .layer(OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
+                .layer(5, OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
                     .nOut(10)
                     .activation(Activation.SOFTMAX)
                     .build())
+                /*.layer(
+                    0, DenseLayer.Builder()
+                        .nIn(28 * 28)
+                        .nOut(1000)
+                        .activation(Activation.RELU)
+                        .weightInit(WeightInit.XAVIER)
+                        .build()
+                )
+                .layer(
+                    1, OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
+                        .nIn(1000)
+                        .nOut(10)
+                        .activation(Activation.SOFTMAX)
+                        .weightInit(WeightInit.XAVIER)
+                        .build()
+                )*/
                 .setInputType(InputType.convolutionalFlat(28, 28, 1))
                 .build()
 
             val network = MultiLayerNetwork(conf)
             network.init()
-            network.setListeners(ScoreIterationListener(10), EvaluativeListener(testIter, 1, InvocationType.EPOCH_END))
-            network.fit(trainIter, 1)
-            network.save(File(requireActivity().getExternalFilesDir(null), "mnist-model.bin"))
+//            network.setListeners(ScoreIterationListener(10), EvaluativeListener(testIter, 1, InvocationType.EPOCH_END))
+            network.fit(trainIter)
+//            val eval = Evaluation(10)
+//            while (testIter.hasNext()) {
+//                val next = testIter.next()
+//                val output = network.output(next.features)
+//                eval.eval(next.labels, output)
+//            }
+//            network.evaluate(mnistTest)
+//            print(eval.stats())
+//            network.save(File(requireActivity().getExternalFilesDir(null), "mnist-model.bin"))
         }
 
 //        val network = CnnModel(CifarDataSetService(), CnnModelProperties())

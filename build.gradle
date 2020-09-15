@@ -36,9 +36,11 @@ allprojects {
     repositories {
         google()
         jcenter()
+        mavenLocal()
         maven { url "https://dl.bintray.com/mattskala/maven" }
         maven { url "https://dl.bintray.com/terl/lazysodium-maven" }
         maven { url 'https://jitpack.io' }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
     }
 
     // Temp fix for issue https://github.com/mockk/mockk/issues/281

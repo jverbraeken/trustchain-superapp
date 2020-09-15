@@ -1,6 +1,5 @@
 package nl.tudelft.trustchain.fedml.ui
 
-import org.deeplearning4j.nn.conf.inputs.InputType
 import java.io.InputStream
 
 

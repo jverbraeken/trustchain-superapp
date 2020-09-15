@@ -37,13 +37,31 @@ android {
     packagingOptions {
         exclude 'META-INF/kotlinx-coroutines-core.kotlin_module'
         pickFirst 'google/protobuf/**'
+        pickFirst 'lib/arm64-v8a/**'
+        pickFirst 'lib/x86/**'
+        pickFirst 'lib/x86_64/**'
+        pickFirst 'lib/armeabi-v7a/**'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/DEPENDENCIES.txt'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/INDEX.LIST'
+        exclude 'org/opencv/**'
+        exclude 'org.opencv.**'
+        exclude 'org.bytedeco.**'
+        exclude 'LICENSE-EDL-1.0.txt'
+        exclude 'LICENSE-EPL-1.0.txt'
     }
 
     applicationVariants.all { variant ->
         variant.getRuntimeConfiguration().exclude group: 'com.google.code.findbugs', module: 'jsr305'
 //        variant.getRuntimeConfiguration().exclude group: 'net.java.dev.jna', module: 'jna'
-        variant.getRuntimeConfiguration().exclude group: 'com.google.guava', module: 'guava'
-        variant.getRuntimeConfiguration().exclude group: 'org.nd4j', module: 'guava'
+//        variant.getRuntimeConfiguration().exclude group: 'com.google.guava', module: 'guava'
+//        variant.getRuntimeConfiguration().exclude group: 'org.nd4j', module: 'guava'
     }
 
     lintOptions {
@@ -57,7 +75,7 @@ android {
 
     defaultConfig {
         applicationId "nl.tudelft.trustchain"
-        minSdkVersion 22
+        minSdkVersion 29
         targetSdkVersion 29
         versionCode generateVersionCode()
         versionName "0.2"
@@ -103,6 +121,10 @@ android {
 
     buildFeatures {
         viewBinding = true
+    }
+
+    configurations {
+        all*.exclude module: 'protobuf'
     }
 }
 
