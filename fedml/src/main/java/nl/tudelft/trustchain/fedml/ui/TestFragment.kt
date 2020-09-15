@@ -14,8 +14,6 @@ import org.datavec.api.split.FileSplit
 import org.datavec.image.loader.NativeImageLoader
 import org.datavec.image.recordreader.ImageRecordReader
 import org.deeplearning4j.datasets.datavec.RecordReaderDataSetIterator
-import org.deeplearning4j.datasets.iterator.impl.MnistDataSetIterator
-//import org.deeplearning4j.eval.Evaluation
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration
 import org.deeplearning4j.nn.conf.inputs.InputType
 import org.deeplearning4j.nn.conf.layers.ConvolutionLayer
@@ -24,16 +22,19 @@ import org.deeplearning4j.nn.conf.layers.OutputLayer
 import org.deeplearning4j.nn.conf.layers.SubsamplingLayer
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.deeplearning4j.nn.weights.WeightInit
+import org.deeplearning4j.optimize.api.InvocationType
+import org.deeplearning4j.optimize.listeners.EvaluativeListener
+import org.deeplearning4j.optimize.listeners.ScoreIterationListener
+import org.nd4j.evaluation.classification.Evaluation
 import org.nd4j.linalg.activations.Activation
 import org.nd4j.linalg.dataset.api.preprocessor.ImagePreProcessingScaler
+import org.nd4j.linalg.dataset.api.preprocessor.NormalizerStandardize
+import org.nd4j.linalg.learning.config.Adam
 import org.nd4j.linalg.learning.config.Nesterovs
 import org.nd4j.linalg.lossfunctions.LossFunctions
 import java.io.*
 import java.util.*
 import kotlin.collections.HashMap
-
-
-//import org.deeplearning4j.eval.Evaluation
 
 class TestFragment : BaseFragment(R.layout.fragment_test) {
     private val binding by viewBinding(FragmentTestBinding::bind)
@@ -54,17 +55,23 @@ class TestFragment : BaseFragment(R.layout.fragment_test) {
             val labelMaker = ParentPathLabelGenerator()
             val trainRR = ImageRecordReader(28, 28, 1, labelMaker)
             trainRR.initialize(trainSplit)
-            val trainIter = RecordReaderDataSetIterator(trainRR, 54, 1, 10)
+            val trainIter = RecordReaderDataSetIterator(trainRR, 1)
 
-            val scaler = ImagePreProcessingScaler()
+//            val tst = NormalizerStandardize()
+//            tst.fit(trainIter)
+            val scaler = ImagePreProcessingScaler(0.1, 0.9)
             scaler.fit(trainIter)
             trainIter.preProcessor = scaler
 
             val testData = File(requireActivity().getExternalFilesDir(null), "testing")
             val testSplit = FileSplit(testData, NativeImageLoader.ALLOWED_FORMATS, randNumGen)
-            val testRR = ImageRecordReader(28, 28, 1, labelMaker)
+            val labelMaker2 = ParentPathLabelGenerator()
+            val testRR = ImageRecordReader(28, 28, 1, labelMaker2)
             testRR.initialize(testSplit)
-            val testIter = RecordReaderDataSetIterator(testRR, 54, 1, 10)
+            val testIter = RecordReaderDataSetIterator(testRR, 1)
+
+//            val scaler2 = ImagePreProcessingScaler(0.1, 0.9)
+//            scaler2.fit(testIter)
             testIter.preProcessor = scaler
 
 //            val mnistTrain = MnistDataSetIterator(54, true, 1234)
@@ -79,70 +86,67 @@ class TestFragment : BaseFragment(R.layout.fragment_test) {
 
             val conf = NeuralNetConfiguration.Builder()
                 .seed(1234)
-                .l2(1e-4)
-                .updater(Nesterovs(0.006, 0.9))
+                .l2(1e-3)
+                .updater(Adam(1e-3))
                 .weightInit(WeightInit.XAVIER)
                 .list()
-                .layer(0,
+                .layer(
+                    0,
                     ConvolutionLayer.Builder(5, 5)
-                    .nIn(1)
-                    .stride(1, 1)
-                    .nOut(20)
-                    .activation(Activation.IDENTITY)
-                    .build())
-                .layer(1,
-                    SubsamplingLayer.Builder(SubsamplingLayer.PoolingType.MAX)
-                    .kernelSize(2, 2)
-                    .stride(2, 2)
-                    .build())
-                .layer(2, ConvolutionLayer.Builder(5, 5)
-                    .stride(1, 1)
-                    .nOut(50)
-                    .activation(Activation.IDENTITY)
-                    .build())
-                .layer(3, SubsamplingLayer.Builder(SubsamplingLayer.PoolingType.MAX)
-                    .kernelSize(2, 2)
-                    .stride(2, 2)
-                    .build())
-                .layer(4, DenseLayer.Builder()
-                    .activation(Activation.RELU)
-                    .nOut(500)
-                    .build())
-                .layer(5, OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
-                    .nOut(10)
-                    .activation(Activation.SOFTMAX)
-                    .build())
-                /*.layer(
-                    0, DenseLayer.Builder()
-                        .nIn(28 * 28)
-                        .nOut(1000)
-                        .activation(Activation.RELU)
-                        .weightInit(WeightInit.XAVIER)
+                        .nIn(1)
+                        .stride(1, 1)
+                        .nOut(20)
+                        .activation(Activation.IDENTITY)
                         .build()
                 )
                 .layer(
-                    1, OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
-                        .nIn(1000)
+                    1,
+                    SubsamplingLayer.Builder(SubsamplingLayer.PoolingType.MAX)
+                        .kernelSize(2, 2)
+                        .stride(2, 2)
+                        .build()
+                )
+                .layer(
+                    2, ConvolutionLayer.Builder(5, 5)
+                        .stride(1, 1)
+                        .nOut(50)
+                        .activation(Activation.IDENTITY)
+                        .build()
+                )
+                .layer(
+                    3, SubsamplingLayer.Builder(SubsamplingLayer.PoolingType.MAX)
+                        .kernelSize(2, 2)
+                        .stride(2, 2)
+                        .build()
+                )
+                .layer(
+                    4, DenseLayer.Builder()
+                        .activation(Activation.RELU)
+                        .nOut(500)
+                        .build()
+                )
+                .layer(
+                    5, OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
                         .nOut(10)
                         .activation(Activation.SOFTMAX)
-                        .weightInit(WeightInit.XAVIER)
                         .build()
-                )*/
+                )
                 .setInputType(InputType.convolutionalFlat(28, 28, 1))
                 .build()
 
             val network = MultiLayerNetwork(conf)
             network.init()
-//            network.setListeners(ScoreIterationListener(10), EvaluativeListener(testIter, 1, InvocationType.EPOCH_END))
+            network.setListeners(ScoreIterationListener(1)/*, EvaluativeListener(testIter, 1)*/)
             network.fit(trainIter)
-//            val eval = Evaluation(10)
-//            while (testIter.hasNext()) {
-//                val next = testIter.next()
-//                val output = network.output(next.features)
-//                eval.eval(next.labels, output)
-//            }
-//            network.evaluate(mnistTest)
-//            print(eval.stats())
+            val eval = Evaluation(10)
+            while (testIter.hasNext()) {
+                val next = testIter.next()
+                val output = network.output(next.features)
+                eval.eval(next.labels, output)
+            }
+//            val result = network.evaluate<Evaluation>(testIter)
+            print(eval.stats())
+//            print(result.axis)
 //            network.save(File(requireActivity().getExternalFilesDir(null), "mnist-model.bin"))
         }
 
@@ -155,7 +159,7 @@ class TestFragment : BaseFragment(R.layout.fragment_test) {
 
     private fun copyAssets() {
         val assetManager: AssetManager = requireActivity().assets
-        for (type in arrayOf("training", "test")) {
+        for (type in arrayOf("training", "testing")) {
             for (num in 0..9) {
                 val path = "$type/$num/"
                 var files: Array<String>? = null
@@ -168,10 +172,12 @@ class TestFragment : BaseFragment(R.layout.fragment_test) {
                 if (!dir.exists()) {
                     dir.mkdirs()
                 }
-                if (files != null) for (filename in files) {
-                    assetManager.open(path + filename).use { input ->
-                        FileOutputStream(File(dir, filename)).use { output ->
-                            copyFile(input, output)
+                if (files != null) {
+                    for (filename in files) {
+                        assetManager.open(path + filename).use { input ->
+                            FileOutputStream(File(dir, filename)).use { output ->
+                                copyFile(input, output)
+                            }
                         }
                     }
                 }

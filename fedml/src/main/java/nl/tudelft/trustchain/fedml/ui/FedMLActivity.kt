@@ -22,7 +22,7 @@ class FedMLActivity : BaseActivity() {
                     android.Manifest.permission.WRITE_EXTERNAL_STORAGE
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
-                ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
+                ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE), PackageManager.PERMISSION_GRANTED)
                 Toast.makeText(applicationContext, "error", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(applicationContext, "top", Toast.LENGTH_SHORT).show()
