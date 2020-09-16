@@ -13,8 +13,8 @@ ktlint {
 }
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.3"
+    compileSdkVersion 30
+    buildToolsVersion "30.0.2"
 
     defaultConfig {
         minSdkVersion 22
@@ -70,12 +70,8 @@ dependencies {
     implementation (group: 'org.deeplearning4j', name: 'deeplearning4j-core', version: dl4jVersion) {
         exclude group: 'org.bytedeco', module: 'opencv-platform'
         exclude group: 'org.bytedeco', module: 'leptonica-platform'
-//        exclude group: 'org.nd4j', module: 'nd4j-base64'
-//        exclude group: 'org.nd4j', module: 'nd4j-api'
         exclude group: "net.java.dev.jna", module: "jna"
         exclude group: 'com.google.guava', module: 'guava'
-//        exclude group: 'org.bytedeco.javacpp-presets', module: 'opencv'
-//        exclude group: 'org.deeplearning4j', module: 'deeplearning4j-util'
     }
     implementation (group: 'org.nd4j', name: 'nd4j-native', version: dl4jVersion) {
         exclude group: "net.java.dev.jna", module: "jna"
@@ -103,9 +99,6 @@ dependencies {
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.4'
 
     // Testing
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
