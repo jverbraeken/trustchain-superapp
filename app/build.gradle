@@ -32,65 +32,25 @@ static def generateVersionCode() {
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
-//    ndkVersion "21.3.6528147"
 
     packagingOptions {
         exclude 'META-INF/kotlinx-coroutines-core.kotlin_module'
-        pickFirst 'google/protobuf/**'
-        pickFirst 'lib/arm64-v8a/**'
-        pickFirst 'lib/x86/**'
-        pickFirst 'lib/x86_64/**'
-        pickFirst 'lib/armeabi-v7a/**'
-        exclude 'META-INF/DEPENDENCIES'
-        exclude 'META-INF/DEPENDENCIES.txt'
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/license.txt'
-        exclude 'META-INF/NOTICE'
-        exclude 'META-INF/NOTICE.txt'
-        exclude 'META-INF/notice.txt'
-        exclude 'META-INF/INDEX.LIST'
-        exclude 'org/opencv/**'
-        exclude 'org.opencv.**'
-        exclude 'org.bytedeco.**'
-        exclude 'LICENSE-EDL-1.0.txt'
-        exclude 'LICENSE-EPL-1.0.txt'
         exclude 'META-INF/native-image/**'
     }
 
     applicationVariants.all { variant ->
         variant.getRuntimeConfiguration().exclude group: 'com.google.code.findbugs', module: 'jsr305'
-//        variant.getRuntimeConfiguration().exclude group: 'net.java.dev.jna', module: 'jna'
-//        variant.getRuntimeConfiguration().exclude group: 'com.google.guava', module: 'guava'
-//        variant.getRuntimeConfiguration().exclude group: 'org.nd4j', module: 'guava'
-    }
-
-    lintOptions {
-        abortOnError false
-        checkAllWarnings false
-        checkReleaseBuilds false
-        ignoreWarnings = true
-        quiet true
-        tasks.lint.enabled false
     }
 
     defaultConfig {
         applicationId "nl.tudelft.trustchain"
-        minSdkVersion 29
+        minSdkVersion 22
         targetSdkVersion 29
         versionCode generateVersionCode()
         versionName "0.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-
-//    externalNativeBuild {
-//        cmake {
-//            path "CMakeLists.txt"
-//            cppFlags "-std=c++14 -fexceptions -frtti"
-//            arguments "-DANDROID_ARM_NEON=TRUE",'-DANDROID_STL=c++_shared'
-//        }
-//    }
 
     signingConfigs {
         release {
@@ -143,7 +103,7 @@ dependencies {
     implementation project(':trustchain-trader')
     implementation project(':trustchain-payloadgenerator')
     implementation project(':debug')
-    implementation project(':distributedAI')
+    implementation project(':distributedai')
     implementation project(':currencyii')
     implementation project(':freedomOfComputing')
     implementation project(':musicdao')
