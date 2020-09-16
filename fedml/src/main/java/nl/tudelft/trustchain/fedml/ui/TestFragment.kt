@@ -2,6 +2,7 @@ package nl.tudelft.trustchain.fedml.ui
 
 import android.content.res.AssetManager
 import android.os.Bundle
+import android.os.StrictMode
 import android.util.Log
 import android.view.View
 import nl.tudelft.trustchain.common.ui.BaseFragment
@@ -9,11 +10,8 @@ import nl.tudelft.trustchain.common.util.viewBinding
 import nl.tudelft.trustchain.fedml.R
 import nl.tudelft.trustchain.fedml.databinding.FragmentTestBinding
 import nl.tudelft.trustchain.fedml.ipv8.FedMLCommunity
-import org.datavec.api.io.labels.ParentPathLabelGenerator
-import org.datavec.api.split.FileSplit
-import org.datavec.image.loader.NativeImageLoader
-import org.datavec.image.recordreader.ImageRecordReader
-import org.deeplearning4j.datasets.datavec.RecordReaderDataSetIterator
+import org.deeplearning4j.common.resources.DL4JResources
+import org.deeplearning4j.datasets.iterator.impl.MnistDataSetIterator
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration
 import org.deeplearning4j.nn.conf.inputs.InputType
 import org.deeplearning4j.nn.conf.layers.ConvolutionLayer
@@ -22,19 +20,12 @@ import org.deeplearning4j.nn.conf.layers.OutputLayer
 import org.deeplearning4j.nn.conf.layers.SubsamplingLayer
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.deeplearning4j.nn.weights.WeightInit
-import org.deeplearning4j.optimize.api.InvocationType
-import org.deeplearning4j.optimize.listeners.EvaluativeListener
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener
-import org.nd4j.evaluation.classification.Evaluation
 import org.nd4j.linalg.activations.Activation
-import org.nd4j.linalg.dataset.api.preprocessor.ImagePreProcessingScaler
-import org.nd4j.linalg.dataset.api.preprocessor.NormalizerStandardize
 import org.nd4j.linalg.learning.config.Adam
-import org.nd4j.linalg.learning.config.Nesterovs
 import org.nd4j.linalg.lossfunctions.LossFunctions
 import java.io.*
 import java.util.*
-import kotlin.collections.HashMap
 
 class TestFragment : BaseFragment(R.layout.fragment_test) {
     private val binding by viewBinding(FragmentTestBinding::bind)
@@ -46,20 +37,18 @@ class TestFragment : BaseFragment(R.layout.fragment_test) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.btnInitiate.setOnClickListener {
-            getCommunity().sendMessage()
-            copyAssets()
+//            getCommunity().sendMessage()
+//            copyAssets()
 
-            val randNumGen = Random(1234)
-            val trainData = File(requireActivity().getExternalFilesDir(null), "training")
+//            val randNumGen = Random(1234)
+            /*val trainData = File(requireActivity().getExternalFilesDir(null), "training")
             val trainSplit = FileSplit(trainData, NativeImageLoader.ALLOWED_FORMATS, randNumGen)
             val labelMaker = ParentPathLabelGenerator()
             val trainRR = ImageRecordReader(28, 28, 1, labelMaker)
             trainRR.initialize(trainSplit)
-            val trainIter = RecordReaderDataSetIterator(trainRR, 1)
+            val trainIter = RecordReaderDataSetIterator(trainRR, 64, 1, 10)
 
-//            val tst = NormalizerStandardize()
-//            tst.fit(trainIter)
-            val scaler = ImagePreProcessingScaler(0.1, 0.9)
+            val scaler = ImagePreProcessingScaler()
             scaler.fit(trainIter)
             trainIter.preProcessor = scaler
 
@@ -68,84 +57,98 @@ class TestFragment : BaseFragment(R.layout.fragment_test) {
             val labelMaker2 = ParentPathLabelGenerator()
             val testRR = ImageRecordReader(28, 28, 1, labelMaker2)
             testRR.initialize(testSplit)
-            val testIter = RecordReaderDataSetIterator(testRR, 1)
+            val testIter = RecordReaderDataSetIterator(testRR, 64, 1, 10)
+            testIter.preProcessor = scaler*/
 
-//            val scaler2 = ImagePreProcessingScaler(0.1, 0.9)
-//            scaler2.fit(testIter)
-            testIter.preProcessor = scaler
+            val nChannels = 1 // Number of input channels
 
-//            val mnistTrain = MnistDataSetIterator(54, true, 1234)
-//            val mnistTest = MnistDataSetIterator(54, false, 1234)
+            val outputNum = 10 // The number of possible outcomes
 
-            val lrSchedule = HashMap<Int, Double>()
-            lrSchedule.put(0, 0.06)
-            lrSchedule.put(200, 0.05)
-            lrSchedule.put(600, 0.028)
-            lrSchedule.put(800, 0.006)
-            lrSchedule.put(1000, 0.001)
+            val batchSize = 64 // Test batch size
+
+            val nEpochs = 1 // Number of training epochs
+
+            val seed = 123L //
+
+
+            DL4JResources.setBaseDirectory(requireActivity().getExternalFilesDir(null)!!)
+            val policy: StrictMode.ThreadPolicy = StrictMode.ThreadPolicy.Builder().permitAll().build()
+            StrictMode.setThreadPolicy(policy)
+
+            val mnistTrain = MnistDataSetIterator(batchSize, true, 12345)
+//            val mnistTest = MnistDataSetIterator(batchSize, false, 12345)
+
+            /*val learningRateSchedule: MutableMap<Int, Double> = HashMap()
+            learningRateSchedule.put(0, 0.06)
+            learningRateSchedule.put(200, 0.05)
+            learningRateSchedule.put(600, 0.028)
+            learningRateSchedule.put(800, 0.0060)
+            learningRateSchedule.put(1000, 0.001)*/
 
             val conf = NeuralNetConfiguration.Builder()
-                .seed(1234)
-                .l2(1e-3)
-                .updater(Adam(1e-3))
+                .seed(seed)
+                .l2(0.0005)
                 .weightInit(WeightInit.XAVIER)
+                .updater(Adam(1e-3)/*Nesterovs(MapSchedule(ScheduleType.ITERATION, learningRateSchedule))*/)
                 .list()
                 .layer(
-                    0,
                     ConvolutionLayer.Builder(5, 5)
-                        .nIn(1)
+                        .nIn(nChannels)
                         .stride(1, 1)
                         .nOut(20)
                         .activation(Activation.IDENTITY)
                         .build()
                 )
                 .layer(
-                    1,
                     SubsamplingLayer.Builder(SubsamplingLayer.PoolingType.MAX)
                         .kernelSize(2, 2)
                         .stride(2, 2)
                         .build()
                 )
                 .layer(
-                    2, ConvolutionLayer.Builder(5, 5)
+                    ConvolutionLayer.Builder(5, 5)
                         .stride(1, 1)
                         .nOut(50)
                         .activation(Activation.IDENTITY)
                         .build()
                 )
                 .layer(
-                    3, SubsamplingLayer.Builder(SubsamplingLayer.PoolingType.MAX)
+                    SubsamplingLayer.Builder(SubsamplingLayer.PoolingType.MAX)
                         .kernelSize(2, 2)
                         .stride(2, 2)
                         .build()
                 )
                 .layer(
-                    4, DenseLayer.Builder()
+                    DenseLayer.Builder()
                         .activation(Activation.RELU)
                         .nOut(500)
                         .build()
                 )
                 .layer(
-                    5, OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
-                        .nOut(10)
+                    OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
+                        .nOut(outputNum)
                         .activation(Activation.SOFTMAX)
                         .build()
                 )
                 .setInputType(InputType.convolutionalFlat(28, 28, 1))
                 .build()
 
+//            val uiServer = UIServer.getInstance()
+//            val statsStorage = InMemoryStatsStorage()
+//            uiServer.attach(statsStorage)
+
             val network = MultiLayerNetwork(conf)
             network.init()
-            network.setListeners(ScoreIterationListener(1)/*, EvaluativeListener(testIter, 1)*/)
-            network.fit(trainIter)
-            val eval = Evaluation(10)
-            while (testIter.hasNext()) {
-                val next = testIter.next()
-                val output = network.output(next.features)
-                eval.eval(next.labels, output)
-            }
+            network.setListeners(ScoreIterationListener(5)/*, EvaluativeListener(testIter, 1)*//*, StatsListener(statsStorage)*/)
+            network.fit(mnistTrain, nEpochs)
+//            val eval = Evaluation(10)
+//            while (testIter.hasNext()) {
+//                val next = testIter.next()
+//                val output = network.output(next.features)
+//                eval.eval(next.labels, output)
+//            }
 //            val result = network.evaluate<Evaluation>(testIter)
-            print(eval.stats())
+//            print(eval.stats())
 //            print(result.axis)
 //            network.save(File(requireActivity().getExternalFilesDir(null), "mnist-model.bin"))
         }

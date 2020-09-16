@@ -55,6 +55,7 @@ android {
         exclude 'org.bytedeco.**'
         exclude 'LICENSE-EDL-1.0.txt'
         exclude 'LICENSE-EPL-1.0.txt'
+        exclude 'META-INF/native-image/**'
     }
 
     applicationVariants.all { variant ->

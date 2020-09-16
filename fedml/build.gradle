@@ -72,9 +72,9 @@ android {
 
 dependencies {
     def dl4jVersion = '1.0.0-beta6'
-    def openblasVersion = '0.3.9-1.5.3'
-    def opencvVersion = '4.3.0-1.5.3'
-    def leptonicaVersion = '1.79.0-1.5.3'
+    def openblasVersion = '0.3.10-1.5.4'
+    def opencvVersion = '4.4.0-1.5.4'
+    def leptonicaVersion = '1.80.0-1.5.4'
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -108,16 +108,8 @@ dependencies {
     implementation 'com.github.tony19:logback-android:2.0.0'
 
     implementation 'com.mattskala:itemadapter:0.3'
-//    implementation('org.deeplearning4j:deeplearning4j-core:1.0.0-beta7') {
-//        exclude group: "net.java.dev.jna", module: "jna"
-//    }
-//    implementation('org.nd4j:nd4j-api:1.0.0-beta7') {
-//        exclude group: "net.java.dev.jna", module: "jna"
-//    }
-//    implementation('org.deeplearning4j:deeplearning4j-nn:1.0.0-beta7') {
-//        exclude group: "net.java.dev.jna", module: "jna"
-//    }
-//    implementation 'org.nd4j:nd4j-native:1.0.0-beta7'
+
+    // Deep learning
     implementation (group: 'org.deeplearning4j', name: 'deeplearning4j-core', version: dl4jVersion) {
         exclude group: 'org.bytedeco', module: 'opencv-platform'
         exclude group: 'org.bytedeco', module: 'leptonica-platform'
