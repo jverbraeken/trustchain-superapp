@@ -2,5 +2,7 @@
 <resources>
     <string name="ping">Ping</string>
     <string name="pong">Pong</string>
-    <string name="start_ai">Start AI</string>
+    <string name="mnist_local">Run MNIST locally</string>
+    <string name="mnist_distr_sim">Simulate dist. MNIST locally</string>
+    <string name="mnist_distr">Run MNIST dist.</string>
 </resources>

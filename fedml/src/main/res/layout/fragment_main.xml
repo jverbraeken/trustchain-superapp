@@ -8,7 +8,7 @@
 
     <TableRow
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
         <Button
             android:id="@+id/btnPing"
@@ -20,13 +20,35 @@
 
     <TableRow
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:paddingTop="10pt">
 
         <Button
-            android:id="@+id/btnAI"
+            android:id="@+id/btnMnistLocal"
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/start_ai" />
+            android:text="@string/mnist_local" />
+
+        <Button
+            android:id="@+id/btnMnistDistrSim"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/mnist_distr_sim" />
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/btnMnistDistr"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/mnist_distr" />
+
     </TableRow>
 </TableLayout>

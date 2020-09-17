@@ -27,16 +27,16 @@ class FedMLCommunity(
         private val settings: TrustChainSettings,
         private val database: TrustChainStore,
         private val crawler: TrustChainCrawler = TrustChainCrawler()
-    ) : Overlay.Factory<FedMLCommunity>(
-        FedMLCommunity::class.java
-    ) {
+    ) : Overlay.Factory<FedMLCommunity>(FedMLCommunity::class.java) {
         override fun create(): FedMLCommunity {
-            return FedMLCommunity(
-                settings,
-                database,
-                crawler
-            )
+            return FedMLCommunity(settings, database, crawler)
         }
+    }
+
+    init {
+        messageHandlers[MessageId.MSG_PING] = ::onMsgPing
+        messageHandlers[MessageId.MSG_PONG] = ::onMsgPong
+        messageHandlers[MessageId.MSG_PARAM_UPDATE] = ::onMsgParamUpdate
     }
 
     object MessageId {
@@ -45,6 +45,7 @@ class FedMLCommunity(
         const val MSG_PARAM_UPDATE = 2
     }
 
+    @Suppress("MemberVisibilityCanBePrivate")
     internal fun sendToPeer(peer: Peer, messageID: Int, message: Serializable) {
         val packet = serializePacket(messageID, message, true)
         send(peer.address, packet)
@@ -56,16 +57,12 @@ class FedMLCommunity(
         }
     }
 
-    init {
-        messageHandlers[MessageId.MSG_PING] = ::onMsgPing
-        messageHandlers[MessageId.MSG_PONG] = ::onMsgPong
-        messageHandlers[MessageId.MSG_PARAM_UPDATE] = ::onMsgParamUpdate
-    }
+    ////// MESSAGE RECEIVED EVENTS
 
     private fun onMsgPing(packet: Packet) {
         val (peer, payload) = packet.getAuthPayload(MsgPing.Deserializer)
         Log.e("MsgPing", peer.mid + ": " + payload.message)
-        sendToAll(MessageId.MSG_PONG, MsgPong("Pong"))
+        sendToPeer(peer, MessageId.MSG_PONG, MsgPong("Pong"))
     }
 
     private fun onMsgPong(packet: Packet) {
@@ -79,6 +76,7 @@ class FedMLCommunity(
     }
 }
 
+////// MESSAGE DATA CLASSES
 
 data class MsgPing(val message: String) : Serializable {
     override fun serialize(): ByteArray {
