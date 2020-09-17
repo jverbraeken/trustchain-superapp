@@ -22,10 +22,12 @@ import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.deeplearning4j.nn.weights.WeightInit
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener
 import org.nd4j.linalg.activations.Activation
+import org.nd4j.linalg.api.buffer.FloatBuffer
+import org.nd4j.linalg.api.ndarray.INDArray
+import org.nd4j.linalg.cpu.nativecpu.NDArray
 import org.nd4j.linalg.learning.config.Adam
 import org.nd4j.linalg.lossfunctions.LossFunctions
 import java.io.*
-import java.util.*
 
 class TestFragment : BaseFragment(R.layout.fragment_test) {
     private val binding by viewBinding(FragmentTestBinding::bind)
@@ -37,37 +39,12 @@ class TestFragment : BaseFragment(R.layout.fragment_test) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.btnInitiate.setOnClickListener {
-//            getCommunity().sendMessage()
-//            copyAssets()
-
-//            val randNumGen = Random(1234)
-            /*val trainData = File(requireActivity().getExternalFilesDir(null), "training")
-            val trainSplit = FileSplit(trainData, NativeImageLoader.ALLOWED_FORMATS, randNumGen)
-            val labelMaker = ParentPathLabelGenerator()
-            val trainRR = ImageRecordReader(28, 28, 1, labelMaker)
-            trainRR.initialize(trainSplit)
-            val trainIter = RecordReaderDataSetIterator(trainRR, 64, 1, 10)
-
-            val scaler = ImagePreProcessingScaler()
-            scaler.fit(trainIter)
-            trainIter.preProcessor = scaler
-
-            val testData = File(requireActivity().getExternalFilesDir(null), "testing")
-            val testSplit = FileSplit(testData, NativeImageLoader.ALLOWED_FORMATS, randNumGen)
-            val labelMaker2 = ParentPathLabelGenerator()
-            val testRR = ImageRecordReader(28, 28, 1, labelMaker2)
-            testRR.initialize(testSplit)
-            val testIter = RecordReaderDataSetIterator(testRR, 64, 1, 10)
-            testIter.preProcessor = scaler*/
+            getCommunity().sendMessage()
 
             val nChannels = 1 // Number of input channels
-
             val outputNum = 10 // The number of possible outcomes
-
             val batchSize = 64 // Test batch size
-
-            val nEpochs = 1 // Number of training epochs
-
+//            val nEpochs = 1 // Number of training epochs
             val seed = 123L //
 
 
@@ -133,14 +110,33 @@ class TestFragment : BaseFragment(R.layout.fragment_test) {
                 .setInputType(InputType.convolutionalFlat(28, 28, 1))
                 .build()
 
-//            val uiServer = UIServer.getInstance()
-//            val statsStorage = InMemoryStatsStorage()
-//            uiServer.attach(statsStorage)
-
-            val network = MultiLayerNetwork(conf)
-            network.init()
-            network.setListeners(ScoreIterationListener(5)/*, EvaluativeListener(testIter, 1)*//*, StatsListener(statsStorage)*/)
-            network.fit(mnistTrain, nEpochs)
+            val networks = arrayOf(MultiLayerNetwork(conf), MultiLayerNetwork(conf))
+            networks.forEach {
+                it.init()
+                it.setListeners(ScoreIterationListener(1))
+            }
+            for (i in 0..100) {
+                for (net in networks) {
+                    net.fit(mnistTrain.next())
+                }
+                var arr : INDArray? = null
+                for (j in networks.indices) {
+                    if (j == 0) {
+                        arr = networks[j].params()
+                    } else {
+                        arr = arr!!.add(networks[j].params())
+                    }
+                }
+                arr = arr!!.divi(networks.size)
+                for (net in networks) {
+                    net.setParameters(arr!!)
+                }
+            }
+//            network.setListeners(ScoreIterationListener(5)/*, EvaluativeListener(testIter, 1)*//*, StatsListener(statsStorage)*/)
+//            network.fit(mnistTrain.next())
+//            network.fit(mnistTrain.next())
+            print("hoi")
+//            network.fit(mnistTrain, nEpochs)
 //            val eval = Evaluation(10)
 //            while (testIter.hasNext()) {
 //                val next = testIter.next()
@@ -158,6 +154,19 @@ class TestFragment : BaseFragment(R.layout.fragment_test) {
 //        network.train()
 //        val evaluation: Evaluation = network.evaluate()
 //        print(evaluation)
+    }
+
+    private fun getAverageParamTable(networks: Array<MultiLayerNetwork>): MutableMap<String, INDArray>? {
+//        val paramTable = networks[0].paramTable()
+//        for (i in 1 until networks.size) {
+//            for ((key, value) in networks[i].paramTable()) {
+//                for (v in (value.data() as FloatBuffer)) {
+//                    paramTable[key] = paramTable[key] + value
+//                }
+//            }
+//        }
+        print(networks.size)
+        return null
     }
 
     private fun copyAssets() {
