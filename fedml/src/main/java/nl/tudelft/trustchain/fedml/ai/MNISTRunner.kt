@@ -8,29 +8,29 @@ import org.deeplearning4j.nn.conf.layers.ConvolutionLayer
 import org.deeplearning4j.nn.conf.layers.DenseLayer
 import org.deeplearning4j.nn.conf.layers.OutputLayer
 import org.deeplearning4j.nn.conf.layers.SubsamplingLayer
-import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.deeplearning4j.nn.weights.WeightInit
-import org.deeplearning4j.optimize.listeners.ScoreIterationListener
 import org.nd4j.linalg.activations.Activation
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.learning.config.Adam
 import org.nd4j.linalg.lossfunctions.LossFunctions
+import kotlin.random.Random
 
 abstract class MNISTRunner {
     open val nChannels = 1
     open val outputNum = 10
     open val batchSize = 64
-    open val seed = 12345
-    open val printScoreIterations = 1
+    open val seed = Random(System.currentTimeMillis()).nextInt()
+    open val printScoreIterations = 20
 
     val mnistTrain by lazy {
         MnistDataSetIterator(batchSize, true, seed)
     }
 
-    //    val mnistTest by lazy {
-//        MnistDataSetIterator(batchSize, false, seed)
-//    }
-//    val learningRateSchedule by lazy {
+    val mnistTest by lazy {
+        MnistDataSetIterator(batchSize, false, seed)
+    }
+
+    //    val learningRateSchedule by lazy {
 //        val map: MutableMap<Int, Double> = HashMap()
 //        map[0] = 0.06
 //        map[200] = 0.05
@@ -90,4 +90,13 @@ abstract class MNISTRunner {
     }
 
     abstract fun run()
+
+    fun calculateWeightedAverageParams(params: List<Pair<INDArray, Int>>): INDArray {
+        val totalWeight = params.map { it.second }.reduce { sum, elem -> sum + elem }.toDouble()
+        var arr: INDArray = params[0].first.mul(params[0].second.toDouble() / totalWeight)
+        for (i in 1 until params.size) {
+            arr = arr.add(params[i].first.mul(params[i].second.toDouble() / totalWeight))
+        }
+        return arr
+    }
 }
