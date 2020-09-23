@@ -22,6 +22,7 @@ import nl.tudelft.ipv8.attestation.trustchain.validation.TransactionValidator
 import nl.tudelft.ipv8.keyvault.PrivateKey
 import nl.tudelft.ipv8.keyvault.defaultCryptoProvider
 import nl.tudelft.ipv8.messaging.tftp.TFTPCommunity
+import nl.tudelft.ipv8.messaging.fasttftp.FastTFTPCommunity
 import nl.tudelft.ipv8.peerdiscovery.DiscoveryCommunity
 import nl.tudelft.ipv8.peerdiscovery.strategy.PeriodicSimilarity
 import nl.tudelft.ipv8.peerdiscovery.strategy.RandomChurn
@@ -52,8 +53,9 @@ class TrustChainApplication : Application() {
             createDiscoveryCommunity(),
             createTrustChainCommunity(),
 //            createPeerChatCommunity(),
-//            createTFTPCommunity(),
-//            createDemoCommunity(),
+            createTFTPCommunity(),
+            createFastTFTPCommunity(),
+            createDemoCommunity(),
 //            createMarketCommunity(),
 //            createCoinCommunity(),
 //            createVotingCommunity(),
@@ -153,6 +155,13 @@ class TrustChainApplication : Application() {
     private fun createTFTPCommunity(): OverlayConfiguration<TFTPCommunity> {
         return OverlayConfiguration(
             Overlay.Factory(TFTPCommunity::class.java),
+            listOf()
+        )
+    }
+
+    private fun createFastTFTPCommunity(): OverlayConfiguration<FastTFTPCommunity> {
+        return OverlayConfiguration(
+            Overlay.Factory(FastTFTPCommunity::class.java),
             listOf()
         )
     }

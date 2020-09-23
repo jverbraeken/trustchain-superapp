@@ -10,11 +10,15 @@ import nl.tudelft.ipv8.attestation.trustchain.store.TrustChainStore
 import nl.tudelft.ipv8.messaging.Deserializable
 import nl.tudelft.ipv8.messaging.Packet
 import nl.tudelft.ipv8.messaging.Serializable
-import org.nd4j.linalg.cpu.nativecpu.NDArray
+import org.nd4j.linalg.api.ndarray.INDArray
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
+
+interface MessageListener {
+    fun onMessageReceived(messageId: FedMLCommunity.MessageId, peer: Peer, payload: Any)
+}
 
 class FedMLCommunity(
     settings: TrustChainSettings,
@@ -33,25 +37,39 @@ class FedMLCommunity(
         }
     }
 
-    init {
-        messageHandlers[MessageId.MSG_PING] = ::onMsgPing
-        messageHandlers[MessageId.MSG_PONG] = ::onMsgPong
-        messageHandlers[MessageId.MSG_PARAM_UPDATE] = ::onMsgParamUpdate
+    // I'm claiming range 100 - 120
+    // TODO: we should really create a class for the whole superapp project that manages the generation of unique message IDs
+    enum class MessageId(val id: Int) {
+        MSG_PING(100),
+        MSG_PONG(101),
+        MSG_PARAM_UPDATE(102)
     }
 
-    object MessageId {
-        const val MSG_PING = 0
-        const val MSG_PONG = 1
-        const val MSG_PARAM_UPDATE = 2
+    init {
+        messageHandlers[MessageId.MSG_PING.id] = ::onMsgPing
+        messageHandlers[MessageId.MSG_PONG.id] = ::onMsgPong
+        messageHandlers[MessageId.MSG_PARAM_UPDATE.id] = ::onMsgParamUpdate
+        messageListeners[MessageId.MSG_PING]!!.add(object: MessageListener{
+            override fun onMessageReceived(messageId: MessageId, peer: Peer, payload: Any) {
+                sendToPeer(peer, MessageId.MSG_PONG, MsgPong("Pong"))
+            }
+        })
+    }
+
+    companion object {
+        val messageListeners = MessageId.values().associate { it to mutableListOf<MessageListener>() }.toMutableMap()
+        fun registerMessageListener(messageId: MessageId, listener: MessageListener) {
+            messageListeners[messageId]!!.add(listener)
+        }
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
-    internal fun sendToPeer(peer: Peer, messageID: Int, message: Serializable) {
-        val packet = serializePacket(messageID, message, true)
-        send(peer.address, packet)
+    internal fun sendToPeer(peer: Peer, messageID: MessageId, message: Serializable) {
+        val packet = serializePacket(messageID.id, message, true)
+        send(peer, packet)
     }
 
-    internal fun sendToAll(messageID: Int, message: Serializable) {
+    internal fun sendToAll(messageID: MessageId, message: Serializable) {
         for (peer in getPeers()) {
             sendToPeer(peer, messageID, message)
         }
@@ -62,17 +80,19 @@ class FedMLCommunity(
     private fun onMsgPing(packet: Packet) {
         val (peer, payload) = packet.getAuthPayload(MsgPing.Deserializer)
         Log.e("MsgPing", peer.mid + ": " + payload.message)
-        sendToPeer(peer, MessageId.MSG_PONG, MsgPong("Pong"))
+        messageListeners[MessageId.MSG_PING]!!.forEach { it.onMessageReceived(MessageId.MSG_PING, peer, payload) }
     }
 
     private fun onMsgPong(packet: Packet) {
         val (peer, payload) = packet.getAuthPayload(MsgPong.Deserializer)
         Log.e("MsgPong", peer.mid + ": " + payload.message)
+        messageListeners[MessageId.MSG_PONG]!!.forEach { it.onMessageReceived(MessageId.MSG_PING, peer, payload) }
     }
 
     private fun onMsgParamUpdate(packet: Packet) {
-        val (peer, _) = packet.getAuthPayload(MsgParamUpdate.Deserializer)
-        Log.e("MsgParamUpdate", peer.mid)
+        val (peer, payload) = packet.getAuthPayload(MsgParamUpdate.Deserializer)
+        Log.e(" MsgParamUpdate", peer.mid)
+        messageListeners[MessageId.MSG_PARAM_UPDATE]!!.forEach { it.onMessageReceived(MessageId.MSG_PING, peer, payload) }
     }
 }
 
@@ -104,22 +124,27 @@ data class MsgPong(val message: String) : Serializable {
     }
 }
 
-data class MsgParamUpdate(val message: NDArray) : Serializable {
+data class MsgParamUpdate(val array: INDArray, val weight: Int) : Serializable {
     override fun serialize(): ByteArray {
-        val bos = ByteArrayOutputStream()
+        val res = ByteArrayOutputStream().use { ObjectOutputStream(it).writeObject(array); it }.toByteArray()
+        return res
+        /*val bos = ByteArrayOutputStream()
         ObjectOutputStream(bos).use {
-            it.writeObject(message)
+            it.writeObject(array)
+//            it.writeInt(weight)
             it.flush()
             return bos.toByteArray()
-        }
+        }*/
     }
 
     companion object Deserializer : Deserializable<MsgParamUpdate> {
         override fun deserialize(buffer: ByteArray, offset: Int): Pair<MsgParamUpdate, Int> {
-            val bis = ByteArrayInputStream(buffer)
-            ObjectInputStream(bis).use {
-                return Pair(it.readObject() as MsgParamUpdate, buffer.size)
-            }
+            val bis = ByteArrayInputStream(buffer.copyOfRange(offset, buffer.size))
+            val ois = ObjectInputStream(bis)
+            return Pair(MsgParamUpdate(ois.readObject() as INDArray, 1812), buffer.size)
+            /*ObjectInputStream(bis).use {
+                return Pair(MsgParamUpdate(it.readObject() as INDArray, 1812*//*it.readInt()*//*), buffer.size)
+            }*/
         }
     }
 }
