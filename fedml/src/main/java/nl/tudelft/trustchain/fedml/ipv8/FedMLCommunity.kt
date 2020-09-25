@@ -25,7 +25,7 @@ class FedMLCommunity(
     database: TrustChainStore,
     crawler: TrustChainCrawler = TrustChainCrawler()
 ) : TrustChainCommunity(settings, database, crawler) {
-    override val serviceId = "29384902d2938f34872398758cf7ca9238ccc333"
+    override val serviceId = "36b098237ff4debfd0278b8b87c583e1c2cce4b7"
 
     class Factory(
         private val settings: TrustChainSettings,
