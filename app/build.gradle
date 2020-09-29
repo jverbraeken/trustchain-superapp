@@ -81,6 +81,7 @@ android {
 
     packagingOptions {
         exclude 'META-INF/kotlinx-coroutines-core.kotlin_module'
+        exclude 'META-INF/DEPENDENCIES'
     }
 
     // TODO: Find a way to move this to fedml
@@ -138,7 +139,15 @@ dependencies {
 
     // Logging
     implementation 'io.github.microutils:kotlin-logging:1.7.7'
-    implementation 'com.github.tony19:logback-android:2.0.0'
+    implementation 'com.github.tony19:logback-android-core:1.1.1-6'
+    implementation('com.github.tony19:logback-android-classic:1.1.1-6') {
+        // workaround issue #73
+        exclude group: 'com.google.android', module: 'android'
+    }
+
+    implementation 'org.slf4j:slf4j-api:1.7.30'
+
+    implementation 'log4j:log4j:1.2.17'
 
     implementation 'com.mattskala:itemadapter:0.3'
 

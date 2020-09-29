@@ -21,7 +21,7 @@ class MNISTDistributedRunner(val community: FedMLCommunity) : MNISTRunner(), Mes
         network.setListeners(ScoreIterationListener(printScoreIterations)/*, EvaluativeListener(mnistTest, 20)*/)
 
         var samplesCounter = 0
-        while (true) {
+//        while (true) {
             val start = System.currentTimeMillis()
             for (i in 0 until batchSize) {
                 network.fit(mnistTrain.next())
@@ -34,7 +34,7 @@ class MNISTDistributedRunner(val community: FedMLCommunity) : MNISTRunner(), Mes
             community.sendToAll(MessageId.MSG_PARAM_UPDATE, MsgParamUpdate(averageParams, 1))  // TODO weight!!!!!!!!!!!!!!!!!!!!!!!!!!1
             paramBuffer.clear()
             network.setParameters(averageParams)
-        }
+//        }
     }
 
     override fun onMessageReceived(messageId: MessageId, peer: Peer, payload: Any) {

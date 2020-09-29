@@ -12,9 +12,4 @@
     <root level="DEBUG">
         <appender-ref ref="logcat" />
     </root>
-
-    <logger name="Community" level="WARN" />
-    <logger name="DiscoveryCommunity" level="WARN" />
-    <logger name="TrustChainCommunity" level="WARN" />
-    <logger name="RandomChurn" level="WARN" />
 </configuration>
