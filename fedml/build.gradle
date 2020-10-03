@@ -17,7 +17,7 @@ android {
     buildToolsVersion "30.0.2"
 
     defaultConfig {
-        minSdkVersion 22
+        minSdkVersion 24
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
@@ -76,22 +76,22 @@ dependencies {
     implementation (group: 'org.nd4j', name: 'nd4j-native', version: dl4jVersion) {
         exclude group: "net.java.dev.jna", module: "jna"
     }
-    implementation (group: 'org.nd4j', name: 'nd4j-native', version: dl4jVersion, classifier: "android-arm") {
-        exclude group: "net.java.dev.jna", module: "jna"
-    }
+//    implementation (group: 'org.nd4j', name: 'nd4j-native', version: dl4jVersion, classifier: "android-arm") {
+//        exclude group: "net.java.dev.jna", module: "jna"
+//    }
     implementation (group: 'org.nd4j', name: 'nd4j-native', version: dl4jVersion, classifier: "android-arm64") {
         exclude group: "net.java.dev.jna", module: "jna"
     }
-    implementation (group: 'org.nd4j', name: 'nd4j-native', version: dl4jVersion, classifier: "android-x86") {
-        exclude group: "net.java.dev.jna", module: "jna"
-    }
+//    implementation (group: 'org.nd4j', name: 'nd4j-native', version: dl4jVersion, classifier: "android-x86") {
+//        exclude group: "net.java.dev.jna", module: "jna"
+//    }
     implementation (group: 'org.nd4j', name: 'nd4j-native', version: dl4jVersion, classifier: "android-x86_64") {
         exclude group: "net.java.dev.jna", module: "jna"
     }
     implementation group: 'org.bytedeco', name: 'openblas', version: openblasVersion
-    implementation group: 'org.bytedeco', name: 'openblas', version: openblasVersion, classifier: "android-arm"
+//    implementation group: 'org.bytedeco', name: 'openblas', version: openblasVersion, classifier: "android-arm"
     implementation group: 'org.bytedeco', name: 'openblas', version: openblasVersion, classifier: "android-arm64"
-    implementation group: 'org.bytedeco', name: 'openblas', version: openblasVersion, classifier: "android-x86"
+//    implementation group: 'org.bytedeco', name: 'openblas', version: openblasVersion, classifier: "android-x86"
     implementation group: 'org.bytedeco', name: 'openblas', version: openblasVersion, classifier: "android-x86_64"
     implementation "org.bytedeco:opencv:$opencvVersion"
     implementation "org.bytedeco:leptonica:$leptonicaVersion"

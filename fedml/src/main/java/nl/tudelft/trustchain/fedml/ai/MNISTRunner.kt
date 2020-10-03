@@ -19,7 +19,7 @@ abstract class MNISTRunner {
     open val nChannels = 1
     open val outputNum = 10
     open val batchSize = 64
-    open val seed = Random(System.currentTimeMillis()).nextInt()
+    open val seed = 1 //Random(System.currentTimeMillis()).nextInt()
     open val printScoreIterations = 20
 
     val mnistTrain by lazy {
@@ -50,11 +50,11 @@ abstract class MNISTRunner {
                 ConvolutionLayer.Builder(5, 5)
                     .nIn(nChannels)
                     .stride(1, 1)
-                    .nOut(20)
+                    .nOut(1)
                     .activation(Activation.IDENTITY)
                     .build()
             )
-            .layer(
+            /*.layer(
                 SubsamplingLayer.Builder(SubsamplingLayer.PoolingType.MAX)
                     .kernelSize(2, 2)
                     .stride(2, 2)
@@ -78,7 +78,7 @@ abstract class MNISTRunner {
                     .activation(Activation.RELU)
                     .nOut(500)
                     .build()
-            )
+            )*/
             .layer(
                 OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
                     .nOut(outputNum)

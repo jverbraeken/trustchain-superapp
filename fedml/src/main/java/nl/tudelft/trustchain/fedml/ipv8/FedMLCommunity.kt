@@ -1,6 +1,7 @@
 package nl.tudelft.trustchain.fedml.ipv8
 
 import android.util.Log
+//import mu.KotlinLogging
 import nl.tudelft.ipv8.Overlay
 import nl.tudelft.ipv8.Peer
 import nl.tudelft.ipv8.attestation.trustchain.TrustChainCommunity
@@ -19,6 +20,9 @@ import java.io.ObjectOutputStream
 interface MessageListener {
     fun onMessageReceived(messageId: FedMLCommunity.MessageId, peer: Peer, payload: Any)
 }
+
+
+//private val logger = KotlinLogging.logger("Community")
 
 class FedMLCommunity(
     settings: TrustChainSettings,
@@ -64,14 +68,14 @@ class FedMLCommunity(
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
-    internal fun sendToPeer(peer: Peer, messageID: MessageId, message: Serializable) {
-        val packet = serializePacket(messageID.id, message, true)
+    internal fun sendToPeer(peer: Peer, messageID: MessageId, message: Serializable, logging: Boolean = false) {
+        val packet = serializePacket(messageID.id, message, true, logging=logging)
         send(peer, packet)
     }
 
-    internal fun sendToAll(messageID: MessageId, message: Serializable) {
+    internal fun sendToAll(messageID: MessageId, message: Serializable, logging: Boolean = false) {
         for (peer in getPeers()) {
-            sendToPeer(peer, messageID, message)
+            sendToPeer(peer, messageID, message, logging)
         }
     }
 
@@ -86,13 +90,13 @@ class FedMLCommunity(
     private fun onMsgPong(packet: Packet) {
         val (peer, payload) = packet.getAuthPayload(MsgPong.Deserializer)
         Log.e("MsgPong", peer.mid + ": " + payload.message)
-        messageListeners[MessageId.MSG_PONG]!!.forEach { it.onMessageReceived(MessageId.MSG_PING, peer, payload) }
+        messageListeners[MessageId.MSG_PONG]!!.forEach { it.onMessageReceived(MessageId.MSG_PONG, peer, payload) }
     }
 
     private fun onMsgParamUpdate(packet: Packet) {
         val (peer, payload) = packet.getAuthPayload(MsgParamUpdate.Deserializer)
         Log.e(" MsgParamUpdate", peer.mid)
-        messageListeners[MessageId.MSG_PARAM_UPDATE]!!.forEach { it.onMessageReceived(MessageId.MSG_PING, peer, payload) }
+        messageListeners[MessageId.MSG_PARAM_UPDATE]!!.forEach { it.onMessageReceived(MessageId.MSG_PARAM_UPDATE, peer, payload) }
     }
 }
 
@@ -126,7 +130,7 @@ data class MsgPong(val message: String) : Serializable {
 
 data class MsgParamUpdate(val array: INDArray, val weight: Int) : Serializable {
     override fun serialize(): ByteArray {
-        val res = ByteArrayOutputStream().use { ObjectOutputStream(it).writeObject(array); it }.toByteArray()
+        val res = ByteArrayOutputStream().use { ObjectOutputStream(it).writeObject(array); it }.toByteArray()/*.copyOfRange(0, 3000)*/
         return res
         /*val bos = ByteArrayOutputStream()
         ObjectOutputStream(bos).use {
