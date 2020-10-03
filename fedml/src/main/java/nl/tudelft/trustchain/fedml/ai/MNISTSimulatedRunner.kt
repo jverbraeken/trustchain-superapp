@@ -22,7 +22,7 @@ class MNISTSimulatedRunner : MNISTRunner() {
             val params : MutableList<Pair<INDArray, Int>> = ArrayList(networks.size)
             networks.forEach { params.add(Pair(it.params(), batchSize)) }
             val averageParams = calculateWeightedAverageParams(params)
-            networks.forEach { it.setParams(averageParams)}
+            networks.forEach { it.setParams(averageParams.first)}
         }
     }
 }

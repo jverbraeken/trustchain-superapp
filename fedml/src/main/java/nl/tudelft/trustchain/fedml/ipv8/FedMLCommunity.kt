@@ -22,8 +22,6 @@ interface MessageListener {
 }
 
 
-//private val logger = KotlinLogging.logger("Community")
-
 class FedMLCommunity(
     settings: TrustChainSettings,
     database: TrustChainStore,

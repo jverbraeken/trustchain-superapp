@@ -8,15 +8,12 @@ import nl.tudelft.trustchain.fedml.ipv8.MessageListener
 import nl.tudelft.trustchain.fedml.ipv8.MsgParamUpdate
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener
-import org.nd4j.linalg.api.buffer.DataBuffer
-import org.nd4j.linalg.api.buffer.Int16Buffer
 import org.nd4j.linalg.api.ndarray.INDArray
-import org.nd4j.linalg.cpu.nativecpu.NDArray
-import java.nio.ByteBuffer
 
-class MNISTDistributedRunner(val community: FedMLCommunity) : MNISTRunner(), MessageListener {
-    override val batchSize = 5
-    val paramBuffer: MutableList<Pair<INDArray, Int>> = ArrayList()
+class MNISTDistributedRunner(private val community: FedMLCommunity) : MNISTRunner(),
+    MessageListener {
+    override val batchSize = 10
+    private val paramBuffer: MutableList<Pair<INDArray, Int>> = ArrayList()
 
     override fun run() {
         FedMLCommunity.registerMessageListener(MessageId.MSG_PARAM_UPDATE, this)
@@ -25,25 +22,25 @@ class MNISTDistributedRunner(val community: FedMLCommunity) : MNISTRunner(), Mes
         network.setListeners(ScoreIterationListener(printScoreIterations)/*, EvaluativeListener(mnistTest, 20)*/)
 
         var samplesCounter = 0
-//        while (true) {
-        val start = System.currentTimeMillis()
-//        for (i in 0 until batchSize) {
-//            network.fit(mnistTrain.next())
-//            samplesCounter++
-//        }
-        val end = System.currentTimeMillis()
-        paramBuffer.add(Pair(network.params(), samplesCounter))
-        val averageParams = calculateWeightedAverageParams(paramBuffer).add(5)
-        Log.i("MNISTdistributedRunner", "time to fit network for batch: " + (end - start))
-        community.sendToAll(
-            MessageId.MSG_PARAM_UPDATE,
-//            intArrayOf(1, 2, 3),
-            MsgParamUpdate(averageParams, 1),
-            true
-        )  // TODO weight!!!!!!!!!!!!!!!!!!!!!!!!!!1
-        paramBuffer.clear()
-        network.setParameters(averageParams)
-//        }
+        while (true) {
+            val start = System.currentTimeMillis()
+            for (i in 0 until batchSize) {
+                network.fit(mnistTrain.next())
+                samplesCounter++
+            }
+            val end = System.currentTimeMillis()
+            Log.i("MNISTDistributedRunner", "time to fit network for batch: " + (end - start))
+            paramBuffer.add(Pair(network.params(), samplesCounter))
+            val averageParams = calculateWeightedAverageParams(paramBuffer)
+            samplesCounter = averageParams.second
+            community.sendToAll(
+                MessageId.MSG_PARAM_UPDATE,
+                MsgParamUpdate(averageParams.first, samplesCounter),
+                true
+            )
+            paramBuffer.clear()
+            network.setParameters(averageParams.first)
+        }
     }
 
     override fun onMessageReceived(messageId: MessageId, peer: Peer, payload: Any) {

@@ -13,14 +13,14 @@ import org.nd4j.linalg.activations.Activation
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.learning.config.Adam
 import org.nd4j.linalg.lossfunctions.LossFunctions
-import kotlin.random.Random
+import java.util.*
 
 abstract class MNISTRunner {
     open val nChannels = 1
     open val outputNum = 10
     open val batchSize = 64
-    open val seed = 1 //Random(System.currentTimeMillis()).nextInt()
-    open val printScoreIterations = 20
+    open val seed = Random(System.currentTimeMillis()).nextInt()
+    open val printScoreIterations = 5
 
     val mnistTrain by lazy {
         MnistDataSetIterator(batchSize, true, seed)
@@ -50,11 +50,11 @@ abstract class MNISTRunner {
                 ConvolutionLayer.Builder(5, 5)
                     .nIn(nChannels)
                     .stride(1, 1)
-                    .nOut(1)
+                    .nOut(10)
                     .activation(Activation.IDENTITY)
                     .build()
             )
-            /*.layer(
+            .layer(
                 SubsamplingLayer.Builder(SubsamplingLayer.PoolingType.MAX)
                     .kernelSize(2, 2)
                     .stride(2, 2)
@@ -78,7 +78,7 @@ abstract class MNISTRunner {
                     .activation(Activation.RELU)
                     .nOut(500)
                     .build()
-            )*/
+            )
             .layer(
                 OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
                     .nOut(outputNum)
@@ -91,12 +91,13 @@ abstract class MNISTRunner {
 
     abstract fun run()
 
-    fun calculateWeightedAverageParams(params: List<Pair<INDArray, Int>>): INDArray {
-        val totalWeight = params.map { it.second }.reduce { sum, elem -> sum + elem }.toDouble()
-        var arr: INDArray = params[0].first.mul(params[0].second.toDouble() / totalWeight)
+    fun calculateWeightedAverageParams(params: List<Pair<INDArray, Int>>): Pair<INDArray, Int> {
+        val totalWeight = params.map { it.second }.reduce { sum, elem -> sum + elem }
+        var arr: INDArray =
+            params[0].first.mul(params[0].second.toDouble() / totalWeight.toDouble())
         for (i in 1 until params.size) {
-            arr = arr.add(params[i].first.mul(params[i].second.toDouble() / totalWeight))
+            arr = arr.add(params[i].first.mul(params[i].second.toDouble() / totalWeight.toDouble()))
         }
-        return arr
+        return Pair(arr, totalWeight)
     }
 }
