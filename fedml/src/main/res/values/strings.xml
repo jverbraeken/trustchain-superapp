@@ -2,7 +2,8 @@
 <resources>
     <string name="ping">Ping</string>
     <string name="pong">Pong</string>
-    <string name="mnist_local">Run MNIST locally</string>
-    <string name="mnist_distr_sim">Simulate dist. MNIST locally</string>
-    <string name="mnist_distr">Run MNIST dist.</string>
+    <string name="run_local">Run locally</string>
+    <string name="run_distr_sim">Simulate distributed</string>
+    <string name="run_distr">Run distributed</string>
+    <string name="run">Run</string>
 </resources>

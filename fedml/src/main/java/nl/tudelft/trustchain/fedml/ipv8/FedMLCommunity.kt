@@ -92,9 +92,9 @@ class FedMLCommunity(
     }
 
     private fun onMsgParamUpdate(packet: Packet) {
-        val (peer, payload) = packet.getAuthPayload(MsgParamUpdate.Deserializer)
+        val (peer, _) = packet.getAuthPayload(MsgParamUpdate.Deserializer)
         Log.e(" MsgParamUpdate", peer.mid)
-        messageListeners[MessageId.MSG_PARAM_UPDATE]!!.forEach { it.onMessageReceived(MessageId.MSG_PARAM_UPDATE, peer, payload) }
+//        messageListeners[MessageId.MSG_PARAM_UPDATE]!!.forEach { it.onMessageReceived(MessageId.MSG_PARAM_UPDATE, peer, payload) }
     }
 }
 

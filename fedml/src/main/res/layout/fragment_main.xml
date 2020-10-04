@@ -4,18 +4,27 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:paddingHorizontal="16dp"
-    android:paddingTop="16dp">
+    android:paddingTop="16dp"
+    android:stretchColumns="*">
 
     <TableRow
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:paddingTop="10pt">
 
-        <Button
-            android:id="@+id/btnPing"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/ping" />
+        <Spinner
+            android:id="@+id/spnDataset"
+            android:singleLine="true"
+            android:background="@drawable/spinner_bg"
+            android:layout_width="0dp"
+            android:layout_height="40sp" />
+
+        <Spinner
+            android:id="@+id/spnUpdater"
+            android:singleLine="true"
+            android:background="@drawable/spinner_bg"
+            android:layout_width="0dp"
+            android:layout_height="40sp" />
     </TableRow>
 
     <TableRow
@@ -23,19 +32,60 @@
         android:layout_height="match_parent"
         android:paddingTop="10pt">
 
-        <Button
-            android:id="@+id/btnMnistLocal"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/mnist_local" />
+        <Spinner
+            android:id="@+id/spnLearningRate"
+            android:singleLine="true"
+            android:background="@drawable/spinner_bg"
+            android:layout_width="0dp"
+            android:layout_height="40sp" />
+
+        <Spinner
+            android:id="@+id/spnMomentum"
+            android:singleLine="true"
+            android:background="@drawable/spinner_bg"
+            android:layout_width="0dp"
+            android:layout_height="40sp" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="10pt">
+
+        <Spinner
+            android:id="@+id/spnL2Regularization"
+            android:singleLine="true"
+            android:background="@drawable/spinner_bg"
+            android:layout_width="0dp"
+            android:layout_height="40sp" />
+
+        <Spinner
+            android:id="@+id/spnBatchSize"
+            android:singleLine="true"
+            android:background="@drawable/spinner_bg"
+            android:layout_width="0dp"
+            android:layout_height="40sp" />
+    </TableRow>
+
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="10pt">
 
         <Button
-            android:id="@+id/btnMnistDistrSim"
+            android:id="@+id/btnPing"
             style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/mnist_distr_sim" />
+            android:text="@string/ping" />
+
+        <Button
+            android:id="@+id/btnRunLocal"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/run_local" />
 
     </TableRow>
 
@@ -44,11 +94,18 @@
         android:layout_height="wrap_content">
 
         <Button
-            android:id="@+id/btnMnistDistr"
+            android:id="@+id/btnRunDistrSim"
             style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/mnist_distr" />
+            android:text="@string/run_distr_sim" />
+
+        <Button
+            android:id="@+id/btnRunDistr"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/run_distr" />
 
     </TableRow>
 </TableLayout>

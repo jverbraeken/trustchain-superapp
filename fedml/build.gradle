@@ -68,7 +68,7 @@ dependencies {
 
     // Deep learning
     implementation (group: 'org.deeplearning4j', name: 'deeplearning4j-core', version: dl4jVersion) {
-        exclude group: 'org.bytedeco', module: 'opencv-platform'
+//        exclude group: 'org.bytedeco', module: 'opencv-platform'
         exclude group: 'org.bytedeco', module: 'leptonica-platform'
         exclude group: "net.java.dev.jna", module: "jna"
         exclude group: 'com.google.guava', module: 'guava'

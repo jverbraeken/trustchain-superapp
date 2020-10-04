@@ -6,26 +6,30 @@ import nl.tudelft.trustchain.fedml.ipv8.FedMLCommunity
 import nl.tudelft.trustchain.fedml.ipv8.FedMLCommunity.MessageId
 import nl.tudelft.trustchain.fedml.ipv8.MessageListener
 import nl.tudelft.trustchain.fedml.ipv8.MsgParamUpdate
-import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener
 import org.nd4j.linalg.api.ndarray.INDArray
 
-class MNISTDistributedRunner(private val community: FedMLCommunity) : MNISTRunner(),
+class DistributedRunner(val community: FedMLCommunity) : Runner(),
     MessageListener {
-    override val batchSize = 10
     private val paramBuffer: MutableList<Pair<INDArray, Int>> = ArrayList()
 
-    override fun run() {
+    override fun run(
+        dataset: Datasets,
+        updater: Updaters,
+        learningRate: LearningRates,
+        momentum: Momentums?,
+        l2: L2Regularizations,
+        batchSize: BatchSizes
+    ) {
         FedMLCommunity.registerMessageListener(MessageId.MSG_PARAM_UPDATE, this)
-        val network = MultiLayerNetwork(nnConf)
-        network.init()
+        val network = generateNetwork(dataset, updater, learningRate, momentum, l2)
         network.setListeners(ScoreIterationListener(printScoreIterations)/*, EvaluativeListener(mnistTest, 20)*/)
 
         var samplesCounter = 0
         while (true) {
             val start = System.currentTimeMillis()
-            for (i in 0 until batchSize) {
-                network.fit(mnistTrain.next())
+            for (i in 0 until batchSize.value) {
+                network.fit(getTrainDatasetIterator(dataset, batchSize).next())
                 samplesCounter++
             }
             val end = System.currentTimeMillis()
