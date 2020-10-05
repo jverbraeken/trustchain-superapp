@@ -8,15 +8,18 @@ import org.deeplearning4j.datasets.iterator.impl.TinyImageNetDataSetIterator
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration
 import org.deeplearning4j.nn.conf.inputs.InputType
-import org.deeplearning4j.nn.conf.layers.*
+import org.deeplearning4j.nn.conf.layers.ConvolutionLayer
+import org.deeplearning4j.nn.conf.layers.DenseLayer
+import org.deeplearning4j.nn.conf.layers.OutputLayer
+import org.deeplearning4j.nn.conf.layers.SubsamplingLayer
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.deeplearning4j.nn.weights.WeightInit
 import org.nd4j.linalg.activations.Activation
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
-import org.nd4j.linalg.dataset.api.preprocessor.ImagePreProcessingScaler
 import org.nd4j.linalg.learning.config.*
 import org.nd4j.linalg.lossfunctions.LossFunctions
+import java.io.File
 import java.util.*
 
 abstract class Runner {
@@ -129,45 +132,49 @@ abstract class Runner {
             .list()
 
 
-
-            .layer(0,
+            .layer(
+                0,
                 ConvolutionLayer.Builder(intArrayOf(3, 3), intArrayOf(1, 1))
                     .nOut(32)
                     .activation(Activation.RELU)
                     .build()
             )
-            .layer(1,
+            .layer(
+                1,
                 SubsamplingLayer.Builder(SubsamplingLayer.PoolingType.MAX)
                     .kernelSize(2, 2)
                     .stride(2, 2)
                     .build()
             )
-            .layer(2,
+            .layer(
+                2,
                 ConvolutionLayer.Builder(intArrayOf(3, 3), intArrayOf(1, 1))
                     .nOut(64)
                     .activation(Activation.RELU)
                     .build()
             )
-            .layer(3,
+            .layer(
+                3,
                 SubsamplingLayer.Builder(SubsamplingLayer.PoolingType.MAX)
                     .kernelSize(2, 2)
                     .stride(2, 2)
                     .build()
             )
-            .layer(4,
+            .layer(
+                4,
                 ConvolutionLayer.Builder(intArrayOf(3, 3), intArrayOf(1, 1))
                     .nOut(64)
                     .activation(Activation.RELU)
                     .build()
             )
             .layer(5, DenseLayer.Builder().nOut(64).activation(Activation.RELU).build())
-            .layer(6,
+            .layer(
+                6,
                 OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
                     .nOut(CifarLoader.NUM_LABELS)
                     .activation(Activation.SOFTMAX)
                     .build()
             )
-
 
 
             /*.layer(0,
@@ -373,6 +380,7 @@ abstract class Runner {
     }
 
     abstract fun run(
+        baseDirectory: File,
         dataset: Datasets,
         updater: Updaters,
         learningRate: LearningRates,

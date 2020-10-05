@@ -18,8 +18,10 @@ enum class Datasets(
 ) {
     MNIST(
         "MNIST",
-        Updaters.NESTEROVS,
-        LearningRates.SCHEDULE1,
+//        Updaters.NESTEROVS,
+        Updaters.ADAM,
+//        LearningRates.SCHEDULE1,
+        LearningRates.RATE_1EM3,
         Momentums.NONE,
         L2Regularizations.L2_5EM3,
         BatchSizes.BATCH_64,
@@ -59,7 +61,7 @@ enum class LearningRates(val identifier: String, val schedule: ISchedule) {
         "1e-3", MapSchedule(ScheduleType.ITERATION, hashMapOf(0 to 1e-3))
     ),
     SCHEDULE1(
-        "{0 -> 0.06\n100 -> 0.05\n200 -> 0.028\n300 -> 0.006\n400 -> 0.001", MapSchedule(
+        "{0 -> 0.06|100 -> 0.05|200 -> 0.028|300 -> 0.006|400 -> 0.001", MapSchedule(
             ScheduleType.ITERATION, hashMapOf(
                 0 to 0.06,
                 100 to 0.05,
@@ -70,7 +72,7 @@ enum class LearningRates(val identifier: String, val schedule: ISchedule) {
         )
     ),
     SCHEDULE2(
-        "{0 -> 0.001\n75 -> 0.005\n100 -> 0.003}", MapSchedule(
+        "{0 -> 0.001|75 -> 0.005|100 -> 0.003}", MapSchedule(
             ScheduleType.EPOCH,
             hashMapOf(
                 0 to 0.001,

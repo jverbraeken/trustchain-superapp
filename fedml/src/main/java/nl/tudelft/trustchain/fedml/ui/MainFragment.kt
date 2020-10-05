@@ -18,8 +18,7 @@ import org.deeplearning4j.common.resources.DL4JResources
 import java.io.File
 
 class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSelectedListener {
-    private val runners: Array<String> = arrayOf("Local", "Simulated", "Distributed")
-    private val baseDirectory: File by lazy { requireActivity().getExternalFilesDir(null)!! }
+    private val baseDirectory: File by lazy { requireActivity().filesDir }
     private val binding by viewBinding(FragmentMainBinding::bind)
 
     private val datasets = Datasets.values().map { it.identifier }
@@ -85,15 +84,32 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     }
 
     private fun onBtnRunLocallyClicked() {
-        LocalRunner().run(dataset, updater, learningRate, momentum, l2, batchSize)
+        LocalRunner().run(
+            baseDirectory,
+            dataset,
+            updater,
+            learningRate,
+            momentum,
+            l2,
+            batchSize
+        )
     }
 
     private fun onBtnSimulateDistributedLocallyClicked() {
-        SimulatedRunner().run(dataset, updater, learningRate, momentum, l2, batchSize)
+        SimulatedRunner().run(
+            baseDirectory,
+            dataset,
+            updater,
+            learningRate,
+            momentum,
+            l2,
+            batchSize
+        )
     }
 
     private fun onBtnRunDistributedClicked() {
         DistributedRunner(getCommunity()).run(
+            baseDirectory,
             dataset,
             updater,
             learningRate,
@@ -106,8 +122,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         when (parent!!.id) {
             binding.spnDataset.id -> {
-                dataset =
-                    Datasets.values().first { it.identifier == datasets[position] }
+                dataset = Datasets.values().first { it.identifier == datasets[position] }
                 setSpinnersToDataset(dataset)
             }
             binding.spnUpdater.id -> updater =

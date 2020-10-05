@@ -8,12 +8,14 @@ import nl.tudelft.trustchain.fedml.ipv8.MessageListener
 import nl.tudelft.trustchain.fedml.ipv8.MsgParamUpdate
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener
 import org.nd4j.linalg.api.ndarray.INDArray
+import java.io.File
 
 class DistributedRunner(val community: FedMLCommunity) : Runner(),
     MessageListener {
     private val paramBuffer: MutableList<Pair<INDArray, Int>> = ArrayList()
 
     override fun run(
+        baseDirectory: File,
         dataset: Datasets,
         updater: Updaters,
         learningRate: LearningRates,
