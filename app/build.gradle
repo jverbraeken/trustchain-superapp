@@ -39,7 +39,7 @@ android {
 
     defaultConfig {
         applicationId "nl.tudelft.trustchain"
-        minSdkVersion 24
+        minSdkVersion 26
         targetSdkVersion 30
         versionCode generateVersionCode()
         versionName "0.2"
@@ -145,10 +145,9 @@ dependencies {
         // workaround issue #73
         exclude group: 'com.google.android', module: 'android'
     }
+    implementation 'log4j:log4j:1.2.17'
 
     implementation 'org.slf4j:slf4j-api:1.7.30'
-
-    implementation 'log4j:log4j:1.2.17'
 
     implementation 'com.mattskala:itemadapter:0.3'
 

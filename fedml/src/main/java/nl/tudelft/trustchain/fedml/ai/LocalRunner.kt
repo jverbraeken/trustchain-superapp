@@ -14,8 +14,8 @@ class LocalRunner : Runner() {
         l2: L2Regularizations,
         batchSize: BatchSizes
     ) {
-        val trainDataSetIterator = getTrainDatasetIterator(dataset, batchSize)
-        val testDataSetIterator = getTestDatasetIterator(dataset, batchSize)
+        val trainDataSetIterator = getTrainDatasetIterator(baseDirectory, dataset, batchSize)
+        val testDataSetIterator = getTestDatasetIterator(baseDirectory, dataset, batchSize)
         val network = generateNetwork(dataset, updater, learningRate, momentum, l2)
         var evaluationListener = EvaluativeListener(testDataSetIterator, 999999)
         val evaluationProcessor = EvaluationProcessor(
@@ -37,19 +37,19 @@ class LocalRunner : Runner() {
 
         var epoch = 0
         var iterations = 0
-        val numEpochs = 5
+        val numEpochs = 10
         for (i in 0 until numEpochs) {
             epoch++
             evaluationProcessor.epoch = epoch
-            while (true) {
-                for (j in 0 until 64) {
+            loop@while (true) {
+                for (j in 0 until batchSize.value) {
                     try {
                         network.fit(trainDataSetIterator.next())
                     } catch (e: NoSuchElementException) {
-                        break
+                        break@loop
                     }
                 }
-                iterations += 64
+                iterations += batchSize.value
                 evaluationProcessor.iteration = iterations
                 evaluationListener = EvaluativeListener(testDataSetIterator, 999999)
                 evaluationListener.callback = evaluationProcessor

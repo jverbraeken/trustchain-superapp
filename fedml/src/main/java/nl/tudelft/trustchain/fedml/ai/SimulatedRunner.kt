@@ -15,8 +15,8 @@ class SimulatedRunner : Runner() {
         l2: L2Regularizations,
         batchSize: BatchSizes
     ) {
-        val trainDataSetIterator = getTrainDatasetIterator(dataset, batchSize)
-        val testDataSetIterator = getTestDatasetIterator(dataset, batchSize)
+        val trainDataSetIterator = getTrainDatasetIterator(baseDirectory, dataset, batchSize)
+        val testDataSetIterator = getTestDatasetIterator(baseDirectory, dataset, batchSize)
         var evaluationListener = EvaluativeListener(testDataSetIterator, 999999)
         val evaluationProcessor = EvaluationProcessor(
             baseDirectory,

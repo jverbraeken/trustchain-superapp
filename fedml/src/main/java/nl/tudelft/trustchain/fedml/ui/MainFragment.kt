@@ -1,11 +1,13 @@
 package nl.tudelft.trustchain.fedml.ui
 
+import android.content.res.AssetManager
 import android.os.Bundle
 import android.os.StrictMode
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
+import mu.KotlinLogging
 import nl.tudelft.trustchain.common.ui.BaseFragment
 import nl.tudelft.trustchain.common.util.viewBinding
 import nl.tudelft.trustchain.fedml.R
@@ -15,7 +17,9 @@ import nl.tudelft.trustchain.fedml.ipv8.FedMLCommunity
 import nl.tudelft.trustchain.fedml.ipv8.FedMLCommunity.MessageId
 import nl.tudelft.trustchain.fedml.ipv8.MsgPing
 import org.deeplearning4j.common.resources.DL4JResources
-import java.io.File
+import java.io.*
+
+private val logger = KotlinLogging.logger("FedML.MainFragment")
 
 class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSelectedListener {
     private val baseDirectory: File by lazy { requireActivity().filesDir }
@@ -59,6 +63,41 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
         allowDL4JOnUIThread()
         binding.spnDataset.setSelection(datasets.indexOf(dataset.identifier))
         setSpinnersToDataset(dataset)
+
+        copyAssets()
+    }
+
+    private fun copyAssets() {
+        val assetManager: AssetManager = requireActivity().assets
+        for (path in arrayOf("train", "test", "train/Inertial Signals", "test/Inertial Signals")) {
+            var files: Array<String>? = null
+            try {
+                files = assetManager.list(path)
+            } catch (e: IOException) {
+                logger.error { "Failed to get asset file list." }
+            }
+            val dir = File(baseDirectory, path)
+            if (!dir.exists()) {
+                dir.mkdirs()
+            }
+            if (files != null) {
+                for (filename in files) {
+                    try {
+                        assetManager.open("$path/$filename").use { input ->
+                            FileOutputStream(File(dir, filename)).use { output ->
+                                copyFile(input, output)
+                            }
+                        }
+                    } catch (e: IOException) {
+                        // Probably a directory
+                    }
+                }
+            }
+        }
+    }
+
+    private fun copyFile(inn: InputStream, out: OutputStream) {
+        out.use { fileOut -> inn.copyTo(fileOut) }
     }
 
     private fun bindSpinner(view: View, spinner: Spinner, elements: List<String>) {

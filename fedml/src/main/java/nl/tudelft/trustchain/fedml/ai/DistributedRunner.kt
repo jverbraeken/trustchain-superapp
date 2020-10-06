@@ -31,7 +31,7 @@ class DistributedRunner(val community: FedMLCommunity) : Runner(),
         while (true) {
             val start = System.currentTimeMillis()
             for (i in 0 until batchSize.value) {
-                network.fit(getTrainDatasetIterator(dataset, batchSize).next())
+                network.fit(getTrainDatasetIterator(baseDirectory, dataset, batchSize).next())
                 samplesCounter++
             }
             val end = System.currentTimeMillis()

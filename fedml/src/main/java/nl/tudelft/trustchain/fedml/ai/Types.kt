@@ -38,12 +38,21 @@ enum class Datasets(
     ),
     TINYIMAGENET(
         "Tiny ImageNet",
-        Updaters.RMSPROP,
+        Updaters.AMSGRAD,
         LearningRates.SCHEDULE2,
         Momentums.NONE,
         L2Regularizations.L2_1EM4,
         BatchSizes.BATCH_64,
         Runner::generateDefaultTinyImageNetConfiguration
+    ),
+    HAL(
+        "HAL",
+        Updaters.ADAM,
+        LearningRates.RATE_1EM3,
+        Momentums.NONE,
+        L2Regularizations.L2_1EM4,
+        BatchSizes.BATCH_32,
+        Runner::generateDefaultHALConfiguration
     ),
 }
 
@@ -53,7 +62,8 @@ enum class Updaters(
     NESTEROVS("Nesterovs"),
     ADAM("Adam"),
     SGD("SGD"),
-    RMSPROP("RMSprop")
+    RMSPROP("RMSprop"),
+    AMSGRAD("AMSGRAD")
 }
 
 enum class LearningRates(val identifier: String, val schedule: ISchedule) {
@@ -75,7 +85,7 @@ enum class LearningRates(val identifier: String, val schedule: ISchedule) {
         "{0 -> 0.001|75 -> 0.005|100 -> 0.003}", MapSchedule(
             ScheduleType.EPOCH,
             hashMapOf(
-                0 to 0.001,
+                0 to 0.01,
                 75 to 0.005,
                 100 to 0.003
             )
@@ -95,5 +105,6 @@ enum class L2Regularizations(val identifier: String, val value: Double) {
 
 enum class BatchSizes(val identifier: String, val value: Int) {
     BATCH_1("1", 1),
+    BATCH_32("32", 32),
     BATCH_64("64", 64)
 }
