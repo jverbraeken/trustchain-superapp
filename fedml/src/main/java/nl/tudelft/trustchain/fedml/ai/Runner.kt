@@ -1,5 +1,8 @@
 package nl.tudelft.trustchain.fedml.ai
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import nl.tudelft.trustchain.fedml.ai.dataset.har.HARDataFetcher
 import nl.tudelft.trustchain.fedml.ai.dataset.har.HARIterator
 import org.datavec.image.loader.CifarLoader
@@ -25,6 +28,7 @@ import java.io.File
 import java.util.*
 
 abstract class Runner {
+    internal val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private var trainDatasetIterator: DataSetIterator? = null
     private var testDatasetIterator: DataSetIterator? = null
     open val seed = Random(System.currentTimeMillis()).nextInt()

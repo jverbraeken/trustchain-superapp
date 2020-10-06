@@ -1,6 +1,5 @@
 package nl.tudelft.trustchain.fedml.ai.dataset.har;
 
-import org.deeplearning4j.datasets.fetchers.MnistDataFetcher;
 import org.nd4j.linalg.dataset.api.iterator.BaseDatasetIterator;
 
 import java.io.File;
@@ -17,7 +16,7 @@ public class HARIterator extends BaseDatasetIterator {
      */
     public HARIterator(File baseDirectory, int batchSize, boolean train, int seed) throws IOException {
         super(batchSize,
-            (train ? MnistDataFetcher.NUM_EXAMPLES : MnistDataFetcher.NUM_EXAMPLES_TEST),
-            new HARDataFetcher(baseDirectory, train, seed, (train ? MnistDataFetcher.NUM_EXAMPLES : MnistDataFetcher.NUM_EXAMPLES_TEST)));
+            (train ? HARDataFetcher.NUM_EXAMPLES : HARDataFetcher.NUM_EXAMPLES_TEST),
+            new HARDataFetcher(baseDirectory, train, seed, (train ? HARDataFetcher.NUM_EXAMPLES : HARDataFetcher.NUM_EXAMPLES_TEST)));
     }
 }
