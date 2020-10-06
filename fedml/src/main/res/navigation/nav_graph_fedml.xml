@@ -7,5 +7,5 @@
     <fragment
         android:id="@+id/mainFragment"
         android:name="nl.tudelft.trustchain.fedml.ui.MainFragment"
-        android:label="Test" />
+        android:label="Federated ML" />
 </navigation>

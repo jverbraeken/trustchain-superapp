@@ -12,19 +12,44 @@
         android:layout_height="match_parent"
         android:paddingTop="10pt">
 
-        <Spinner
-            android:id="@+id/spnDataset"
-            android:singleLine="true"
-            android:background="@drawable/spinner_bg"
+        <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="40sp" />
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-        <Spinner
-            android:id="@+id/spnUpdater"
-            android:singleLine="true"
-            android:background="@drawable/spinner_bg"
+            <TextView
+                style="@style/InputLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/spnDataset" />
+
+            <Spinner
+                android:id="@+id/spnDataset"
+                android:layout_width="match_parent"
+                android:layout_height="50sp"
+                android:background="@drawable/spinner_bg"
+                android:singleLine="true" />
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="40sp" />
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/InputLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/spnOptimizer" />
+
+            <Spinner
+                android:id="@+id/spnOptimizer"
+                android:layout_width="match_parent"
+                android:layout_height="50sp"
+                android:background="@drawable/spinner_bg"
+                android:singleLine="true" />
+
+        </LinearLayout>
     </TableRow>
 
     <TableRow
@@ -32,19 +57,45 @@
         android:layout_height="match_parent"
         android:paddingTop="10pt">
 
-        <Spinner
-            android:id="@+id/spnLearningRate"
-            android:singleLine="true"
-            android:background="@drawable/spinner_bg"
-            android:layout_width="0dp"
-            android:layout_height="40sp" />
 
-        <Spinner
-            android:id="@+id/spnMomentum"
-            android:singleLine="true"
-            android:background="@drawable/spinner_bg"
+        <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="40sp" />
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/InputLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/spnLearningRate" />
+
+            <Spinner
+                android:id="@+id/spnLearningRate"
+                android:layout_width="match_parent"
+                android:layout_height="50sp"
+                android:background="@drawable/spinner_bg"
+                android:singleLine="true" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/InputLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/spnMomentum" />
+
+            <Spinner
+                android:id="@+id/spnMomentum"
+                android:layout_width="match_parent"
+                android:layout_height="50sp"
+                android:background="@drawable/spinner_bg"
+                android:singleLine="true" />
+        </LinearLayout>
     </TableRow>
 
     <TableRow
@@ -52,21 +103,71 @@
         android:layout_height="match_parent"
         android:paddingTop="10pt">
 
-        <Spinner
-            android:id="@+id/spnL2Regularization"
-            android:singleLine="true"
-            android:background="@drawable/spinner_bg"
-            android:layout_width="0dp"
-            android:layout_height="40sp" />
 
-        <Spinner
-            android:id="@+id/spnBatchSize"
-            android:singleLine="true"
-            android:background="@drawable/spinner_bg"
+        <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="40sp" />
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/InputLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/spnL2Regularization" />
+
+            <Spinner
+                android:id="@+id/spnL2Regularization"
+                android:layout_width="match_parent"
+                android:layout_height="50sp"
+                android:background="@drawable/spinner_bg"
+                android:singleLine="true" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/InputLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/spnBatchSize" />
+
+            <Spinner
+                android:id="@+id/spnBatchSize"
+                android:layout_width="match_parent"
+                android:layout_height="50sp"
+                android:background="@drawable/spinner_bg"
+                android:singleLine="true" />
+        </LinearLayout>
     </TableRow>
 
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="10pt">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/InputLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/spnEpochs" />
+
+            <Spinner
+                android:id="@+id/spnEpochs"
+                android:layout_width="match_parent"
+                android:layout_height="50sp"
+                android:background="@drawable/spinner_bg"
+                android:singleLine="true" />
+        </LinearLayout>
+    </TableRow>
 
     <TableRow
         android:layout_width="match_parent"
@@ -77,14 +178,14 @@
             android:id="@+id/btnPing"
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="50sp"
             android:text="@string/ping" />
 
         <Button
             android:id="@+id/btnRunLocal"
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="50sp"
             android:text="@string/run_local" />
 
     </TableRow>
@@ -97,14 +198,14 @@
             android:id="@+id/btnRunDistrSim"
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="50sp"
             android:text="@string/run_distr_sim" />
 
         <Button
             android:id="@+id/btnRunDistr"
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="50sp"
             android:text="@string/run_distr" />
 
     </TableRow>

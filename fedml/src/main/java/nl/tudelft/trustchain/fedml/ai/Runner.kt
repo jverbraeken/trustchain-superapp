@@ -1,11 +1,8 @@
 package nl.tudelft.trustchain.fedml.ai
 
-import org.datavec.api.records.reader.impl.LineRecordReader
-import org.datavec.api.records.reader.impl.csv.CSVRecordReader
-import org.datavec.api.split.FileSplit
-import org.datavec.api.transform.schema.Schema
+import nl.tudelft.trustchain.fedml.ai.dataset.har.HARDataFetcher
+import nl.tudelft.trustchain.fedml.ai.dataset.har.HARIterator
 import org.datavec.image.loader.CifarLoader
-import org.deeplearning4j.datasets.datavec.RecordReaderDataSetIterator
 import org.deeplearning4j.datasets.fetchers.DataSetType
 import org.deeplearning4j.datasets.fetchers.TinyImageNetFetcher
 import org.deeplearning4j.datasets.iterator.impl.Cifar10DataSetIterator
@@ -35,20 +32,20 @@ abstract class Runner {
 
     fun generateNetwork(
         dataset: Datasets,
-        updater: Updaters,
+        optimizer: Optimizers,
         learningRate: LearningRates,
         momentum: Momentums?,
         l2: L2Regularizations
     ): MultiLayerNetwork {
         val network =
-            MultiLayerNetwork(dataset.defaultArchitecture(this, updater, learningRate, l2))
+            MultiLayerNetwork(dataset.defaultArchitecture(this, optimizer, learningRate, l2))
         network.init()
         print(momentum)
         return network
     }
 
     fun generateDefaultMNISTConfiguration(
-        updater: Updaters,
+        optimizer: Optimizers,
         learningRate: LearningRates,
         l2: L2Regularizations
     ): MultiLayerConfiguration {
@@ -56,7 +53,7 @@ abstract class Runner {
             .seed(seed.toLong())
             .l2(l2.value)
             .weightInit(WeightInit.XAVIER)
-            .updater(getUpdaterImplementation(updater, learningRate))
+            .updater(getOptimizerImplementation(optimizer, learningRate))
             .list()
             .layer(
                 ConvolutionLayer.Builder(5, 5)
@@ -102,7 +99,7 @@ abstract class Runner {
     }
 
     fun generateDefaultCIFARConfiguration(
-        updater: Updaters,
+        optimizer: Optimizers,
         learningRate: LearningRates,
         l2: L2Regularizations
     ): MultiLayerConfiguration {
@@ -110,7 +107,7 @@ abstract class Runner {
             .seed(seed.toLong())
             .l2(l2.value)
             .weightInit(WeightInit.XAVIER)
-            .updater(getUpdaterImplementation(updater, learningRate))
+            .updater(getOptimizerImplementation(optimizer, learningRate))
             .list()
 
 
@@ -299,7 +296,7 @@ abstract class Runner {
     }
 
     fun generateDefaultTinyImageNetConfiguration(
-        updater: Updaters,
+        optimizer: Optimizers,
         learningRate: LearningRates,
         l2: L2Regularizations
     ): MultiLayerConfiguration {
@@ -308,7 +305,7 @@ abstract class Runner {
             .l2(l2.value)
             .weightInit(WeightInit.RELU)
             .convolutionMode(ConvolutionMode.Same)
-            .updater(getUpdaterImplementation(updater, learningRate))
+            .updater(getOptimizerImplementation(optimizer, learningRate))
             .list()
             .layer(
                 0,
@@ -358,7 +355,7 @@ abstract class Runner {
     }
 
     fun generateDefaultHALConfiguration(
-        updater: Updaters,
+        optimizer: Optimizers,
         learningRate: LearningRates,
         l2: L2Regularizations
     ): MultiLayerConfiguration {
@@ -366,66 +363,15 @@ abstract class Runner {
             .seed(seed.toLong())
             .l2(l2.value)
             .weightInit(WeightInit.XAVIER)
-            .updater(getUpdaterImplementation(updater, learningRate))
+            .updater(getOptimizerImplementation(optimizer, learningRate))
             .list()
-            /*.layer(
-                ConvolutionLayer.Builder(5, 5)
-                    .nIn(1)
-                    .stride(1, 1)
-                    .nOut(10)
-                    .activation(Activation.IDENTITY)
-                    .build()
-            )
-            .layer(
-                SubsamplingLayer.Builder(SubsamplingLayer.PoolingType.MAX)
-                    .kernelSize(2, 2)
-                    .stride(2, 2)
-                    .build()
-            )
-            .layer(
-                ConvolutionLayer.Builder(5, 5)
-                    .stride(1, 1)
-                    .nOut(50)
-                    .activation(Activation.IDENTITY)
-                    .build()
-            )
-            .layer(
-                SubsamplingLayer.Builder(SubsamplingLayer.PoolingType.MAX)
-                    .kernelSize(2, 2)
-                    .stride(2, 2)
-                    .build()
-            )*/
-            /*.layer(
-                DenseLayer.Builder()
-                    .activation(Activation.RELU)
-                    .nIn(HALDataFetcher.NUM_ATTRIBUTES)
-                    .nOut(500)
-                    .dropOut(0.8)
-                    .build()
-            )
-            .layer(
-                DenseLayer.Builder()
-                    .activation(Activation.RELU)
-                    .nOut(500)
-                    .dropOut(0.8)
-                    .build()
-            )
-            .layer(
-                DenseLayer.Builder()
-                    .activation(Activation.RELU)
-                    .nOut(500)
-                    .dropOut(0.8)
-                    .build()
-            )*/
             .layer(Convolution1DLayer.Builder(3).nIn(128).activation(Activation.RELU).nOut(64).build())
             .layer(Convolution1DLayer.Builder(3).activation(Activation.RELU).nOut(64).build())
             .layer(DropoutLayer.Builder(0.5).nOut(64).build())
-//            .layer(Glob Subsampling1DLayer.Builder(SubsamplingLayer.PoolingType.MAX, 2).build())
-//            .layer(DenseLayer.Builder().nOut(100).activation(Activation.RELU).build())
             .layer(GlobalPoolingLayer.Builder(PoolingType.MAX).build())
             .layer(
                 OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
-                    .nOut(HALDataFetcher.NUM_LABELS)
+                    .nOut(HARDataFetcher.NUM_LABELS)
                     .activation(Activation.SOFTMAX)
                     .build()
             )
@@ -433,13 +379,13 @@ abstract class Runner {
             .build()
     }
 
-    private fun getUpdaterImplementation(updater: Updaters, learningRate: LearningRates): IUpdater {
-        return when (updater) {
-            Updaters.NESTEROVS -> Nesterovs(learningRate.schedule)
-            Updaters.ADAM -> Adam(learningRate.schedule)
-            Updaters.SGD -> Sgd(learningRate.schedule)
-            Updaters.RMSPROP -> RmsProp(learningRate.schedule)
-            Updaters.AMSGRAD -> AMSGrad(learningRate.schedule)
+    private fun getOptimizerImplementation(optimizer: Optimizers, learningRate: LearningRates): IUpdater {
+        return when (optimizer) {
+            Optimizers.NESTEROVS -> Nesterovs(learningRate.schedule)
+            Optimizers.ADAM -> Adam(learningRate.schedule)
+            Optimizers.SGD -> Sgd(learningRate.schedule)
+            Optimizers.RMSPROP -> RmsProp(learningRate.schedule)
+            Optimizers.AMSGRAD -> AMSGrad(learningRate.schedule)
         }
     }
 
@@ -466,7 +412,13 @@ abstract class Runner {
                     seed.toLong()
                 )
                 Datasets.HAL -> {
-                    val iterator = HALIterator(baseDirectory, batchSize.value, true, seed)
+                    val iterator =
+                        HARIterator(
+                            baseDirectory,
+                            batchSize.value,
+                            true,
+                            seed
+                        )
                     iterator
                 }
             }
@@ -506,7 +458,13 @@ abstract class Runner {
                     iterator
                 }
                 Datasets.HAL -> {
-                    val iterator = HALIterator(baseDirectory, batchSize.value, false, seed)
+                    val iterator =
+                        HARIterator(
+                            baseDirectory,
+                            batchSize.value,
+                            false,
+                            seed
+                        )
                     iterator
                 }
             }
@@ -516,8 +474,9 @@ abstract class Runner {
 
     abstract fun run(
         baseDirectory: File,
+        numEpochs: Epochs,
         dataset: Datasets,
-        updater: Updaters,
+        optimizer: Optimizers,
         learningRate: LearningRates,
         momentum: Momentums?,
         l2: L2Regularizations,

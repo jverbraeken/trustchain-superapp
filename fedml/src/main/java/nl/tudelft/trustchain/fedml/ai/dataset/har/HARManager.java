@@ -1,4 +1,4 @@
-package nl.tudelft.trustchain.fedml.ai;
+package nl.tudelft.trustchain.fedml.ai.dataset.har;
 
 
 import java.io.BufferedReader;
@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
-public class HALManager {
+public class HARManager {
     private List<String>[] dataArr;
     private int[] labelsArr;
 
-    public HALManager(File[] dataFiles, File labelsFile) throws IOException {
+    public HARManager(File[] dataFiles, File labelsFile) throws IOException {
         dataArr = (List<String>[]) new List[dataFiles.length];
         for (int i = 0; i < dataFiles.length; i++) {
             try (BufferedReader reader = new BufferedReader(new FileReader(dataFiles[i]))) {

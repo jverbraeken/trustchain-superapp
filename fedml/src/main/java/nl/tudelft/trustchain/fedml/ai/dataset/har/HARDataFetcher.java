@@ -1,12 +1,6 @@
-package nl.tudelft.trustchain.fedml.ai;
+package nl.tudelft.trustchain.fedml.ai.dataset.har;
 
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.deeplearning4j.base.MnistFetcher;
-import org.deeplearning4j.common.resources.DL4JResources;
-import org.deeplearning4j.common.resources.ResourceType;
-import org.deeplearning4j.datasets.mnist.MnistManager;
 import org.nd4j.linalg.api.buffer.DataType;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
@@ -20,26 +14,23 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Random;
-import java.util.stream.Stream;
-import java.util.zip.Adler32;
-import java.util.zip.Checksum;
 
 
 /**
  * Data fetcher for the HAL dataset
  */
-public class HALDataFetcher extends BaseDataFetcher {
+public class HARDataFetcher extends BaseDataFetcher {
     public static final int NUM_EXAMPLES = 7352;
     public static final int NUM_EXAMPLES_TEST = 2947;
     public static final int NUM_ATTRIBUTES = 561;
     public static final int NUM_LABELS = 6;
 
-    protected transient HALManager man;
+    protected transient HARManager man;
     protected boolean train;
     protected int[] order;
     protected Random rng;
 
-    public HALDataFetcher(File baseDirectory, boolean train, long rngSeed, int numExamples) throws IOException {
+    public HARDataFetcher(File baseDirectory, boolean train, long rngSeed, int numExamples) throws IOException {
         File[] data = new File[9];
         File labels;
         if (train) {
@@ -67,7 +58,7 @@ public class HALDataFetcher extends BaseDataFetcher {
             labels = new File(new File(baseDirectory, "test"), "y_test.txt");
             totalExamples = NUM_EXAMPLES_TEST;
         }
-        man = new HALManager(data, labels);
+        man = new HARManager(data, labels);
 
         numOutcomes = NUM_LABELS;
         cursor = 0;

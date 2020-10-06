@@ -26,18 +26,20 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private val binding by viewBinding(FragmentMainBinding::bind)
 
     private val datasets = Datasets.values().map { it.identifier }
-    private val updaters = Updaters.values().map { it.identifier }
+    private val optimizers = Optimizers.values().map { it.identifier }
     private val learningRates = LearningRates.values().map { it.identifier }
     private val momentums = Momentums.values().map { it.identifier }
     private val l2Regularizations = L2Regularizations.values().map { it.identifier }
     private val batchSizes = BatchSizes.values().map { it.identifier }
+    private val epochs = Epochs.values().map { it.identifier }
 
     private var dataset: Datasets = Datasets.MNIST
-    private var updater: Updaters = Datasets.MNIST.defaultUpdater
-    private var learningRate: LearningRates = Datasets.MNIST.defaultLearningRate
+    private var optimizer: Optimizers = dataset.defaultOptimizer
+    private var learningRate: LearningRates = dataset.defaultLearningRate
     private var momentum: Momentums? = null
-    private var l2: L2Regularizations = Datasets.MNIST.defaultL2
-    private var batchSize: BatchSizes = Datasets.MNIST.defaultBatchSize
+    private var l2: L2Regularizations = dataset.defaultL2
+    private var batchSize: BatchSizes = dataset.defaultBatchSize
+    private var epoch: Epochs = Epochs.EPOCH_5
 
     private fun getCommunity(): FedMLCommunity {
         return getIpv8().getOverlay()
@@ -48,11 +50,12 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
         super.onViewCreated(view, savedInstanceState)
 
         bindSpinner(view, binding.spnDataset, datasets)
-        bindSpinner(view, binding.spnUpdater, updaters)
+        bindSpinner(view, binding.spnOptimizer, optimizers)
         bindSpinner(view, binding.spnLearningRate, learningRates)
         bindSpinner(view, binding.spnMomentum, momentums)
         bindSpinner(view, binding.spnL2Regularization, l2Regularizations)
         bindSpinner(view, binding.spnBatchSize, batchSizes)
+        bindSpinner(view, binding.spnEpochs, epochs)
 
         binding.btnPing.setOnClickListener { onBtnPingClicked() }
         binding.btnRunLocal.setOnClickListener { onBtnRunLocallyClicked() }
@@ -63,6 +66,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
         allowDL4JOnUIThread()
         binding.spnDataset.setSelection(datasets.indexOf(dataset.identifier))
         setSpinnersToDataset(dataset)
+        binding.spnEpochs.setSelection(datasets.indexOf(epoch.identifier))
 
         copyAssets()
     }
@@ -125,8 +129,9 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private fun onBtnRunLocallyClicked() {
         LocalRunner().run(
             baseDirectory,
+            epoch,
             dataset,
-            updater,
+            optimizer,
             learningRate,
             momentum,
             l2,
@@ -137,8 +142,9 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private fun onBtnSimulateDistributedLocallyClicked() {
         SimulatedRunner().run(
             baseDirectory,
+            epoch,
             dataset,
-            updater,
+            optimizer,
             learningRate,
             momentum,
             l2,
@@ -149,8 +155,9 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private fun onBtnRunDistributedClicked() {
         DistributedRunner(getCommunity()).run(
             baseDirectory,
+            epoch,
             dataset,
-            updater,
+            optimizer,
             learningRate,
             momentum,
             l2,
@@ -164,8 +171,8 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
                 dataset = Datasets.values().first { it.identifier == datasets[position] }
                 setSpinnersToDataset(dataset)
             }
-            binding.spnUpdater.id -> updater =
-                Updaters.values().first { it.identifier == updaters[position] }
+            binding.spnOptimizer.id -> optimizer =
+                Optimizers.values().first { it.identifier == optimizers[position] }
             binding.spnLearningRate.id -> learningRate =
                 LearningRates.values().first { it.identifier == learningRates[position] }
             binding.spnMomentum.id -> momentum =
@@ -174,11 +181,13 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
                 L2Regularizations.values().first { it.identifier == l2Regularizations[position] }
             binding.spnBatchSize.id -> batchSize =
                 BatchSizes.values().first { it.identifier == batchSizes[position] }
+            binding.spnEpochs.id -> epoch =
+                Epochs.values().first { it.identifier == epochs[position] }
         }
     }
 
     private fun setSpinnersToDataset(dataset: Datasets) {
-        binding.spnUpdater.setSelection(updaters.indexOf(dataset.defaultUpdater.identifier), true)
+        binding.spnOptimizer.setSelection(optimizers.indexOf(dataset.defaultOptimizer.identifier), true)
         binding.spnLearningRate.setSelection(
             learningRates.indexOf(dataset.defaultLearningRate.identifier),
             true

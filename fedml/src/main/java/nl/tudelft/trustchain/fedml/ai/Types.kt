@@ -9,17 +9,17 @@ import kotlin.reflect.KFunction4
 
 enum class Datasets(
     val identifier: String,
-    val defaultUpdater: Updaters,
+    val defaultOptimizer: Optimizers,
     val defaultLearningRate: LearningRates,
     val defaultMomentum: Momentums,
     val defaultL2: L2Regularizations,
     val defaultBatchSize: BatchSizes,
-    val defaultArchitecture: KFunction4<Runner, Updaters, LearningRates, L2Regularizations, MultiLayerConfiguration>
+    val defaultArchitecture: KFunction4<Runner, Optimizers, LearningRates, L2Regularizations, MultiLayerConfiguration>
 ) {
     MNIST(
         "MNIST",
-//        Updaters.NESTEROVS,
-        Updaters.ADAM,
+//        Optimizers.NESTEROVS,
+        Optimizers.ADAM,
 //        LearningRates.SCHEDULE1,
         LearningRates.RATE_1EM3,
         Momentums.NONE,
@@ -29,7 +29,7 @@ enum class Datasets(
     ),
     CIFAR10(
         "CIFAR-10",
-        Updaters.RMSPROP,
+        Optimizers.RMSPROP,
         LearningRates.SCHEDULE2,
         Momentums.NONE,
         L2Regularizations.L2_1EM4,
@@ -38,7 +38,7 @@ enum class Datasets(
     ),
     TINYIMAGENET(
         "Tiny ImageNet",
-        Updaters.AMSGRAD,
+        Optimizers.AMSGRAD,
         LearningRates.SCHEDULE2,
         Momentums.NONE,
         L2Regularizations.L2_1EM4,
@@ -47,7 +47,7 @@ enum class Datasets(
     ),
     HAL(
         "HAL",
-        Updaters.ADAM,
+        Optimizers.ADAM,
         LearningRates.RATE_1EM3,
         Momentums.NONE,
         L2Regularizations.L2_1EM4,
@@ -56,7 +56,7 @@ enum class Datasets(
     ),
 }
 
-enum class Updaters(
+enum class Optimizers(
     val identifier: String
 ) {
     NESTEROVS("Nesterovs"),
@@ -107,4 +107,11 @@ enum class BatchSizes(val identifier: String, val value: Int) {
     BATCH_1("1", 1),
     BATCH_32("32", 32),
     BATCH_64("64", 64)
+}
+
+enum class Epochs(val identifier: String, val value: Int) {
+    EPOCH_1("1", 1),
+    EPOCH_5("5", 5),
+    EPOCH_25("25", 25),
+    EPOCH_50("50", 50)
 }

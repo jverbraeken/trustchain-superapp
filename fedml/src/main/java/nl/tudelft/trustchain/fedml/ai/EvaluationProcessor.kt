@@ -15,7 +15,7 @@ class EvaluationProcessor(
     baseDirectory: File,
     private val runner: String,
     private val dataset: String,
-    private val updater: String,
+    private val optimizer: String,
     private val learningRate: String,
     private val momentum: String,
     private val l2: String,
@@ -29,6 +29,7 @@ class EvaluationProcessor(
     internal var epoch: Int = 0
     internal var iteration: Int = 0
     internal var extraElements: Map<String, String> = HashMap()
+    internal var elapsedTime: Long = 0
 
     init {
         fileResults = File(
@@ -50,7 +51,7 @@ class EvaluationProcessor(
             arrayOf(
                 "dataset, $dataset",
                 "runner, $runner",
-                "updater, $updater",
+                "optimizer, $optimizer",
                 "learning rate, $learningRate",
                 "momentum, $momentum",
                 "l2, $l2",
@@ -59,6 +60,7 @@ class EvaluationProcessor(
         }
 
         val mainDataLineNames = arrayOf(
+            "elapsedTime",
             "epoch",
             "iteration",
             "accuracy",
@@ -100,6 +102,7 @@ class EvaluationProcessor(
         val gMeasure = evaluations[0].getValue(Evaluation.Metric.GMEASURE)
         val mcc = evaluations[0].getValue(Evaluation.Metric.MCC)
         val mainDataLineElements = arrayOf(
+                elapsedTime.toString(),
                 epoch.toString(),
                 iteration.toString(),
                 accuracy.toString(),

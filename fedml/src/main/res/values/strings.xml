@@ -6,4 +6,11 @@
     <string name="run_distr_sim">Simulate distributed</string>
     <string name="run_distr">Run distributed</string>
     <string name="run">Run</string>
+    <string name="spnDataset">Dataset</string>
+    <string name="spnOptimizer">Optimizer</string>
+    <string name="spnLearningRate">Learning rate</string>
+    <string name="spnMomentum">Momentum</string>
+    <string name="spnL2Regularization">L2-regularization</string>
+    <string name="spnBatchSize">Batch size</string>
+    <string name="spnEpochs">Epochs</string>
 </resources>
