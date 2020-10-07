@@ -143,7 +143,7 @@ data class MsgParamUpdate(val array: INDArray, val weight: Int) : Serializable {
         override fun deserialize(buffer: ByteArray, offset: Int): Pair<MsgParamUpdate, Int> {
             val bis = ByteArrayInputStream(buffer.copyOfRange(offset, buffer.size))
             val ois = ObjectInputStream(bis)
-            return Pair(MsgParamUpdate(ois.readObject() as INDArray, 1812), buffer.size)
+            return Pair(MsgParamUpdate(ois.readObject() as INDArray, 9999), buffer.size)
             /*ObjectInputStream(bis).use {
                 return Pair(MsgParamUpdate(it.readObject() as INDArray, 1812*//*it.readInt()*//*), buffer.size)
             }*/
