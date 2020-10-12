@@ -21,22 +21,24 @@ import java.io.*
 
 private val logger = KotlinLogging.logger("FedML.MainFragment")
 
+//-e activity fedml -e dataset mnist -e optimizer adam -e learningRate rate_1em3 -e momentum none -e l2Regularization l2_5em3 -e batchSize batch_32 -e epoch epoch_50 -e runner distributed -e run true
+//-e activity fedml -e dataset cifar10 -e optimizer sgd -e learningRate schedule1 -e momentum momentum_1em3 -e l2Regularization l2_1em4 -e batchSize batch_5 -e epoch epoch_25 -e runner distributed -e run true
 class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSelectedListener {
     private val baseDirectory: File by lazy { requireActivity().filesDir }
     private val binding by viewBinding(FragmentMainBinding::bind)
 
-    private val datasets = Datasets.values().map { it.identifier }
-    private val optimizers = Optimizers.values().map { it.identifier }
-    private val learningRates = LearningRates.values().map { it.identifier }
-    private val momentums = Momentums.values().map { it.identifier }
-    private val l2Regularizations = L2Regularizations.values().map { it.identifier }
-    private val batchSizes = BatchSizes.values().map { it.identifier }
-    private val epochs = Epochs.values().map { it.identifier }
+    private val datasets = Datasets.values().map { it.text }
+    private val optimizers = Optimizers.values().map { it.text }
+    private val learningRates = LearningRates.values().map { it.text }
+    private val momentums = Momentums.values().map { it.text }
+    private val l2Regularizations = L2Regularizations.values().map { it.text }
+    private val batchSizes = BatchSizes.values().map { it.text }
+    private val epochs = Epochs.values().map { it.text }
 
     private var dataset: Datasets = Datasets.MNIST
     private var optimizer: Optimizers = dataset.defaultOptimizer
     private var learningRate: LearningRates = dataset.defaultLearningRate
-    private var momentum: Momentums? = null
+    private var momentum: Momentums = dataset.defaultMomentum
     private var l2: L2Regularizations = dataset.defaultL2
     private var batchSize: BatchSizes = dataset.defaultBatchSize
     private var epoch: Epochs = Epochs.EPOCH_5
@@ -64,11 +66,54 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
 
         configureDL4JDirectory()
         allowDL4JOnUIThread()
-        binding.spnDataset.setSelection(datasets.indexOf(dataset.identifier))
-        setSpinnersToDataset(dataset)
-        binding.spnEpochs.setSelection(datasets.indexOf(epoch.identifier))
+        binding.spnDataset.setSelection(datasets.indexOf(dataset.text))
+        binding.spnEpochs.setSelection(datasets.indexOf(epoch.text))
+        processIntentExtras()
+        synchronizeSpinners()
 
         copyAssets()
+
+        if (requireActivity().intent?.extras?.getString("run") == "true") {
+            when (requireActivity().intent?.extras?.getString("runner")) {
+                "local" -> onBtnRunLocallyClicked()
+                "simulated" -> onBtnSimulateDistributedLocallyClicked()
+                "distributed" -> onBtnRunDistributedClicked()
+                else -> throw IllegalStateException("Runner must be either local, simulated, or distributed")
+            }
+        }
+    }
+
+    private fun processIntentExtras() {
+        val extras = requireActivity().intent?.extras
+
+        val dataset = extras?.getString("dataset")
+        if (dataset != null) {
+            this.dataset = Datasets.values().first { it.id == dataset }
+        }
+        val optimizer = extras?.getString("optimizer")
+        if (dataset != null) {
+            this.optimizer = Optimizers.values().first { it.id == optimizer }
+        }
+        val learningRate = extras?.getString("learningRate")
+        if (learningRate != null) {
+            this.learningRate = LearningRates.values().first { it.id == learningRate }
+        }
+        val momentum = extras?.getString("momentum")
+        if (momentum != null) {
+            this.momentum = Momentums.values().first { it.id == momentum }
+        }
+        val l2 = extras?.getString("l2Regularization")
+        if (l2 != null) {
+            this.l2 = L2Regularizations.values().first { it.id == l2 }
+        }
+        val batchSize = extras?.getString("batchSize")
+        if (batchSize != null) {
+            this.batchSize = BatchSizes.values().first { it.id == batchSize }
+        }
+        val epoch = extras?.getString("epoch")
+        if (epoch != null) {
+            this.epoch = Epochs.values().first { it.id == epoch }
+        }
     }
 
     private fun copyAssets() {
@@ -168,41 +213,55 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         when (parent!!.id) {
             binding.spnDataset.id -> {
-                dataset = Datasets.values().first { it.identifier == datasets[position] }
-                setSpinnersToDataset(dataset)
+                dataset = Datasets.values().first { it.text == datasets[position] }
+                setDefaultValuesByDataset(dataset)
+                synchronizeSpinners()
             }
             binding.spnOptimizer.id -> optimizer =
-                Optimizers.values().first { it.identifier == optimizers[position] }
+                Optimizers.values().first { it.text == optimizers[position] }
             binding.spnLearningRate.id -> learningRate =
-                LearningRates.values().first { it.identifier == learningRates[position] }
+                LearningRates.values().first { it.text == learningRates[position] }
             binding.spnMomentum.id -> momentum =
-                Momentums.values().first { it.identifier == momentums[position] }
+                Momentums.values().first { it.text == momentums[position] }
             binding.spnL2Regularization.id -> l2 =
-                L2Regularizations.values().first { it.identifier == l2Regularizations[position] }
+                L2Regularizations.values().first { it.text == l2Regularizations[position] }
             binding.spnBatchSize.id -> batchSize =
-                BatchSizes.values().first { it.identifier == batchSizes[position] }
+                BatchSizes.values().first { it.text == batchSizes[position] }
             binding.spnEpochs.id -> epoch =
-                Epochs.values().first { it.identifier == epochs[position] }
+                Epochs.values().first { it.text == epochs[position] }
         }
     }
 
-    private fun setSpinnersToDataset(dataset: Datasets) {
-        binding.spnOptimizer.setSelection(optimizers.indexOf(dataset.defaultOptimizer.identifier), true)
+    private fun setDefaultValuesByDataset(dataset: Datasets) {
+        optimizer = dataset.defaultOptimizer
+        learningRate = dataset.defaultLearningRate
+        momentum = dataset.defaultMomentum
+        l2 = dataset.defaultL2
+        batchSize = dataset.defaultBatchSize
+    }
+
+    private fun synchronizeSpinners(
+    ) {
+        binding.spnDataset.setSelection(
+            datasets.indexOf(dataset.text), true
+        )
+        binding.spnOptimizer.setSelection(
+            optimizers.indexOf(optimizer.text), true
+        )
         binding.spnLearningRate.setSelection(
-            learningRates.indexOf(dataset.defaultLearningRate.identifier),
-            true
+            learningRates.indexOf(learningRate.text), true
         )
         binding.spnMomentum.setSelection(
-            momentums.indexOf(dataset.defaultMomentum.identifier),
-            true
+            momentums.indexOf(momentum.text), true
         )
         binding.spnL2Regularization.setSelection(
-            l2Regularizations.indexOf(dataset.defaultL2.identifier),
-            true
+            l2Regularizations.indexOf(l2.text), true
         )
         binding.spnBatchSize.setSelection(
-            batchSizes.indexOf(dataset.defaultBatchSize.identifier),
-            true
+            batchSizes.indexOf(batchSize.text), true
+        )
+        binding.spnEpochs.setSelection(
+            epochs.indexOf(epoch.text), true
         )
     }
 

@@ -136,7 +136,7 @@ abstract class Runner {
                     .activation(Activation.RELU)
                     .build()
             )
-            .layer(
+            /*.layer(
                 3,
                 SubsamplingLayer.Builder(SubsamplingLayer.PoolingType.MAX)
                     .kernelSize(2, 2)
@@ -149,7 +149,7 @@ abstract class Runner {
                     .nOut(64)
                     .activation(Activation.RELU)
                     .build()
-            )
+            )*/
             .layer(5, DenseLayer.Builder().nOut(64).activation(Activation.RELU).build())
             .layer(
                 6,
@@ -355,7 +355,7 @@ abstract class Runner {
                     TinyImageNetFetcher.INPUT_CHANNELS.toLong()
                 )
             )
-            .build();
+            .build()
     }
 
     fun generateDefaultHALConfiguration(

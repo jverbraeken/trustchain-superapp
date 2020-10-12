@@ -5,9 +5,12 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import com.mattskala.itemadapter.ItemAdapter
+import mu.KotlinLogging
 import nl.tudelft.trustchain.app.AppDefinition
 import nl.tudelft.trustchain.app.databinding.ActivityDashboardBinding
 import nl.tudelft.trustchain.common.util.viewBinding
+
+private val logger = KotlinLogging.logger {}
 
 class DashboardActivity : AppCompatActivity() {
     private val binding by viewBinding(ActivityDashboardBinding::inflate)
@@ -23,6 +26,12 @@ class DashboardActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val launchActivity = intent.extras?.getString("activity")
+        if (launchActivity != null) {
+            logger.debug { "Activity flag" }
+            startActivity(Intent(this, AppDefinition.values()
+                .first { it.id == intent.extras?.getString("activity") }.activity).putExtras(intent.extras!!))
+        }
 
         setContentView(binding.root)
 

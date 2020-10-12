@@ -24,13 +24,13 @@ class SimulatedRunner : Runner() {
             var evaluationListener = EvaluativeListener(testDataSetIterator, 999999)
             val evaluationProcessor = EvaluationProcessor(
                 baseDirectory,
-                "local",
-                dataset.identifier,
-                optimizer.identifier,
-                learningRate.identifier,
-                momentum?.identifier ?: "null",
-                l2.identifier,
-                batchSize.identifier,
+                "simulated",
+                dataset.text,
+                optimizer.text,
+                learningRate.text,
+                momentum?.text ?: "null",
+                l2.text,
+                batchSize.text,
                 listOf("before or after averaging")
             )
             evaluationListener.callback = evaluationProcessor

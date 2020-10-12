@@ -24,12 +24,12 @@ class LocalRunner : Runner() {
             val evaluationProcessor = EvaluationProcessor(
                 baseDirectory,
                 "local",
-                dataset.identifier,
-                optimizer.identifier,
-                learningRate.identifier,
-                momentum?.identifier ?: "null",
-                l2.identifier,
-                batchSize.identifier,
+                dataset.text,
+                optimizer.text,
+                learningRate.text,
+                momentum?.text ?: "null",
+                l2.text,
+                batchSize.text,
                 ArrayList()
             )
             evaluationListener.callback = evaluationProcessor
