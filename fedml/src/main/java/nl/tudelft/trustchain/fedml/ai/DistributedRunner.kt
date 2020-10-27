@@ -10,11 +10,13 @@ import nl.tudelft.trustchain.fedml.ipv8.MsgParamUpdate
 import org.deeplearning4j.optimize.listeners.EvaluativeListener
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener
 import org.nd4j.linalg.api.ndarray.INDArray
+import org.nd4j.linalg.dataset.api.iterator.SamplingDataSetIterator
 import java.io.File
 
 class DistributedRunner(private val community: FedMLCommunity) : Runner(),
     MessageListener {
     private val paramBuffer: MutableList<Pair<INDArray, Int>> = ArrayList()
+    private val aggregationRule : AggregationRule = Mozi()
 
     override fun run(
         baseDirectory: File,
@@ -24,13 +26,16 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(),
         learningRate: LearningRates,
         momentum: Momentums?,
         l2: L2Regularizations,
-        batchSize: BatchSizes
+        batchSize: BatchSizes,
+        iteratorDistribution: IteratorDistributions,
+        maxTestSamples: MaxTestSamples
     ) {
         FedMLCommunity.registerMessageListener(MessageId.MSG_PARAM_UPDATE, this)
         scope.launch {
-            val trainDataSetIterator = getTrainDatasetIterator(baseDirectory, dataset, batchSize)
-            val testDataSetIterator = getTestDatasetIterator(baseDirectory, dataset, batchSize)
-            var evaluationListener = EvaluativeListener(testDataSetIterator, 999999)
+            val seed = community.myEstimatedLan.toString().hashCode()
+            val trainDataSetIterator = getTrainDatasetIterator(baseDirectory, dataset, batchSize, iteratorDistribution, seed)
+            val testDataSetIterator = getTestDatasetIterator(baseDirectory, dataset, batchSize, iteratorDistribution, seed, maxTestSamples)
+//            var evaluationListener = EvaluativeListener(testDataSetIterator, 999999)
             val evaluationProcessor = EvaluationProcessor(
                 baseDirectory,
                 "distributed",
@@ -46,7 +51,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(),
                     "#peers included in current batch"
                 )
             )
-            evaluationListener.callback = evaluationProcessor
+//            evaluationListener.callback = evaluationProcessor
             val network = generateNetwork(dataset, optimizer, learningRate, momentum, l2)
             network.setListeners(ScoreIterationListener(printScoreIterations))
 
@@ -77,13 +82,14 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(),
                         Pair("#peers included in current batch", "")
                     )
                     evaluationProcessor.elapsedTime = end - start
-                    evaluationListener = EvaluativeListener(testDataSetIterator, 999999)
+                    var evaluationListener = EvaluativeListener(testDataSetIterator, 999999)
                     evaluationListener.callback = evaluationProcessor
                     evaluationListener.iterationDone(network, network.iterationCount, epoch)
 
-                    paramBuffer.add(Pair(network.params(), samplesCounter))
+
+
                     val numPeers = paramBuffer.size
-                    val averageParams = calculateWeightedAverageParams(paramBuffer)
+                    val averageParams = aggregationRule.integrateParameters(Pair(network.params(), samplesCounter), paramBuffer, network, testDataSetIterator)
                     samplesCounter = averageParams.second
                     community.sendToAll(
                         MessageId.MSG_PARAM_UPDATE,

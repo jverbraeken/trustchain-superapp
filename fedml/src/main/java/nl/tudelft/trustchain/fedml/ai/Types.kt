@@ -15,6 +15,7 @@ enum class Datasets(
     val defaultMomentum: Momentums,
     val defaultL2: L2Regularizations,
     val defaultBatchSize: BatchSizes,
+    val defaultIteratorDistribution: IteratorDistributions,
     val defaultArchitecture: KFunction4<Runner, Optimizers, LearningRates, L2Regularizations, MultiLayerConfiguration>
 ) {
     MNIST(
@@ -27,6 +28,7 @@ enum class Datasets(
         Momentums.NONE,
         L2Regularizations.L2_5EM3,
         BatchSizes.BATCH_32,
+        IteratorDistributions.DISTRIBUTION_MNIST_1,
         Runner::generateDefaultMNISTConfiguration
     ),
     CIFAR10(
@@ -37,6 +39,7 @@ enum class Datasets(
         Momentums.NONE,
         L2Regularizations.L2_1EM4,
         BatchSizes.BATCH_64,
+        IteratorDistributions.DISTRIBUTION_CIFAR_1,
         Runner::generateDefaultCIFARConfiguration
     ),
     TINYIMAGENET(
@@ -47,6 +50,7 @@ enum class Datasets(
         Momentums.NONE,
         L2Regularizations.L2_1EM4,
         BatchSizes.BATCH_64,
+        IteratorDistributions.DISTRIBUTION_MNIST_1,
         Runner::generateDefaultTinyImageNetConfiguration
     ),
     HAL(
@@ -57,6 +61,7 @@ enum class Datasets(
         Momentums.NONE,
         L2Regularizations.L2_1EM4,
         BatchSizes.BATCH_32,
+        IteratorDistributions.DISTRIBUTION_HAR_1,
         Runner::generateDefaultHALConfiguration
     ),
 }
@@ -121,4 +126,14 @@ enum class Epochs(val id: String, val text: String, val value: Int) {
     EPOCH_5("epoch_5", "5", 5),
     EPOCH_25("epoch_25", "25", 25),
     EPOCH_50("epoch_50", "50", 50)
+}
+
+enum class IteratorDistributions(val id: String, val text: String, val value: List<Int>) {
+    DISTRIBUTION_MNIST_1("mnist_1", "MNIST 1", arrayListOf(100, 100, 100, 100, 100, 100, 100, 100, 100, 100)),
+    DISTRIBUTION_CIFAR_1("cifar_1", "CIFAR 1", arrayListOf(100, 100, 100, 100, 100, 100, 100, 100, 100, 100)),
+    DISTRIBUTION_HAR_1("har_1", "HAR 1", arrayListOf(100, 100, 100, 100, 100, 100)),
+}
+
+enum class MaxTestSamples(val id: String, val text: String, val value: Int) {
+    NUM_500("num_500", "500", 500)
 }

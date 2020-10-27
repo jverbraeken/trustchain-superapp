@@ -7,6 +7,7 @@ import org.nd4j.linalg.api.ndarray.INDArray
 import java.io.File
 
 class SimulatedRunner : Runner() {
+    private val aggregationRule: AggregationRule = SimpleAggregator()
 
     override fun run(
         baseDirectory: File,
@@ -16,11 +17,26 @@ class SimulatedRunner : Runner() {
         learningRate: LearningRates,
         momentum: Momentums?,
         l2: L2Regularizations,
-        batchSize: BatchSizes
+        batchSize: BatchSizes,
+        iteratorDistribution: IteratorDistributions,
+        maxTestSamples: MaxTestSamples
     ) {
         scope.launch {
-            val trainDataSetIterator = getTrainDatasetIterator(baseDirectory, dataset, batchSize)
-            val testDataSetIterator = getTestDatasetIterator(baseDirectory, dataset, batchSize)
+            val trainDataSetIterator = getTrainDatasetIterator(
+                baseDirectory,
+                dataset,
+                batchSize,
+                iteratorDistribution,
+                seed
+            )
+            val testDataSetIterator = getTestDatasetIterator(
+                baseDirectory,
+                dataset,
+                batchSize,
+                iteratorDistribution,
+                seed,
+                maxTestSamples
+            )
             var evaluationListener = EvaluativeListener(testDataSetIterator, 999999)
             val evaluationProcessor = EvaluationProcessor(
                 baseDirectory,
@@ -71,7 +87,12 @@ class SimulatedRunner : Runner() {
 
                     val params: MutableList<Pair<INDArray, Int>> = ArrayList(networks.size)
                     networks.forEach { params.add(Pair(it.params(), batchSize.value)) }
-                    val averageParams = calculateWeightedAverageParams(params)
+                    val averageParams = aggregationRule.integrateParameters(
+                        params[0],
+                        params.subList(1, params.size),
+                        networks[0],
+                        testDataSetIterator
+                    )
                     networks.forEach { it.setParams(averageParams.first) }
 
                     evaluationProcessor.extraElements =

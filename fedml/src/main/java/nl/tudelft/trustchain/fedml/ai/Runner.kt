@@ -3,8 +3,10 @@ package nl.tudelft.trustchain.fedml.ai
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import nl.tudelft.trustchain.fedml.ai.dataset.cifar.CustomCifar10DataSetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.har.HARDataFetcher
 import nl.tudelft.trustchain.fedml.ai.dataset.har.HARIterator
+import nl.tudelft.trustchain.fedml.ai.dataset.mnist.CustomMnistDataSetIterator
 import org.datavec.image.loader.CifarLoader
 import org.deeplearning4j.datasets.fetchers.DataSetType
 import org.deeplearning4j.datasets.fetchers.TinyImageNetFetcher
@@ -19,7 +21,6 @@ import org.deeplearning4j.nn.conf.layers.*
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.deeplearning4j.nn.weights.WeightInit
 import org.nd4j.linalg.activations.Activation
-import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 import org.nd4j.linalg.dataset.api.preprocessor.ImagePreProcessingScaler
 import org.nd4j.linalg.learning.config.*
@@ -150,9 +151,9 @@ abstract class Runner {
                     .activation(Activation.RELU)
                     .build()
             )*/
-            .layer(5, DenseLayer.Builder().nOut(64).activation(Activation.RELU).build())
+            .layer(3, DenseLayer.Builder().nOut(64).activation(Activation.RELU).build())
             .layer(
-                6,
+                4,
                 OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
                     .nOut(CifarLoader.NUM_LABELS)
                     .activation(Activation.SOFTMAX)
@@ -396,32 +397,36 @@ abstract class Runner {
     fun getTrainDatasetIterator(
         baseDirectory: File,
         dataset: Datasets,
-        batchSize: BatchSizes
+        batchSize: BatchSizes,
+        iteratorDistribution: IteratorDistributions,
+        seed: Int
     ): DataSetIterator {
         if (trainDatasetIterator == null) {
             trainDatasetIterator = when (dataset) {
-                Datasets.MNIST -> MnistDataSetIterator(batchSize.value, true, seed)
-                Datasets.CIFAR10 -> Cifar10DataSetIterator(
+                Datasets.MNIST -> /*MnistDataSetIterator(batchSize.value, true, seed)*/CustomMnistDataSetIterator(batchSize.value, iteratorDistribution, seed, DataSetType.TRAIN)
+                Datasets.CIFAR10 -> CustomCifar10DataSetIterator(
                     batchSize.value,
                     null,
                     DataSetType.TRAIN,
                     null,
-                    seed.toLong()
+                    seed.toLong(),
+                    iteratorDistribution
                 )
                 Datasets.TINYIMAGENET -> TinyImageNetDataSetIterator(
                     batchSize.value,
                     null,
                     DataSetType.TRAIN,
                     null,
-                    seed.toLong()
+                    this.seed.toLong()
                 )
                 Datasets.HAL -> {
                     val iterator =
                         HARIterator(
                             baseDirectory,
                             batchSize.value,
-                            true,
-                            seed
+                            seed,
+                            iteratorDistribution,
+                            DataSetType.TRAIN
                         )
                     iterator
                 }
@@ -433,18 +438,23 @@ abstract class Runner {
     fun getTestDatasetIterator(
         baseDirectory: File,
         dataset: Datasets,
-        batchSize: BatchSizes
+        batchSize: BatchSizes,
+        iteratorDistribution: IteratorDistributions,
+        seed: Int,
+        maxTestSamples: MaxTestSamples
     ): DataSetIterator {
         if (testDatasetIterator == null) {
             testDatasetIterator = when (dataset) {
-                Datasets.MNIST -> MnistDataSetIterator(batchSize.value, false, seed)
+                Datasets.MNIST -> /*MnistDataSetIterator(batchSize.value, false, seed)*/CustomMnistDataSetIterator(batchSize.value, iteratorDistribution, seed, DataSetType.TEST, maxTestSamples)
                 Datasets.CIFAR10 -> {
-                    val iterator = Cifar10DataSetIterator(
+                    val iterator = CustomCifar10DataSetIterator(
                         batchSize.value,
                         null,
                         DataSetType.TEST,
                         null,
-                        seed.toLong()
+                        seed.toLong(),
+                        iteratorDistribution,
+                        maxTestSamples
                     )
                     iterator.preProcessor = ImagePreProcessingScaler(-0.5, 0.5)
                     // Should be perhaps NormalizerStandardize (make sure to fit!!!)
@@ -466,8 +476,10 @@ abstract class Runner {
                         HARIterator(
                             baseDirectory,
                             batchSize.value,
-                            false,
-                            seed
+                            seed,
+                            iteratorDistribution,
+                            DataSetType.TEST,
+                            maxTestSamples
                         )
                     iterator
                 }
@@ -484,16 +496,8 @@ abstract class Runner {
         learningRate: LearningRates,
         momentum: Momentums?,
         l2: L2Regularizations,
-        batchSize: BatchSizes
+        batchSize: BatchSizes,
+        iteratorDistribution: IteratorDistributions,
+        maxTestSamples: MaxTestSamples
     )
-
-    fun calculateWeightedAverageParams(params: List<Pair<INDArray, Int>>): Pair<INDArray, Int> {
-        val totalWeight = params.map { it.second }.reduce { sum, elem -> sum + elem }
-        var arr: INDArray =
-            params[0].first.mul(params[0].second.toDouble() / totalWeight.toDouble())
-        for (i in 1 until params.size) {
-            arr = arr.add(params[i].first.mul(params[i].second.toDouble() / totalWeight.toDouble()))
-        }
-        return Pair(arr, totalWeight)
-    }
 }

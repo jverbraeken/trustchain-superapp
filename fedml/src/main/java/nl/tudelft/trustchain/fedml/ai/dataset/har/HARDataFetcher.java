@@ -1,6 +1,7 @@
 package nl.tudelft.trustchain.fedml.ai.dataset.har;
 
 
+import org.deeplearning4j.datasets.fetchers.DataSetType;
 import org.nd4j.linalg.api.buffer.DataType;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
@@ -13,27 +14,30 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
+
+import nl.tudelft.trustchain.fedml.ai.MaxTestSamples;
 
 
 /**
  * Data fetcher for the HAL dataset
  */
 public class HARDataFetcher extends BaseDataFetcher {
-    public static final int NUM_EXAMPLES = 7352;
-    public static final int NUM_EXAMPLES_TEST = 2947;
     public static final int NUM_ATTRIBUTES = 561;
+    public static final int NUM_DIMENSIONS = 9;
+    public static final int NUM_TIMESTEPS = 128;
     public static final int NUM_LABELS = 6;
 
     protected transient HARManager man;
-    protected boolean train;
     protected int[] order;
     protected Random rng;
+    private double[][][] featureData = null;  // samples => time step => feature
 
-    public HARDataFetcher(File baseDirectory, boolean train, long rngSeed, int numExamples) throws IOException {
-        File[] data = new File[9];
+    public HARDataFetcher(File baseDirectory, int seed, List<Integer> iteratorDistribution, DataSetType dataSetType, MaxTestSamples maxTestSamples) throws IOException {
+        File[] data = new File[NUM_DIMENSIONS];
         File labels;
-        if (train) {
+        if (dataSetType == DataSetType.TRAIN) {
             data[0] = Paths.get(baseDirectory.getPath(), "train", "Inertial Signals", "body_acc_x_train.txt").toFile();
             data[1] = Paths.get(baseDirectory.getPath(), "train", "Inertial Signals", "body_acc_y_train.txt").toFile();
             data[2] = Paths.get(baseDirectory.getPath(), "train", "Inertial Signals", "body_acc_z_train.txt").toFile();
@@ -44,7 +48,6 @@ public class HARDataFetcher extends BaseDataFetcher {
             data[7] = Paths.get(baseDirectory.getPath(), "train", "Inertial Signals", "total_acc_y_train.txt").toFile();
             data[8] = Paths.get(baseDirectory.getPath(), "train", "Inertial Signals", "total_acc_z_train.txt").toFile();
             labels = new File(new File(baseDirectory, "train"), "y_train.txt");
-            totalExamples = NUM_EXAMPLES;
         } else {
             data[0] = Paths.get(baseDirectory.getPath(), "test", "Inertial Signals", "body_acc_x_test.txt").toFile();
             data[1] = Paths.get(baseDirectory.getPath(), "test", "Inertial Signals", "body_acc_y_test.txt").toFile();
@@ -56,25 +59,35 @@ public class HARDataFetcher extends BaseDataFetcher {
             data[7] = Paths.get(baseDirectory.getPath(), "test", "Inertial Signals", "total_acc_y_test.txt").toFile();
             data[8] = Paths.get(baseDirectory.getPath(), "test", "Inertial Signals", "total_acc_z_test.txt").toFile();
             labels = new File(new File(baseDirectory, "test"), "y_test.txt");
-            totalExamples = NUM_EXAMPLES_TEST;
         }
-        man = new HARManager(data, labels);
+        man = new HARManager(data, labels, iteratorDistribution, maxTestSamples == null ? Integer.MAX_VALUE : maxTestSamples.getValue(), seed);
 
+        totalExamples = man.getNumSamples();
         numOutcomes = NUM_LABELS;
         cursor = 0;
         inputColumns = NUM_ATTRIBUTES;
-        this.train = train;
 
-        if (train) {
-            order = new int[NUM_EXAMPLES];
-        } else {
-            order = new int[NUM_EXAMPLES_TEST];
-        }
+        order = new int[totalExamples];
         for (int i = 0; i < order.length; i++) {
             order[i] = i;
         }
-        rng = new Random(rngSeed);
-        reset(); //Shuffle order
+        rng = new Random(seed);
+        reset();
+    }
+
+    public static double[][] transposeMatrix(double[][] matrix) {
+        int m = matrix.length;
+        int n = matrix[0].length;
+
+        double[][] transposedMatrix = new double[n][m];
+
+        for (int x = 0; x < n; x++) {
+            for (int y = 0; y < m; y++) {
+                transposedMatrix[x][y] = matrix[y][x];
+            }
+        }
+
+        return transposedMatrix;
     }
 
     @Override
@@ -89,8 +102,6 @@ public class HARDataFetcher extends BaseDataFetcher {
         return super.next();
     }
 
-    private double[][][] featureData = null;  // samples => time step => feature
-
     @Override
     public void fetch(int numExamples) {
         if (!hasMore()) {
@@ -100,7 +111,7 @@ public class HARDataFetcher extends BaseDataFetcher {
         INDArray labels = Nd4j.zeros(DataType.FLOAT, numExamples, numOutcomes);
 
         if (featureData == null || featureData.length < numExamples) {
-            featureData = new double[numExamples][128][9];
+            featureData = new double[numExamples][NUM_TIMESTEPS][NUM_DIMENSIONS];
         }
 
         int actualExamples = 0;
@@ -112,7 +123,7 @@ public class HARDataFetcher extends BaseDataFetcher {
             int label = man.readLabel(order[cursor]);
 
             labels.put(actualExamples, label, 1.0f);
-            double[][] features = new double[9][];
+            double[][] features = new double[NUM_DIMENSIONS][];
             for (int j = 0; j < entries.length; j++) {
                 entries[j] = entries[j].trim();
                 String[] parts = entries[j].split("\\s+");
@@ -139,20 +150,5 @@ public class HARDataFetcher extends BaseDataFetcher {
         }
 
         curr = new DataSet(features, labels);
-    }
-
-    public static double[][] transposeMatrix(double[][] matrix){
-        int m = matrix.length;
-        int n = matrix[0].length;
-
-        double[][] transposedMatrix = new double[n][m];
-
-        for(int x = 0; x < n; x++) {
-            for(int y = 0; y < m; y++) {
-                transposedMatrix[x][y] = matrix[y][x];
-            }
-        }
-
-        return transposedMatrix;
     }
 }

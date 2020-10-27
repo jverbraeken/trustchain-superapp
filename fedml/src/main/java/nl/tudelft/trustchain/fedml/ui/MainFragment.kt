@@ -42,6 +42,8 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private var l2: L2Regularizations = dataset.defaultL2
     private var batchSize: BatchSizes = dataset.defaultBatchSize
     private var epoch: Epochs = Epochs.EPOCH_5
+    private var iteratorDistribution: IteratorDistributions = dataset.defaultIteratorDistribution
+    private var maxTestSamples = MaxTestSamples.NUM_500
 
     private fun getCommunity(): FedMLCommunity {
         return getIpv8().getOverlay()
@@ -180,7 +182,9 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
             learningRate,
             momentum,
             l2,
-            batchSize
+            batchSize,
+            iteratorDistribution,
+            maxTestSamples
         )
     }
 
@@ -193,7 +197,9 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
             learningRate,
             momentum,
             l2,
-            batchSize
+            batchSize,
+            iteratorDistribution,
+            maxTestSamples
         )
     }
 
@@ -206,7 +212,9 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
             learningRate,
             momentum,
             l2,
-            batchSize
+            batchSize,
+            iteratorDistribution,
+            maxTestSamples
         )
     }
 

@@ -14,11 +14,26 @@ class LocalRunner : Runner() {
         learningRate: LearningRates,
         momentum: Momentums?,
         l2: L2Regularizations,
-        batchSize: BatchSizes
+        batchSize: BatchSizes,
+        iteratorDistribution: IteratorDistributions,
+        maxTestSamples: MaxTestSamples
     ) {
         scope.launch {
-            val trainDataSetIterator = getTrainDatasetIterator(baseDirectory, dataset, batchSize)
-            val testDataSetIterator = getTestDatasetIterator(baseDirectory, dataset, batchSize)
+            val trainDataSetIterator = getTrainDatasetIterator(
+                baseDirectory,
+                dataset,
+                batchSize,
+                iteratorDistribution,
+                seed
+            )
+            val testDataSetIterator = getTestDatasetIterator(
+                baseDirectory,
+                dataset,
+                batchSize,
+                iteratorDistribution,
+                seed,
+                maxTestSamples
+            )
             val network = generateNetwork(dataset, optimizer, learningRate, momentum, l2)
             var evaluationListener = EvaluativeListener(testDataSetIterator, 999999)
             val evaluationProcessor = EvaluationProcessor(
