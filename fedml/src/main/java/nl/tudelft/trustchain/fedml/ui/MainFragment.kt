@@ -34,6 +34,8 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private val l2Regularizations = L2Regularizations.values().map { it.text }
     private val batchSizes = BatchSizes.values().map { it.text }
     private val epochs = Epochs.values().map { it.text }
+    private val iteratorDistributions = IteratorDistributions.values().map { it.text }
+    private val maxTestSamples = MaxTestSamples.values().map { it.text }
 
     private var dataset: Datasets = Datasets.MNIST
     private var optimizer: Optimizers = dataset.defaultOptimizer
@@ -43,7 +45,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private var batchSize: BatchSizes = dataset.defaultBatchSize
     private var epoch: Epochs = Epochs.EPOCH_5
     private var iteratorDistribution: IteratorDistributions = dataset.defaultIteratorDistribution
-    private var maxTestSamples = MaxTestSamples.NUM_500
+    private var maxTestSample = MaxTestSamples.NUM_500
 
     private fun getCommunity(): FedMLCommunity {
         return getIpv8().getOverlay()
@@ -60,6 +62,8 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
         bindSpinner(view, binding.spnL2Regularization, l2Regularizations)
         bindSpinner(view, binding.spnBatchSize, batchSizes)
         bindSpinner(view, binding.spnEpochs, epochs)
+        bindSpinner(view, binding.spnIteratorDistribution, iteratorDistributions)
+        bindSpinner(view, binding.spnMaxTestSamples, maxTestSamples)
 
         binding.btnPing.setOnClickListener { onBtnPingClicked() }
         binding.btnRunLocal.setOnClickListener { onBtnRunLocallyClicked() }
@@ -70,6 +74,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
         allowDL4JOnUIThread()
         binding.spnDataset.setSelection(datasets.indexOf(dataset.text))
         binding.spnEpochs.setSelection(datasets.indexOf(epoch.text))
+        binding.spnMaxTestSamples.setSelection(datasets.indexOf(maxTestSample.text))
         processIntentExtras()
         synchronizeSpinners()
 
@@ -115,6 +120,15 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
         val epoch = extras?.getString("epoch")
         if (epoch != null) {
             this.epoch = Epochs.values().first { it.id == epoch }
+        }
+        val iteratorDistribution = extras?.getString("iteratorDistribution")
+        if (iteratorDistribution != null) {
+            this.iteratorDistribution =
+                IteratorDistributions.values().first { it.id == iteratorDistribution }
+        }
+        val maxTestSample = extras?.getString("maxTestSample")
+        if (maxTestSample != null) {
+            this.maxTestSample = MaxTestSamples.values().first { it.id == maxTestSample }
         }
     }
 
@@ -184,7 +198,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
             l2,
             batchSize,
             iteratorDistribution,
-            maxTestSamples
+            maxTestSample
         )
     }
 
@@ -199,7 +213,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
             l2,
             batchSize,
             iteratorDistribution,
-            maxTestSamples
+            maxTestSample
         )
     }
 
@@ -214,7 +228,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
             l2,
             batchSize,
             iteratorDistribution,
-            maxTestSamples
+            maxTestSample
         )
     }
 
@@ -237,6 +251,10 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
                 BatchSizes.values().first { it.text == batchSizes[position] }
             binding.spnEpochs.id -> epoch =
                 Epochs.values().first { it.text == epochs[position] }
+            binding.spnIteratorDistribution.id -> iteratorDistribution =
+                IteratorDistributions.values().first { it.text == iteratorDistributions[position] }
+            binding.spnMaxTestSamples.id -> maxTestSample =
+                MaxTestSamples.values().first { it.text == maxTestSamples[position] }
         }
     }
 
@@ -246,6 +264,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
         momentum = dataset.defaultMomentum
         l2 = dataset.defaultL2
         batchSize = dataset.defaultBatchSize
+        iteratorDistribution = dataset.defaultIteratorDistribution
     }
 
     private fun synchronizeSpinners(
@@ -270,6 +289,12 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
         )
         binding.spnEpochs.setSelection(
             epochs.indexOf(epoch.text), true
+        )
+        binding.spnIteratorDistribution.setSelection(
+            iteratorDistributions.indexOf(iteratorDistribution.text), true
+        )
+        binding.spnMaxTestSamples.setSelection(
+            maxTestSamples.indexOf(maxTestSample.text), true
         )
     }
 

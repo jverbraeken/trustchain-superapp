@@ -167,6 +167,50 @@
                 android:background="@drawable/spinner_bg"
                 android:singleLine="true" />
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/InputLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/spnIteratorDistribution" />
+
+            <Spinner
+                android:id="@+id/spnIteratorDistribution"
+                android:layout_width="match_parent"
+                android:layout_height="50sp"
+                android:background="@drawable/spinner_bg"
+                android:singleLine="true" />
+        </LinearLayout>
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="10pt">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/InputLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/spnMaxTestSamples" />
+
+            <Spinner
+                android:id="@+id/spnMaxTestSamples"
+                android:layout_width="match_parent"
+                android:layout_height="50sp"
+                android:background="@drawable/spinner_bg"
+                android:singleLine="true" />
+        </LinearLayout>
     </TableRow>
 
     <TableRow

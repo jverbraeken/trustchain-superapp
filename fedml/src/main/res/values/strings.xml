@@ -13,4 +13,6 @@
     <string name="spnL2Regularization">L2-regularization</string>
     <string name="spnBatchSize">Batch size</string>
     <string name="spnEpochs">Epochs</string>
+    <string name="spnIteratorDistribution">Iterator distribution</string>
+    <string name="spnMaxTestSamples">Max test samples</string>
 </resources>
