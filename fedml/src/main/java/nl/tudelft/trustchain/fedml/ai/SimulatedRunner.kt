@@ -19,7 +19,8 @@ class SimulatedRunner : Runner() {
         l2: L2Regularizations,
         batchSize: BatchSizes,
         iteratorDistribution: IteratorDistributions,
-        maxTestSamples: MaxTestSamples
+        maxTestSamples: MaxTestSamples,
+        seed: Int
     ) {
         scope.launch {
             val trainDataSetIterator = getTrainDatasetIterator(
@@ -52,8 +53,8 @@ class SimulatedRunner : Runner() {
             evaluationListener.callback = evaluationProcessor
 
             val networks = arrayOf(
-                generateNetwork(dataset, optimizer, learningRate, momentum, l2),
-                generateNetwork(dataset, optimizer, learningRate, momentum, l2)
+                generateNetwork(dataset, optimizer, learningRate, momentum, l2, seed),
+                generateNetwork(dataset, optimizer, learningRate, momentum, l2, seed)
             )
             networks.forEach { it.setListeners(ScoreIterationListener(printScoreIterations)) }
 

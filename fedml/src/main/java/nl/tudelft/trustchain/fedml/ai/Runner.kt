@@ -10,8 +10,6 @@ import nl.tudelft.trustchain.fedml.ai.dataset.mnist.CustomMnistDataSetIterator
 import org.datavec.image.loader.CifarLoader
 import org.deeplearning4j.datasets.fetchers.DataSetType
 import org.deeplearning4j.datasets.fetchers.TinyImageNetFetcher
-import org.deeplearning4j.datasets.iterator.impl.Cifar10DataSetIterator
-import org.deeplearning4j.datasets.iterator.impl.MnistDataSetIterator
 import org.deeplearning4j.datasets.iterator.impl.TinyImageNetDataSetIterator
 import org.deeplearning4j.nn.conf.ConvolutionMode
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration
@@ -26,24 +24,24 @@ import org.nd4j.linalg.dataset.api.preprocessor.ImagePreProcessingScaler
 import org.nd4j.linalg.learning.config.*
 import org.nd4j.linalg.lossfunctions.LossFunctions
 import java.io.File
-import java.util.*
 
 abstract class Runner {
     internal val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private var trainDatasetIterator: DataSetIterator? = null
     private var testDatasetIterator: DataSetIterator? = null
-    open val seed = Random(System.currentTimeMillis()).nextInt()
-    open val printScoreIterations = 5
+    protected open val printScoreIterations = 5
+    protected open val iterationsBeforeEvaluation = 400
 
     fun generateNetwork(
         dataset: Datasets,
         optimizer: Optimizers,
         learningRate: LearningRates,
         momentum: Momentums?,
-        l2: L2Regularizations
+        l2: L2Regularizations,
+        seed: Int
     ): MultiLayerNetwork {
         val network =
-            MultiLayerNetwork(dataset.defaultArchitecture(this, optimizer, learningRate, l2))
+            MultiLayerNetwork(dataset.architecture(this, optimizer, learningRate, l2, seed))
         network.init()
         print(momentum)
         return network
@@ -52,7 +50,8 @@ abstract class Runner {
     fun generateDefaultMNISTConfiguration(
         optimizer: Optimizers,
         learningRate: LearningRates,
-        l2: L2Regularizations
+        l2: L2Regularizations,
+        seed: Int
     ): MultiLayerConfiguration {
         return NeuralNetConfiguration.Builder()
             .seed(seed.toLong())
@@ -106,7 +105,8 @@ abstract class Runner {
     fun generateDefaultCIFARConfiguration(
         optimizer: Optimizers,
         learningRate: LearningRates,
-        l2: L2Regularizations
+        l2: L2Regularizations,
+        seed: Int
     ): MultiLayerConfiguration {
         return NeuralNetConfiguration.Builder()
             .seed(seed.toLong())
@@ -303,7 +303,8 @@ abstract class Runner {
     fun generateDefaultTinyImageNetConfiguration(
         optimizer: Optimizers,
         learningRate: LearningRates,
-        l2: L2Regularizations
+        l2: L2Regularizations,
+        seed: Int
     ): MultiLayerConfiguration {
         return NeuralNetConfiguration.Builder()
             .seed(seed.toLong())
@@ -362,7 +363,8 @@ abstract class Runner {
     fun generateDefaultHALConfiguration(
         optimizer: Optimizers,
         learningRate: LearningRates,
-        l2: L2Regularizations
+        l2: L2Regularizations,
+        seed: Int
     ): MultiLayerConfiguration {
         return NeuralNetConfiguration.Builder()
             .seed(seed.toLong())
@@ -370,7 +372,9 @@ abstract class Runner {
             .weightInit(WeightInit.XAVIER)
             .updater(getOptimizerImplementation(optimizer, learningRate))
             .list()
-            .layer(Convolution1DLayer.Builder(3).nIn(128).activation(Activation.RELU).nOut(64).build())
+            .layer(
+                Convolution1DLayer.Builder(3).nIn(128).activation(Activation.RELU).nOut(64).build()
+            )
             .layer(Convolution1DLayer.Builder(3).activation(Activation.RELU).nOut(64).build())
             .layer(DropoutLayer.Builder(0.5).nOut(64).build())
             .layer(GlobalPoolingLayer.Builder(PoolingType.MAX).build())
@@ -384,7 +388,10 @@ abstract class Runner {
             .build()
     }
 
-    private fun getOptimizerImplementation(optimizer: Optimizers, learningRate: LearningRates): IUpdater {
+    private fun getOptimizerImplementation(
+        optimizer: Optimizers,
+        learningRate: LearningRates
+    ): IUpdater {
         return when (optimizer) {
             Optimizers.NESTEROVS -> Nesterovs(learningRate.schedule)
             Optimizers.ADAM -> Adam(learningRate.schedule)
@@ -403,7 +410,12 @@ abstract class Runner {
     ): DataSetIterator {
         if (trainDatasetIterator == null) {
             trainDatasetIterator = when (dataset) {
-                Datasets.MNIST -> /*MnistDataSetIterator(batchSize.value, true, seed)*/CustomMnistDataSetIterator(batchSize.value, iteratorDistribution, seed, DataSetType.TRAIN)
+                Datasets.MNIST -> /*MnistDataSetIterator(batchSize.value, true, seed)*/CustomMnistDataSetIterator(
+                    batchSize.value,
+                    iteratorDistribution,
+                    seed,
+                    DataSetType.TRAIN
+                )
                 Datasets.CIFAR10 -> CustomCifar10DataSetIterator(
                     batchSize.value,
                     null,
@@ -417,7 +429,7 @@ abstract class Runner {
                     null,
                     DataSetType.TRAIN,
                     null,
-                    this.seed.toLong()
+                    seed.toLong()
                 )
                 Datasets.HAL -> {
                     val iterator =
@@ -445,7 +457,13 @@ abstract class Runner {
     ): DataSetIterator {
         if (testDatasetIterator == null) {
             testDatasetIterator = when (dataset) {
-                Datasets.MNIST -> /*MnistDataSetIterator(batchSize.value, false, seed)*/CustomMnistDataSetIterator(batchSize.value, iteratorDistribution, seed, DataSetType.TEST, maxTestSamples)
+                Datasets.MNIST -> /*MnistDataSetIterator(batchSize.value, false, seed)*/CustomMnistDataSetIterator(
+                    batchSize.value,
+                    iteratorDistribution,
+                    seed,
+                    DataSetType.TEST,
+                    maxTestSamples
+                )
                 Datasets.CIFAR10 -> {
                     val iterator = CustomCifar10DataSetIterator(
                         batchSize.value,
@@ -498,6 +516,7 @@ abstract class Runner {
         l2: L2Regularizations,
         batchSize: BatchSizes,
         iteratorDistribution: IteratorDistributions,
-        maxTestSamples: MaxTestSamples
+        maxTestSamples: MaxTestSamples,
+        seed: Int
     )
 }

@@ -65,7 +65,7 @@ class Mozi : AggregationRule() {
     }
 
     private fun applyPerformanceFilter(myModel: Pair<INDArray, Int>, otherModels: List<INDArray>, network: MultiLayerNetwork, testDataSetIterator: DataSetIterator): List<INDArray> {
-        val result : MutableList<INDArray> = arrayListOf()
+        val result : MutableList<INDArray> = arrayListOf(myModel.first)
         testDataSetIterator.reset()
         val sample = testDataSetIterator.next(TEST_BATCH)
         val myLoss = calculateLoss(myModel.first, network, sample)
@@ -74,9 +74,6 @@ class Mozi : AggregationRule() {
             if (otherLoss <= myLoss) {
                 result.add(otherModels[index])
             }
-        }
-        if (result.isEmpty()) {
-            result.add(otherModels[otherLosses.indexOf(otherLosses.minBy { it })])
         }
         return result
     }

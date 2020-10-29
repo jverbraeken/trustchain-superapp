@@ -26,6 +26,7 @@ private val logger = KotlinLogging.logger("FedML.MainFragment")
 class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSelectedListener {
     private val baseDirectory: File by lazy { requireActivity().filesDir }
     private val binding by viewBinding(FragmentMainBinding::bind)
+    private val seed = getCommunity().myEstimatedLan.toString().hashCode()
 
     private val datasets = Datasets.values().map { it.text }
     private val optimizers = Optimizers.values().map { it.text }
@@ -45,7 +46,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private var batchSize: BatchSizes = dataset.defaultBatchSize
     private var epoch: Epochs = Epochs.EPOCH_5
     private var iteratorDistribution: IteratorDistributions = dataset.defaultIteratorDistribution
-    private var maxTestSample = MaxTestSamples.NUM_500
+    private var maxTestSample = MaxTestSamples.NUM_50
 
     private fun getCommunity(): FedMLCommunity {
         return getIpv8().getOverlay()
@@ -198,7 +199,8 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
             l2,
             batchSize,
             iteratorDistribution,
-            maxTestSample
+            maxTestSample,
+            seed
         )
     }
 
@@ -213,7 +215,8 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
             l2,
             batchSize,
             iteratorDistribution,
-            maxTestSample
+            maxTestSample,
+            seed
         )
     }
 
@@ -228,7 +231,8 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
             l2,
             batchSize,
             iteratorDistribution,
-            maxTestSample
+            maxTestSample,
+            seed
         )
     }
 

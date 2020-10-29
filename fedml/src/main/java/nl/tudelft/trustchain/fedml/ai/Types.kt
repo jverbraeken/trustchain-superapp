@@ -4,7 +4,7 @@ import org.deeplearning4j.nn.conf.MultiLayerConfiguration
 import org.nd4j.linalg.schedule.ISchedule
 import org.nd4j.linalg.schedule.MapSchedule
 import org.nd4j.linalg.schedule.ScheduleType
-import kotlin.reflect.KFunction4
+import kotlin.reflect.KFunction5
 
 
 enum class Datasets(
@@ -16,7 +16,7 @@ enum class Datasets(
     val defaultL2: L2Regularizations,
     val defaultBatchSize: BatchSizes,
     val defaultIteratorDistribution: IteratorDistributions,
-    val defaultArchitecture: KFunction4<Runner, Optimizers, LearningRates, L2Regularizations, MultiLayerConfiguration>
+    val architecture: KFunction5<Runner, Optimizers, LearningRates, L2Regularizations, Int, MultiLayerConfiguration>
 ) {
     MNIST(
         "mnist",
@@ -27,8 +27,8 @@ enum class Datasets(
         LearningRates.RATE_1EM3,
         Momentums.NONE,
         L2Regularizations.L2_5EM3,
-        BatchSizes.BATCH_32,
-        IteratorDistributions.DISTRIBUTION_MNIST_1,
+        BatchSizes.BATCH_5,
+        IteratorDistributions.DISTRIBUTION_MNIST_2,
         Runner::generateDefaultMNISTConfiguration
     ),
     CIFAR10(
@@ -129,11 +129,12 @@ enum class Epochs(val id: String, val text: String, val value: Int) {
 }
 
 enum class IteratorDistributions(val id: String, val text: String, val value: List<Int>) {
-    DISTRIBUTION_MNIST_1("mnist_1", "MNIST 1", arrayListOf(100, 100, 100, 100, 100, 100, 100, 100, 100, 100)),
+    DISTRIBUTION_MNIST_1("mnist_1", "MNIST 100", arrayListOf(100, 100, 100, 100, 100, 100, 100, 100, 100, 100)),
+    DISTRIBUTION_MNIST_2("mnist_2", "MNIST 500", arrayListOf(500, 500, 500, 500, 500, 500, 500, 500, 500, 500)),
     DISTRIBUTION_CIFAR_1("cifar_1", "CIFAR 1", arrayListOf(100, 100, 100, 100, 100, 100, 100, 100, 100, 100)),
     DISTRIBUTION_HAR_1("har_1", "HAR 1", arrayListOf(100, 100, 100, 100, 100, 100)),
 }
 
 enum class MaxTestSamples(val id: String, val text: String, val value: Int) {
-    NUM_500("num_500", "500", 500)
+    NUM_50("num_50", "50", 50)
 }
