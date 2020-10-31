@@ -10,7 +10,6 @@ import java.io.PrintWriter
 import java.text.SimpleDateFormat
 import java.util.*
 
-
 class EvaluationProcessor(
     baseDirectory: File,
     private val runner: String,
@@ -20,6 +19,9 @@ class EvaluationProcessor(
     private val momentum: String,
     private val l2: String,
     private val batchSize: String,
+    private val iteratorDistribution: String,
+    private val maxTestSamples: String,
+    private val seed: Int,
     private val extraElementNames: List<String>
 ) : EvaluationCallback {
     private val datePattern = "yyyy-MM-dd_HH.mm.ss"
@@ -30,6 +32,15 @@ class EvaluationProcessor(
     internal var iteration: Int = 0
     internal var extraElements: Map<String, String> = HashMap()
     internal var elapsedTime: Long = 0
+
+    data class EvaluationData(
+        val beforeAfterAveraging: String,
+        val samplesCounter: Int,
+        val numPeers: String,
+        val elapsedTime: Long,
+        val iterationCount: Int,
+        val epoch: Int
+    )
 
     init {
         fileResults = File(
@@ -55,7 +66,10 @@ class EvaluationProcessor(
                 "learning rate, $learningRate",
                 "momentum, $momentum",
                 "l2, $l2",
-                "batchSize, $batchSize"
+                "batchSize, $batchSize",
+                "iteratorDistribution, $iteratorDistribution",
+                "maxTestSamples, $maxTestSamples",
+                "seed, $seed"
             ).forEach(pw::println)
         }
 
@@ -102,16 +116,16 @@ class EvaluationProcessor(
         val gMeasure = evaluations[0].getValue(Evaluation.Metric.GMEASURE)
         val mcc = evaluations[0].getValue(Evaluation.Metric.MCC)
         val mainDataLineElements = arrayOf(
-                elapsedTime.toString(),
-                epoch.toString(),
-                iteration.toString(),
-                accuracy.toString(),
-                f1.toString(),
-                precision.toString(),
-                recall.toString(),
-                gMeasure.toString(),
-                mcc.toString()
-            )
+            elapsedTime.toString(),
+            epoch.toString(),
+            iteration.toString(),
+            accuracy.toString(),
+            f1.toString(),
+            precision.toString(),
+            recall.toString(),
+            gMeasure.toString(),
+            mcc.toString()
+        )
         dataLines.add(Array(mainDataLineElements.size + extraElements.size) { "" })
         System.arraycopy(mainDataLineElements, 0, dataLines.last(), 0, mainDataLineElements.size)
         for ((name, value) in extraElements) {

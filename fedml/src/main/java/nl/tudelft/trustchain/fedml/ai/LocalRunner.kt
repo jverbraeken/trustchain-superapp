@@ -8,44 +8,46 @@ import java.io.File
 class LocalRunner : Runner() {
     override fun run(
         baseDirectory: File,
-        numEpochs: Epochs,
-        dataset: Datasets,
-        optimizer: Optimizers,
-        learningRate: LearningRates,
-        momentum: Momentums?,
-        l2: L2Regularizations,
-        batchSize: BatchSizes,
-        iteratorDistribution: IteratorDistributions,
-        maxTestSamples: MaxTestSamples,
-        seed: Int
+        seed: Int,
+        mlConfiguration: MLConfiguration
     ) {
         scope.launch {
             val trainDataSetIterator = getTrainDatasetIterator(
                 baseDirectory,
-                dataset,
-                batchSize,
-                iteratorDistribution,
+                mlConfiguration.dataset,
+                mlConfiguration.batchSize,
+                mlConfiguration.iteratorDistribution,
                 seed
             )
             val testDataSetIterator = getTestDatasetIterator(
                 baseDirectory,
-                dataset,
-                batchSize,
-                iteratorDistribution,
+                mlConfiguration.dataset,
+                mlConfiguration.batchSize,
+                mlConfiguration.iteratorDistribution,
                 seed,
-                maxTestSamples
+                mlConfiguration.maxTestSamples
             )
-            val network = generateNetwork(dataset, optimizer, learningRate, momentum, l2, seed)
+            val network = generateNetwork(
+                mlConfiguration.dataset,
+                mlConfiguration.optimizer,
+                mlConfiguration.learningRate,
+                mlConfiguration.momentum,
+                mlConfiguration.l2,
+                seed
+            )
             var evaluationListener = EvaluativeListener(testDataSetIterator, 999999)
             val evaluationProcessor = EvaluationProcessor(
                 baseDirectory,
                 "local",
-                dataset.text,
-                optimizer.text,
-                learningRate.text,
-                momentum?.text ?: "null",
-                l2.text,
-                batchSize.text,
+                mlConfiguration.dataset.text,
+                mlConfiguration.optimizer.text,
+                mlConfiguration.learningRate.text,
+                mlConfiguration.momentum?.text ?: "null",
+                mlConfiguration.l2.text,
+                mlConfiguration.batchSize.text,
+                mlConfiguration.iteratorDistribution.text,
+                mlConfiguration.maxTestSamples.text,
+                seed,
                 ArrayList()
             )
             evaluationListener.callback = evaluationProcessor
@@ -56,19 +58,19 @@ class LocalRunner : Runner() {
 
             var epoch = 0
             var iterations = 0
-            for (i in 0 until numEpochs.value) {
+            for (i in 0 until mlConfiguration.epoch.value) {
                 epoch++
                 evaluationProcessor.epoch = epoch
                 val start = System.currentTimeMillis()
                 loop@ while (true) {
-                    for (j in 0 until batchSize.value) {
+                    for (j in 0 until mlConfiguration.batchSize.value) {
                         try {
                             network.fit(trainDataSetIterator.next())
                         } catch (e: NoSuchElementException) {
                             break@loop
                         }
                     }
-                    iterations += batchSize.value
+                    iterations += mlConfiguration.batchSize.value
                     val end = System.currentTimeMillis()
                     evaluationProcessor.iteration = iterations
                     evaluationProcessor.elapsedTime = end - start

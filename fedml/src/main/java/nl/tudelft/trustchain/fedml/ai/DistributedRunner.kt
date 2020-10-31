@@ -15,59 +15,60 @@ import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 import java.io.File
 
 private val logger = KotlinLogging.logger("DistributedRunner")
+private val aggregationRule: AggregationRule = Mozi()
 
-class DistributedRunner(private val community: FedMLCommunity) : Runner(),
-    MessageListener {
+class DistributedRunner(private val community: FedMLCommunity) : Runner(), MessageListener {
     private val paramBuffer: MutableList<Pair<INDArray, Int>> = ArrayList()
-    private val aggregationRule: AggregationRule = Mozi()
 
     override fun run(
         baseDirectory: File,
-        numEpochs: Epochs,
-        dataset: Datasets,
-        optimizer: Optimizers,
-        learningRate: LearningRates,
-        momentum: Momentums?,
-        l2: L2Regularizations,
-        batchSize: BatchSizes,
-        iteratorDistribution: IteratorDistributions,
-        maxTestSamples: MaxTestSamples,
-        seed: Int
+        seed: Int,
+        mlConfiguration: MLConfiguration
     ) {
         FedMLCommunity.registerMessageListener(MessageId.MSG_PARAM_UPDATE, this)
         scope.launch {
             val trainDataSetIterator = getTrainDatasetIterator(
                 baseDirectory,
-                dataset,
-                batchSize,
-                iteratorDistribution,
+                mlConfiguration.dataset,
+                mlConfiguration.batchSize,
+                mlConfiguration.iteratorDistribution,
                 seed
             )
             val testDataSetIterator = getTestDatasetIterator(
                 baseDirectory,
-                dataset,
-                batchSize,
-                iteratorDistribution,
+                mlConfiguration.dataset,
+                mlConfiguration.batchSize,
+                mlConfiguration.iteratorDistribution,
                 seed,
-                maxTestSamples
+                mlConfiguration.maxTestSamples
             )
 //            var evaluationListener = EvaluativeListener(testDataSetIterator, 999999)
             val evaluationProcessor = EvaluationProcessor(
                 baseDirectory,
                 "distributed",
-                dataset.text,
-                optimizer.text,
-                learningRate.text,
-                momentum?.text ?: "null",
-                l2.text,
-                batchSize.text,
+                mlConfiguration.dataset.text,
+                mlConfiguration.optimizer.text,
+                mlConfiguration.learningRate.text,
+                mlConfiguration.momentum?.text ?: "null",
+                mlConfiguration.l2.text,
+                mlConfiguration.batchSize.text,
+                mlConfiguration.iteratorDistribution.text,
+                mlConfiguration.maxTestSamples.text,
+                seed,
                 listOf(
                     "before or after averaging",
                     "total samples",
                     "#peers included in current batch"
                 )
             )
-            val network = generateNetwork(dataset, optimizer, learningRate, momentum, l2, seed)
+            val network = generateNetwork(
+                mlConfiguration.dataset,
+                mlConfiguration.optimizer,
+                mlConfiguration.learningRate,
+                mlConfiguration.momentum,
+                mlConfiguration.l2,
+                seed
+            )
             network.setListeners(ScoreIterationListener(printScoreIterations))
 
             trainNetwork(
@@ -75,8 +76,8 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(),
                 evaluationProcessor,
                 trainDataSetIterator,
                 testDataSetIterator,
-                numEpochs,
-                batchSize
+                mlConfiguration.epoch,
+                mlConfiguration.batchSize
             )
         }
     }
@@ -142,73 +143,85 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(),
         network: MultiLayerNetwork,
         epoch: Int
     ): Int {
+        logger.debug { "Evaluating network " }
         evaluationProcessor.iteration = iterations
         execEvaluationProcessor(
             evaluationProcessor,
-            samplesCounter,
-            "",
-            elapsedTime,
             testDataSetIterator,
             network,
-            network.iterationCount,
-            epoch
+            EvaluationProcessor.EvaluationData(
+                "before",
+                samplesCounter,
+                "",
+                elapsedTime,
+                network.iterationCount,
+                epoch
+            )
         )
 
         var ret = -1
         val start = System.currentTimeMillis()
-        val numPeers = paramBuffer.size
-        if (numPeers == 0) {
+        val numPeers = paramBuffer.size + 1
+        val averageParams: Pair<INDArray, Int>
+        if (numPeers == 1) {
+            logger.debug { "No peers => skipping integration evaluation" }
             evaluationProcessor.skip()
+            averageParams = Pair(network.params().dup(), samplesCounter)
         } else {
-            val averageParams = aggregationRule.integrateParameters(
+            logger.debug { "Peers found => executing aggregation rule" }
+            averageParams = aggregationRule.integrateParameters(
                 Pair(
-                    network.params(),
+                    network.params().dup(),
                     samplesCounter
                 ), paramBuffer, network, testDataSetIterator
             )
             ret = averageParams.second
-            community.sendToAll(
-                MessageId.MSG_PARAM_UPDATE,
-                MsgParamUpdate(averageParams.first, samplesCounter),
-                true
-            )
             paramBuffer.clear()
             network.setParameters(averageParams.first)
             val end = System.currentTimeMillis()
 
             execEvaluationProcessor(
                 evaluationProcessor,
-                samplesCounter,
-                numPeers.toString(),
-                end - start,
                 testDataSetIterator,
                 network,
-                iterations,
-                epoch
+                EvaluationProcessor.EvaluationData(
+                    "after",
+                    samplesCounter,
+                    numPeers.toString(),
+                    end - start,
+                    iterations,
+                    epoch
+                )
             )
         }
+        community.sendToAll(
+            MessageId.MSG_PARAM_UPDATE,
+            MsgParamUpdate(averageParams.first, samplesCounter),
+            true
+        )
         return ret
     }
 
     private fun execEvaluationProcessor(
         evaluationProcessor: EvaluationProcessor,
-        samplesCounter: Int,
-        numPeers: String,
-        elapsedTime: Long,
         testDataSetIterator: DataSetIterator,
         network: MultiLayerNetwork,
-        iterationCount: Int,
-        epoch: Int
+        evaluationData: EvaluationProcessor.EvaluationData
     ) {
+        testDataSetIterator.reset()
         evaluationProcessor.extraElements = mapOf(
-            Pair("before or after averaging", "before"),
-            Pair("total samples", samplesCounter.toString()),
-            Pair("#peers included in current batch", numPeers)
+            Pair("before or after averaging", evaluationData.beforeAfterAveraging),
+            Pair("total samples", evaluationData.samplesCounter.toString()),
+            Pair("#peers included in current batch", evaluationData.numPeers)
         )
-        evaluationProcessor.elapsedTime = elapsedTime
+        evaluationProcessor.elapsedTime = evaluationData.elapsedTime
         val evaluationListener = EvaluativeListener(testDataSetIterator, 999999)
         evaluationListener.callback = evaluationProcessor
-        evaluationListener.iterationDone(network, iterationCount, epoch)
+        evaluationListener.iterationDone(
+            network,
+            evaluationData.iterationCount,
+            evaluationData.epoch
+        )
     }
 
     override fun onMessageReceived(messageId: MessageId, peer: Peer, payload: Any) {
@@ -221,5 +234,4 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(),
             else -> throw Exception("Other messages should not be listened to...")
         }
     }
-
 }

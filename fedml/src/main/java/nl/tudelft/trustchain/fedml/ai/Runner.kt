@@ -30,7 +30,7 @@ abstract class Runner {
     private var trainDatasetIterator: DataSetIterator? = null
     private var testDatasetIterator: DataSetIterator? = null
     protected open val printScoreIterations = 5
-    protected open val iterationsBeforeEvaluation = 400
+    protected open val iterationsBeforeEvaluation = 100
 
     fun generateNetwork(
         dataset: Datasets,
@@ -508,15 +508,7 @@ abstract class Runner {
 
     abstract fun run(
         baseDirectory: File,
-        numEpochs: Epochs,
-        dataset: Datasets,
-        optimizer: Optimizers,
-        learningRate: LearningRates,
-        momentum: Momentums?,
-        l2: L2Regularizations,
-        batchSize: BatchSizes,
-        iteratorDistribution: IteratorDistributions,
-        maxTestSamples: MaxTestSamples,
-        seed: Int
+        seed: Int,
+        mlConfiguration: MLConfiguration
     )
 }

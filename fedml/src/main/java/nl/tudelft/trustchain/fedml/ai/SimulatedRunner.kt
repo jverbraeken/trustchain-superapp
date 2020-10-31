@@ -11,63 +11,72 @@ class SimulatedRunner : Runner() {
 
     override fun run(
         baseDirectory: File,
-        numEpochs: Epochs,
-        dataset: Datasets,
-        optimizer: Optimizers,
-        learningRate: LearningRates,
-        momentum: Momentums?,
-        l2: L2Regularizations,
-        batchSize: BatchSizes,
-        iteratorDistribution: IteratorDistributions,
-        maxTestSamples: MaxTestSamples,
-        seed: Int
+        seed: Int,
+        mlConfiguration: MLConfiguration
     ) {
         scope.launch {
             val trainDataSetIterator = getTrainDatasetIterator(
                 baseDirectory,
-                dataset,
-                batchSize,
-                iteratorDistribution,
+                mlConfiguration.dataset,
+                mlConfiguration.batchSize,
+                mlConfiguration.iteratorDistribution,
                 seed
             )
             val testDataSetIterator = getTestDatasetIterator(
                 baseDirectory,
-                dataset,
-                batchSize,
-                iteratorDistribution,
+                mlConfiguration.dataset,
+                mlConfiguration.batchSize,
+                mlConfiguration.iteratorDistribution,
                 seed,
-                maxTestSamples
+                mlConfiguration.maxTestSamples
             )
             var evaluationListener = EvaluativeListener(testDataSetIterator, 999999)
             val evaluationProcessor = EvaluationProcessor(
                 baseDirectory,
                 "simulated",
-                dataset.text,
-                optimizer.text,
-                learningRate.text,
-                momentum?.text ?: "null",
-                l2.text,
-                batchSize.text,
+                mlConfiguration.dataset.text,
+                mlConfiguration.optimizer.text,
+                mlConfiguration.learningRate.text,
+                mlConfiguration.momentum?.text ?: "null",
+                mlConfiguration.l2.text,
+                mlConfiguration.batchSize.text,
+                mlConfiguration.iteratorDistribution.text,
+                mlConfiguration.maxTestSamples.text,
+                seed,
                 listOf("before or after averaging")
             )
             evaluationListener.callback = evaluationProcessor
 
             val networks = arrayOf(
-                generateNetwork(dataset, optimizer, learningRate, momentum, l2, seed),
-                generateNetwork(dataset, optimizer, learningRate, momentum, l2, seed)
+                generateNetwork(
+                    mlConfiguration.dataset,
+                    mlConfiguration.optimizer,
+                    mlConfiguration.learningRate,
+                    mlConfiguration.momentum,
+                    mlConfiguration.l2,
+                    seed
+                ),
+                generateNetwork(
+                    mlConfiguration.dataset,
+                    mlConfiguration.optimizer,
+                    mlConfiguration.learningRate,
+                    mlConfiguration.momentum,
+                    mlConfiguration.l2,
+                    seed
+                )
             )
             networks.forEach { it.setListeners(ScoreIterationListener(printScoreIterations)) }
 
             var epoch = 0
             var iterations = 0
-            for (i in 0 until numEpochs.value) {
+            for (i in 0 until mlConfiguration.epoch.value) {
                 epoch++
                 evaluationProcessor.epoch = epoch
                 val start = System.currentTimeMillis()
                 while (true) {
                     var endEpoch = false
                     for (net in networks) {
-                        for (j in 0 until batchSize.value) {
+                        for (j in 0 until mlConfiguration.batchSize.value) {
                             try {
                                 net.fit(trainDataSetIterator.next())
                             } catch (e: NoSuchElementException) {
@@ -75,7 +84,7 @@ class SimulatedRunner : Runner() {
                             }
                         }
                     }
-                    iterations += batchSize.value
+                    iterations += mlConfiguration.batchSize.value
                     val end = System.currentTimeMillis()
 
                     evaluationProcessor.iteration = iterations
@@ -87,7 +96,7 @@ class SimulatedRunner : Runner() {
                     evaluationListener.iterationDone(networks[0], networks[0].iterationCount, epoch)
 
                     val params: MutableList<Pair<INDArray, Int>> = ArrayList(networks.size)
-                    networks.forEach { params.add(Pair(it.params(), batchSize.value)) }
+                    networks.forEach { params.add(Pair(it.params().dup(), mlConfiguration.batchSize.value)) }
                     val averageParams = aggregationRule.integrateParameters(
                         params[0],
                         params.subList(1, params.size),

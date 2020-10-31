@@ -191,48 +191,51 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private fun onBtnRunLocallyClicked() {
         LocalRunner().run(
             baseDirectory,
-            epoch,
-            dataset,
-            optimizer,
-            learningRate,
-            momentum,
-            l2,
-            batchSize,
-            iteratorDistribution,
-            maxTestSample,
-            seed
+            seed,
+            MLConfiguration(
+                dataset = dataset,
+                optimizer = optimizer,
+                learningRate = learningRate,
+                momentum = momentum,
+                l2 = l2,
+                batchSize = batchSize,
+                epoch = epoch,
+                iteratorDistribution = iteratorDistribution,
+                maxTestSamples = maxTestSample)
         )
     }
 
     private fun onBtnSimulateDistributedLocallyClicked() {
         SimulatedRunner().run(
             baseDirectory,
-            epoch,
-            dataset,
-            optimizer,
-            learningRate,
-            momentum,
-            l2,
-            batchSize,
-            iteratorDistribution,
-            maxTestSample,
-            seed
+            seed,
+            MLConfiguration(
+                dataset = dataset,
+                optimizer = optimizer,
+                learningRate = learningRate,
+                momentum = momentum,
+                l2 = l2,
+                batchSize = batchSize,
+                epoch = epoch,
+                iteratorDistribution = iteratorDistribution,
+                maxTestSamples = maxTestSample)
         )
     }
 
     private fun onBtnRunDistributedClicked() {
         DistributedRunner(getCommunity()).run(
             baseDirectory,
-            epoch,
-            dataset,
-            optimizer,
-            learningRate,
-            momentum,
-            l2,
-            batchSize,
-            iteratorDistribution,
-            maxTestSample,
-            seed
+            seed,
+            MLConfiguration(
+                dataset = dataset,
+                optimizer = optimizer,
+                learningRate = learningRate,
+                momentum = momentum,
+                l2 = l2,
+                batchSize = batchSize,
+                epoch = epoch,
+                iteratorDistribution = iteratorDistribution,
+                maxTestSamples = maxTestSample)
         )
     }
 
