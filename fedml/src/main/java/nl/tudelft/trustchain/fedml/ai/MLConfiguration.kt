@@ -9,5 +9,6 @@ data class MLConfiguration(
     val batchSize: BatchSizes,
     val epoch: Epochs,
     val iteratorDistribution: IteratorDistributions,
-    val maxTestSamples: MaxTestSamples
+    val maxTestSamples: MaxTestSamples,
+    val gar: GARs
 )

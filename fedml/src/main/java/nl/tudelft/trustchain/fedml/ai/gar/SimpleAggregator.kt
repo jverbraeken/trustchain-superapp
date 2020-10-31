@@ -1,4 +1,4 @@
-package nl.tudelft.trustchain.fedml.ai
+package nl.tudelft.trustchain.fedml.ai.gar
 
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.nd4j.linalg.api.ndarray.INDArray

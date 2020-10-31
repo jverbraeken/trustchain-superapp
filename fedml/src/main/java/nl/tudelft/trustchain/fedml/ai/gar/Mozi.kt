@@ -1,4 +1,4 @@
-package nl.tudelft.trustchain.fedml.ai
+package nl.tudelft.trustchain.fedml.ai.gar
 
 import mu.KotlinLogging
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork

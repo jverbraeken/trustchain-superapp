@@ -3,6 +3,8 @@ package nl.tudelft.trustchain.fedml.ai
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import nl.tudelft.ipv8.Peer
+import nl.tudelft.trustchain.fedml.ai.gar.AggregationRule
+import nl.tudelft.trustchain.fedml.ai.gar.Mozi
 import nl.tudelft.trustchain.fedml.ipv8.FedMLCommunity
 import nl.tudelft.trustchain.fedml.ipv8.FedMLCommunity.MessageId
 import nl.tudelft.trustchain.fedml.ipv8.MessageListener
@@ -15,7 +17,6 @@ import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 import java.io.File
 
 private val logger = KotlinLogging.logger("DistributedRunner")
-private val aggregationRule: AggregationRule = Mozi()
 
 class DistributedRunner(private val community: FedMLCommunity) : Runner(), MessageListener {
     private val paramBuffer: MutableList<Pair<INDArray, Int>> = ArrayList()
@@ -46,14 +47,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
             val evaluationProcessor = EvaluationProcessor(
                 baseDirectory,
                 "distributed",
-                mlConfiguration.dataset.text,
-                mlConfiguration.optimizer.text,
-                mlConfiguration.learningRate.text,
-                mlConfiguration.momentum?.text ?: "null",
-                mlConfiguration.l2.text,
-                mlConfiguration.batchSize.text,
-                mlConfiguration.iteratorDistribution.text,
-                mlConfiguration.maxTestSamples.text,
+                mlConfiguration,
                 seed,
                 listOf(
                     "before or after averaging",
@@ -77,7 +71,8 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 trainDataSetIterator,
                 testDataSetIterator,
                 mlConfiguration.epoch,
-                mlConfiguration.batchSize
+                mlConfiguration.batchSize,
+                mlConfiguration.gar
             )
         }
     }
@@ -88,7 +83,8 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         trainDataSetIterator: DataSetIterator,
         testDataSetIterator: DataSetIterator,
         numEpochs: Epochs,
-        batchSize: BatchSizes
+        batchSize: BatchSizes,
+        gar: GARs
     ) {
         var samplesCounter = 0
         var epoch = 0
@@ -115,13 +111,14 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                     iterationsToEvaluation = 0
                     val end = System.currentTimeMillis()
                     val newSamplesCounter = evaluateNetwork(
-                        testDataSetIterator,
+                        network,
                         evaluationProcessor,
+                        testDataSetIterator,
                         end - start,
                         iterations,
                         samplesCounter,
-                        network,
-                        epoch
+                        epoch,
+                        gar.obj
                     )
                     samplesCounter =
                         if (newSamplesCounter == -1) samplesCounter else newSamplesCounter
@@ -135,13 +132,14 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
     }
 
     private fun evaluateNetwork(
-        testDataSetIterator: DataSetIterator,
+        network: MultiLayerNetwork,
         evaluationProcessor: EvaluationProcessor,
+        testDataSetIterator: DataSetIterator,
         elapsedTime: Long,
         iterations: Int,
         samplesCounter: Int,
-        network: MultiLayerNetwork,
-        epoch: Int
+        epoch: Int,
+        gar: AggregationRule
     ): Int {
         logger.debug { "Evaluating network " }
         evaluationProcessor.iteration = iterations
@@ -169,7 +167,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
             averageParams = Pair(network.params().dup(), samplesCounter)
         } else {
             logger.debug { "Peers found => executing aggregation rule" }
-            averageParams = aggregationRule.integrateParameters(
+            averageParams = gar.integrateParameters(
                 Pair(
                     network.params().dup(),
                     samplesCounter

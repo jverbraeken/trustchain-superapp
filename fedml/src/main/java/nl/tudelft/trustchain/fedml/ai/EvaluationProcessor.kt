@@ -12,16 +12,9 @@ import java.util.*
 
 class EvaluationProcessor(
     baseDirectory: File,
-    private val runner: String,
-    private val dataset: String,
-    private val optimizer: String,
-    private val learningRate: String,
-    private val momentum: String,
-    private val l2: String,
-    private val batchSize: String,
-    private val iteratorDistribution: String,
-    private val maxTestSamples: String,
-    private val seed: Int,
+    runner: String,
+    mlConfiguration: MLConfiguration,
+    seed: Int,
     private val extraElementNames: List<String>
 ) : EvaluationCallback {
     private val datePattern = "yyyy-MM-dd_HH.mm.ss"
@@ -60,15 +53,16 @@ class EvaluationProcessor(
         fileMeta.createNewFile()
         PrintWriter(fileMeta).use { pw ->
             arrayOf(
-                "dataset, $dataset",
+                "dataset, ${mlConfiguration.dataset.text}",
                 "runner, $runner",
-                "optimizer, $optimizer",
-                "learning rate, $learningRate",
-                "momentum, $momentum",
-                "l2, $l2",
-                "batchSize, $batchSize",
-                "iteratorDistribution, $iteratorDistribution",
-                "maxTestSamples, $maxTestSamples",
+                "optimizer, ${mlConfiguration.optimizer.text}",
+                "learning rate, ${mlConfiguration.learningRate.text}",
+                "momentum, ${mlConfiguration.momentum?.text ?: "<null>"}",
+                "l2, ${mlConfiguration.l2.text}",
+                "batchSize, ${mlConfiguration.batchSize.text}",
+                "iteratorDistribution, ${mlConfiguration.iteratorDistribution.text}",
+                "maxTestSamples, ${mlConfiguration.maxTestSamples.text}",
+                "gar, ${mlConfiguration.gar.text}",
                 "seed, $seed"
             ).forEach(pw::println)
         }

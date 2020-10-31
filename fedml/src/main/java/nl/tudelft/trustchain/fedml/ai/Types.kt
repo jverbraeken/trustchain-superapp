@@ -1,5 +1,8 @@
 package nl.tudelft.trustchain.fedml.ai
 
+import nl.tudelft.trustchain.fedml.ai.gar.AggregationRule
+import nl.tudelft.trustchain.fedml.ai.gar.Mozi
+import nl.tudelft.trustchain.fedml.ai.gar.SimpleAggregator
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration
 import org.nd4j.linalg.schedule.ISchedule
 import org.nd4j.linalg.schedule.MapSchedule
@@ -137,4 +140,10 @@ enum class IteratorDistributions(val id: String, val text: String, val value: Li
 
 enum class MaxTestSamples(val id: String, val text: String, val value: Int) {
     NUM_50("num_50", "50", 50)
+}
+
+// Gradient Aggregation Rule
+enum class GARs(val id: String, val text: String, val obj: AggregationRule) {
+    SIMPLE("simple", "Simple", SimpleAggregator()),
+    MOZI("mozi", "Mozi", Mozi())
 }

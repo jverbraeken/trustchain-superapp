@@ -1,8 +1,10 @@
 @echo off
 set ports[0]=5554
 set ports[1]=5556
-set redirects[0]=62217
-set redirects[1]=62212
+set ports[2]=5558
+set redirects[0]=65460
+set redirects[1]=65451
+set redirects[2]=59001
 
 set "x=0"
 :SymLoop

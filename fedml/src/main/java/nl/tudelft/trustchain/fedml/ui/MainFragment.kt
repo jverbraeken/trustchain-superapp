@@ -37,6 +37,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private val epochs = Epochs.values().map { it.text }
     private val iteratorDistributions = IteratorDistributions.values().map { it.text }
     private val maxTestSamples = MaxTestSamples.values().map { it.text }
+    private val gars = GARs.values().map { it.text }
 
     private var dataset: Datasets = Datasets.MNIST
     private var optimizer: Optimizers = dataset.defaultOptimizer
@@ -47,6 +48,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private var epoch: Epochs = Epochs.EPOCH_5
     private var iteratorDistribution: IteratorDistributions = dataset.defaultIteratorDistribution
     private var maxTestSample = MaxTestSamples.NUM_50
+    private var gar = GARs.MOZI
 
     private fun getCommunity(): FedMLCommunity {
         return getIpv8().getOverlay()
@@ -65,6 +67,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
         bindSpinner(view, binding.spnEpochs, epochs)
         bindSpinner(view, binding.spnIteratorDistribution, iteratorDistributions)
         bindSpinner(view, binding.spnMaxTestSamples, maxTestSamples)
+        bindSpinner(view, binding.spnGar, gars)
 
         binding.btnPing.setOnClickListener { onBtnPingClicked() }
         binding.btnRunLocal.setOnClickListener { onBtnRunLocallyClicked() }
@@ -74,8 +77,9 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
         configureDL4JDirectory()
         allowDL4JOnUIThread()
         binding.spnDataset.setSelection(datasets.indexOf(dataset.text))
-        binding.spnEpochs.setSelection(datasets.indexOf(epoch.text))
-        binding.spnMaxTestSamples.setSelection(datasets.indexOf(maxTestSample.text))
+        binding.spnEpochs.setSelection(epochs.indexOf(epoch.text))
+        binding.spnMaxTestSamples.setSelection(maxTestSamples.indexOf(maxTestSample.text))
+        binding.spnGar.setSelection(gars.indexOf(gar.text))
         processIntentExtras()
         synchronizeSpinners()
 
@@ -130,6 +134,10 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
         val maxTestSample = extras?.getString("maxTestSample")
         if (maxTestSample != null) {
             this.maxTestSample = MaxTestSamples.values().first { it.id == maxTestSample }
+        }
+        val gar = extras?.getString("gar")
+        if (gar != null) {
+            this.gar = GARs.values().first { it.id == gar }
         }
     }
 
@@ -201,7 +209,9 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
                 batchSize = batchSize,
                 epoch = epoch,
                 iteratorDistribution = iteratorDistribution,
-                maxTestSamples = maxTestSample)
+                maxTestSamples = maxTestSample,
+                gar = gar
+            )
         )
     }
 
@@ -218,7 +228,9 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
                 batchSize = batchSize,
                 epoch = epoch,
                 iteratorDistribution = iteratorDistribution,
-                maxTestSamples = maxTestSample)
+                maxTestSamples = maxTestSample,
+                gar = gar
+            )
         )
     }
 
@@ -235,7 +247,9 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
                 batchSize = batchSize,
                 epoch = epoch,
                 iteratorDistribution = iteratorDistribution,
-                maxTestSamples = maxTestSample)
+                maxTestSamples = maxTestSample,
+                gar = gar
+            )
         )
     }
 
@@ -262,6 +276,8 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
                 IteratorDistributions.values().first { it.text == iteratorDistributions[position] }
             binding.spnMaxTestSamples.id -> maxTestSample =
                 MaxTestSamples.values().first { it.text == maxTestSamples[position] }
+            binding.spnGar.id -> gar =
+                GARs.values().first { it.text == gars[position] }
         }
     }
 
@@ -302,6 +318,9 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
         )
         binding.spnMaxTestSamples.setSelection(
             maxTestSamples.indexOf(maxTestSample.text), true
+        )
+        binding.spnGar.setSelection(
+            gars.indexOf(gar.text), true
         )
     }
 

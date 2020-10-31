@@ -39,14 +39,7 @@ class LocalRunner : Runner() {
             val evaluationProcessor = EvaluationProcessor(
                 baseDirectory,
                 "local",
-                mlConfiguration.dataset.text,
-                mlConfiguration.optimizer.text,
-                mlConfiguration.learningRate.text,
-                mlConfiguration.momentum?.text ?: "null",
-                mlConfiguration.l2.text,
-                mlConfiguration.batchSize.text,
-                mlConfiguration.iteratorDistribution.text,
-                mlConfiguration.maxTestSamples.text,
+                mlConfiguration,
                 seed,
                 ArrayList()
             )

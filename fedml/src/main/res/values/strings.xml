@@ -15,4 +15,5 @@
     <string name="spnEpochs">Epochs</string>
     <string name="spnIteratorDistribution">Iterator distribution</string>
     <string name="spnMaxTestSamples">Max test samples</string>
+    <string name="spnGar">Distributed GAR</string>
 </resources>
