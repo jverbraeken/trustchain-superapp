@@ -28,6 +28,7 @@ class FedMLCommunity(
     crawler: TrustChainCrawler = TrustChainCrawler()
 ) : TrustChainCommunity(settings, database, crawler) {
     override val serviceId = "36b098237ff4debfd0278b8b87c583e1c2cce4b7"
+    private var peersRR: MutableList<Peer>? = null
 
     class Factory(
         private val settings: TrustChainSettings,
@@ -78,7 +79,21 @@ class FedMLCommunity(
     }
 
     internal fun sendToRandomPeer(messageID: MessageId, message: Serializable, logging: Boolean = false) {
-        sendToPeer(getPeers().random(), messageID, message, logging)
+        val peer = getPeers().random()
+        sendToPeer(peer, messageID, message, logging)
+    }
+
+    // Round Robin
+    internal fun sendToNextPeerRR(messageID: MessageId, message: Serializable, logging: Boolean = false) {
+        val peer = getAndSetNextPeerRR()
+        sendToPeer(peer, messageID, message, logging)
+    }
+
+    private fun getAndSetNextPeerRR(): Peer {
+        if (peersRR?.isEmpty() != false) {
+            peersRR = getPeers().toMutableList()
+        }
+        return peersRR!!.removeAt(0)
     }
 
     ////// MESSAGE RECEIVED EVENTS
