@@ -192,7 +192,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 )
             )
         }
-        community.sendToAll(
+        community.sendToRandomPeer(
             MessageId.MSG_PARAM_UPDATE,
             MsgParamUpdate(averageParams.first, samplesCounter),
             true

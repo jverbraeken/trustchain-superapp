@@ -51,7 +51,7 @@ class FedMLCommunity(
         messageHandlers[MessageId.MSG_PING.id] = ::onMsgPing
         messageHandlers[MessageId.MSG_PONG.id] = ::onMsgPong
         messageHandlers[MessageId.MSG_PARAM_UPDATE.id] = ::onMsgParamUpdate
-        messageListeners[MessageId.MSG_PING]!!.add(object: MessageListener{
+        messageListeners[MessageId.MSG_PING]!!.add(object : MessageListener {
             override fun onMessageReceived(messageId: MessageId, peer: Peer, payload: Any) {
                 sendToPeer(peer, MessageId.MSG_PONG, MsgPong("Pong"))
             }
@@ -67,7 +67,7 @@ class FedMLCommunity(
 
     @Suppress("MemberVisibilityCanBePrivate")
     internal fun sendToPeer(peer: Peer, messageID: MessageId, message: Serializable, logging: Boolean = false) {
-        val packet = serializePacket(messageID.id, message, true, logging=logging)
+        val packet = serializePacket(messageID.id, message, true, logging = logging)
         send(peer, packet)
     }
 
@@ -75,6 +75,10 @@ class FedMLCommunity(
         for (peer in getPeers()) {
             sendToPeer(peer, messageID, message, logging)
         }
+    }
+
+    internal fun sendToRandomPeer(messageID: MessageId, message: Serializable, logging: Boolean = false) {
+        sendToPeer(getPeers().random(), messageID, message, logging)
     }
 
     ////// MESSAGE RECEIVED EVENTS
@@ -128,8 +132,7 @@ data class MsgPong(val message: String) : Serializable {
 
 data class MsgParamUpdate(val array: INDArray, val weight: Int) : Serializable {
     override fun serialize(): ByteArray {
-        val res = ByteArrayOutputStream().use { ObjectOutputStream(it).writeObject(array); it }.toByteArray()/*.copyOfRange(0, 3000)*/
-        return res
+        return ByteArrayOutputStream().use { ObjectOutputStream(it).writeObject(array); it }.toByteArray()
         /*val bos = ByteArrayOutputStream()
         ObjectOutputStream(bos).use {
             it.writeObject(array)
