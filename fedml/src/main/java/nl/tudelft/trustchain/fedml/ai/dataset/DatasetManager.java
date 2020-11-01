@@ -22,8 +22,8 @@ public abstract class DatasetManager {
         return Math.min(Math.min(a, b), c);
     }
 
-    public static int calculateTotalExamples(List<Integer> iteratorDistribution, int maxSamples, int[] labelsArray) {
+    public static int calculateTotalExamples(List<Integer> iteratorDistribution, int maxTestSamples, int[] labelsArray) {
         return IntStream.range(0, iteratorDistribution.size()).map(i -> min(iteratorDistribution.get(i),
-            maxSamples, (int) Arrays.stream(labelsArray).filter(j -> j == i).count())).sum();
+            maxTestSamples, (int) Arrays.stream(labelsArray).filter(j -> j == i).count())).sum();
     }
 }

@@ -1,9 +1,12 @@
 package nl.tudelft.trustchain.fedml.ai
 
 import kotlinx.coroutines.launch
+import mu.KotlinLogging
 import org.deeplearning4j.optimize.listeners.EvaluativeListener
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener
 import java.io.File
+
+private val logger = KotlinLogging.logger("LocalRunner")
 
 class LocalRunner : Runner() {
     override fun run(
@@ -15,24 +18,18 @@ class LocalRunner : Runner() {
             val trainDataSetIterator = getTrainDatasetIterator(
                 baseDirectory,
                 mlConfiguration.dataset,
-                mlConfiguration.batchSize,
-                mlConfiguration.iteratorDistribution,
+                mlConfiguration.datasetIteratorConfiguration,
                 seed
             )
             val testDataSetIterator = getTestDatasetIterator(
                 baseDirectory,
                 mlConfiguration.dataset,
-                mlConfiguration.batchSize,
-                mlConfiguration.iteratorDistribution,
-                seed,
-                mlConfiguration.maxTestSamples
+                mlConfiguration.datasetIteratorConfiguration,
+                seed
             )
             val network = generateNetwork(
                 mlConfiguration.dataset,
-                mlConfiguration.optimizer,
-                mlConfiguration.learningRate,
-                mlConfiguration.momentum,
-                mlConfiguration.l2,
+                mlConfiguration.nnConfiguration,
                 seed
             )
             var evaluationListener = EvaluativeListener(testDataSetIterator, 999999)
@@ -51,25 +48,37 @@ class LocalRunner : Runner() {
 
             var epoch = 0
             var iterations = 0
-            for (i in 0 until mlConfiguration.epoch.value) {
+            var iterationsToEvaluation = 0
+            val trainConfiguration = mlConfiguration.trainConfiguration
+            val datasetIteratorConfiguration = mlConfiguration.datasetIteratorConfiguration
+            for (i in 0 until trainConfiguration.numEpochs.value) {
                 epoch++
+                trainDataSetIterator.reset()
+                logger.debug { "Starting epoch: $epoch" }
                 evaluationProcessor.epoch = epoch
                 val start = System.currentTimeMillis()
-                loop@ while (true) {
-                    for (j in 0 until mlConfiguration.batchSize.value) {
-                        try {
-                            network.fit(trainDataSetIterator.next())
-                        } catch (e: NoSuchElementException) {
-                            break@loop
-                        }
+                while (true) {
+                    var endEpoch = false
+                    try {
+                        network.fit(trainDataSetIterator.next())
+                    } catch (e: NoSuchElementException) {
+                        endEpoch = true
                     }
-                    iterations += mlConfiguration.batchSize.value
-                    val end = System.currentTimeMillis()
-                    evaluationProcessor.iteration = iterations
-                    evaluationProcessor.elapsedTime = end - start
-                    evaluationListener = EvaluativeListener(testDataSetIterator, 999999)
-                    evaluationListener.callback = evaluationProcessor
-                    evaluationListener.iterationDone(network, iterations, epoch)
+                    iterations += datasetIteratorConfiguration.batchSize.value
+                    iterationsToEvaluation += datasetIteratorConfiguration.batchSize.value
+
+                    if (iterationsToEvaluation >= iterationsBeforeEvaluation) {
+                        iterationsToEvaluation = 0
+                        val end = System.currentTimeMillis()
+                        evaluationProcessor.iteration = iterations
+                        evaluationProcessor.elapsedTime = end - start
+                        evaluationListener = EvaluativeListener(testDataSetIterator, 999999)
+                        evaluationListener.callback = evaluationProcessor
+                        evaluationListener.iterationDone(network, iterations, epoch)
+                    }
+                    if (endEpoch) {
+                        break
+                    }
                 }
             }
             evaluationProcessor.done()

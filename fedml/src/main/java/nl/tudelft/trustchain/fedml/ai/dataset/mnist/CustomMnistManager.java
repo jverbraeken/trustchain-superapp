@@ -16,14 +16,14 @@ public class CustomMnistManager extends DatasetManager {
     private final byte[][] imagesArr;
     private final int[] labelsArr;
 
-    public CustomMnistManager(String imagesFile, String labelsFile, int numExamples, List<Integer> iteratorDistribution, int maxSamples, int seed) throws IOException {
+    public CustomMnistManager(String imagesFile, String labelsFile, int numExamples, List<Integer> iteratorDistribution, int maxTestSamples, int seed) throws IOException {
         mnistImageFile = new MnistImageFile(imagesFile, "r");
         mnistLabelFile = new MnistLabelFile(labelsFile, "r");
         final byte[][] tmpImagesArr = loadImages(mnistImageFile, numExamples);
         final int[] tmpLabelsArr = loadLabels(mnistLabelFile, numExamples);
 
-        final int totalExamples = calculateTotalExamples(iteratorDistribution, maxSamples, tmpLabelsArr);
-        final ImageLabelContainer res = sampleData(tmpImagesArr, tmpLabelsArr, totalExamples, iteratorDistribution, maxSamples, seed);
+        final int totalExamples = calculateTotalExamples(iteratorDistribution, maxTestSamples, tmpLabelsArr);
+        final ImageLabelContainer res = sampleData(tmpImagesArr, tmpLabelsArr, totalExamples, iteratorDistribution, maxTestSamples, seed);
         imagesArr = res.images;
         labelsArr = res.labels;
     }
@@ -36,7 +36,7 @@ public class CustomMnistManager extends DatasetManager {
         return mnistImageFile.readImagesUnsafe(numExamples);
     }
 
-    private static ImageLabelContainer sampleData(byte[][] tmpImagesArr, int[] tmpLabelsArr, int totalExamples, List<Integer> iteratorDistribution, int maxSamples, int seed) {
+    private static ImageLabelContainer sampleData(byte[][] tmpImagesArr, int[] tmpLabelsArr, int totalExamples, List<Integer> iteratorDistribution, int maxTestSamples, int seed) {
         final byte[][] imagesArr = new byte[totalExamples][tmpImagesArr[0].length];
         final int[] labelsArr = new int[totalExamples];
         int count = 0;
@@ -52,7 +52,7 @@ public class CustomMnistManager extends DatasetManager {
              */
             final int[] matchingImageIndices = findMatchingImageIndices(label, tmpLabelsArr);
             final int[] shuffledMatchingImageIndices = shuffle(matchingImageIndices, seed);
-            for (int j = 0; j < min(shuffledMatchingImageIndices.length, maxSamplesOfLabel, maxSamples); j++) {
+            for (int j = 0; j < min(shuffledMatchingImageIndices.length, maxSamplesOfLabel, maxTestSamples); j++) {
                 imagesArr[count] = tmpImagesArr[shuffledMatchingImageIndices[j]];
                 labelsArr[count] = tmpLabelsArr[shuffledMatchingImageIndices[j]];
                 count++;

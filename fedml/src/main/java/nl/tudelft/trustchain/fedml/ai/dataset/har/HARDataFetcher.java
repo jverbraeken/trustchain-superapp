@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import nl.tudelft.trustchain.fedml.ai.MaxTestSamples;
+import nl.tudelft.trustchain.fedml.ai.MaxSamples;
 
 
 /**
@@ -34,7 +34,7 @@ public class HARDataFetcher extends BaseDataFetcher {
     protected Random rng;
     private double[][][] featureData = null;  // samples => time step => feature
 
-    public HARDataFetcher(File baseDirectory, int seed, List<Integer> iteratorDistribution, DataSetType dataSetType, MaxTestSamples maxTestSamples) throws IOException {
+    public HARDataFetcher(File baseDirectory, int seed, List<Integer> iteratorDistribution, DataSetType dataSetType, int maxTestSamples) throws IOException {
         File[] data = new File[NUM_DIMENSIONS];
         File labels;
         if (dataSetType == DataSetType.TRAIN) {
@@ -60,7 +60,7 @@ public class HARDataFetcher extends BaseDataFetcher {
             data[8] = Paths.get(baseDirectory.getPath(), "test", "Inertial Signals", "total_acc_z_test.txt").toFile();
             labels = new File(new File(baseDirectory, "test"), "y_test.txt");
         }
-        man = new HARManager(data, labels, iteratorDistribution, maxTestSamples == null ? Integer.MAX_VALUE : maxTestSamples.getValue(), seed);
+        man = new HARManager(data, labels, iteratorDistribution, dataSetType == DataSetType.TRAIN ? Integer.MAX_VALUE : maxTestSamples, seed);
 
         totalExamples = man.getNumSamples();
         numOutcomes = NUM_LABELS;

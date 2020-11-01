@@ -16,19 +16,18 @@ import java.io.File;
 import java.util.Random;
 
 import nl.tudelft.trustchain.fedml.ai.IteratorDistributions;
-import nl.tudelft.trustchain.fedml.ai.MaxTestSamples;
 
 public class CustomCifar10Fetcher extends Cifar10Fetcher {
     private final IteratorDistributions iteratorDistribution;
-    private final int maxSamples;
+    private final int maxTestSamples;
 
-    public CustomCifar10Fetcher(IteratorDistributions iteratorDistribution, MaxTestSamples maxSamples) {
+    public CustomCifar10Fetcher(IteratorDistributions iteratorDistribution, int maxTestSamples) {
         this.iteratorDistribution = iteratorDistribution;
-        this.maxSamples = maxSamples == null ? Integer.MAX_VALUE : maxSamples.getValue();
+        this.maxTestSamples = maxTestSamples;
     }
 
     @Override
-    public RecordReader getRecordReader(long rngSeed, int[] imgDim, DataSetType set, ImageTransform imageTransform) {
+    public RecordReader getRecordReader(long rngSeed, int[] imgDim, DataSetType dataSetType, ImageTransform imageTransform) {
         Preconditions.checkState(imgDim == null || imgDim.length == 2, "Invalid image dimensions: must be null or lenth 2. Got: %s", imgDim);
         // check empty cache
         File localCache = getLocalCacheDir();
@@ -44,7 +43,7 @@ public class CustomCifar10Fetcher extends Cifar10Fetcher {
 
         Random rng = new Random(rngSeed);
         File datasetPath;
-        switch (set) {
+        switch (dataSetType) {
             case TRAIN:
                 datasetPath = new File(localCache, "/train/");
                 break;
@@ -55,7 +54,7 @@ public class CustomCifar10Fetcher extends Cifar10Fetcher {
                 throw new IllegalArgumentException("You will need to manually create and iterate a validation directory, CIFAR-10 does not provide labels");
         }
 
-        // set up file paths
+        // dataSetType up file paths
         RandomPathFilter pathFilter = new RandomPathFilter(rng, BaseImageLoader.ALLOWED_FORMATS);
         FileSplit filesInDir = new FileSplit(datasetPath, BaseImageLoader.ALLOWED_FORMATS, rng);
         InputSplit[] filesInDirSplit = filesInDir.sample(pathFilter, iteratorDistribution.getValue().stream().mapToDouble(i->i).toArray());

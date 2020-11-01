@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="ping">Ping</string>
-    <string name="pong">Pong</string>
-    <string name="run_local">Run locally</string>
-    <string name="run_distr_sim">Simulate distributed</string>
-    <string name="run_distr">Run distributed</string>
     <string name="run">Run</string>
     <string name="spnDataset">Dataset</string>
     <string name="spnOptimizer">Optimizer</string>
@@ -14,6 +9,18 @@
     <string name="spnBatchSize">Batch size</string>
     <string name="spnEpochs">Epochs</string>
     <string name="spnIteratorDistribution">Iterator distribution</string>
-    <string name="spnMaxTestSamples">Max test samples</string>
+    <string name="spnMaxSamples">Max test samples</string>
     <string name="spnGar">Distributed GAR</string>
+    <string name="spnCommunicationPattern">Communication Pattern</string>
+
+    <string name="ping">Ping</string>
+    <string name="pong">Pong</string>
+
+    <string name="run_local">Run locally</string>
+    <string name="run_distr_sim">Simulate distributed</string>
+    <string name="run_distr">Run distributed</string>
+    <string name="dataset">Dataset</string>
+    <string name="training">Training</string>
+    <string name="neuralnetwork">Neural Network</string>
+    <string name="iterator">Iterator</string>
 </resources>

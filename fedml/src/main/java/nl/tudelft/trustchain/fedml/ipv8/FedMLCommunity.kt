@@ -72,21 +72,21 @@ class FedMLCommunity(
         send(peer, packet)
     }
 
-    internal fun sendToAll(messageID: MessageId, message: Serializable, logging: Boolean = false) {
+    internal fun sendToAll(messageID: MessageId, message: Serializable) {
         for (peer in getPeers()) {
-            sendToPeer(peer, messageID, message, logging)
+            sendToPeer(peer, messageID, message)
         }
     }
 
-    internal fun sendToRandomPeer(messageID: MessageId, message: Serializable, logging: Boolean = false) {
+    internal fun sendToRandomPeer(messageID: MessageId, message: Serializable) {
         val peer = getPeers().random()
-        sendToPeer(peer, messageID, message, logging)
+        sendToPeer(peer, messageID, message)
     }
 
     // Round Robin
-    internal fun sendToNextPeerRR(messageID: MessageId, message: Serializable, logging: Boolean = false) {
+    internal fun sendToNextPeerRR(messageID: MessageId, message: Serializable) {
         val peer = getAndSetNextPeerRR()
-        sendToPeer(peer, messageID, message, logging)
+        sendToPeer(peer, messageID, message)
     }
 
     private fun getAndSetNextPeerRR(): Peer {

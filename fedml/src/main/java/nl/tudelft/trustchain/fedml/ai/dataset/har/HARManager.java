@@ -16,17 +16,17 @@ public class HARManager extends DatasetManager {
     private final String[][] dataArr;
     private final int[] labelsArr;
 
-    public HARManager(File[] dataFiles, File labelsFile, List<Integer> iteratorDistribution, int maxSamples, int seed) throws IOException {
+    public HARManager(File[] dataFiles, File labelsFile, List<Integer> iteratorDistribution, int maxTestSamples, int seed) throws IOException {
         final List<String>[] tmpDataArr = loadData(dataFiles);
         int[] tmpLabelsArr = loadLabels(labelsFile);
 
-        int totalExamples = calculateTotalExamples(iteratorDistribution, maxSamples, tmpLabelsArr);
-        final DataLabelContainer res = sampleData(tmpDataArr, tmpLabelsArr, totalExamples, iteratorDistribution, maxSamples, seed);
+        int totalExamples = calculateTotalExamples(iteratorDistribution, maxTestSamples, tmpLabelsArr);
+        final DataLabelContainer res = sampleData(tmpDataArr, tmpLabelsArr, totalExamples, iteratorDistribution, maxTestSamples, seed);
         dataArr = res.data;
         labelsArr = res.labels;
     }
 
-    private static DataLabelContainer sampleData(List<String>[] tmpDataArr, int[] tmpLabelsArr, int totalExamples, List<Integer> iteratorDistribution, int maxSamples, int seed) {
+    private static DataLabelContainer sampleData(List<String>[] tmpDataArr, int[] tmpLabelsArr, int totalExamples, List<Integer> iteratorDistribution, int maxTestSamples, int seed) {
         final String[][] dataArr = new String[totalExamples][tmpDataArr.length];
         final int[] labelsArr = new int[totalExamples];
         int count = 0;
@@ -42,7 +42,7 @@ public class HARManager extends DatasetManager {
              */
             final int[] matchingImageIndices = findMatchingImageIndices(label, tmpLabelsArr);
             final int[] shuffledMatchingImageIndices = shuffle(matchingImageIndices, seed);
-            for (int j = 0; j < min(shuffledMatchingImageIndices.length, maxSamplesOfLabel, maxSamples); j++) {
+            for (int j = 0; j < min(shuffledMatchingImageIndices.length, maxSamplesOfLabel, maxTestSamples); j++) {
                 final int index = j;
                 dataArr[count] = Arrays.stream(tmpDataArr).map(dataFile -> dataFile.get(shuffledMatchingImageIndices[index])).toArray(String[]::new);
                 labelsArr[count] = tmpLabelsArr[shuffledMatchingImageIndices[j]];

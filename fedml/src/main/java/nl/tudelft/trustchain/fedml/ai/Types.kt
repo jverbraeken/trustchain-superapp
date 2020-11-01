@@ -7,7 +7,7 @@ import org.deeplearning4j.nn.conf.MultiLayerConfiguration
 import org.nd4j.linalg.schedule.ISchedule
 import org.nd4j.linalg.schedule.MapSchedule
 import org.nd4j.linalg.schedule.ScheduleType
-import kotlin.reflect.KFunction5
+import kotlin.reflect.KFunction3
 
 
 enum class Datasets(
@@ -19,7 +19,7 @@ enum class Datasets(
     val defaultL2: L2Regularizations,
     val defaultBatchSize: BatchSizes,
     val defaultIteratorDistribution: IteratorDistributions,
-    val architecture: KFunction5<Runner, Optimizers, LearningRates, L2Regularizations, Int, MultiLayerConfiguration>
+    val architecture: KFunction3<Runner, NNConfiguration, Int, MultiLayerConfiguration>
 ) {
     MNIST(
         "mnist",
@@ -138,7 +138,7 @@ enum class IteratorDistributions(val id: String, val text: String, val value: Li
     DISTRIBUTION_HAR_1("har_1", "HAR 1", arrayListOf(100, 100, 100, 100, 100, 100)),
 }
 
-enum class MaxTestSamples(val id: String, val text: String, val value: Int) {
+enum class MaxSamples(val id: String, val text: String, val value: Int) {
     NUM_50("num_50", "50", 50)
 }
 
@@ -146,4 +146,10 @@ enum class MaxTestSamples(val id: String, val text: String, val value: Int) {
 enum class GARs(val id: String, val text: String, val obj: AggregationRule) {
     SIMPLE("simple", "Simple", SimpleAggregator()),
     MOZI("mozi", "Mozi", Mozi())
+}
+
+enum class CommunicationPatterns(val id: String, val text: String) {
+    ALL("all", "All"),
+    RANDOM("random", "Random"),
+    RR("rr", "Round-robin")
 }

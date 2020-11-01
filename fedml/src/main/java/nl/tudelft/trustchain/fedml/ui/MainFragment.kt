@@ -36,8 +36,9 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private val batchSizes = BatchSizes.values().map { it.text }
     private val epochs = Epochs.values().map { it.text }
     private val iteratorDistributions = IteratorDistributions.values().map { it.text }
-    private val maxTestSamples = MaxTestSamples.values().map { it.text }
+    private val maxTestSamples = MaxSamples.values().map { it.text }
     private val gars = GARs.values().map { it.text }
+    private val communicationPatterns = CommunicationPatterns.values().map { it.text }
 
     private var dataset: Datasets = Datasets.MNIST
     private var optimizer: Optimizers = dataset.defaultOptimizer
@@ -47,8 +48,9 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private var batchSize: BatchSizes = dataset.defaultBatchSize
     private var epoch: Epochs = Epochs.EPOCH_5
     private var iteratorDistribution: IteratorDistributions = dataset.defaultIteratorDistribution
-    private var maxTestSample = MaxTestSamples.NUM_50
+    private var maxTestSample = MaxSamples.NUM_50
     private var gar = GARs.MOZI
+    private var communicationPattern = CommunicationPatterns.RR
 
     private fun getCommunity(): FedMLCommunity {
         return getIpv8().getOverlay()
@@ -66,8 +68,9 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
         bindSpinner(view, binding.spnBatchSize, batchSizes)
         bindSpinner(view, binding.spnEpochs, epochs)
         bindSpinner(view, binding.spnIteratorDistribution, iteratorDistributions)
-        bindSpinner(view, binding.spnMaxTestSamples, maxTestSamples)
+        bindSpinner(view, binding.spnMaxSamples, maxTestSamples)
         bindSpinner(view, binding.spnGar, gars)
+        bindSpinner(view, binding.spnCommunicationPattern, communicationPatterns)
 
         binding.btnPing.setOnClickListener { onBtnPingClicked() }
         binding.btnRunLocal.setOnClickListener { onBtnRunLocallyClicked() }
@@ -78,8 +81,9 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
         allowDL4JOnUIThread()
         binding.spnDataset.setSelection(datasets.indexOf(dataset.text))
         binding.spnEpochs.setSelection(epochs.indexOf(epoch.text))
-        binding.spnMaxTestSamples.setSelection(maxTestSamples.indexOf(maxTestSample.text))
+        binding.spnMaxSamples.setSelection(maxTestSamples.indexOf(maxTestSample.text))
         binding.spnGar.setSelection(gars.indexOf(gar.text))
+        binding.spnCommunicationPattern.setSelection(communicationPatterns.indexOf(communicationPattern.text))
         processIntentExtras()
         synchronizeSpinners()
 
@@ -133,11 +137,15 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
         }
         val maxTestSample = extras?.getString("maxTestSample")
         if (maxTestSample != null) {
-            this.maxTestSample = MaxTestSamples.values().first { it.id == maxTestSample }
+            this.maxTestSample = MaxSamples.values().first { it.id == maxTestSample }
         }
         val gar = extras?.getString("gar")
         if (gar != null) {
             this.gar = GARs.values().first { it.id == gar }
+        }
+        val communicationPattern = extras?.getString("communicationPattern")
+        if (communicationPattern != null) {
+            this.communicationPattern = CommunicationPatterns.values().first { it.id == communicationPattern }
         }
     }
 
@@ -200,18 +208,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
         LocalRunner().run(
             baseDirectory,
             seed,
-            MLConfiguration(
-                dataset = dataset,
-                optimizer = optimizer,
-                learningRate = learningRate,
-                momentum = momentum,
-                l2 = l2,
-                batchSize = batchSize,
-                epoch = epoch,
-                iteratorDistribution = iteratorDistribution,
-                maxTestSamples = maxTestSample,
-                gar = gar
-            )
+            createMLConfiguration()
         )
     }
 
@@ -219,18 +216,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
         SimulatedRunner().run(
             baseDirectory,
             seed,
-            MLConfiguration(
-                dataset = dataset,
-                optimizer = optimizer,
-                learningRate = learningRate,
-                momentum = momentum,
-                l2 = l2,
-                batchSize = batchSize,
-                epoch = epoch,
-                iteratorDistribution = iteratorDistribution,
-                maxTestSamples = maxTestSample,
-                gar = gar
-            )
+            createMLConfiguration()
         )
     }
 
@@ -238,17 +224,28 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
         DistributedRunner(getCommunity()).run(
             baseDirectory,
             seed,
-            MLConfiguration(
-                dataset = dataset,
+            createMLConfiguration()
+        )
+    }
+
+    private fun createMLConfiguration(): MLConfiguration {
+        return MLConfiguration(
+            dataset,
+            DatasetIteratorConfiguration(
+                batchSize = batchSize,
+                maxTestSamples = maxTestSample,
+                distribution = iteratorDistribution
+            ),
+            NNConfiguration(
                 optimizer = optimizer,
                 learningRate = learningRate,
                 momentum = momentum,
-                l2 = l2,
-                batchSize = batchSize,
-                epoch = epoch,
-                iteratorDistribution = iteratorDistribution,
-                maxTestSamples = maxTestSample,
-                gar = gar
+                l2 = l2
+            ),
+            TrainConfiguration(
+                numEpochs = epoch,
+                gar = gar,
+                communicationPattern = communicationPattern
             )
         )
     }
@@ -274,10 +271,12 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
                 Epochs.values().first { it.text == epochs[position] }
             binding.spnIteratorDistribution.id -> iteratorDistribution =
                 IteratorDistributions.values().first { it.text == iteratorDistributions[position] }
-            binding.spnMaxTestSamples.id -> maxTestSample =
-                MaxTestSamples.values().first { it.text == maxTestSamples[position] }
+            binding.spnMaxSamples.id -> maxTestSample =
+                MaxSamples.values().first { it.text == maxTestSamples[position] }
             binding.spnGar.id -> gar =
                 GARs.values().first { it.text == gars[position] }
+            binding.spnCommunicationPattern.id -> communicationPattern =
+                CommunicationPatterns.values().first { it.text == communicationPatterns[position] }
         }
     }
 
@@ -316,11 +315,14 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
         binding.spnIteratorDistribution.setSelection(
             iteratorDistributions.indexOf(iteratorDistribution.text), true
         )
-        binding.spnMaxTestSamples.setSelection(
+        binding.spnMaxSamples.setSelection(
             maxTestSamples.indexOf(maxTestSample.text), true
         )
         binding.spnGar.setSelection(
             gars.indexOf(gar.text), true
+        )
+        binding.spnCommunicationPattern.setSelection(
+            communicationPatterns.indexOf(communicationPattern.text), true
         )
     }
 

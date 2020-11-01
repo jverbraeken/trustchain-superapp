@@ -10,6 +10,9 @@ import java.io.PrintWriter
 import java.text.SimpleDateFormat
 import java.util.*
 
+private const val DATE_PATTERN = "yyyy-MM-dd_HH.mm.ss"
+private val DATE_FORMAT = SimpleDateFormat(DATE_PATTERN, Locale.US)
+
 class EvaluationProcessor(
     baseDirectory: File,
     runner: String,
@@ -17,10 +20,9 @@ class EvaluationProcessor(
     seed: Int,
     private val extraElementNames: List<String>
 ) : EvaluationCallback {
-    private val datePattern = "yyyy-MM-dd_HH.mm.ss"
     private val dataLines: MutableList<Array<String>> = ArrayList()
-    private var fileResults: File
-    private var fileMeta: File
+    private val fileResults: File = File(baseDirectory.path, "evaluation-${DATE_FORMAT.format(Date())}.csv")
+    private var fileMeta: File = File(baseDirectory.path, "evaluation-${DATE_FORMAT.format(Date())}.meta.csv")
     internal var epoch: Int = 0
     internal var iteration: Int = 0
     internal var extraElements: Map<String, String> = HashMap()
@@ -36,33 +38,28 @@ class EvaluationProcessor(
     )
 
     init {
-        fileResults = File(
-            baseDirectory.path, "evaluation-" + SimpleDateFormat(
-                datePattern,
-                Locale.US
-            ).format(Date()) + ".csv"
-        )
         fileResults.createNewFile()
-
-        fileMeta = File(
-            baseDirectory.path, "evaluation-" + SimpleDateFormat(
-                datePattern,
-                Locale.US
-            ).format(Date()) + ".meta.csv"
-        )
         fileMeta.createNewFile()
+        val nnConfiguration = mlConfiguration.nnConfiguration
+        val datasetIteratorConfiguration = mlConfiguration.datasetIteratorConfiguration
+        val trainConfiguration = mlConfiguration.trainConfiguration
         PrintWriter(fileMeta).use { pw ->
             arrayOf(
-                "dataset, ${mlConfiguration.dataset.text}",
                 "runner, $runner",
-                "optimizer, ${mlConfiguration.optimizer.text}",
-                "learning rate, ${mlConfiguration.learningRate.text}",
-                "momentum, ${mlConfiguration.momentum?.text ?: "<null>"}",
-                "l2, ${mlConfiguration.l2.text}",
-                "batchSize, ${mlConfiguration.batchSize.text}",
-                "iteratorDistribution, ${mlConfiguration.iteratorDistribution.text}",
-                "maxTestSamples, ${mlConfiguration.maxTestSamples.text}",
-                "gar, ${mlConfiguration.gar.text}",
+                "dataset, ${mlConfiguration.dataset.text}",
+                "optimizer, ${nnConfiguration.optimizer.text}",
+                "learning rate, ${nnConfiguration.learningRate.text}",
+                "momentum, ${nnConfiguration.momentum?.text ?: "<null>"}",
+                "l2, ${nnConfiguration.l2.text}",
+
+                "batchSize, ${datasetIteratorConfiguration.batchSize.text}",
+                "iteratorDistribution, ${datasetIteratorConfiguration.distribution.text}",
+                "maxTestSamples, ${datasetIteratorConfiguration.maxTestSamples?.text ?: Integer.MAX_VALUE}",
+
+                "gar, ${trainConfiguration.gar.text}",
+                "communicationPattern, ${trainConfiguration.communicationPattern.text}",
+                "numEpochs, ${trainConfiguration.numEpochs}",
+
                 "seed, $seed"
             ).forEach(pw::println)
         }

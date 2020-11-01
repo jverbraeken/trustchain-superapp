@@ -4,7 +4,6 @@ import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import nl.tudelft.ipv8.Peer
 import nl.tudelft.trustchain.fedml.ai.gar.AggregationRule
-import nl.tudelft.trustchain.fedml.ai.gar.Mozi
 import nl.tudelft.trustchain.fedml.ipv8.FedMLCommunity
 import nl.tudelft.trustchain.fedml.ipv8.FedMLCommunity.MessageId
 import nl.tudelft.trustchain.fedml.ipv8.MessageListener
@@ -31,17 +30,14 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
             val trainDataSetIterator = getTrainDatasetIterator(
                 baseDirectory,
                 mlConfiguration.dataset,
-                mlConfiguration.batchSize,
-                mlConfiguration.iteratorDistribution,
+                mlConfiguration.datasetIteratorConfiguration,
                 seed
             )
             val testDataSetIterator = getTestDatasetIterator(
                 baseDirectory,
                 mlConfiguration.dataset,
-                mlConfiguration.batchSize,
-                mlConfiguration.iteratorDistribution,
-                seed,
-                mlConfiguration.maxTestSamples
+                mlConfiguration.datasetIteratorConfiguration,
+                seed
             )
 //            var evaluationListener = EvaluativeListener(testDataSetIterator, 999999)
             val evaluationProcessor = EvaluationProcessor(
@@ -57,10 +53,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
             )
             val network = generateNetwork(
                 mlConfiguration.dataset,
-                mlConfiguration.optimizer,
-                mlConfiguration.learningRate,
-                mlConfiguration.momentum,
-                mlConfiguration.l2,
+                mlConfiguration.nnConfiguration,
                 seed
             )
             network.setListeners(ScoreIterationListener(printScoreIterations))
@@ -70,9 +63,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 evaluationProcessor,
                 trainDataSetIterator,
                 testDataSetIterator,
-                mlConfiguration.epoch,
-                mlConfiguration.batchSize,
-                mlConfiguration.gar
+                mlConfiguration.trainConfiguration
             )
         }
     }
@@ -82,15 +73,14 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         evaluationProcessor: EvaluationProcessor,
         trainDataSetIterator: DataSetIterator,
         testDataSetIterator: DataSetIterator,
-        numEpochs: Epochs,
-        batchSize: BatchSizes,
-        gar: GARs
+        trainConfiguration: TrainConfiguration
     ) {
+        val batchSize = trainDataSetIterator.batch()
         var samplesCounter = 0
         var epoch = 0
         var iterations = 0
         var iterationsToEvaluation = 0
-        for (i in 0 until numEpochs.value) {
+        for (i in 0 until trainConfiguration.numEpochs.value) {
             epoch++
             trainDataSetIterator.reset()
             logger.debug { "Starting epoch: $epoch" }
@@ -103,9 +93,9 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 } catch (e: NoSuchElementException) {
                     endEpoch = true
                 }
-                samplesCounter += batchSize.value
-                iterations += batchSize.value
-                iterationsToEvaluation += batchSize.value
+                samplesCounter += batchSize
+                iterations += batchSize
+                iterationsToEvaluation += batchSize
 
                 if (iterationsToEvaluation >= iterationsBeforeEvaluation) {
                     iterationsToEvaluation = 0
@@ -118,13 +108,14 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                         iterations,
                         samplesCounter,
                         epoch,
-                        gar.obj
+                        trainConfiguration.gar.obj,
+                        trainConfiguration.communicationPattern
                     )
-                    samplesCounter =
-                        if (newSamplesCounter == -1) samplesCounter else newSamplesCounter
+                    samplesCounter = if (newSamplesCounter == -1) samplesCounter else newSamplesCounter
                 }
-                if (endEpoch)
+                if (endEpoch) {
                     break
+                }
             }
         }
         logger.debug { "Done training the network" }
@@ -139,7 +130,8 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         iterations: Int,
         samplesCounter: Int,
         epoch: Int,
-        gar: AggregationRule
+        gar: AggregationRule,
+        communicationPattern: CommunicationPatterns
     ): Int {
         logger.debug { "Evaluating network " }
         evaluationProcessor.iteration = iterations
@@ -192,11 +184,12 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 )
             )
         }
-        community.sendToNextPeerRR(
-            MessageId.MSG_PARAM_UPDATE,
-            MsgParamUpdate(averageParams.first, samplesCounter),
-            true
-        )
+        val sendMessage = when (communicationPattern) {
+            CommunicationPatterns.ALL -> community::sendToAll
+            CommunicationPatterns.RANDOM -> community::sendToRandomPeer
+            CommunicationPatterns.RR -> community::sendToNextPeerRR
+        }
+        sendMessage(MessageId.MSG_PARAM_UPDATE, MsgParamUpdate(averageParams.first, samplesCounter))
         return ret
     }
 
