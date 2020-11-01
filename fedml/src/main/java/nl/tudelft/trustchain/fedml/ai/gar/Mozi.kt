@@ -21,9 +21,7 @@ class Mozi : AggregationRule() {
         testDataSetIterator: DataSetIterator
     ): Pair<INDArray, Int> {
         val otherModels: MutableList<INDArray> = arrayListOf()
-        for (otherModelPair in otherModelPairs) {
-            otherModels.add(otherModelPair.first)
-        }
+        otherModelPairs.forEach { otherModels.add(it.first) }
         logger.debug { "Found ${otherModels.size} other models" }
         logger.debug { "MyModel: " + myModel.first.getDouble(0) }
         val Ndistance: List<INDArray> = applyDistanceFilter(myModel, otherModels)

@@ -1,8 +1,11 @@
 package nl.tudelft.trustchain.fedml.ai.gar
 
+import mu.KotlinLogging
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
+
+private val logger = KotlinLogging.logger("SimpleAggregator")
 
 class SimpleAggregator : AggregationRule() {
     override fun integrateParameters(

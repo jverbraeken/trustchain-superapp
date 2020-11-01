@@ -1,6 +1,7 @@
 package nl.tudelft.trustchain.fedml.ai
 
 import nl.tudelft.trustchain.fedml.ai.gar.AggregationRule
+import nl.tudelft.trustchain.fedml.ai.gar.Median
 import nl.tudelft.trustchain.fedml.ai.gar.Mozi
 import nl.tudelft.trustchain.fedml.ai.gar.SimpleAggregator
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration
@@ -145,6 +146,7 @@ enum class MaxSamples(val id: String, val text: String, val value: Int) {
 // Gradient Aggregation Rule
 enum class GARs(val id: String, val text: String, val obj: AggregationRule) {
     SIMPLE("simple", "Simple", SimpleAggregator()),
+    MEDIAN("median", "Median", Median()),
     MOZI("mozi", "Mozi", Mozi())
 }
 
