@@ -156,7 +156,6 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         if (numPeers == 1) {
             logger.debug { "No peers => skipping integration evaluation" }
             evaluationProcessor.skip()
-            averageParams = Pair(network.params().dup(), samplesCounter)
         } else {
             logger.debug { "Peers found => executing aggregation rule" }
             averageParams = gar.integrateParameters(
@@ -183,13 +182,13 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                     epoch
                 )
             )
+            val sendMessage = when (communicationPattern) {
+                CommunicationPatterns.ALL -> community::sendToAll
+                CommunicationPatterns.RANDOM -> community::sendToRandomPeer
+                CommunicationPatterns.RR -> community::sendToNextPeerRR
+            }
+            sendMessage(MessageId.MSG_PARAM_UPDATE, MsgParamUpdate(averageParams.first, samplesCounter))
         }
-        val sendMessage = when (communicationPattern) {
-            CommunicationPatterns.ALL -> community::sendToAll
-            CommunicationPatterns.RANDOM -> community::sendToRandomPeer
-            CommunicationPatterns.RR -> community::sendToNextPeerRR
-        }
-        sendMessage(MessageId.MSG_PARAM_UPDATE, MsgParamUpdate(averageParams.first, samplesCounter))
         return ret
     }
 

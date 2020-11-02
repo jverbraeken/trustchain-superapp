@@ -21,8 +21,9 @@ class EvaluationProcessor(
     private val extraElementNames: List<String>
 ) : EvaluationCallback {
     private val dataLines: MutableList<Array<String>> = ArrayList()
-    private val fileResults: File = File(baseDirectory.path, "evaluation-${DATE_FORMAT.format(Date())}.csv")
-    private var fileMeta: File = File(baseDirectory.path, "evaluation-${DATE_FORMAT.format(Date())}.meta.csv")
+    private val fileDirectory: File = File(baseDirectory.path, "evaluations")
+    private val fileResults: File = File(fileDirectory, "evaluation-${DATE_FORMAT.format(Date())}.csv")
+    private var fileMeta: File = File(fileDirectory, "evaluation-${DATE_FORMAT.format(Date())}.meta.csv")
     internal var epoch: Int = 0
     internal var iteration: Int = 0
     internal var extraElements: Map<String, String> = HashMap()
@@ -38,6 +39,9 @@ class EvaluationProcessor(
     )
 
     init {
+        if (!fileDirectory.exists()) {
+            fileDirectory.mkdirs()
+        }
         fileResults.createNewFile()
         fileMeta.createNewFile()
         val nnConfiguration = mlConfiguration.nnConfiguration
