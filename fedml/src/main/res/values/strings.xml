@@ -23,4 +23,8 @@
     <string name="training">Training</string>
     <string name="neuralnetwork">Neural Network</string>
     <string name="iterator">Iterator</string>
+    <string name="spnBehavior">Behavior</string>
+
+    <string name="peers">%1$d, %2$d peers</string>
+    <string name="wan_address">WAN Address</string>
 </resources>

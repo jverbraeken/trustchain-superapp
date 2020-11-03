@@ -95,7 +95,7 @@ class Mozi : AggregationRule() {
             logger.debug { "otherLoss $index: $otherLoss" }
             if (otherLoss <= myLoss) {
                 result.add(otherModels[index])
-                logger.debug { "Adding model($index): " + otherModels[index].getDouble(0) }
+                logger.debug { "ADDING model($index): " + otherModels[index].getDouble(0) }
             } else {
                 logger.debug { "NOT adding model($index): " + otherModels[index].getDouble(0) }
             }

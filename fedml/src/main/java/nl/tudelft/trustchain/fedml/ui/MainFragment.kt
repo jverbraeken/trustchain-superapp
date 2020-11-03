@@ -3,10 +3,12 @@ package nl.tudelft.trustchain.fedml.ui
 import android.content.res.AssetManager
 import android.os.Bundle
 import android.os.StrictMode
+import androidx.lifecycle.lifecycleScope
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
+import kotlinx.coroutines.*
 import mu.KotlinLogging
 import nl.tudelft.trustchain.common.ui.BaseFragment
 import nl.tudelft.trustchain.common.util.viewBinding
@@ -18,12 +20,14 @@ import nl.tudelft.trustchain.fedml.ipv8.FedMLCommunity.MessageId
 import nl.tudelft.trustchain.fedml.ipv8.MsgPing
 import org.deeplearning4j.common.resources.DL4JResources
 import java.io.*
+import java.lang.Thread.sleep
 
 private val logger = KotlinLogging.logger("FedML.MainFragment")
 
-//-e activity fedml -e dataset mnist -e optimizer adam -e learningRate rate_1em3 -e momentum none -e l2Regularization l2_5em3 -e batchSize batch_32 -e epoch epoch_50 -e runner distributed -e run true
+//-e activity fedml -e dataset mnist -e optimizer adam -e learningRate rate_1em3 -e momentum none -e l2Regularization l2_5em3 -e batchSize batch_32 -e epoch epoch_50 -e iteratorDistribution mnist_1 -e maxTestSample num_50 -e gar mozi -e communicationPattern random -e behavior benign -e runner distributed -e run false
 //-e activity fedml -e dataset cifar10 -e optimizer sgd -e learningRate schedule1 -e momentum momentum_1em3 -e l2Regularization l2_1em4 -e batchSize batch_5 -e epoch epoch_25 -e runner distributed -e run true
 class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSelectedListener {
+    private val scope = CoroutineScope(Dispatchers.Default)
     private val baseDirectory: File by lazy { requireActivity().filesDir }
     private val binding by viewBinding(FragmentMainBinding::bind)
     private val seed = getCommunity().myEstimatedLan.toString().hashCode()
@@ -39,6 +43,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private val maxTestSamples = MaxSamples.values().map { it.text }
     private val gars = GARs.values().map { it.text }
     private val communicationPatterns = CommunicationPatterns.values().map { it.text }
+    private val behaviors = Behaviors.values().map { it.text }
 
     private var dataset: Datasets = Datasets.MNIST
     private var optimizer: Optimizers = dataset.defaultOptimizer
@@ -51,6 +56,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private var maxTestSample = MaxSamples.NUM_50
     private var gar = GARs.MOZI
     private var communicationPattern = CommunicationPatterns.RR
+    private var behavior = Behaviors.BENIGN
 
     private fun getCommunity(): FedMLCommunity {
         return getIpv8().getOverlay()
@@ -71,6 +77,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
         bindSpinner(view, binding.spnMaxSamples, maxTestSamples)
         bindSpinner(view, binding.spnGar, gars)
         bindSpinner(view, binding.spnCommunicationPattern, communicationPatterns)
+        bindSpinner(view, binding.spnBehavior, behaviors)
 
         binding.btnPing.setOnClickListener { onBtnPingClicked() }
         binding.btnRunLocal.setOnClickListener { onBtnRunLocallyClicked() }
@@ -84,6 +91,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
         binding.spnMaxSamples.setSelection(maxTestSamples.indexOf(maxTestSample.text))
         binding.spnGar.setSelection(gars.indexOf(gar.text))
         binding.spnCommunicationPattern.setSelection(communicationPatterns.indexOf(communicationPattern.text))
+        binding.spnBehavior.setSelection(behaviors.indexOf(behavior.text))
         processIntentExtras()
         synchronizeSpinners()
 
@@ -97,6 +105,23 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
                 else -> throw IllegalStateException("Runner must be either local, simulated, or distributed")
             }
         }
+
+        lifecycleScope.launchWhenStarted {
+            while (isActive) {
+                updateView()
+                delay(500)
+            }
+        }
+    }
+
+    private fun updateView() {
+        val ipv8 = getIpv8()
+        val demo = getDemoCommunity()
+        binding.txtWanAddress.text = demo.myEstimatedWan.toString()
+        binding.txtPeers.text = resources.getString(R.string.peers).format(
+            ipv8.overlays.values.first { it.javaClass.simpleName == "FedMLCommunity" }.getPeers().size,
+            ipv8.overlays.values.first { it.javaClass.simpleName == "UTPCommunity" }.getPeers().size
+        )
     }
 
     private fun processIntentExtras() {
@@ -146,6 +171,10 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
         val communicationPattern = extras?.getString("communicationPattern")
         if (communicationPattern != null) {
             this.communicationPattern = CommunicationPatterns.values().first { it.id == communicationPattern }
+        }
+        val behavior = extras?.getString("behavior")
+        if (behavior != null) {
+            this.behavior = Behaviors.values().first { it.id == behavior }
         }
     }
 
@@ -245,7 +274,8 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
             TrainConfiguration(
                 numEpochs = epoch,
                 gar = gar,
-                communicationPattern = communicationPattern
+                communicationPattern = communicationPattern,
+                behavior = behavior
             )
         )
     }
@@ -277,6 +307,8 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
                 GARs.values().first { it.text == gars[position] }
             binding.spnCommunicationPattern.id -> communicationPattern =
                 CommunicationPatterns.values().first { it.text == communicationPatterns[position] }
+            binding.spnBehavior.id -> behavior =
+                Behaviors.values().first { it.text == behaviors[position] }
         }
     }
 
@@ -323,6 +355,9 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
         )
         binding.spnCommunicationPattern.setSelection(
             communicationPatterns.indexOf(communicationPattern.text), true
+        )
+        binding.spnBehavior.setSelection(
+            behaviors.indexOf(behavior.text), true
         )
     }
 

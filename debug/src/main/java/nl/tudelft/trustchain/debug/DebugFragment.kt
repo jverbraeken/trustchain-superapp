@@ -63,7 +63,7 @@ class DebugFragment : BaseFragment(R.layout.fragment_debug) {
         lifecycleScope.launchWhenStarted {
             while (isActive) {
                 updateView()
-                delay(1000)
+                delay(500)
             }
         }
     }

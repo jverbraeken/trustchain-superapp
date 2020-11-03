@@ -1,22 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_centerInParent="true"
-    android:layout_centerHorizontal="true"
-    android:layout_centerVertical="true"
-    android:layout_gravity="center|center_horizontal|center_vertical"
-    android:foregroundGravity="center_vertical|center|center_horizontal">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/default_vertical_spacing">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/default_vertical_spacing"
+            android:layout_marginHorizontal="@dimen/header_spacing"
+            android:orientation="horizontal">
 
-        <GridLayout style="@style/GridLayout">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/wan_address" />
+
+            <TextView
+                android:id="@+id/txtWanAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/default_horizontal_spacing" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/txtPeers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <GridLayout style="@style/GridLayout"
+            android:paddingVertical="0dp">
 
             <Button
                 android:id="@+id/btnPing"
@@ -39,9 +63,7 @@
                 android:text="@string/run_distr" />
         </GridLayout>
 
-        <androidx.cardview.widget.CardView
-            style="@style/Card"
-            card_view:cardCornerRadius="5dp">
+        <androidx.cardview.widget.CardView style="@style/Card">
 
             <LinearLayout style="@style/outerLinearLayout">
 
@@ -69,9 +91,7 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            style="@style/Card"
-            card_view:cardCornerRadius="5dp">
+        <androidx.cardview.widget.CardView style="@style/Card">
 
             <LinearLayout style="@style/outerLinearLayout">
 
@@ -119,9 +139,7 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            style="@style/Card"
-            card_view:cardCornerRadius="5dp">
+        <androidx.cardview.widget.CardView style="@style/Card">
 
             <LinearLayout style="@style/outerLinearLayout">
 
@@ -180,9 +198,7 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            style="@style/Card"
-            card_view:cardCornerRadius="5dp">
+        <androidx.cardview.widget.CardView style="@style/Card">
 
             <LinearLayout style="@style/outerLinearLayout">
 
@@ -223,6 +239,18 @@
 
                         <Spinner
                             android:id="@+id/spnCommunicationPattern"
+                            style="@style/Spinner" />
+
+                    </LinearLayout>
+
+                    <LinearLayout style="@style/innerLinearLayout">
+
+                        <TextView
+                            style="@style/InputLabel"
+                            android:text="@string/spnBehavior" />
+
+                        <Spinner
+                            android:id="@+id/spnBehavior"
                             style="@style/Spinner" />
 
                     </LinearLayout>

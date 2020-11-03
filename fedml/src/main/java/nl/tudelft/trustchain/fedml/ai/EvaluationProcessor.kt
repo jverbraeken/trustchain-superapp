@@ -62,6 +62,7 @@ class EvaluationProcessor(
 
                 "gar, ${trainConfiguration.gar.text}",
                 "communicationPattern, ${trainConfiguration.communicationPattern.text}",
+                "behavior, ${trainConfiguration.behavior.text}",
                 "numEpochs, ${trainConfiguration.numEpochs}",
 
                 "seed, $seed"

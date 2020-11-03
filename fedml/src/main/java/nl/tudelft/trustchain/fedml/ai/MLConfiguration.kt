@@ -23,5 +23,6 @@ data class NNConfiguration(
 data class TrainConfiguration(
     val numEpochs: Epochs,
     val gar: GARs,
-    val communicationPattern: CommunicationPatterns
+    val communicationPattern: CommunicationPatterns,
+    val behavior: Behaviors
 )

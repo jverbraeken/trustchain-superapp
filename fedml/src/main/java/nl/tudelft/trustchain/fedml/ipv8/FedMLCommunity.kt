@@ -72,28 +72,34 @@ class FedMLCommunity(
         send(peer, packet)
     }
 
-    internal fun sendToAll(messageID: MessageId, message: Serializable) {
-        for (peer in getPeers()) {
+    internal fun sendToAll(messageID: MessageId, message: Serializable, peers: List<Peer>? = null) {
+        for (peer in /*peers ?:*/ getPeers()) {
             sendToPeer(peer, messageID, message)
         }
     }
 
-    internal fun sendToRandomPeer(messageID: MessageId, message: Serializable) {
-        val peer = getPeers().random()
-        sendToPeer(peer, messageID, message)
+    internal fun sendToRandomPeer(messageID: MessageId, message: Serializable, peers: List<Peer>? = null) {
+        val set = /*peers ?:*/ getPeers()
+        if (set.isNotEmpty()) {
+            val peer = set.random()
+            sendToPeer(peer, messageID, message)
+        }
     }
 
     // Round Robin
-    internal fun sendToNextPeerRR(messageID: MessageId, message: Serializable) {
-        val peer = getAndSetNextPeerRR()
-        sendToPeer(peer, messageID, message)
+    internal fun sendToNextPeerRR(messageID: MessageId, message: Serializable, peers: List<Peer>? = null) {
+        val peer = getAndSetNextPeerRR(peers)
+        if (peer != null) {
+            sendToPeer(peer, messageID, message)
+        }
     }
 
-    private fun getAndSetNextPeerRR(): Peer {
+    private fun getAndSetNextPeerRR(peers: List<Peer>?): Peer? {
         if (peersRR?.isEmpty() != false) {
-            peersRR = getPeers().toMutableList()
+            peersRR = (/*peers ?:*/ getPeers()).toMutableList()
+            return peersRR!!.removeAt(0)
         }
-        return peersRR!!.removeAt(0)
+        return null
     }
 
     ////// MESSAGE RECEIVED EVENTS

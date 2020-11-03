@@ -2,8 +2,9 @@ package nl.tudelft.trustchain.fedml.ai
 
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
+import nl.tudelft.ipv8.IPv4Address
 import nl.tudelft.ipv8.Peer
-import nl.tudelft.trustchain.fedml.ai.gar.AggregationRule
+import nl.tudelft.ipv8.keyvault.defaultCryptoProvider
 import nl.tudelft.trustchain.fedml.ipv8.FedMLCommunity
 import nl.tudelft.trustchain.fedml.ipv8.FedMLCommunity.MessageId
 import nl.tudelft.trustchain.fedml.ipv8.MessageListener
@@ -26,6 +27,11 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         mlConfiguration: MLConfiguration
     ) {
         FedMLCommunity.registerMessageListener(MessageId.MSG_PARAM_UPDATE, this)
+        val nodeAssignments = getNodeAssignments(baseDirectory)
+        val port = community.myEstimatedWan.port
+        val behavior = nodeAssignments?.get(port) ?: Behaviors.BENIGN
+        val otherNodes = nodeAssignments?.keys?.filter { it != port } ?: arrayListOf()
+        val otherPeers = convertToPeer(otherNodes)
         scope.launch {
             val trainDataSetIterator = getTrainDatasetIterator(
                 baseDirectory,
@@ -39,7 +45,6 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 mlConfiguration.datasetIteratorConfiguration,
                 seed
             )
-//            var evaluationListener = EvaluativeListener(testDataSetIterator, 999999)
             val evaluationProcessor = EvaluationProcessor(
                 baseDirectory,
                 "distributed",
@@ -58,23 +63,45 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
             )
             network.setListeners(ScoreIterationListener(printScoreIterations))
 
-            trainNetwork(
+            trainTestSendNetwork(
                 network,
                 evaluationProcessor,
                 trainDataSetIterator,
                 testDataSetIterator,
-                mlConfiguration.trainConfiguration
+                mlConfiguration.trainConfiguration,
+                behavior,
+                otherPeers
             )
         }
     }
 
-    private fun trainNetwork(
+    private fun convertToPeer(otherNodes: List<Int>): List<Peer> {
+        val key = defaultCryptoProvider.generateKey()
+        return otherNodes.map { Peer(key, IPv4Address("10.0.2.2", it), supportsUTP = true) }
+    }
+
+    private fun getNodeAssignments(baseDirectory: File): Map<Int, Behaviors>? {
+        val fileNodeAssignment = File(baseDirectory, "NodeAssignment.csv")
+
+        if (!fileNodeAssignment.exists()) {
+            return null
+        }
+
+        val lines = fileNodeAssignment.readLines()
+        val split = lines.map { it.split(",") }
+        return split.associateBy({ it[0].toInt() }, { spl -> Behaviors.values().first { it.id == spl[1] } })
+    }
+
+    private fun trainTestSendNetwork(
         network: MultiLayerNetwork,
         evaluationProcessor: EvaluationProcessor,
         trainDataSetIterator: DataSetIterator,
         testDataSetIterator: DataSetIterator,
-        trainConfiguration: TrainConfiguration
+        trainConfiguration: TrainConfiguration,
+        behavior: Behaviors,
+        otherPeers: List<Peer>
     ) {
+        print(behavior)
         val batchSize = trainDataSetIterator.batch()
         var samplesCounter = 0
         var epoch = 0
@@ -87,6 +114,8 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
             evaluationProcessor.epoch = epoch
             val start = System.currentTimeMillis()
             while (true) {
+
+                // Train
                 var endEpoch = false
                 try {
                     network.fit(trainDataSetIterator.next())
@@ -98,19 +127,60 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 iterationsToEvaluation += batchSize
 
                 if (iterationsToEvaluation >= iterationsBeforeEvaluation) {
+
+                    // Test
                     iterationsToEvaluation = 0
                     val end = System.currentTimeMillis()
-                    val newSamplesCounter = evaluateNetwork(
-                        network,
+                    logger.debug { "Evaluating network " }
+                    evaluationProcessor.iteration = iterations
+                    execEvaluationProcessor(
                         evaluationProcessor,
                         testDataSetIterator,
-                        end - start,
-                        iterations,
-                        samplesCounter,
-                        epoch,
-                        trainConfiguration.gar.obj,
-                        trainConfiguration.communicationPattern
+                        network,
+                        EvaluationProcessor.EvaluationData(
+                            "before", samplesCounter, "", end - start, network.iterationCount, epoch
+                        )
                     )
+
+                    // Integrate parameters of other peers
+                    var ret = -1
+                    val numPeers = paramBuffer.size + 1
+                    val averageParams: Pair<INDArray, Int>
+                    if (numPeers == 1) {
+                        logger.debug { "No peers => skipping integration evaluation" }
+                        evaluationProcessor.skip()
+                        averageParams = Pair(network.params().dup(), samplesCounter)
+                    } else {
+                        logger.debug { "Peers found => executing aggregation rule" }
+
+                        val start2 = System.currentTimeMillis()
+                        averageParams = trainConfiguration.gar.obj.integrateParameters(
+                            Pair(network.params().dup(), samplesCounter), paramBuffer, network, testDataSetIterator
+                        )
+                        ret = averageParams.second
+                        paramBuffer.clear()
+                        network.setParameters(averageParams.first)
+                        val end2 = System.currentTimeMillis()
+
+                        execEvaluationProcessor(
+                            evaluationProcessor,
+                            testDataSetIterator,
+                            network,
+                            EvaluationProcessor.EvaluationData(
+                                "after", samplesCounter, numPeers.toString(), end2 - start2, iterations, epoch
+                            )
+                        )
+                    }
+
+                    // Send new parameters to other peers
+                    val sendMessage = when (trainConfiguration.communicationPattern) {
+                        CommunicationPatterns.ALL -> community::sendToAll
+                        CommunicationPatterns.RANDOM -> community::sendToRandomPeer
+                        CommunicationPatterns.RR -> community::sendToNextPeerRR
+                    }
+                    val message = craftMessage(averageParams.first, trainConfiguration.behavior/*behavior*/)
+                    sendMessage(MessageId.MSG_PARAM_UPDATE, MsgParamUpdate(message, samplesCounter), otherPeers)
+                    val newSamplesCounter = ret
                     samplesCounter = if (newSamplesCounter == -1) samplesCounter else newSamplesCounter
                 }
                 if (endEpoch) {
@@ -122,74 +192,12 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         evaluationProcessor.done()
     }
 
-    private fun evaluateNetwork(
-        network: MultiLayerNetwork,
-        evaluationProcessor: EvaluationProcessor,
-        testDataSetIterator: DataSetIterator,
-        elapsedTime: Long,
-        iterations: Int,
-        samplesCounter: Int,
-        epoch: Int,
-        gar: AggregationRule,
-        communicationPattern: CommunicationPatterns
-    ): Int {
-        logger.debug { "Evaluating network " }
-        evaluationProcessor.iteration = iterations
-        execEvaluationProcessor(
-            evaluationProcessor,
-            testDataSetIterator,
-            network,
-            EvaluationProcessor.EvaluationData(
-                "before",
-                samplesCounter,
-                "",
-                elapsedTime,
-                network.iterationCount,
-                epoch
-            )
-        )
-
-        var ret = -1
-        val start = System.currentTimeMillis()
-        val numPeers = paramBuffer.size + 1
-        val averageParams: Pair<INDArray, Int>
-        if (numPeers == 1) {
-            logger.debug { "No peers => skipping integration evaluation" }
-            evaluationProcessor.skip()
-        } else {
-            logger.debug { "Peers found => executing aggregation rule" }
-            averageParams = gar.integrateParameters(
-                Pair(
-                    network.params().dup(),
-                    samplesCounter
-                ), paramBuffer, network, testDataSetIterator
-            )
-            ret = averageParams.second
-            paramBuffer.clear()
-            network.setParameters(averageParams.first)
-            val end = System.currentTimeMillis()
-
-            execEvaluationProcessor(
-                evaluationProcessor,
-                testDataSetIterator,
-                network,
-                EvaluationProcessor.EvaluationData(
-                    "after",
-                    samplesCounter,
-                    numPeers.toString(),
-                    end - start,
-                    iterations,
-                    epoch
-                )
-            )
-            val sendMessage = when (communicationPattern) {
-                CommunicationPatterns.ALL -> community::sendToAll
-                CommunicationPatterns.RANDOM -> community::sendToRandomPeer
-                CommunicationPatterns.RR -> community::sendToNextPeerRR
-            }
-            sendMessage(MessageId.MSG_PARAM_UPDATE, MsgParamUpdate(averageParams.first, samplesCounter))
+    private fun craftMessage(first: INDArray, behavior: Behaviors): INDArray {
+        return when (behavior) {
+            Behaviors.BENIGN -> first
+            Behaviors.NOISE -> first
+            Behaviors.LABEL_FLIP -> first
         }
-        return ret
     }
 
     private fun execEvaluationProcessor(

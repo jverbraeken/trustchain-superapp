@@ -155,3 +155,9 @@ enum class CommunicationPatterns(val id: String, val text: String) {
     RANDOM("random", "Random"),
     RR("rr", "Round-robin")
 }
+
+enum class Behaviors(val id: String, val text: String) {
+    BENIGN("benign", "Benign"),
+    NOISE("noise", "Noise"),
+    LABEL_FLIP("label_flip", "Label flip")
+}
