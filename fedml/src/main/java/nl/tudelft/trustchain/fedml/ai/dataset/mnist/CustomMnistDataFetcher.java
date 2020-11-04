@@ -24,6 +24,8 @@ import java.util.stream.IntStream;
 import java.util.zip.Adler32;
 import java.util.zip.Checksum;
 
+import nl.tudelft.trustchain.fedml.ai.Behaviors;
+
 
 public class CustomMnistDataFetcher extends BaseDataFetcher {
     protected static final long CHECKSUM_TRAIN_FEATURES = 2094436111L;
@@ -40,7 +42,7 @@ public class CustomMnistDataFetcher extends BaseDataFetcher {
     protected boolean fOrder = false; //MNIST is C order, EMNIST is F order
     private float[][] featureData = null;
 
-    public CustomMnistDataFetcher(List<Integer> iteratorDistribution, int seed, DataSetType dataSetType, int maxTestSamples) throws IOException {
+    public CustomMnistDataFetcher(List<Integer> iteratorDistribution, int seed, DataSetType dataSetType, int maxTestSamples, Behaviors behavior) throws IOException {
         if (!mnistExists()) {
             new MnistFetcher().downloadAndUntar();
         }
@@ -55,18 +57,18 @@ public class CustomMnistDataFetcher extends BaseDataFetcher {
             labels = FilenameUtils.concat(MNIST_ROOT, MnistFetcher.TRAINING_FILE_LABELS_FILENAME_UNZIPPED);
             maxExamples = MnistDataFetcher.NUM_EXAMPLES;
             checksums = CHECKSUMS_TRAIN;
-            man = new CustomMnistManager(images, labels, maxExamples, iteratorDistribution, Integer.MAX_VALUE, seed);
+            man = new CustomMnistManager(images, labels, maxExamples, iteratorDistribution, Integer.MAX_VALUE, seed, behavior);
         } else {
             images = FilenameUtils.concat(MNIST_ROOT, MnistFetcher.TEST_FILES_FILENAME_UNZIPPED);
             labels = FilenameUtils.concat(MNIST_ROOT, MnistFetcher.TEST_FILE_LABELS_FILENAME_UNZIPPED);
             maxExamples = MnistDataFetcher.NUM_EXAMPLES_TEST;
             checksums = CHECKSUMS_TEST;
-            man = new CustomMnistManager(images, labels, maxExamples, iteratorDistribution, maxTestSamples, seed);
+            man = new CustomMnistManager(images, labels, maxExamples, iteratorDistribution, maxTestSamples, seed, behavior);
         }
         String[] files = new String[]{images, labels};
 
         try {
-            man = new CustomMnistManager(images, labels, maxExamples, iteratorDistribution, dataSetType == DataSetType.TRAIN ? Integer.MAX_VALUE : maxTestSamples, seed);
+            man = new CustomMnistManager(images, labels, maxExamples, iteratorDistribution, dataSetType == DataSetType.TRAIN ? Integer.MAX_VALUE : maxTestSamples, seed, behavior);
             validateFiles(files, checksums);
         } catch (Exception e) {
             try {
@@ -75,7 +77,7 @@ public class CustomMnistDataFetcher extends BaseDataFetcher {
                 // Ignore
             }
             new MnistFetcher().downloadAndUntar();
-            man = new CustomMnistManager(images, labels, maxExamples, iteratorDistribution, dataSetType == DataSetType.TRAIN ? Integer.MAX_VALUE : maxTestSamples, seed);
+            man = new CustomMnistManager(images, labels, maxExamples, iteratorDistribution, dataSetType == DataSetType.TRAIN ? Integer.MAX_VALUE : maxTestSamples, seed, behavior);
             validateFiles(files, checksums);
         }
         totalExamples = man.getNumSamples();

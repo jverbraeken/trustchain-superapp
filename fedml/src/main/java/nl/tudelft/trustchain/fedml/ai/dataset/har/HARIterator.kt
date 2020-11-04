@@ -1,5 +1,6 @@
 package nl.tudelft.trustchain.fedml.ai.dataset.har
 
+import nl.tudelft.trustchain.fedml.ai.Behaviors
 import nl.tudelft.trustchain.fedml.ai.DatasetIteratorConfiguration
 import org.deeplearning4j.datasets.fetchers.DataSetType
 import org.nd4j.linalg.dataset.api.iterator.BaseDatasetIterator
@@ -10,7 +11,8 @@ class HARIterator(
     iteratorConfiguration: DatasetIteratorConfiguration,
     seed: Int,
     dataSetType: DataSetType,
-    baseDirectory: File
+    baseDirectory: File,
+    behavior: Behaviors
 ) : BaseDatasetIterator(
     iteratorConfiguration.batchSize.value,
     -1,

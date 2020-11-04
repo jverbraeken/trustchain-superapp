@@ -25,12 +25,14 @@ class SimulatedRunner : Runner() {
                     baseDirectory,
                     mlConfiguration.dataset,
                     mlConfiguration.datasetIteratorConfiguration,
+                    Behaviors.BENIGN,
                     seed
                 ),
                 getTrainDatasetIterator(
                     baseDirectory,
                     mlConfiguration.dataset,
                     mlConfiguration.datasetIteratorConfiguration,
+                    Behaviors.BENIGN,
                     seed + 1
                 )
             )
@@ -38,6 +40,7 @@ class SimulatedRunner : Runner() {
                 baseDirectory,
                 mlConfiguration.dataset,
                 mlConfiguration.datasetIteratorConfiguration,
+                Behaviors.BENIGN,
                 seed
             )
             val networks = arrayOf(

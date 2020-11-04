@@ -19,12 +19,14 @@ class LocalRunner : Runner() {
                 baseDirectory,
                 mlConfiguration.dataset,
                 mlConfiguration.datasetIteratorConfiguration,
+                Behaviors.BENIGN,
                 seed
             )
             val testDataSetIterator = getTestDatasetIterator(
                 baseDirectory,
                 mlConfiguration.dataset,
                 mlConfiguration.datasetIteratorConfiguration,
+                Behaviors.BENIGN,
                 seed
             )
             val network = generateNetwork(

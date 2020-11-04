@@ -22,6 +22,7 @@ class Mozi : AggregationRule() {
     ): Pair<INDArray, Int> {
         val otherModels: MutableList<INDArray> = arrayListOf()
         otherModelPairs.forEach { otherModels.add(it.first) }
+        logger.debug { "<====      MOZI      ====>" }
         logger.debug { "Found ${otherModels.size} other models" }
         logger.debug { "MyModel: " + myModel.first.getDouble(0) }
         val Ndistance: List<INDArray> = applyDistanceFilter(myModel, otherModels)
@@ -32,6 +33,12 @@ class Mozi : AggregationRule() {
 //            logger.debug("Nperformance empty => taking ${Ndistance[0].getDouble(0)}")
 //            Nperformance = arrayListOf(Ndistance[0])
 //        }
+
+        // This is not included in the original algorithm!!!!
+        if (Nperformance.isEmpty()) {
+            return Pair(myModel.first, 99999)
+        }
+
         val Rmozi: INDArray = average(Nperformance)
         logger.debug("average: ${Rmozi.getDouble(0)}")
         val alpha = 0.5

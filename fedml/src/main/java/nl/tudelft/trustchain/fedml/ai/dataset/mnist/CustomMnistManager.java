@@ -5,8 +5,11 @@ import org.deeplearning4j.datasets.mnist.MnistImageFile;
 import org.deeplearning4j.datasets.mnist.MnistLabelFile;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
 
+import nl.tudelft.trustchain.fedml.ai.Behaviors;
 import nl.tudelft.trustchain.fedml.ai.dataset.DatasetManager;
 
 
@@ -16,14 +19,19 @@ public class CustomMnistManager extends DatasetManager {
     private final byte[][] imagesArr;
     private final int[] labelsArr;
 
-    public CustomMnistManager(String imagesFile, String labelsFile, int numExamples, List<Integer> iteratorDistribution, int maxTestSamples, int seed) throws IOException {
+    public CustomMnistManager(String imagesFile, String labelsFile, int numExamples, List<Integer> iteratorDistribution, int maxTestSamples, int seed, Behaviors behavior) throws IOException {
         mnistImageFile = new MnistImageFile(imagesFile, "r");
         mnistLabelFile = new MnistLabelFile(labelsFile, "r");
         final byte[][] tmpImagesArr = loadImages(mnistImageFile, numExamples);
         final int[] tmpLabelsArr = loadLabels(mnistLabelFile, numExamples);
+        int[] tmpLabelsArr2 = Arrays.copyOf(tmpLabelsArr, tmpLabelsArr.length);
+        if (behavior == Behaviors.LABEL_FLIP) {
+            IntStream.range(0, tmpLabelsArr.length).filter(i -> tmpLabelsArr[i] == 1).forEach(i -> tmpLabelsArr2[i] = 2);
+            IntStream.range(0, tmpLabelsArr.length).filter(i -> tmpLabelsArr[i] == 2).forEach(i -> tmpLabelsArr2[i] = 1);
+        }
 
-        final int totalExamples = calculateTotalExamples(iteratorDistribution, maxTestSamples, tmpLabelsArr);
-        final ImageLabelContainer res = sampleData(tmpImagesArr, tmpLabelsArr, totalExamples, iteratorDistribution, maxTestSamples, seed);
+        final int totalExamples = calculateTotalExamples(iteratorDistribution, maxTestSamples, tmpLabelsArr2);
+        final ImageLabelContainer res = sampleData(tmpImagesArr, tmpLabelsArr2, totalExamples, iteratorDistribution, maxTestSamples, seed);
         imagesArr = res.images;
         labelsArr = res.labels;
     }

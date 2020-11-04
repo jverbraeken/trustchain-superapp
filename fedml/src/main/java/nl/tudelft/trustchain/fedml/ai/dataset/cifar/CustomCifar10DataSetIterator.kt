@@ -1,5 +1,6 @@
 package nl.tudelft.trustchain.fedml.ai.dataset.cifar
 
+import nl.tudelft.trustchain.fedml.ai.Behaviors
 import nl.tudelft.trustchain.fedml.ai.DatasetIteratorConfiguration
 import org.deeplearning4j.datasets.datavec.RecordReaderDataSetIterator
 import org.deeplearning4j.datasets.fetchers.Cifar10Fetcher
@@ -9,7 +10,8 @@ import org.deeplearning4j.datasets.fetchers.DataSetType
 class CustomCifar10DataSetIterator(
     iteratorConfiguration: DatasetIteratorConfiguration,
     seed: Long,
-    dataSetType: DataSetType
+    dataSetType: DataSetType,
+    behavior: Behaviors
 ) : RecordReaderDataSetIterator(
     CustomCifar10Fetcher(
         iteratorConfiguration.distribution,

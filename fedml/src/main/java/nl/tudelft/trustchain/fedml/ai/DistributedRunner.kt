@@ -41,12 +41,14 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 baseDirectory,
                 mlConfiguration.dataset,
                 mlConfiguration.datasetIteratorConfiguration,
+                mlConfiguration.trainConfiguration.behavior,
                 seed
             )
             val testDataSetIterator = getTestDatasetIterator(
                 baseDirectory,
                 mlConfiguration.dataset,
                 mlConfiguration.datasetIteratorConfiguration,
+                mlConfiguration.trainConfiguration.behavior,
                 seed
             )
             val evaluationProcessor = EvaluationProcessor(

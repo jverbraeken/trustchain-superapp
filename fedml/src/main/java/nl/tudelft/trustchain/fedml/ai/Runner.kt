@@ -393,6 +393,7 @@ abstract class Runner {
         baseDirectory: File,
         dataset: Datasets,
         iteratorConfiguration: DatasetIteratorConfiguration,
+        behavior: Behaviors,
         seed: Int
     ): DataSetIterator {
         if (trainDatasetIterator == null) {
@@ -400,12 +401,14 @@ abstract class Runner {
                 Datasets.MNIST -> /*MnistDataSetIterator(batchSize.value, true, seed)*/CustomMnistDataSetIterator(
                     iteratorConfiguration,
                     seed,
-                    DataSetType.TRAIN
+                    DataSetType.TRAIN,
+                    behavior
                 )
                 Datasets.CIFAR10 -> CustomCifar10DataSetIterator(
                     iteratorConfiguration,
                     seed.toLong(),
-                    DataSetType.TRAIN
+                    DataSetType.TRAIN,
+                    behavior
                 )
                 Datasets.TINYIMAGENET -> TinyImageNetDataSetIterator(
                     iteratorConfiguration.batchSize.value,
@@ -414,16 +417,13 @@ abstract class Runner {
                     null,
                     seed.toLong()
                 )
-                Datasets.HAL -> {
-                    val iterator =
-                        HARIterator(
-                            iteratorConfiguration,
-                            seed,
-                            DataSetType.TRAIN,
-                            baseDirectory
-                        )
-                    iterator
-                }
+                Datasets.HAL -> HARIterator(
+                    iteratorConfiguration,
+                    seed,
+                    DataSetType.TRAIN,
+                    baseDirectory,
+                    behavior
+                )
             }
         }
         return trainDatasetIterator!!
@@ -433,6 +433,7 @@ abstract class Runner {
         baseDirectory: File,
         dataset: Datasets,
         iteratorConfiguration: DatasetIteratorConfiguration,
+        behavior: Behaviors,
         seed: Int
     ): DataSetIterator {
         if (testDatasetIterator == null) {
@@ -440,13 +441,15 @@ abstract class Runner {
                 Datasets.MNIST -> /*MnistDataSetIterator(batchSize.value, false, seed)*/CustomMnistDataSetIterator(
                     iteratorConfiguration,
                     seed,
-                    DataSetType.TEST
+                    DataSetType.TEST,
+                    behavior
                 )
                 Datasets.CIFAR10 -> {
                     val iterator = CustomCifar10DataSetIterator(
                         iteratorConfiguration,
                         seed.toLong(),
-                        DataSetType.TEST
+                        DataSetType.TEST,
+                        behavior
                     )
                     iterator.preProcessor = ImagePreProcessingScaler(-0.5, 0.5)
                     // Should be perhaps NormalizerStandardize (make sure to fit!!!)
@@ -469,7 +472,8 @@ abstract class Runner {
                             iteratorConfiguration,
                             seed,
                             DataSetType.TEST,
-                            baseDirectory
+                            baseDirectory,
+                            behavior
                         )
                     iterator
                 }
