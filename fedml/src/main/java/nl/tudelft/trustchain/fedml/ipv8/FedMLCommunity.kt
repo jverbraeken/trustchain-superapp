@@ -1,6 +1,7 @@
 package nl.tudelft.trustchain.fedml.ipv8
 
 import android.util.Log
+import mu.KotlinLogging
 //import mu.KotlinLogging
 import nl.tudelft.ipv8.Overlay
 import nl.tudelft.ipv8.Peer
@@ -16,6 +17,8 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
+
+private val logger = KotlinLogging.logger("FedMLCommunity")
 
 interface MessageListener {
     fun onMessageReceived(messageId: FedMLCommunity.MessageId, peer: Peer, payload: Any)
@@ -73,52 +76,61 @@ class FedMLCommunity(
     }
 
     internal fun sendToAll(messageID: MessageId, message: Serializable, peers: List<Peer>? = null) {
+        logger.debug { "sendToAll" }
         for (peer in /*peers ?:*/ getPeers()) {
+            logger.debug { "Peer: ${peer.address}" }
             sendToPeer(peer, messageID, message)
         }
     }
 
     internal fun sendToRandomPeer(messageID: MessageId, message: Serializable, peers: List<Peer>? = null) {
+        logger.debug { "sendToRandomPeer" }
         val set = /*peers ?:*/ getPeers()
         if (set.isNotEmpty()) {
             val peer = set.random()
+            logger.debug { "Peer: ${peer.address}" }
             sendToPeer(peer, messageID, message)
         }
     }
 
     // Round Robin
     internal fun sendToNextPeerRR(messageID: MessageId, message: Serializable, peers: List<Peer>? = null) {
+        logger.debug { "sendToNextPeerRR" }
         val peer = getAndSetNextPeerRR(peers)
         if (peer != null) {
+            logger.debug { "Peer: ${peer.address}" }
             sendToPeer(peer, messageID, message)
         }
     }
 
     private fun getAndSetNextPeerRR(peers: List<Peer>?): Peer? {
-        if (peersRR?.isEmpty() != false) {
+        if (peersRR.isNullOrEmpty()) {
             peersRR = (/*peers ?:*/ getPeers()).toMutableList()
+        }
+        if (peersRR!!.isEmpty()) {
+            return null
+        } else {
             return peersRR!!.removeAt(0)
         }
-        return null
     }
 
     ////// MESSAGE RECEIVED EVENTS
 
     private fun onMsgPing(packet: Packet) {
         val (peer, payload) = packet.getAuthPayload(MsgPing.Deserializer)
-        Log.e("MsgPing", peer.mid + ": " + payload.message)
+        logger.debug { "MsgPing: ${peer.mid} : ${payload.message}" }
         messageListeners[MessageId.MSG_PING]!!.forEach { it.onMessageReceived(MessageId.MSG_PING, peer, payload) }
     }
 
     private fun onMsgPong(packet: Packet) {
         val (peer, payload) = packet.getAuthPayload(MsgPong.Deserializer)
-        Log.e("MsgPong", peer.mid + ": " + payload.message)
+        logger.debug { "MsgPong: ${peer.mid} : ${payload.message}" }
         messageListeners[MessageId.MSG_PONG]!!.forEach { it.onMessageReceived(MessageId.MSG_PONG, peer, payload) }
     }
 
     private fun onMsgParamUpdate(packet: Packet) {
         val (peer, payload) = packet.getAuthPayload(MsgParamUpdate.Deserializer)
-        Log.e(" MsgParamUpdate", peer.mid)
+        logger.debug { "MsgPing: ${peer.mid}" }
         messageListeners[MessageId.MSG_PARAM_UPDATE]!!.forEach { it.onMessageReceived(MessageId.MSG_PARAM_UPDATE, peer, payload) }
     }
 }

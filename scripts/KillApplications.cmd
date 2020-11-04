@@ -21,4 +21,3 @@ for /L %%x in (1, 1, %idi%) do (
 	adb -s !var%%x! shell am force-stop nl.tudelft.trustchain
 )
 endlocal
-pause

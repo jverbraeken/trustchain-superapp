@@ -26,12 +26,12 @@ class Mozi : AggregationRule() {
         logger.debug { "MyModel: " + myModel.first.getDouble(0) }
         val Ndistance: List<INDArray> = applyDistanceFilter(myModel, otherModels)
         logger.debug { "After distance filter, remaining:${Ndistance.size}" }
-        var Nperformance: List<INDArray> = applyPerformanceFilter(myModel, Ndistance, network, testDataSetIterator)
+        val Nperformance: List<INDArray> = applyPerformanceFilter(myModel, Ndistance, network, testDataSetIterator)
         logger.debug { "After performance filter, remaining:${Nperformance.size}" }
-        if (Nperformance.isEmpty()) {
-            logger.debug("Nperformance empty => taking ${Ndistance[0].getDouble(0)}")
-            Nperformance = arrayListOf(Ndistance[0])
-        }
+//        if (Nperformance.isEmpty()) {
+//            logger.debug("Nperformance empty => taking ${Ndistance[0].getDouble(0)}")
+//            Nperformance = arrayListOf(Ndistance[0])
+//        }
         val Rmozi: INDArray = average(Nperformance)
         logger.debug("average: ${Rmozi.getDouble(0)}")
         val alpha = 0.5

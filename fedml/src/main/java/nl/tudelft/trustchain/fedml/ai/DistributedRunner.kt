@@ -13,13 +13,16 @@ import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.deeplearning4j.optimize.listeners.EvaluativeListener
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener
 import org.nd4j.linalg.api.ndarray.INDArray
+import org.nd4j.linalg.cpu.nativecpu.NDArray
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 import java.io.File
+import kotlin.random.Random
 
 private val logger = KotlinLogging.logger("DistributedRunner")
 
 class DistributedRunner(private val community: FedMLCommunity) : Runner(), MessageListener {
     private val paramBuffer: MutableList<Pair<INDArray, Int>> = ArrayList()
+    private lateinit var random: Random
 
     override fun run(
         baseDirectory: File,
@@ -32,6 +35,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         val behavior = nodeAssignments?.get(port) ?: Behaviors.BENIGN
         val otherNodes = nodeAssignments?.keys?.filter { it != port } ?: arrayListOf()
         val otherPeers = convertToPeer(otherNodes)
+        this.random = Random(seed)
         scope.launch {
             val trainDataSetIterator = getTrainDatasetIterator(
                 baseDirectory,
@@ -147,11 +151,11 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                     val numPeers = paramBuffer.size + 1
                     val averageParams: Pair<INDArray, Int>
                     if (numPeers == 1) {
-                        logger.debug { "No peers => skipping integration evaluation" }
+                        logger.debug { "No received params => skipping integration evaluation" }
                         evaluationProcessor.skip()
                         averageParams = Pair(network.params().dup(), samplesCounter)
                     } else {
-                        logger.debug { "Peers found => executing aggregation rule" }
+                        logger.debug { "Params received => executing aggregation rule" }
 
                         val start2 = System.currentTimeMillis()
                         averageParams = trainConfiguration.gar.obj.integrateParameters(
@@ -195,9 +199,18 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
     private fun craftMessage(first: INDArray, behavior: Behaviors): INDArray {
         return when (behavior) {
             Behaviors.BENIGN -> first
-            Behaviors.NOISE -> first
+            Behaviors.NOISE -> craftNoiseMessage(first)
             Behaviors.LABEL_FLIP -> first
         }
+    }
+
+    private fun craftNoiseMessage(first: INDArray): INDArray {
+        val oldMatrix = first.toFloatMatrix()[0]
+        val newMatrix = Array(1) { FloatArray(oldMatrix.size) }
+        for (i in oldMatrix.indices) {
+            newMatrix[0][i] = random.nextFloat() * 2 - 1
+        }
+        return NDArray(newMatrix)
     }
 
     private fun execEvaluationProcessor(
