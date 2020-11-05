@@ -114,7 +114,6 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         var iterations = 0
         var iterationsToEvaluation = 0
         for (i in 0 until trainConfiguration.numEpochs.value) {
-            epoch++
             trainDataSetIterator.reset()
             logger.debug { "Starting epoch: $epoch" }
             evaluationProcessor.epoch = epoch
@@ -160,9 +159,8 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                         logger.debug { "Params received => executing aggregation rule" }
 
                         val start2 = System.currentTimeMillis()
-                        averageParams = trainConfiguration.gar.obj.integrateParameters(
-                            Pair(network.params().dup(), samplesCounter), paramBuffer, network, testDataSetIterator
-                        )
+                        val model = Pair(network.params().dup(), samplesCounter)
+                        averageParams = gar.integrateParameters(model, paramBuffer, network, testDataSetIterator)
                         ret = averageParams.second
                         paramBuffer.clear()
                         network.setParameters(averageParams.first)
@@ -193,6 +191,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                     break
                 }
             }
+            epoch++
         }
         logger.debug { "Done training the network" }
         evaluationProcessor.done()

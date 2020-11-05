@@ -8,10 +8,9 @@ import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 
 private val logger = KotlinLogging.logger("Median")
 
-fun median(l: List<Double>) = l.sorted().let { (it[it.size / 2] + it[(it.size - 1) / 2]) / 2 }
+fun trimmedMean(b: Int, l: List<Double>) = l.sorted().subList(b, l.size - b - 1).average()
 
-class Median : AggregationRule() {
-
+class CWTrimmedMean(val b: Int) : AggregationRule() {
     override fun integrateParameters(
         myModel: Pair<INDArray, Int>,
         otherModelPairs: List<Pair<INDArray, Int>>,
@@ -29,7 +28,7 @@ class Median : AggregationRule() {
             for (i in modelsAsArrays[0].indices) {
                 val elements = ArrayList<Double>(modelsAsArrays.size)
                 modelsAsArrays.forEach { elements.add(it[i]) }
-                newMatrix[0][i] = median(elements)
+                newMatrix[0][i] = trimmedMean(b, elements)
             }
             Pair(NDArray(newMatrix), 999999)
         }

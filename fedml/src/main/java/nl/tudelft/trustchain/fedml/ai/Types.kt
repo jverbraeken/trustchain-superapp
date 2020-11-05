@@ -1,9 +1,6 @@
 package nl.tudelft.trustchain.fedml.ai
 
-import nl.tudelft.trustchain.fedml.ai.gar.AggregationRule
-import nl.tudelft.trustchain.fedml.ai.gar.Median
-import nl.tudelft.trustchain.fedml.ai.gar.Mozi
-import nl.tudelft.trustchain.fedml.ai.gar.SimpleAggregator
+import nl.tudelft.trustchain.fedml.ai.gar.*
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration
 import org.nd4j.linalg.schedule.ISchedule
 import org.nd4j.linalg.schedule.MapSchedule
@@ -147,7 +144,8 @@ enum class MaxSamples(val id: String, val text: String, val value: Int) {
 enum class GARs(val id: String, val text: String, val obj: AggregationRule) {
     SIMPLE("simple", "Simple", SimpleAggregator()),
     MEDIAN("median", "Median", Median()),
-    MOZI("mozi", "Mozi", Mozi())
+    MOZI("mozi", "Mozi", Mozi()),
+    CWTRIMMEDMEAN("cwtrimmedmean", "Trimmed Mean (b=1)", CWTrimmedMean(1))
 }
 
 enum class CommunicationPatterns(val id: String, val text: String) {
