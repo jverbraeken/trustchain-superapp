@@ -2,8 +2,12 @@ package nl.tudelft.trustchain.fedml.ai
 
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
+import org.deeplearning4j.nn.updater.UpdaterCreator
+import org.deeplearning4j.nn.workspace.LayerWorkspaceMgr
 import org.deeplearning4j.optimize.listeners.EvaluativeListener
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener
+import org.nd4j.linalg.learning.AdamUpdater
+import org.nd4j.linalg.learning.config.Adam
 import java.io.File
 
 private val logger = KotlinLogging.logger("LocalRunner")
@@ -62,7 +66,25 @@ class LocalRunner : Runner() {
                 while (true) {
                     var endEpoch = false
                     try {
-                        network.fit(trainDataSetIterator.next())
+//                        network.fit(trainDataSetIterator.next())
+                        val batch = trainDataSetIterator.next()
+                        val pair = network.calculateGradients(batch.features, batch.labels, null, null)
+                        val adam = Adam(mlConfiguration.nnConfiguration.learningRate.schedule)
+                        val updater = UpdaterCreator.getUpdater(network)
+                        updater.update(network, pair.first, iterations, epoch, network.batchSize(), LayerWorkspaceMgr.noWorkspaces())
+                        val params = network.params()
+                        params.subi(pair.first.gradient())
+
+
+
+
+                        /*val batch = trainDataSetIterator.next()
+                        val pair = network.calculateGradients(batch.features, batch.labels, null, null)
+//                        val adam = Adam(mlConfiguration.nnConfiguration.learningRate.schedule)
+                        val updater = UpdaterCreator.getUpdater(network)
+                        updater.update(network, pair.first, iterations, epoch, network.batchSize(), LayerWorkspaceMgr.noWorkspaces())
+                        val params = network.params()
+                        params.subi(pair.first.gradient())*/
                     } catch (e: NoSuchElementException) {
                         endEpoch = true
                     }

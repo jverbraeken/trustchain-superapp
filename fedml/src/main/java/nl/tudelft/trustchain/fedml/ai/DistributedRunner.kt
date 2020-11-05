@@ -10,8 +10,16 @@ import nl.tudelft.trustchain.fedml.ipv8.FedMLCommunity.MessageId
 import nl.tudelft.trustchain.fedml.ipv8.MessageListener
 import nl.tudelft.trustchain.fedml.ipv8.MsgParamUpdate
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
+import org.deeplearning4j.nn.updater.UpdaterCreator
+import org.deeplearning4j.nn.workspace.ArrayType
+import org.deeplearning4j.nn.workspace.LayerWorkspaceMgr
 import org.deeplearning4j.optimize.listeners.EvaluativeListener
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener
+import org.nd4j.linalg.api.memory.conf.WorkspaceConfiguration
+import org.nd4j.linalg.api.memory.enums.AllocationPolicy
+import org.nd4j.linalg.api.memory.enums.LearningPolicy
+import org.nd4j.linalg.api.memory.enums.ResetPolicy
+import org.nd4j.linalg.api.memory.enums.SpillPolicy
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.cpu.nativecpu.NDArray
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
@@ -23,6 +31,58 @@ private val logger = KotlinLogging.logger("DistributedRunner")
 class DistributedRunner(private val community: FedMLCommunity) : Runner(), MessageListener {
     private val paramBuffer: MutableList<Pair<INDArray, Int>> = ArrayList()
     private lateinit var random: Random
+
+
+    /**
+     * Workspace for working memory for a single layer: forward pass and backward pass
+     * Note that this is opened/closed once per op (activate/backpropGradient call)
+     */
+    protected val WS_LAYER_WORKING_MEM = "WS_LAYER_WORKING_MEM"
+
+    /**
+     * Workspace for storing all layers' activations - used only to store activations (layer inputs) as part of backprop
+     * Not used for inference
+     */
+    protected val WS_ALL_LAYERS_ACT = "WS_ALL_LAYERS_ACT"
+
+    /**
+     * Next 2 workspaces: used for:
+     * (a) Inference: holds activations for one layer only
+     * (b) Backprop: holds activation gradients for one layer only
+     * In both cases, they are opened and closed on every second layer
+     */
+    protected val WS_LAYER_ACT_1 = "WS_LAYER_ACT_1"
+    protected val WS_LAYER_ACT_2 = "WS_LAYER_ACT_2"
+
+    /**
+     * Workspace for output methods that use OutputAdapter
+     */
+    protected val WS_OUTPUT_MEM = "WS_OUTPUT_MEM"
+
+    /**
+     * Workspace for working memory in RNNs - opened and closed once per RNN time step
+     */
+    protected val WS_RNN_LOOP_WORKING_MEM = "WS_RNN_LOOP_WORKING_MEM"
+
+
+    protected var WS_LAYER_WORKING_MEM_CONFIG: WorkspaceConfiguration? = null
+
+    protected val WS_ALL_LAYERS_ACT_CONFIG = WorkspaceConfiguration.builder()
+        .initialSize(0)
+        .overallocationLimit(0.05)
+        .policyLearning(LearningPolicy.FIRST_LOOP)
+        .policyReset(ResetPolicy.BLOCK_LEFT)
+        .policySpill(SpillPolicy.REALLOCATE)
+        .policyAllocation(AllocationPolicy.OVERALLOCATE)
+        .build()
+
+    protected var WS_LAYER_ACT_X_CONFIG: WorkspaceConfiguration? = null
+
+    protected val WS_RNN_LOOP_WORKING_MEM_CONFIG = WorkspaceConfiguration.builder()
+        .initialSize(0).overallocationLimit(0.05).policyReset(ResetPolicy.BLOCK_LEFT)
+        .policyAllocation(AllocationPolicy.OVERALLOCATE).policySpill(SpillPolicy.REALLOCATE)
+        .policyLearning(LearningPolicy.FIRST_LOOP).build()
+
 
     override fun run(
         baseDirectory: File,
@@ -109,6 +169,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
     ) {
         print(behavior)
         val batchSize = trainDataSetIterator.batch()
+        val gar = trainConfiguration.gar.obj
         var samplesCounter = 0
         var epoch = 0
         var iterations = 0
@@ -123,7 +184,18 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 // Train
                 var endEpoch = false
                 try {
-                    network.fit(trainDataSetIterator.next())
+//                    network.fit(trainDataSetIterator.next())
+                    val batch = trainDataSetIterator.next()
+                    val pair = network.calculateGradients(batch.features, batch.labels, null, null)
+//                    network.computeGradientAndScore()
+//                    val gradAndScore = network.gradientAndScore()
+
+                    val updater = UpdaterCreator.getUpdater(network)
+                    updater.update(network, pair.first, iterations, epoch, network.batchSize(), LayerWorkspaceMgr.noWorkspaces())
+//                    val gradient = network.gradient()
+//                    network.update(gradient)
+                    val params = network.params()
+                    params.subi(pair.first.gradient())
                 } catch (e: NoSuchElementException) {
                     endEpoch = true
                 }
