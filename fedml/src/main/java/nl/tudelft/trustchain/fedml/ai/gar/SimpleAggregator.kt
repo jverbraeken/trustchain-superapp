@@ -10,6 +10,7 @@ private val logger = KotlinLogging.logger("SimpleAggregator")
 class SimpleAggregator : AggregationRule() {
     override fun integrateParameters(
         myModel: Pair<INDArray, Int>,
+        gradient: INDArray,
         otherModelPairs: List<Pair<INDArray, Int>>,
         network: MultiLayerNetwork,
         testDataSetIterator: DataSetIterator
@@ -22,6 +23,6 @@ class SimpleAggregator : AggregationRule() {
         for (i in 1 until allModels.size) {
             arr = arr.add(allModels[i].first.mul(allModels[i].second.toDouble() / totalWeight.toDouble()))
         }
-        return Pair(arr, totalWeight)
+        return Pair(arr.sub(gradient), totalWeight)
     }
 }

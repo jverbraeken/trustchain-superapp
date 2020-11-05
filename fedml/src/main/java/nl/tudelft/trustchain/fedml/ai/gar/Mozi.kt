@@ -16,6 +16,7 @@ class Mozi : AggregationRule() {
 
     override fun integrateParameters(
         myModel: Pair<INDArray, Int>,
+        gradient: INDArray,
         otherModelPairs: List<Pair<INDArray, Int>>,
         network: MultiLayerNetwork,
         testDataSetIterator: DataSetIterator
@@ -36,7 +37,7 @@ class Mozi : AggregationRule() {
 
         // This is not included in the original algorithm!!!!
         if (Nperformance.isEmpty()) {
-            return Pair(myModel.first, 99999)
+            return Pair(myModel.first.sub(gradient), 99999)
         }
 
         val Rmozi: INDArray = average(Nperformance)

@@ -137,7 +137,7 @@ enum class IteratorDistributions(val id: String, val text: String, val value: Li
 }
 
 enum class MaxSamples(val id: String, val text: String, val value: Int) {
-    NUM_50("num_50", "50", 50)
+    NUM_200("num_200", "200", 200)
 }
 
 // Gradient Aggregation Rule

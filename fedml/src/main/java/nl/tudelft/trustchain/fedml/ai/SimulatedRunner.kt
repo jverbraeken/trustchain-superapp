@@ -80,12 +80,16 @@ class SimulatedRunner : Runner() {
                 val start = System.currentTimeMillis()
                 while (true) {
                     var endEpoch = false
+                    val oldParams = arrayListOf<INDArray>()
+                    val gradient = arrayListOf<INDArray>()
                     for ((j, net) in networks.withIndex()) {
+                        oldParams.add(net.params().dup())
                         try {
                             net.fit(trainDataSetIterators[j].next())
                         } catch (e: NoSuchElementException) {
                             endEpoch = true
                         }
+                        gradient.add(oldParams.last().sub(net.params().dup()))
                     }
                     iterations += datasetIteratorConfiguration.batchSize.value
                     iterationsToEvaluation += datasetIteratorConfiguration.batchSize.value
@@ -105,6 +109,7 @@ class SimulatedRunner : Runner() {
                         networks.forEach { params.add(Pair(it.params().dup(), datasetIteratorConfiguration.batchSize.value)) }
                         val averageParams = aggregationRule.integrateParameters(
                             params[0],
+                            gradient[0],
                             params.subList(1, params.size),
                             networks[0],
                             testDataSetIterator

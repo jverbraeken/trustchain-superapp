@@ -20,7 +20,6 @@ import nl.tudelft.trustchain.fedml.ipv8.FedMLCommunity.MessageId
 import nl.tudelft.trustchain.fedml.ipv8.MsgPing
 import org.deeplearning4j.common.resources.DL4JResources
 import java.io.*
-import java.lang.Thread.sleep
 
 private val logger = KotlinLogging.logger("FedML.MainFragment")
 
@@ -53,7 +52,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private var batchSize: BatchSizes = dataset.defaultBatchSize
     private var epoch: Epochs = Epochs.EPOCH_5
     private var iteratorDistribution: IteratorDistributions = dataset.defaultIteratorDistribution
-    private var maxTestSample = MaxSamples.NUM_50
+    private var maxTestSample = MaxSamples.NUM_200
     private var gar = GARs.MOZI
     private var communicationPattern = CommunicationPatterns.RR
     private var behavior = Behaviors.BENIGN

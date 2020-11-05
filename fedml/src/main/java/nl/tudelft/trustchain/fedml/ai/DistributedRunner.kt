@@ -109,6 +109,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
     ) {
         print(behavior)
         val batchSize = trainDataSetIterator.batch()
+        val gar = trainConfiguration.gar.obj
         var samplesCounter = 0
         var epoch = 0
         var iterations = 0
@@ -122,11 +123,14 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
 
                 // Train
                 var endEpoch = false
+                val oldParams = network.params().dup()
                 try {
                     network.fit(trainDataSetIterator.next())
                 } catch (e: NoSuchElementException) {
                     endEpoch = true
                 }
+                val newParams = network.params().dup()
+                val gradient = oldParams.sub(newParams)
                 samplesCounter += batchSize
                 iterations += batchSize
                 iterationsToEvaluation += batchSize
@@ -148,6 +152,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                     )
 
                     // Integrate parameters of other peers
+                    network.setParams(oldParams)
                     var ret = -1
                     val numPeers = paramBuffer.size + 1
                     val averageParams: Pair<INDArray, Int>
@@ -160,7 +165,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
 
                         val start2 = System.currentTimeMillis()
                         val model = Pair(network.params().dup(), samplesCounter)
-                        averageParams = gar.integrateParameters(model, paramBuffer, network, testDataSetIterator)
+                        averageParams = gar.integrateParameters(model, gradient, paramBuffer, network, testDataSetIterator)
                         ret = averageParams.second
                         paramBuffer.clear()
                         network.setParameters(averageParams.first)

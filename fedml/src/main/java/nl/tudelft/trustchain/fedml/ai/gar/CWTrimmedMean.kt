@@ -13,15 +13,16 @@ fun trimmedMean(b: Int, l: List<Double>) = l.sorted().subList(b, l.size - b - 1)
 class CWTrimmedMean(val b: Int) : AggregationRule() {
     override fun integrateParameters(
         myModel: Pair<INDArray, Int>,
+        gradient: INDArray,
         otherModelPairs: List<Pair<INDArray, Int>>,
         network: MultiLayerNetwork,
         testDataSetIterator: DataSetIterator
     ): Pair<INDArray, Int> {
-        val models: MutableList<INDArray> = arrayListOf(myModel.first)
+        val models: MutableList<INDArray> = arrayListOf(myModel.first.sub(gradient))
         otherModelPairs.forEach { models.add(it.first) }
         logger.debug { "Found ${models.size} models in total" }
         return if (models.size == 1) {
-            myModel
+            Pair(models[0], 999999)
         } else {
             val modelsAsArrays = models.map { it.toDoubleMatrix()[0] }
             val newMatrix = Array(1) { DoubleArray(modelsAsArrays[0].size) }
