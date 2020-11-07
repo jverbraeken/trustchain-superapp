@@ -77,7 +77,7 @@ class FedMLCommunity(
 
     internal fun sendToAll(messageID: MessageId, message: Serializable) {
         logger.debug { "sendToAll" }
-        for (peer in /*peers ?:*/ getPeers()) {
+        for (peer in getPeers()) {
             logger.debug { "Peer: ${peer.address}" }
             sendToPeer(peer, messageID, message)
         }
@@ -85,7 +85,7 @@ class FedMLCommunity(
 
     internal fun sendToRandomPeer(messageID: MessageId, message: Serializable) {
         logger.debug { "sendToRandomPeer" }
-        val set = /*peers ?:*/ getPeers()
+        val set = getPeers()
         if (set.isNotEmpty()) {
             val peer = set.random()
             logger.debug { "Peer: ${peer.address}" }
@@ -96,7 +96,7 @@ class FedMLCommunity(
     // Round Robin
     internal fun sendToNextPeerRR(messageID: MessageId, message: Serializable) {
         logger.debug { "sendToNextPeerRR" }
-        if (nl.tudelft.ipv8.messaging.utp.busySending) {
+        if (!nl.tudelft.ipv8.messaging.utp.canSend()) {
             logger.debug { "Skipped because busy sending" }
             return
         }
@@ -109,7 +109,7 @@ class FedMLCommunity(
 
     private fun getAndSetNextPeerRR(): Peer? {
         if (peersRR.isNullOrEmpty()) {
-            peersRR = (/*peers ?:*/ getPeers()).toMutableList()
+            peersRR = (getPeers()).toMutableList()
         }
         return if (peersRR!!.isEmpty()) {
             logger.debug { "No peer found" }
@@ -121,7 +121,7 @@ class FedMLCommunity(
 
     internal fun sendToNextPeerRing(messageID: MessageId, message: Serializable) {
         logger.debug { "sendToNextPeerRing" }
-        if (nl.tudelft.ipv8.messaging.utp.busySending) {
+        if (!nl.tudelft.ipv8.messaging.utp.canSend()) {
             logger.debug { "Skipped because busy sending" }
             return
         }
@@ -134,7 +134,7 @@ class FedMLCommunity(
 
     private fun getAndSetNextPeerRing(): Peer? {
         if (peersRing.isNullOrEmpty() || peersRing!!.size < ringCounter) {
-            peersRing = (/*peers ?:*/ getPeers()).toMutableList()
+            peersRing = (getPeers()).toMutableList()
             peersRing!!.sortBy { it.address.port }
             val index = peersRing!!.indexOfFirst { it.address.port > myEstimatedWan.port }
             for (i in 0 until index) {

@@ -3,10 +3,10 @@ set ports[0]=5554
 set ports[1]=5556
 set ports[2]=5558
 set ports[3]=5560
-set redirects[0]=52855
-set redirects[1]=52862
-set redirects[2]=53053
-set redirects[3]=52843
+set redirects[0]=51596
+set redirects[1]=51603
+set redirects[2]=51582
+set redirects[3]=51587
 
 set "x=0"
 :SymLoop

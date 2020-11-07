@@ -3,12 +3,13 @@ package nl.tudelft.trustchain.fedml.ui
 import android.content.res.AssetManager
 import android.os.Bundle
 import android.os.StrictMode
-import androidx.lifecycle.lifecycleScope
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
-import kotlinx.coroutines.*
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import mu.KotlinLogging
 import nl.tudelft.trustchain.common.ui.BaseFragment
 import nl.tudelft.trustchain.common.util.viewBinding
@@ -26,10 +27,8 @@ private val logger = KotlinLogging.logger("FedML.MainFragment")
 //-e activity fedml -e dataset mnist -e optimizer adam -e learningRate rate_1em3 -e momentum none -e l2Regularization l2_5em3 -e batchSize batch_32 -e epoch epoch_50 -e iteratorDistribution mnist_1 -e maxTestSample num_200 -e gar mozi -e communicationPattern random -e behavior benign -e runner distributed -e run false
 //-e activity fedml -e dataset cifar10 -e optimizer sgd -e learningRate schedule1 -e momentum momentum_1em3 -e l2Regularization l2_1em4 -e batchSize batch_5 -e epoch epoch_25 -e runner distributed -e run true
 class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSelectedListener {
-    private val scope = CoroutineScope(Dispatchers.Default)
     private val baseDirectory: File by lazy { requireActivity().filesDir }
     private val binding by viewBinding(FragmentMainBinding::bind)
-    private val seed = getCommunity().myEstimatedLan.toString().hashCode()
 
     private val datasets = Datasets.values().map { it.text }
     private val optimizers = Optimizers.values().map { it.text }
@@ -235,7 +234,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private fun onBtnRunLocallyClicked() {
         LocalRunner().run(
             baseDirectory,
-            seed,
+            getSeed(),
             createMLConfiguration()
         )
     }
@@ -243,7 +242,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private fun onBtnSimulateDistributedLocallyClicked() {
         SimulatedRunner().run(
             baseDirectory,
-            seed,
+            getSeed(),
             createMLConfiguration()
         )
     }
@@ -251,9 +250,13 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private fun onBtnRunDistributedClicked() {
         DistributedRunner(getCommunity()).run(
             baseDirectory,
-            seed,
+            getSeed(),
             createMLConfiguration()
         )
+    }
+
+    private fun getSeed(): Int {
+        return getCommunity().myEstimatedWan.port
     }
 
     private fun createMLConfiguration(): MLConfiguration {
