@@ -134,16 +134,6 @@ class EvaluationProcessor(
         }
     }
 
-    fun skip() {
-        dataLines.add(Array(dataLines[0].size) { "-" })
-
-        PrintWriter(fileResults).use { pw ->
-            dataLines.stream()
-                .map(::convertToCSV)
-                .forEach(pw::println)
-        }
-    }
-
     fun done() {
         dataLines.add(Array(dataLines[0].size) { "DONE" })
 

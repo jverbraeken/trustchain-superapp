@@ -23,6 +23,7 @@ for /F "usebackq" %%A in (tmp3) do (
 )
 set var
 for /L %%x in (1, 1, %idi%) do (
+	rmdir /s /q %USERPROFILE%\Downloads\evaluations\!var%%x!
 	adb -s !var%%x! root
 	adb -s !var%%x! pull /data/user/0/nl.tudelft.trustchain/files/evaluations/ %USERPROFILE%\Downloads\evaluations\!var%%x!
 )

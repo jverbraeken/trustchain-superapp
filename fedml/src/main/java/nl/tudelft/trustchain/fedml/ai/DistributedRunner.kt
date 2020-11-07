@@ -126,7 +126,6 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                     val averageParams: INDArray
                     if (numPeers == 1) {
                         logger.debug { "No received params => skipping integration evaluation" }
-                        evaluationProcessor.skip()
                         averageParams = network.params().dup()
                     } else {
                         logger.debug { "Params received => executing aggregation rule" }

@@ -141,7 +141,7 @@ class FedMLCommunity(
                 val peer = peersRing!!.removeAt(0)
                 peersRing!!.add(peer)
             }
-            logger.debug { "Added ${peersRing!!.size} peers to ring" }
+            logger.debug { "peersRing = { ${peersRing!!.map { it.address.port }.joinToString(", ") }" }
             ringCounter = 1
         }
         return if (peersRing!!.isEmpty()) {
@@ -150,10 +150,9 @@ class FedMLCommunity(
         } else {
             for (i in 0 until ringCounter - 1) {
                 peersRing!!.removeAt(0)
-                logger.debug { "Removed 1 peer" }
+                logger.debug { "peersRing after removal = { ${peersRing!!.map { it.address.port }.joinToString(", ") }" }
             }
             ringCounter *= 2
-            logger.debug { "Ringcounter = $ringCounter" }
             peersRing!!.removeAt(0)
         }
     }
