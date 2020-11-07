@@ -142,6 +142,7 @@ enum class MaxSamples(val id: String, val text: String, val value: Int) {
 
 // Gradient Aggregation Rule
 enum class GARs(val id: String, val text: String, val obj: AggregationRule) {
+    AVERAGE("average", "Simple average", Average()),
     MEDIAN("median", "Median", Median()),
     CWTRIMMEDMEAN("cwtrimmedmean", "Trimmed Mean (b=1)", CWTrimmedMean(1)),
     KRUM("krum", "Krum (b=1)", Krum(1)),
