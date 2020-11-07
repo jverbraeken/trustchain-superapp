@@ -30,7 +30,7 @@ abstract class Runner {
     private var trainDatasetIterator: DataSetIterator? = null
     private var testDatasetIterator: DataSetIterator? = null
     protected open val printScoreIterations = 5
-    protected open val iterationsBeforeEvaluation = 100
+    protected open val iterationsBeforeEvaluation = 300
 
     fun generateNetwork(
         dataset: Datasets,

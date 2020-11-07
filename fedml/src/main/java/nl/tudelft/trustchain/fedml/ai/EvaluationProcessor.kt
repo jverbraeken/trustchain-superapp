@@ -31,7 +31,6 @@ class EvaluationProcessor(
 
     data class EvaluationData(
         val beforeAfterAveraging: String,
-        val samplesCounter: Int,
         val numPeers: String,
         val elapsedTime: Long,
         val iterationCount: Int,

@@ -142,16 +142,18 @@ enum class MaxSamples(val id: String, val text: String, val value: Int) {
 
 // Gradient Aggregation Rule
 enum class GARs(val id: String, val text: String, val obj: AggregationRule) {
-    SIMPLE("simple", "Simple", SimpleAggregator()),
     MEDIAN("median", "Median", Median()),
-    MOZI("mozi", "Mozi", Mozi()),
-    CWTRIMMEDMEAN("cwtrimmedmean", "Trimmed Mean (b=1)", CWTrimmedMean(1))
+    CWTRIMMEDMEAN("cwtrimmedmean", "Trimmed Mean (b=1)", CWTrimmedMean(1)),
+    KRUM("krum", "Krum (b=1)", Krum(1)),
+    BRIDGE("bridge", "Bridge (b=1)", Bridge(1)),
+    MOZI("mozi", "Mozi (frac=0.5)", Mozi(0.5))
 }
 
 enum class CommunicationPatterns(val id: String, val text: String) {
     ALL("all", "All"),
     RANDOM("random", "Random"),
-    RR("rr", "Round-robin")
+    RR("rr", "Round-robin"),
+    RING("ring", "Ring")
 }
 
 enum class Behaviors(val id: String, val text: String) {

@@ -8,30 +8,33 @@ import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 
 private val logger = KotlinLogging.logger("Median")
 
-fun trimmedMean(b: Int, l: List<Double>) = l.sorted().subList(b, l.size - b - 1).average()
+fun trimmedMean(b: Int, l: List<Float>) = l.sorted().subList(b, l.size - b).average().toFloat()
 
 class CWTrimmedMean(val b: Int) : AggregationRule() {
+    private val minimumModels = 2 * b + 1
+
     override fun integrateParameters(
-        myModel: Pair<INDArray, Int>,
+        myModel: INDArray,
         gradient: INDArray,
-        otherModelPairs: List<Pair<INDArray, Int>>,
+        otherModelPairs: List<INDArray>,
         network: MultiLayerNetwork,
         testDataSetIterator: DataSetIterator
-    ): Pair<INDArray, Int> {
-        val models: MutableList<INDArray> = arrayListOf(myModel.first.sub(gradient))
-        otherModelPairs.forEach { models.add(it.first) }
+    ): INDArray {
+        logger.debug { formatName("Coordinate-Wise Trimmed Mean") }
+        val models: MutableList<INDArray> = arrayListOf(myModel.sub(gradient))
+        otherModelPairs.forEach { models.add(it) }
         logger.debug { "Found ${models.size} models in total" }
-        return if (models.size == 1) {
-            Pair(models[0], 999999)
+        return if (models.size < minimumModels) {
+            models[0]
         } else {
-            val modelsAsArrays = models.map { it.toDoubleMatrix()[0] }
-            val newMatrix = Array(1) { DoubleArray(modelsAsArrays[0].size) }
+            val modelsAsArrays = models.map { it.toFloatMatrix()[0] }
+            val newMatrix = Array(1) { FloatArray(modelsAsArrays[0].size) }
             for (i in modelsAsArrays[0].indices) {
-                val elements = ArrayList<Double>(modelsAsArrays.size)
+                val elements = ArrayList<Float>(modelsAsArrays.size)
                 modelsAsArrays.forEach { elements.add(it[i]) }
                 newMatrix[0][i] = trimmedMean(b, elements)
             }
-            Pair(NDArray(newMatrix), 999999)
+            NDArray(newMatrix)
         }
     }
 }

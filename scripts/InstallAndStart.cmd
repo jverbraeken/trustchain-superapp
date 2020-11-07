@@ -5,6 +5,8 @@ set "replaced="
 set "source=tmp2"
 set "target=tmp3"
 adb devices > tmp1
+for /f "tokens=2 delims==" %%I in ('wmic os get localdatetime /format:list') do set datetime=%%I
+set datetime=%datetime:~0,8%-%datetime:~8,6%
 findstr /v "List of devices attached" tmp1 > tmp2
 (
    for /F "tokens=1* delims=:" %%a in ('findstr /N "^" %source%') do (

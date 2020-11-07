@@ -21,7 +21,7 @@ import kotlin.random.Random
 private val logger = KotlinLogging.logger("DistributedRunner")
 
 class DistributedRunner(private val community: FedMLCommunity) : Runner(), MessageListener {
-    private val paramBuffer: MutableList<Pair<INDArray, Int>> = ArrayList()
+    private val paramBuffer: MutableList<INDArray> = ArrayList()
     private lateinit var random: Random
 
     override fun run(
@@ -30,11 +30,6 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         mlConfiguration: MLConfiguration
     ) {
         FedMLCommunity.registerMessageListener(MessageId.MSG_PARAM_UPDATE, this)
-        val nodeAssignments = getNodeAssignments(baseDirectory)
-        val port = community.myEstimatedWan.port
-        val behavior = nodeAssignments?.get(port) ?: Behaviors.BENIGN
-        val otherNodes = nodeAssignments?.keys?.filter { it != port } ?: arrayListOf()
-        val otherPeers = convertToPeer(otherNodes)
         this.random = Random(seed)
         scope.launch {
             val trainDataSetIterator = getTrainDatasetIterator(
@@ -58,7 +53,6 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 seed,
                 listOf(
                     "before or after averaging",
-                    "total samples",
                     "#peers included in current batch"
                 )
             )
@@ -74,28 +68,9 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 evaluationProcessor,
                 trainDataSetIterator,
                 testDataSetIterator,
-                mlConfiguration.trainConfiguration,
-                behavior,
-                otherPeers
+                mlConfiguration.trainConfiguration
             )
         }
-    }
-
-    private fun convertToPeer(otherNodes: List<Int>): List<Peer> {
-        val key = defaultCryptoProvider.generateKey()
-        return otherNodes.map { Peer(key, IPv4Address("10.0.2.2", it), supportsUTP = true) }
-    }
-
-    private fun getNodeAssignments(baseDirectory: File): Map<Int, Behaviors>? {
-        val fileNodeAssignment = File(baseDirectory, "NodeAssignment.csv")
-
-        if (!fileNodeAssignment.exists()) {
-            return null
-        }
-
-        val lines = fileNodeAssignment.readLines()
-        val split = lines.map { it.split(",") }
-        return split.associateBy({ it[0].toInt() }, { spl -> Behaviors.values().first { it.id == spl[1] } })
     }
 
     private fun trainTestSendNetwork(
@@ -103,18 +78,13 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         evaluationProcessor: EvaluationProcessor,
         trainDataSetIterator: DataSetIterator,
         testDataSetIterator: DataSetIterator,
-        trainConfiguration: TrainConfiguration,
-        behavior: Behaviors,
-        otherPeers: List<Peer>
+        trainConfiguration: TrainConfiguration
     ) {
-        print(behavior)
         val batchSize = trainDataSetIterator.batch()
         val gar = trainConfiguration.gar.obj
-        var samplesCounter = 0
-        var epoch = 0
         var iterations = 0
         var iterationsToEvaluation = 0
-        for (i in 0 until trainConfiguration.numEpochs.value) {
+        for (epoch in 0 until trainConfiguration.numEpochs.value) {
             trainDataSetIterator.reset()
             logger.debug { "Starting epoch: $epoch" }
             evaluationProcessor.epoch = epoch
@@ -131,7 +101,6 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 }
                 val newParams = network.params().dup()
                 val gradient = oldParams.sub(newParams)
-                samplesCounter += batchSize
                 iterations += batchSize
                 iterationsToEvaluation += batchSize
 
@@ -147,28 +116,26 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                         testDataSetIterator,
                         network,
                         EvaluationProcessor.EvaluationData(
-                            "before", samplesCounter, "", end - start, network.iterationCount, epoch
+                            "before", "", end - start, network.iterationCount, epoch
                         )
                     )
 
                     // Integrate parameters of other peers
                     network.setParams(oldParams)
-                    var ret = -1
                     val numPeers = paramBuffer.size + 1
-                    val averageParams: Pair<INDArray, Int>
+                    val averageParams: INDArray
                     if (numPeers == 1) {
                         logger.debug { "No received params => skipping integration evaluation" }
                         evaluationProcessor.skip()
-                        averageParams = Pair(network.params().dup(), samplesCounter)
+                        averageParams = network.params().dup()
                     } else {
                         logger.debug { "Params received => executing aggregation rule" }
 
                         val start2 = System.currentTimeMillis()
-                        val model = Pair(network.params().dup(), samplesCounter)
+                        val model = network.params().dup()
                         averageParams = gar.integrateParameters(model, gradient, paramBuffer, network, testDataSetIterator)
-                        ret = averageParams.second
                         paramBuffer.clear()
-                        network.setParameters(averageParams.first)
+                        network.setParameters(averageParams)
                         val end2 = System.currentTimeMillis()
 
                         execEvaluationProcessor(
@@ -176,7 +143,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                             testDataSetIterator,
                             network,
                             EvaluationProcessor.EvaluationData(
-                                "after", samplesCounter, numPeers.toString(), end2 - start2, iterations, epoch
+                                "after", numPeers.toString(), end2 - start2, iterations, epoch
                             )
                         )
                     }
@@ -186,17 +153,15 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                         CommunicationPatterns.ALL -> community::sendToAll
                         CommunicationPatterns.RANDOM -> community::sendToRandomPeer
                         CommunicationPatterns.RR -> community::sendToNextPeerRR
+                        CommunicationPatterns.RING -> community::sendToNextPeerRing
                     }
-                    val message = craftMessage(averageParams.first, trainConfiguration.behavior/*behavior*/)
-                    sendMessage(MessageId.MSG_PARAM_UPDATE, MsgParamUpdate(message, samplesCounter), otherPeers)
-                    val newSamplesCounter = ret
-                    samplesCounter = if (newSamplesCounter == -1) samplesCounter else newSamplesCounter
+                    val message = craftMessage(averageParams, trainConfiguration.behavior)
+                    sendMessage(MessageId.MSG_PARAM_UPDATE, MsgParamUpdate(message))
                 }
                 if (endEpoch) {
                     break
                 }
             }
-            epoch++
         }
         logger.debug { "Done training the network" }
         evaluationProcessor.done()
@@ -228,7 +193,6 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         testDataSetIterator.reset()
         evaluationProcessor.extraElements = mapOf(
             Pair("before or after averaging", evaluationData.beforeAfterAveraging),
-            Pair("total samples", evaluationData.samplesCounter.toString()),
             Pair("#peers included in current batch", evaluationData.numPeers)
         )
         evaluationProcessor.elapsedTime = evaluationData.elapsedTime
@@ -246,7 +210,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         when (messageId) {
             MessageId.MSG_PARAM_UPDATE -> {
                 val paramUpdate = payload as MsgParamUpdate
-                paramBuffer.add(Pair(paramUpdate.array, paramUpdate.weight))
+                paramBuffer.add(paramUpdate.array)
             }
             else -> throw Exception("Other messages should not be listened to...")
         }

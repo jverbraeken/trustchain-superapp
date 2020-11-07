@@ -10,22 +10,21 @@ import kotlin.math.ceil
 
 private val logger = KotlinLogging.logger("Mozi")
 
-class Mozi : AggregationRule() {
-    private val FRAC_BENIGN = 0.5
+class Mozi(val fracBenign: Double) : AggregationRule() {
     private val TEST_BATCH = 50
 
     override fun integrateParameters(
-        myModel: Pair<INDArray, Int>,
+        myModel: INDArray,
         gradient: INDArray,
-        otherModelPairs: List<Pair<INDArray, Int>>,
+        otherModelPairs: List<INDArray>,
         network: MultiLayerNetwork,
         testDataSetIterator: DataSetIterator
-    ): Pair<INDArray, Int> {
+    ): INDArray {
+        logger.debug { formatName("MOZI") }
         val otherModels: MutableList<INDArray> = arrayListOf()
-        otherModelPairs.forEach { otherModels.add(it.first) }
-        logger.debug { "<====      MOZI      ====>" }
+        otherModelPairs.forEach { otherModels.add(it) }
         logger.debug { "Found ${otherModels.size} other models" }
-        logger.debug { "MyModel: " + myModel.first.getDouble(0) }
+        logger.debug { "MyModel: " + myModel.getDouble(0) }
         val Ndistance: List<INDArray> = applyDistanceFilter(myModel, otherModels)
         logger.debug { "After distance filter, remaining:${Ndistance.size}" }
         val Nperformance: List<INDArray> = applyPerformanceFilter(myModel, Ndistance, network, testDataSetIterator)
@@ -37,15 +36,15 @@ class Mozi : AggregationRule() {
 
         // This is not included in the original algorithm!!!!
         if (Nperformance.isEmpty()) {
-            return Pair(myModel.first.sub(gradient), 99999)
+            return myModel.sub(gradient)
         }
 
         val Rmozi: INDArray = average(Nperformance)
         logger.debug("average: ${Rmozi.getDouble(0)}")
         val alpha = 0.5
-        val part1 = myModel.first.mul(alpha)
-        val result = Pair(part1.add(Rmozi.mul(1 - alpha)), 999999)
-        logger.debug("result: ${result.first.getDouble(0)}")
+        val part1 = myModel.mul(alpha)
+        val result = part1.add(Rmozi.mul(1 - alpha))
+        logger.debug("result: ${result.getDouble(0)}")
         return result
     }
 
@@ -73,22 +72,22 @@ class Mozi : AggregationRule() {
     }
 
     private fun applyDistanceFilter(
-        myModel: Pair<INDArray, Int>,
+        myModel: INDArray,
         otherModels: List<INDArray>
     ): List<INDArray> {
         val distances: MutableMap<Double, INDArray> = hashMapOf()
         for (otherModel in otherModels) {
-            logger.debug { "Distance calculated: ${myModel.first.distance2(otherModel)}" }
-            distances[myModel.first.distance2(otherModel)] = otherModel
+            logger.debug { "Distance calculated: ${myModel.distance2(otherModel)}" }
+            distances[myModel.distance2(otherModel)] = otherModel
         }
         val sortedDistances: Map<Double, INDArray> = distances.toSortedMap()
-        val numBenign = ceil(FRAC_BENIGN * otherModels.size).toLong()
+        val numBenign = ceil(fracBenign * otherModels.size).toLong()
         logger.debug { "#benign: $numBenign" }
         return sortedDistances.values.stream().limit(numBenign).collect(Collectors.toList())
     }
 
     private fun applyPerformanceFilter(
-        myModel: Pair<INDArray, Int>,
+        myModel: INDArray,
         otherModels: List<INDArray>,
         network: MultiLayerNetwork,
         testDataSetIterator: DataSetIterator
@@ -96,7 +95,7 @@ class Mozi : AggregationRule() {
         val result: MutableList<INDArray> = arrayListOf()
         testDataSetIterator.reset()
         val sample = testDataSetIterator.next(TEST_BATCH)
-        val myLoss = calculateLoss(myModel.first, network, sample)
+        val myLoss = calculateLoss(myModel, network, sample)
         logger.debug { "myLoss: $myLoss" }
         val otherLosses = calculateLoss(otherModels, network, sample)
         for ((index, otherLoss) in otherLosses.withIndex()) {

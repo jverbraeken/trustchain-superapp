@@ -3,7 +3,6 @@ package nl.tudelft.trustchain.fedml.ai
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.ai.gar.AggregationRule
-import nl.tudelft.trustchain.fedml.ai.gar.SimpleAggregator
 import org.deeplearning4j.optimize.listeners.EvaluativeListener
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener
 import org.nd4j.linalg.api.ndarray.INDArray
@@ -12,8 +11,6 @@ import java.io.File
 private val logger = KotlinLogging.logger("SimulatedRunner")
 
 class SimulatedRunner : Runner() {
-    private val aggregationRule: AggregationRule = SimpleAggregator()
-
     override fun run(
         baseDirectory: File,
         seed: Int,
@@ -67,13 +64,14 @@ class SimulatedRunner : Runner() {
             )
             evaluationListener.callback = evaluationProcessor
 
-            var epoch = 0
             var iterations = 0
             var iterationsToEvaluation = 0
             val trainConfiguration = mlConfiguration.trainConfiguration
             val datasetIteratorConfiguration = mlConfiguration.datasetIteratorConfiguration
-            for (i in 0 until trainConfiguration.numEpochs.value) {
-                epoch++
+            val numEpochs = trainConfiguration.numEpochs.value
+            val batchSize = datasetIteratorConfiguration.batchSize.value
+            val gar = trainConfiguration.gar.obj
+            for (epoch in 0 until numEpochs) {
                 trainDataSetIterators.forEach { it.reset() }
                 logger.debug { "Starting epoch: $epoch" }
                 evaluationProcessor.epoch = epoch
@@ -91,8 +89,8 @@ class SimulatedRunner : Runner() {
                         }
                         gradient.add(oldParams.last().sub(net.params().dup()))
                     }
-                    iterations += datasetIteratorConfiguration.batchSize.value
-                    iterationsToEvaluation += datasetIteratorConfiguration.batchSize.value
+                    iterations += batchSize
+                    iterationsToEvaluation += batchSize
 
                     if (iterationsToEvaluation >= iterationsBeforeEvaluation) {
                         iterationsToEvaluation = 0
@@ -105,16 +103,16 @@ class SimulatedRunner : Runner() {
                         evaluationListener.callback = evaluationProcessor
                         evaluationListener.iterationDone(networks[0], networks[0].iterationCount, epoch)
 
-                        val params: MutableList<Pair<INDArray, Int>> = ArrayList(networks.size)
-                        networks.forEach { params.add(Pair(it.params().dup(), datasetIteratorConfiguration.batchSize.value)) }
-                        val averageParams = aggregationRule.integrateParameters(
+                        val params: MutableList<INDArray> = ArrayList(networks.size)
+                        networks.forEach { params.add(it.params().dup()) }
+                        val averageParams = gar.integrateParameters(
                             params[0],
                             gradient[0],
                             params.subList(1, params.size),
                             networks[0],
                             testDataSetIterator
                         )
-                        networks.forEach { it.setParams(averageParams.first) }
+                        networks.forEach { it.setParams(averageParams) }
 
                         evaluationProcessor.extraElements =
                             mapOf(Pair("before or after averaging", "after"))

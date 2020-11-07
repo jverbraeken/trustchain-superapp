@@ -6,10 +6,14 @@ import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 
 abstract class AggregationRule {
     abstract fun integrateParameters(
-        myModel: Pair<INDArray, Int>,
+        myModel: INDArray,
         gradient: INDArray,
-        otherModelPairs: List<Pair<INDArray, Int>>,
+        otherModelPairs: List<INDArray>,
         network: MultiLayerNetwork,
         testDataSetIterator: DataSetIterator
-    ): Pair<INDArray, Int>
+    ): INDArray
+
+    protected fun formatName(name: String): String {
+        return "<====      $name      ====>"
+    }
 }

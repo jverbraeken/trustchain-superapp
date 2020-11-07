@@ -8,31 +8,32 @@ import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 
 private val logger = KotlinLogging.logger("Median")
 
-fun median(l: List<Double>) = l.sorted().let { (it[it.size / 2] + it[(it.size - 1) / 2]) / 2 }
+fun median(l: List<Float>) = l.sorted().let { (it[it.size / 2] + it[(it.size - 1) / 2]) / 2 }
 
 class Median : AggregationRule() {
 
     override fun integrateParameters(
-        myModel: Pair<INDArray, Int>,
+        myModel: INDArray,
         gradient: INDArray,
-        otherModelPairs: List<Pair<INDArray, Int>>,
+        otherModelPairs: List<INDArray>,
         network: MultiLayerNetwork,
         testDataSetIterator: DataSetIterator
-    ): Pair<INDArray, Int> {
-        val models: MutableList<INDArray> = arrayListOf(myModel.first)
-        otherModelPairs.forEach { models.add(it.first) }
+    ): INDArray {
+        logger.debug { formatName("Median") }
+        val models: MutableList<INDArray> = arrayListOf(myModel)
+        otherModelPairs.forEach { models.add(it) }
         logger.debug { "Found ${models.size} models in total" }
         return if (models.size == 1) {
-            Pair(myModel.first.sub(gradient), 999999)
+            myModel.sub(gradient)
         } else {
-            val modelsAsArrays = models.map { it.toDoubleMatrix()[0] }
-            val newMatrix = Array(1) { DoubleArray(modelsAsArrays[0].size) }
+            val modelsAsArrays = models.map { it.toFloatMatrix()[0] }
+            val newMatrix = Array(1) { FloatArray(modelsAsArrays[0].size) }
             for (i in modelsAsArrays[0].indices) {
-                val elements = ArrayList<Double>(modelsAsArrays.size)
+                val elements = ArrayList<Float>(modelsAsArrays.size)
                 modelsAsArrays.forEach { elements.add(it[i]) }
                 newMatrix[0][i] = median(elements)
             }
-            Pair(NDArray(newMatrix).sub(gradient), 999999)
+            NDArray(newMatrix).sub(gradient)
         }
     }
 }

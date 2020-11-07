@@ -1,8 +1,6 @@
 package nl.tudelft.trustchain.fedml.ipv8
 
-import android.util.Log
 import mu.KotlinLogging
-//import mu.KotlinLogging
 import nl.tudelft.ipv8.Overlay
 import nl.tudelft.ipv8.Peer
 import nl.tudelft.ipv8.attestation.trustchain.TrustChainCommunity
@@ -32,6 +30,8 @@ class FedMLCommunity(
 ) : TrustChainCommunity(settings, database, crawler) {
     override val serviceId = "36b098237ff4debfd0278b8b87c583e1c2cce4b7"
     private var peersRR: MutableList<Peer>? = null
+    private var peersRing: MutableList<Peer>? = null
+    private var ringCounter: Int = 1
 
     class Factory(
         private val settings: TrustChainSettings,
@@ -75,7 +75,7 @@ class FedMLCommunity(
         send(peer, packet)
     }
 
-    internal fun sendToAll(messageID: MessageId, message: Serializable, peers: List<Peer>? = null) {
+    internal fun sendToAll(messageID: MessageId, message: Serializable) {
         logger.debug { "sendToAll" }
         for (peer in /*peers ?:*/ getPeers()) {
             logger.debug { "Peer: ${peer.address}" }
@@ -83,7 +83,7 @@ class FedMLCommunity(
         }
     }
 
-    internal fun sendToRandomPeer(messageID: MessageId, message: Serializable, peers: List<Peer>? = null) {
+    internal fun sendToRandomPeer(messageID: MessageId, message: Serializable) {
         logger.debug { "sendToRandomPeer" }
         val set = /*peers ?:*/ getPeers()
         if (set.isNotEmpty()) {
@@ -94,23 +94,67 @@ class FedMLCommunity(
     }
 
     // Round Robin
-    internal fun sendToNextPeerRR(messageID: MessageId, message: Serializable, peers: List<Peer>? = null) {
+    internal fun sendToNextPeerRR(messageID: MessageId, message: Serializable) {
         logger.debug { "sendToNextPeerRR" }
-        val peer = getAndSetNextPeerRR(peers)
+        if (nl.tudelft.ipv8.messaging.utp.busySending) {
+            logger.debug { "Skipped because busy sending" }
+            return
+        }
+        val peer = getAndSetNextPeerRR()
         if (peer != null) {
             logger.debug { "Peer: ${peer.address}" }
             sendToPeer(peer, messageID, message)
         }
     }
 
-    private fun getAndSetNextPeerRR(peers: List<Peer>?): Peer? {
+    private fun getAndSetNextPeerRR(): Peer? {
         if (peersRR.isNullOrEmpty()) {
             peersRR = (/*peers ?:*/ getPeers()).toMutableList()
         }
-        if (peersRR!!.isEmpty()) {
-            return null
+        return if (peersRR!!.isEmpty()) {
+            logger.debug { "No peer found" }
+            null
         } else {
-            return peersRR!!.removeAt(0)
+            peersRR!!.removeAt(0)
+        }
+    }
+
+    internal fun sendToNextPeerRing(messageID: MessageId, message: Serializable) {
+        logger.debug { "sendToNextPeerRing" }
+        if (nl.tudelft.ipv8.messaging.utp.busySending) {
+            logger.debug { "Skipped because busy sending" }
+            return
+        }
+        val peer = getAndSetNextPeerRing()
+        if (peer != null) {
+            logger.debug { "Peer: ${peer.address}" }
+            sendToPeer(peer, messageID, message)
+        }
+    }
+
+    private fun getAndSetNextPeerRing(): Peer? {
+        if (peersRing.isNullOrEmpty() || peersRing!!.size < ringCounter) {
+            peersRing = (/*peers ?:*/ getPeers()).toMutableList()
+            peersRing!!.sortBy { it.address.port }
+            val index = peersRing!!.indexOfFirst { it.address.port > myEstimatedWan.port }
+            for (i in 0 until index) {
+                val peer = peersRing!!.removeAt(0)
+                peersRing!!.add(peer)
+            }
+            logger.debug { "Added ${peersRing!!.size} peers to ring" }
+            ringCounter = 1
+        }
+        return if (peersRing!!.isEmpty()) {
+            logger.debug { "No peers found" }
+            null
+        } else {
+            for (i in 0 until ringCounter - 1) {
+                peersRing!!.removeAt(0)
+                logger.debug { "Removed 1 peer" }
+            }
+            ringCounter *= 2
+            logger.debug { "Ringcounter = $ringCounter" }
+            peersRing!!.removeAt(0)
         }
     }
 
@@ -163,26 +207,16 @@ data class MsgPong(val message: String) : Serializable {
     }
 }
 
-data class MsgParamUpdate(val array: INDArray, val weight: Int) : Serializable {
+data class MsgParamUpdate(val array: INDArray) : Serializable {
     override fun serialize(): ByteArray {
         return ByteArrayOutputStream().use { ObjectOutputStream(it).writeObject(array); it }.toByteArray()
-        /*val bos = ByteArrayOutputStream()
-        ObjectOutputStream(bos).use {
-            it.writeObject(array)
-//            it.writeInt(weight)
-            it.flush()
-            return bos.toByteArray()
-        }*/
     }
 
     companion object Deserializer : Deserializable<MsgParamUpdate> {
         override fun deserialize(buffer: ByteArray, offset: Int): Pair<MsgParamUpdate, Int> {
             val bis = ByteArrayInputStream(buffer.copyOfRange(offset, buffer.size))
             val ois = ObjectInputStream(bis)
-            return Pair(MsgParamUpdate(ois.readObject() as INDArray, 9999), buffer.size)
-            /*ObjectInputStream(bis).use {
-                return Pair(MsgParamUpdate(it.readObject() as INDArray, 1812*//*it.readInt()*//*), buffer.size)
-            }*/
+            return Pair(MsgParamUpdate(ois.readObject() as INDArray), buffer.size)
         }
     }
 }
