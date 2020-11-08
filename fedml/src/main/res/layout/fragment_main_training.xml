@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/Card">
+
+    <LinearLayout style="@style/outerLinearLayout">
+
+        <TextView
+            style="@style/CardLabel"
+            android:text="@string/training" />
+
+        <GridLayout style="@style/GridLayout">
+
+            <LinearLayout style="@style/innerLinearLayout">
+
+                <TextView
+                    style="@style/InputLabel"
+                    android:text="@string/spnEpochs" />
+
+                <Spinner
+                    android:id="@+id/spnEpochs"
+                    style="@style/Spinner" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/innerLinearLayout">
+
+                <TextView
+                    style="@style/InputLabel"
+                    android:text="@string/spnGar" />
+
+                <Spinner
+                    android:id="@+id/spnGar"
+                    style="@style/Spinner" />
+
+            </LinearLayout>
+
+            <LinearLayout style="@style/innerLinearLayout">
+
+                <TextView
+                    style="@style/InputLabel"
+                    android:text="@string/spnCommunicationPattern" />
+
+                <Spinner
+                    android:id="@+id/spnCommunicationPattern"
+                    style="@style/Spinner" />
+
+            </LinearLayout>
+
+            <LinearLayout style="@style/innerLinearLayout">
+
+                <TextView
+                    style="@style/InputLabel"
+                    android:text="@string/spnBehavior" />
+
+                <Spinner
+                    android:id="@+id/spnBehavior"
+                    style="@style/Spinner" />
+
+            </LinearLayout>
+        </GridLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

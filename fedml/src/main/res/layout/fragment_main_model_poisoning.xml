@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/Card">
+
+    <LinearLayout style="@style/outerLinearLayout">
+
+        <TextView
+            style="@style/CardLabel"
+            android:text="@string/model_poisoning" />
+
+        <GridLayout style="@style/GridLayout">
+
+            <LinearLayout style="@style/innerLinearLayout">
+
+                <TextView
+                    style="@style/InputLabel"
+                    android:text="@string/spnAttack" />
+
+                <Spinner
+                    android:id="@+id/spnAttack"
+                    style="@style/Spinner" />
+            </LinearLayout>
+
+
+            <LinearLayout style="@style/innerLinearLayout">
+
+                <TextView
+                    style="@style/InputLabel"
+                    android:text="@string/spnNumPeers" />
+
+                <Spinner
+                    android:id="@+id/spnNumPeers"
+                    style="@style/Spinner" />
+            </LinearLayout>
+        </GridLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -10,252 +9,32 @@
         android:orientation="vertical"
         android:paddingBottom="@dimen/default_vertical_spacing">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/default_vertical_spacing"
-            android:layout_marginHorizontal="@dimen/header_spacing"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/wan_address" />
-
-            <TextView
-                android:id="@+id/txtWanAddress"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/default_horizontal_spacing" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-
-            <TextView
-                android:id="@+id/txtPeers"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
-        <GridLayout style="@style/GridLayout"
-            android:paddingVertical="0dp">
-
-            <Button
-                android:id="@+id/btnPing"
-                style="@style/button"
-                android:text="@string/ping" />
-
-            <Button
-                android:id="@+id/btnRunLocal"
-                style="@style/button"
-                android:text="@string/run_local" />
-
-            <Button
-                android:id="@+id/btnRunDistrSim"
-                style="@style/button"
-                android:text="@string/run_distr_sim" />
-
-            <Button
-                android:id="@+id/btnRunDistr"
-                style="@style/button"
-                android:text="@string/run_distr" />
-        </GridLayout>
-
-        <androidx.cardview.widget.CardView style="@style/Card">
-
-            <LinearLayout style="@style/outerLinearLayout">
-
-                <TextView
-                    style="@style/CardLabel"
-                    android:text="@string/dataset" />
-
-                <GridLayout style="@style/GridLayout">
-
-                    <LinearLayout style="@style/innerLinearLayout">
-
-                        <TextView
-                            style="@style/InputLabel"
-                            android:text="@string/spnDataset" />
-
-                        <Spinner
-                            android:id="@+id/spnDataset"
-                            style="@style/Spinner" />
-                    </LinearLayout>
-
-                    <LinearLayout style="@style/innerLinearLayout">
-
-                    </LinearLayout>
-                </GridLayout>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView style="@style/Card">
-
-            <LinearLayout style="@style/outerLinearLayout">
-
-                <TextView
-                    style="@style/CardLabel"
-                    android:text="@string/iterator" />
-
-                <GridLayout style="@style/GridLayout">
-
-                    <LinearLayout style="@style/innerLinearLayout">
-
-                        <TextView
-                            style="@style/InputLabel"
-                            android:text="@string/spnBatchSize" />
-
-                        <Spinner
-                            android:id="@+id/spnBatchSize"
-                            style="@style/Spinner" />
-                    </LinearLayout>
-
-                    <LinearLayout style="@style/innerLinearLayout">
-
-                        <TextView
-                            style="@style/InputLabel"
-                            android:text="@string/spnIteratorDistribution" />
-
-                        <Spinner
-                            android:id="@+id/spnIteratorDistribution"
-                            style="@style/Spinner" />
-
-                    </LinearLayout>
-
-                    <LinearLayout style="@style/innerLinearLayout">
-
-                        <TextView
-                            style="@style/InputLabel"
-                            android:text="@string/spnMaxSamples" />
-
-                        <Spinner
-                            android:id="@+id/spnMaxSamples"
-                            style="@style/Spinner" />
-
-                    </LinearLayout>
-                </GridLayout>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView style="@style/Card">
-
-            <LinearLayout style="@style/outerLinearLayout">
-
-                <TextView
-                    style="@style/CardLabel"
-                    android:text="@string/neuralnetwork" />
-
-                <GridLayout style="@style/GridLayout">
-
-                    <LinearLayout style="@style/innerLinearLayout">
-
-                        <TextView
-                            style="@style/InputLabel"
-                            android:text="@string/spnOptimizer" />
-
-                        <Spinner
-                            android:id="@+id/spnOptimizer"
-                            style="@style/Spinner" />
-                    </LinearLayout>
-
-                    <LinearLayout style="@style/innerLinearLayout">
-
-                        <TextView
-                            style="@style/InputLabel"
-                            android:text="@string/spnLearningRate" />
-
-                        <Spinner
-                            android:id="@+id/spnLearningRate"
-                            style="@style/Spinner" />
-
-                    </LinearLayout>
-
-                    <LinearLayout style="@style/innerLinearLayout">
-
-                        <TextView
-                            style="@style/InputLabel"
-                            android:text="@string/spnMomentum" />
-
-                        <Spinner
-                            android:id="@+id/spnMomentum"
-                            style="@style/Spinner" />
-                    </LinearLayout>
-
-                    <LinearLayout style="@style/innerLinearLayout">
-
-                        <TextView
-                            style="@style/InputLabel"
-                            android:text="@string/spnL2Regularization" />
-
-                        <Spinner
-                            android:id="@+id/spnL2Regularization"
-                            style="@style/Spinner" />
-
-                    </LinearLayout>
-                </GridLayout>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView style="@style/Card">
-
-            <LinearLayout style="@style/outerLinearLayout">
-
-                <TextView
-                    style="@style/CardLabel"
-                    android:text="@string/training" />
-
-                <GridLayout style="@style/GridLayout">
-
-                    <LinearLayout style="@style/innerLinearLayout">
-
-                        <TextView
-                            style="@style/InputLabel"
-                            android:text="@string/spnEpochs" />
-
-                        <Spinner
-                            android:id="@+id/spnEpochs"
-                            style="@style/Spinner" />
-                    </LinearLayout>
-
-                    <LinearLayout style="@style/innerLinearLayout">
-
-                        <TextView
-                            style="@style/InputLabel"
-                            android:text="@string/spnGar" />
-
-                        <Spinner
-                            android:id="@+id/spnGar"
-                            style="@style/Spinner" />
-
-                    </LinearLayout>
-
-                    <LinearLayout style="@style/innerLinearLayout">
-
-                        <TextView
-                            style="@style/InputLabel"
-                            android:text="@string/spnCommunicationPattern" />
-
-                        <Spinner
-                            android:id="@+id/spnCommunicationPattern"
-                            style="@style/Spinner" />
-
-                    </LinearLayout>
-
-                    <LinearLayout style="@style/innerLinearLayout">
-
-                        <TextView
-                            style="@style/InputLabel"
-                            android:text="@string/spnBehavior" />
-
-                        <Spinner
-                            android:id="@+id/spnBehavior"
-                            style="@style/Spinner" />
-
-                    </LinearLayout>
-                </GridLayout>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+        <include
+            style="@style/include"
+            layout="@layout/fragment_main_network" />
+
+        <include
+            style="@style/include"
+            layout="@layout/fragment_main_buttons" />
+
+        <include
+            style="@style/include"
+            layout="@layout/fragment_main_dataset" />
+
+        <include
+            style="@style/include"
+            layout="@layout/fragment_main_iterator" />
+
+        <include
+            style="@style/include"
+            layout="@layout/fragment_main_neural_network" />
+
+        <include
+            style="@style/include"
+            layout="@layout/fragment_main_training" />
+
+        <include
+            style="@style/include"
+            layout="@layout/fragment_main_model_poisoning" />
     </LinearLayout>
 </ScrollView>
