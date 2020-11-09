@@ -15,13 +15,13 @@ class Median : AggregationRule() {
     override fun integrateParameters(
         myModel: INDArray,
         gradient: INDArray,
-        otherModelPairs: List<INDArray>,
+        otherModels: List<INDArray>,
         network: MultiLayerNetwork,
         testDataSetIterator: DataSetIterator
     ): INDArray {
         logger.debug { formatName("Median") }
         val models: MutableList<INDArray> = arrayListOf(myModel)
-        otherModelPairs.forEach { models.add(it) }
+        otherModels.forEach { models.add(it) }
         logger.debug { "Found ${models.size} models in total" }
         return if (models.size == 1) {
             myModel.sub(gradient)

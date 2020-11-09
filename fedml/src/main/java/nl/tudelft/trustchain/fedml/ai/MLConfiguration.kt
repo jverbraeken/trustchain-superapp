@@ -4,7 +4,8 @@ data class MLConfiguration(
     val dataset: Datasets,
     val datasetIteratorConfiguration: DatasetIteratorConfiguration,
     val nnConfiguration: NNConfiguration,
-    val trainConfiguration: TrainConfiguration
+    val trainConfiguration: TrainConfiguration,
+    val modelPoisoningConfiguration: ModelPoisoningConfiguration
 )
 
 data class DatasetIteratorConfiguration(
@@ -25,4 +26,9 @@ data class TrainConfiguration(
     val gar: GARs,
     val communicationPattern: CommunicationPatterns,
     val behavior: Behaviors
+)
+
+data class ModelPoisoningConfiguration(
+    val attack: ModelPoisoningAttacks,
+    val numAttackers: NumAttackers
 )

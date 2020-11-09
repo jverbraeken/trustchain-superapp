@@ -10,19 +10,19 @@ private val logger = KotlinLogging.logger("Median")
 
 fun trimmedMean(b: Int, l: List<Float>) = l.sorted().subList(b, l.size - b).average().toFloat()
 
-class CWTrimmedMean(val b: Int) : AggregationRule() {
+class CWTrimmedMean(private val b: Int) : AggregationRule() {
     private val minimumModels = 2 * b + 1
 
     override fun integrateParameters(
         myModel: INDArray,
         gradient: INDArray,
-        otherModelPairs: List<INDArray>,
+        otherModels: List<INDArray>,
         network: MultiLayerNetwork,
         testDataSetIterator: DataSetIterator
     ): INDArray {
         logger.debug { formatName("Coordinate-Wise Trimmed Mean") }
         val models: MutableList<INDArray> = arrayListOf(myModel.sub(gradient))
-        otherModelPairs.forEach { models.add(it) }
+        otherModels.forEach { models.add(it) }
         logger.debug { "Found ${models.size} models in total" }
         return if (models.size < minimumModels) {
             models[0]

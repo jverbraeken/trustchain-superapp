@@ -1,6 +1,10 @@
 package nl.tudelft.trustchain.fedml.ai
 
 import nl.tudelft.trustchain.fedml.ai.gar.*
+import nl.tudelft.trustchain.fedml.ai.modelPoisoningAttack.Fang2020Krum
+import nl.tudelft.trustchain.fedml.ai.modelPoisoningAttack.Fang2020TrimmedMean
+import nl.tudelft.trustchain.fedml.ai.modelPoisoningAttack.ModelPoisoningAttack
+import nl.tudelft.trustchain.fedml.ai.modelPoisoningAttack.NoAttack
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration
 import org.nd4j.linalg.schedule.ISchedule
 import org.nd4j.linalg.schedule.MapSchedule
@@ -141,13 +145,13 @@ enum class MaxSamples(val id: String, val text: String, val value: Int) {
 }
 
 // Gradient Aggregation Rule
-enum class GARs(val id: String, val text: String, val obj: AggregationRule) {
-    AVERAGE("average", "Simple average", Average()),
-    MEDIAN("median", "Median", Median()),
-    CWTRIMMEDMEAN("cwtrimmedmean", "Trimmed Mean (b=1)", CWTrimmedMean(1)),
-    KRUM("krum", "Krum (b=1)", Krum(1)),
-    BRIDGE("bridge", "Bridge (b=1)", Bridge(1)),
-    MOZI("mozi", "Mozi (frac=0.5)", Mozi(0.5))
+enum class GARs(val id: String, val text: String, val obj: AggregationRule, val defaultModelPoisoningAttack: ModelPoisoningAttacks) {
+    AVERAGE("average", "Simple average", Average(), ModelPoisoningAttacks.NONE),
+    MEDIAN("median", "Median", Median(), ModelPoisoningAttacks.FANG_2020_MEDIAN),
+    CWTRIMMEDMEAN("cwtrimmedmean", "Trimmed Mean (b=1)", CWTrimmedMean(1), ModelPoisoningAttacks.FANG_2020_TRIMMED_MEAN),
+    KRUM("krum", "Krum (b=1)", Krum(1), ModelPoisoningAttacks.FANG_2020_KRUM),
+    BRIDGE("bridge", "Bridge (b=1)", Bridge(1), ModelPoisoningAttacks.NONE),
+    MOZI("mozi", "Mozi (frac=0.5)", Mozi(0.5), ModelPoisoningAttacks.NONE)
 }
 
 enum class CommunicationPatterns(val id: String, val text: String) {
@@ -161,4 +165,18 @@ enum class Behaviors(val id: String, val text: String) {
     BENIGN("benign", "Benign"),
     NOISE("noise", "Noise"),
     LABEL_FLIP("label_flip", "Label flip")
+}
+
+enum class ModelPoisoningAttacks(val id: String, val text: String, val obj: ModelPoisoningAttack) {
+    NONE("none", "<none>", NoAttack()),
+    FANG_2020_TRIMMED_MEAN("fang_2020_trimmed_mean", "Fang 2020, trimmed mean", Fang2020TrimmedMean(2)),
+    FANG_2020_MEDIAN("fang_2020_median", "Fang 2020, median", Fang2020TrimmedMean(2)), // Attack is the same as for mean
+    FANG_2020_KRUM("fang_2020_krum", "Fang 2020, krum", Fang2020Krum(2))
+}
+
+enum class NumAttackers(val id: String, val text: String, val num: Int) {
+    NUM_1("num_1", "1", 1),
+    NUM_2("num_2", "2", 2),
+    NUM_3("num_3", "3", 3),
+    NUM_4("num_4", "4", 4)
 }

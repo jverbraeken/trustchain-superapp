@@ -8,19 +8,19 @@ import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 
 private val logger = KotlinLogging.logger("Bridge")
 
-class Bridge(val b: Int) : AggregationRule() {
+class Bridge(private val b: Int) : AggregationRule() {
     private val minimumModels = 2 * b + 1
 
     override fun integrateParameters(
         myModel: INDArray,
         gradient: INDArray,
-        otherModelPairs: List<INDArray>,
+        otherModels: List<INDArray>,
         network: MultiLayerNetwork,
         testDataSetIterator: DataSetIterator
     ): INDArray {
         logger.debug { formatName("BRIDGE") }
         val models: MutableList<INDArray> = arrayListOf(myModel)
-        otherModelPairs.forEach { models.add(it) }
+        otherModels.forEach { models.add(it) }
         logger.debug { "Found ${models.size} models in total" }
         return if (models.size < minimumModels) {
             myModel.sub(gradient)

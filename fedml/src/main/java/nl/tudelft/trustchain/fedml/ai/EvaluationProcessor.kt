@@ -46,6 +46,7 @@ class EvaluationProcessor(
         val nnConfiguration = mlConfiguration.nnConfiguration
         val datasetIteratorConfiguration = mlConfiguration.datasetIteratorConfiguration
         val trainConfiguration = mlConfiguration.trainConfiguration
+        val modelPoisoningConfiguration = mlConfiguration.modelPoisoningConfiguration
         PrintWriter(fileMeta).use { pw ->
             arrayOf(
                 "runner, $runner",
@@ -63,6 +64,9 @@ class EvaluationProcessor(
                 "communicationPattern, ${trainConfiguration.communicationPattern.text}",
                 "behavior, ${trainConfiguration.behavior.text}",
                 "numEpochs, ${trainConfiguration.numEpochs}",
+
+                "local model poisoning attack, ${modelPoisoningConfiguration.attack.text}",
+                "#attackers, ${modelPoisoningConfiguration.numAttackers.text}",
 
                 "seed, $seed"
             ).forEach(pw::println)

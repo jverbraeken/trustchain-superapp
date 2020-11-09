@@ -1,25 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/GridLayout"
-    android:paddingVertical="0dp">
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <Button
-        android:id="@+id/btnPing"
-        style="@style/button"
-        android:text="@string/ping" />
+    <GridLayout
+        style="@style/GridLayout"
+        android:paddingVertical="0dp">
 
-    <Button
-        android:id="@+id/btnRunLocal"
-        style="@style/button"
-        android:text="@string/run_local" />
+        <Button
+            android:id="@+id/btnPing"
+            style="@style/button"
+            android:text="@string/ping" />
 
-    <Button
-        android:id="@+id/btnRunDistrSim"
-        style="@style/button"
-        android:text="@string/run_distr_sim" />
+        <Button
+            android:id="@+id/btnRunLocal"
+            style="@style/button"
+            android:text="@string/run_local" />
 
-    <Button
-        android:id="@+id/btnRunDistr"
-        style="@style/button"
-        android:text="@string/run_distr" />
-</GridLayout>
+        <Button
+            android:id="@+id/btnRunDistrSim"
+            style="@style/button"
+            android:text="@string/run_distr_sim" />
+
+        <Button
+            android:id="@+id/btnRunDistr"
+            style="@style/button"
+            android:text="@string/run_distr" />
+    </GridLayout>
+</merge>

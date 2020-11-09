@@ -12,13 +12,13 @@ class Average : AggregationRule() {
     override fun integrateParameters(
         myModel: INDArray,
         gradient: INDArray,
-        otherModelPairs: List<INDArray>,
+        otherModels: List<INDArray>,
         network: MultiLayerNetwork,
         testDataSetIterator: DataSetIterator
     ): INDArray {
         logger.debug { formatName("Simple average") }
         val models: MutableList<INDArray> = arrayListOf(myModel.sub(gradient))
-        otherModelPairs.forEach { models.add(it) }
+        otherModels.forEach { models.add(it) }
         logger.debug { "Found ${models.size} models in total" }
         val modelsAsArrays = models.map { it.toFloatMatrix()[0] }
         val newMatrix = Array(1) { FloatArray(modelsAsArrays[0].size) }

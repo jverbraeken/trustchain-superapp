@@ -1,59 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android" style="@style/Card">
 
-<LinearLayout style="@style/outerLinearLayout">
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <TextView
-        style="@style/CardLabel"
-        android:text="@string/neuralnetwork" />
+    <androidx.cardview.widget.CardView style="@style/Card">
 
-    <GridLayout style="@style/GridLayout">
-
-        <LinearLayout style="@style/innerLinearLayout">
+        <LinearLayout style="@style/outerLinearLayout">
 
             <TextView
-                style="@style/InputLabel"
-                android:text="@string/spnOptimizer" />
+                style="@style/CardLabel"
+                android:text="@string/neuralnetwork" />
 
-            <Spinner
-                android:id="@+id/spnOptimizer"
-                style="@style/Spinner" />
+            <GridLayout style="@style/GridLayout">
+
+                <LinearLayout style="@style/innerLinearLayout">
+
+                    <TextView
+                        style="@style/InputLabel"
+                        android:text="@string/spnOptimizer" />
+
+                    <Spinner
+                        android:id="@+id/spnOptimizer"
+                        style="@style/Spinner" />
+                </LinearLayout>
+
+                <LinearLayout style="@style/innerLinearLayout">
+
+                    <TextView
+                        style="@style/InputLabel"
+                        android:text="@string/spnLearningRate" />
+
+                    <Spinner
+                        android:id="@+id/spnLearningRate"
+                        style="@style/Spinner" />
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/innerLinearLayout">
+
+                    <TextView
+                        style="@style/InputLabel"
+                        android:text="@string/spnMomentum" />
+
+                    <Spinner
+                        android:id="@+id/spnMomentum"
+                        style="@style/Spinner" />
+                </LinearLayout>
+
+                <LinearLayout style="@style/innerLinearLayout">
+
+                    <TextView
+                        style="@style/InputLabel"
+                        android:text="@string/spnL2Regularization" />
+
+                    <Spinner
+                        android:id="@+id/spnL2Regularization"
+                        style="@style/Spinner" />
+
+                </LinearLayout>
+            </GridLayout>
         </LinearLayout>
-
-        <LinearLayout style="@style/innerLinearLayout">
-
-            <TextView
-                style="@style/InputLabel"
-                android:text="@string/spnLearningRate" />
-
-            <Spinner
-                android:id="@+id/spnLearningRate"
-                style="@style/Spinner" />
-
-        </LinearLayout>
-
-        <LinearLayout style="@style/innerLinearLayout">
-
-            <TextView
-                style="@style/InputLabel"
-                android:text="@string/spnMomentum" />
-
-            <Spinner
-                android:id="@+id/spnMomentum"
-                style="@style/Spinner" />
-        </LinearLayout>
-
-        <LinearLayout style="@style/innerLinearLayout">
-
-            <TextView
-                style="@style/InputLabel"
-                android:text="@string/spnL2Regularization" />
-
-            <Spinner
-                android:id="@+id/spnL2Regularization"
-                style="@style/Spinner" />
-
-        </LinearLayout>
-    </GridLayout>
-</LinearLayout>
-</androidx.cardview.widget.CardView>
+    </androidx.cardview.widget.CardView>
+</merge>

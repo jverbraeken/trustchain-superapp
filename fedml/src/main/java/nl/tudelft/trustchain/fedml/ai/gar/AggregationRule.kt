@@ -8,7 +8,7 @@ abstract class AggregationRule {
     abstract fun integrateParameters(
         myModel: INDArray,
         gradient: INDArray,
-        otherModelPairs: List<INDArray>,
+        otherModels: List<INDArray>,
         network: MultiLayerNetwork,
         testDataSetIterator: DataSetIterator
     ): INDArray

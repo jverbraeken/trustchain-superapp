@@ -2,9 +2,7 @@ package nl.tudelft.trustchain.fedml.ai
 
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
-import nl.tudelft.ipv8.IPv4Address
 import nl.tudelft.ipv8.Peer
-import nl.tudelft.ipv8.keyvault.defaultCryptoProvider
 import nl.tudelft.trustchain.fedml.ipv8.FedMLCommunity
 import nl.tudelft.trustchain.fedml.ipv8.FedMLCommunity.MessageId
 import nl.tudelft.trustchain.fedml.ipv8.MessageListener
@@ -68,7 +66,8 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 evaluationProcessor,
                 trainDataSetIterator,
                 testDataSetIterator,
-                mlConfiguration.trainConfiguration
+                mlConfiguration.trainConfiguration,
+                mlConfiguration.modelPoisoningConfiguration
             )
         }
     }
@@ -78,16 +77,17 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         evaluationProcessor: EvaluationProcessor,
         trainDataSetIterator: DataSetIterator,
         testDataSetIterator: DataSetIterator,
-        trainConfiguration: TrainConfiguration
+        trainConfiguration: TrainConfiguration,
+        modelPoisoningConfiguration: ModelPoisoningConfiguration
     ) {
         val batchSize = trainDataSetIterator.batch()
         val gar = trainConfiguration.gar.obj
         var iterations = 0
         var iterationsToEvaluation = 0
         for (epoch in 0 until trainConfiguration.numEpochs.value) {
-            trainDataSetIterator.reset()
             logger.debug { "Starting epoch: $epoch" }
             evaluationProcessor.epoch = epoch
+            trainDataSetIterator.reset()
             val start = System.currentTimeMillis()
             while (true) {
 
@@ -122,17 +122,25 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
 
                     // Integrate parameters of other peers
                     network.setParams(oldParams)
+                    val attack = modelPoisoningConfiguration.attack
+                    val attackVectors = attack.obj.generateAttack(
+                        modelPoisoningConfiguration.numAttackers,
+                        oldParams,
+                        gradient,
+                        paramBuffer,
+                        random
+                    )
+                    paramBuffer.addAll(attackVectors)
                     val numPeers = paramBuffer.size + 1
                     val averageParams: INDArray
                     if (numPeers == 1) {
                         logger.debug { "No received params => skipping integration evaluation" }
-                        averageParams = network.params().dup()
+                        averageParams = newParams
                     } else {
                         logger.debug { "Params received => executing aggregation rule" }
 
                         val start2 = System.currentTimeMillis()
-                        val model = network.params().dup()
-                        averageParams = gar.integrateParameters(model, gradient, paramBuffer, network, testDataSetIterator)
+                        averageParams = gar.integrateParameters(oldParams, gradient, paramBuffer, network, testDataSetIterator)
                         paramBuffer.clear()
                         network.setParameters(averageParams)
                         val end2 = System.currentTimeMillis()
@@ -148,13 +156,13 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                     }
 
                     // Send new parameters to other peers
+                    val message = craftMessage(averageParams, trainConfiguration.behavior)
                     val sendMessage = when (trainConfiguration.communicationPattern) {
                         CommunicationPatterns.ALL -> community::sendToAll
                         CommunicationPatterns.RANDOM -> community::sendToRandomPeer
                         CommunicationPatterns.RR -> community::sendToNextPeerRR
                         CommunicationPatterns.RING -> community::sendToNextPeerRing
                     }
-                    val message = craftMessage(averageParams, trainConfiguration.behavior)
                     sendMessage(MessageId.MSG_PARAM_UPDATE, MsgParamUpdate(message))
                 }
                 if (endEpoch) {

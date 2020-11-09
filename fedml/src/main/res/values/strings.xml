@@ -29,5 +29,5 @@
     <string name="wan_address">WAN Address</string>
     <string name="model_poisoning">MITM local model poisoning</string>
     <string name="spnAttack">Attack</string>
-    <string name="spnNumPeers">#peers</string>
+    <string name="spnNumAttackers">#attackers</string>
 </resources>

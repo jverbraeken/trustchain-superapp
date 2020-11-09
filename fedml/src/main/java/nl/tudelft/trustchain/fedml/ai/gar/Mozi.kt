@@ -10,19 +10,19 @@ import kotlin.math.ceil
 
 private val logger = KotlinLogging.logger("Mozi")
 
-class Mozi(val fracBenign: Double) : AggregationRule() {
+class Mozi(private val fracBenign: Double) : AggregationRule() {
     private val TEST_BATCH = 50
 
     override fun integrateParameters(
         myModel: INDArray,
         gradient: INDArray,
-        otherModelPairs: List<INDArray>,
+        otherModels: List<INDArray>,
         network: MultiLayerNetwork,
         testDataSetIterator: DataSetIterator
     ): INDArray {
         logger.debug { formatName("MOZI") }
         val otherModels: MutableList<INDArray> = arrayListOf()
-        otherModelPairs.forEach { otherModels.add(it) }
+        otherModels.forEach { otherModels.add(it) }
         logger.debug { "Found ${otherModels.size} other models" }
         logger.debug { "MyModel: " + myModel.getDouble(0) }
         val Ndistance: List<INDArray> = applyDistanceFilter(myModel, otherModels)

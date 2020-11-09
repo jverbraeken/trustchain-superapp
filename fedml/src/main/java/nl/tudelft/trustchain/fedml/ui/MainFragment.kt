@@ -15,7 +15,7 @@ import nl.tudelft.trustchain.common.ui.BaseFragment
 import nl.tudelft.trustchain.common.util.viewBinding
 import nl.tudelft.trustchain.fedml.R
 import nl.tudelft.trustchain.fedml.ai.*
-import nl.tudelft.trustchain.fedml.databinding.FragmentMainBinding
+import nl.tudelft.trustchain.fedml.databinding.*
 import nl.tudelft.trustchain.fedml.ipv8.FedMLCommunity
 import nl.tudelft.trustchain.fedml.ipv8.FedMLCommunity.MessageId
 import nl.tudelft.trustchain.fedml.ipv8.MsgPing
@@ -28,7 +28,13 @@ private val logger = KotlinLogging.logger("FedML.MainFragment")
 //-e activity fedml -e dataset cifar10 -e optimizer sgd -e learningRate schedule1 -e momentum momentum_1em3 -e l2Regularization l2_1em4 -e batchSize batch_5 -e epoch epoch_25 -e runner distributed -e run true
 class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSelectedListener {
     private val baseDirectory: File by lazy { requireActivity().filesDir }
-    private val binding by viewBinding(FragmentMainBinding::bind)
+    private val networkBinding by viewBinding(FragmentMainNetworkBinding::bind)
+    private val buttonsBinding by viewBinding(FragmentMainButtonsBinding::bind)
+    private val datasetBinding by viewBinding(FragmentMainDatasetBinding::bind)
+    private val iteratorBinding by viewBinding(FragmentMainIteratorBinding::bind)
+    private val neuralNetworkBinding by viewBinding(FragmentMainNeuralNetworkBinding::bind)
+    private val trainingBinding by viewBinding(FragmentMainTrainingBinding::bind)
+    private val modelPoisoningBinding by viewBinding(FragmentMainModelPoisoningBinding::bind)
 
     private val datasets = Datasets.values().map { it.text }
     private val optimizers = Optimizers.values().map { it.text }
@@ -42,6 +48,8 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private val gars = GARs.values().map { it.text }
     private val communicationPatterns = CommunicationPatterns.values().map { it.text }
     private val behaviors = Behaviors.values().map { it.text }
+    private val modelPoisoningAttacks = ModelPoisoningAttacks.values().map { it.text }
+    private val numAttackers = NumAttackers.values().map { it.text }
 
     private var dataset: Datasets = Datasets.MNIST
     private var optimizer: Optimizers = dataset.defaultOptimizer
@@ -55,6 +63,8 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private var gar = GARs.MOZI
     private var communicationPattern = CommunicationPatterns.RR
     private var behavior = Behaviors.BENIGN
+    private var modelPoisoningAttack = ModelPoisoningAttacks.NONE
+    private var numAttacker = NumAttackers.NUM_2
 
     private fun getCommunity(): FedMLCommunity {
         return getIpv8().getOverlay()
@@ -64,32 +74,36 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        bindSpinner(view, binding.spnDataset, datasets)
-        bindSpinner(view, binding.spnOptimizer, optimizers)
-        bindSpinner(view, binding.spnLearningRate, learningRates)
-        bindSpinner(view, binding.spnMomentum, momentums)
-        bindSpinner(view, binding.spnL2Regularization, l2Regularizations)
-        bindSpinner(view, binding.spnBatchSize, batchSizes)
-        bindSpinner(view, binding.spnEpochs, epochs)
-        bindSpinner(view, binding.spnIteratorDistribution, iteratorDistributions)
-        bindSpinner(view, binding.spnMaxSamples, maxTestSamples)
-        bindSpinner(view, binding.spnGar, gars)
-        bindSpinner(view, binding.spnCommunicationPattern, communicationPatterns)
-        bindSpinner(view, binding.spnBehavior, behaviors)
+        buttonsBinding.btnPing.setOnClickListener { onBtnPingClicked() }
+        buttonsBinding.btnRunLocal.setOnClickListener { onBtnRunLocallyClicked() }
+        buttonsBinding.btnRunDistrSim.setOnClickListener { onBtnSimulateDistributedLocallyClicked() }
+        buttonsBinding.btnRunDistr.setOnClickListener { onBtnRunDistributedClicked() }
 
-        binding.btnPing.setOnClickListener { onBtnPingClicked() }
-        binding.btnRunLocal.setOnClickListener { onBtnRunLocallyClicked() }
-        binding.btnRunDistrSim.setOnClickListener { onBtnSimulateDistributedLocallyClicked() }
-        binding.btnRunDistr.setOnClickListener { onBtnRunDistributedClicked() }
+        bindSpinner(view, datasetBinding.spnDataset, datasets)
+        bindSpinner(view, iteratorBinding.spnBatchSize, batchSizes)
+        bindSpinner(view, iteratorBinding.spnIteratorDistribution, iteratorDistributions)
+        bindSpinner(view, iteratorBinding.spnMaxSamples, maxTestSamples)
+        bindSpinner(view, neuralNetworkBinding.spnOptimizer, optimizers)
+        bindSpinner(view, neuralNetworkBinding.spnLearningRate, learningRates)
+        bindSpinner(view, neuralNetworkBinding.spnMomentum, momentums)
+        bindSpinner(view, neuralNetworkBinding.spnL2Regularization, l2Regularizations)
+        bindSpinner(view, trainingBinding.spnEpochs, epochs)
+        bindSpinner(view, trainingBinding.spnGar, gars)
+        bindSpinner(view, trainingBinding.spnCommunicationPattern, communicationPatterns)
+        bindSpinner(view, trainingBinding.spnBehavior, behaviors)
+        bindSpinner(view, modelPoisoningBinding.spnAttack, modelPoisoningAttacks)
+        bindSpinner(view, modelPoisoningBinding.spnNumAttackers, numAttackers)
 
         configureDL4JDirectory()
         allowDL4JOnUIThread()
-        binding.spnDataset.setSelection(datasets.indexOf(dataset.text))
-        binding.spnEpochs.setSelection(epochs.indexOf(epoch.text))
-        binding.spnMaxSamples.setSelection(maxTestSamples.indexOf(maxTestSample.text))
-        binding.spnGar.setSelection(gars.indexOf(gar.text))
-        binding.spnCommunicationPattern.setSelection(communicationPatterns.indexOf(communicationPattern.text))
-        binding.spnBehavior.setSelection(behaviors.indexOf(behavior.text))
+        datasetBinding.spnDataset.setSelection(datasets.indexOf(dataset.text))
+        iteratorBinding.spnMaxSamples.setSelection(maxTestSamples.indexOf(maxTestSample.text))
+        trainingBinding.spnEpochs.setSelection(epochs.indexOf(epoch.text))
+        trainingBinding.spnGar.setSelection(gars.indexOf(gar.text))
+        trainingBinding.spnCommunicationPattern.setSelection(communicationPatterns.indexOf(communicationPattern.text))
+        trainingBinding.spnBehavior.setSelection(behaviors.indexOf(behavior.text))
+        modelPoisoningBinding.spnAttack.setSelection(modelPoisoningAttacks.indexOf(modelPoisoningAttack.text))
+        modelPoisoningBinding.spnNumAttackers.setSelection(numAttackers.indexOf(numAttacker.text))
         processIntentExtras()
         synchronizeSpinners()
 
@@ -115,8 +129,8 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private fun updateView() {
         val ipv8 = getIpv8()
         val demo = getDemoCommunity()
-        binding.txtWanAddress.text = demo.myEstimatedWan.toString()
-        binding.txtPeers.text = resources.getString(R.string.peers).format(
+        networkBinding.txtWanAddress.text = demo.myEstimatedWan.toString()
+        networkBinding.txtPeers.text = resources.getString(R.string.peers).format(
             ipv8.overlays.values.first { it.javaClass.simpleName == "FedMLCommunity" }.getPeers().size,
             ipv8.overlays.values.first { it.javaClass.simpleName == "UTPCommunity" }.getPeers().size
         )
@@ -173,6 +187,14 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
         val behavior = extras?.getString("behavior")
         if (behavior != null) {
             this.behavior = Behaviors.values().first { it.id == behavior }
+        }
+        val modelPoisoningAttack = extras?.getString("modelPoisoningAttack")
+        if (modelPoisoningAttack != null) {
+            this.modelPoisoningAttack = ModelPoisoningAttacks.values().first { it.id == modelPoisoningAttack }
+        }
+        val numAttackers = extras?.getString("numAttackers")
+        if (numAttackers != null) {
+            this.numAttacker = NumAttackers.values().first { it.id == numAttackers }
         }
     }
 
@@ -278,39 +300,50 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
                 gar = gar,
                 communicationPattern = communicationPattern,
                 behavior = behavior
+            ),
+            ModelPoisoningConfiguration(
+                attack = modelPoisoningAttack,
+                numAttackers = numAttacker
             )
         )
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         when (parent!!.id) {
-            binding.spnDataset.id -> {
+            datasetBinding.spnDataset.id -> {
                 dataset = Datasets.values().first { it.text == datasets[position] }
                 setDefaultValuesByDataset(dataset)
                 synchronizeSpinners()
             }
-            binding.spnOptimizer.id -> optimizer =
-                Optimizers.values().first { it.text == optimizers[position] }
-            binding.spnLearningRate.id -> learningRate =
-                LearningRates.values().first { it.text == learningRates[position] }
-            binding.spnMomentum.id -> momentum =
-                Momentums.values().first { it.text == momentums[position] }
-            binding.spnL2Regularization.id -> l2 =
-                L2Regularizations.values().first { it.text == l2Regularizations[position] }
-            binding.spnBatchSize.id -> batchSize =
+            iteratorBinding.spnBatchSize.id -> batchSize =
                 BatchSizes.values().first { it.text == batchSizes[position] }
-            binding.spnEpochs.id -> epoch =
-                Epochs.values().first { it.text == epochs[position] }
-            binding.spnIteratorDistribution.id -> iteratorDistribution =
+            iteratorBinding.spnIteratorDistribution.id -> iteratorDistribution =
                 IteratorDistributions.values().first { it.text == iteratorDistributions[position] }
-            binding.spnMaxSamples.id -> maxTestSample =
+            iteratorBinding.spnMaxSamples.id -> maxTestSample =
                 MaxSamples.values().first { it.text == maxTestSamples[position] }
-            binding.spnGar.id -> gar =
-                GARs.values().first { it.text == gars[position] }
-            binding.spnCommunicationPattern.id -> communicationPattern =
+            neuralNetworkBinding.spnOptimizer.id -> optimizer =
+                Optimizers.values().first { it.text == optimizers[position] }
+            neuralNetworkBinding.spnLearningRate.id -> learningRate =
+                LearningRates.values().first { it.text == learningRates[position] }
+            neuralNetworkBinding.spnMomentum.id -> momentum =
+                Momentums.values().first { it.text == momentums[position] }
+            neuralNetworkBinding.spnL2Regularization.id -> l2 =
+                L2Regularizations.values().first { it.text == l2Regularizations[position] }
+            trainingBinding.spnEpochs.id -> epoch =
+                Epochs.values().first { it.text == epochs[position] }
+            trainingBinding.spnGar.id -> {
+                gar = GARs.values().first { it.text == gars[position] }
+                modelPoisoningAttack = gar.defaultModelPoisoningAttack
+                synchronizeSpinners()
+            }
+            trainingBinding.spnCommunicationPattern.id -> communicationPattern =
                 CommunicationPatterns.values().first { it.text == communicationPatterns[position] }
-            binding.spnBehavior.id -> behavior =
+            trainingBinding.spnBehavior.id -> behavior =
                 Behaviors.values().first { it.text == behaviors[position] }
+            modelPoisoningBinding.spnAttack.id -> modelPoisoningAttack =
+                ModelPoisoningAttacks.values().first { it.text == modelPoisoningAttacks[position] }
+            modelPoisoningBinding.spnNumAttackers.id -> numAttacker =
+                NumAttackers.values().first { it.text == numAttackers[position] }
         }
     }
 
@@ -325,41 +358,47 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
 
     private fun synchronizeSpinners(
     ) {
-        binding.spnDataset.setSelection(
+        datasetBinding.spnDataset.setSelection(
             datasets.indexOf(dataset.text), true
         )
-        binding.spnOptimizer.setSelection(
-            optimizers.indexOf(optimizer.text), true
-        )
-        binding.spnLearningRate.setSelection(
-            learningRates.indexOf(learningRate.text), true
-        )
-        binding.spnMomentum.setSelection(
-            momentums.indexOf(momentum.text), true
-        )
-        binding.spnL2Regularization.setSelection(
-            l2Regularizations.indexOf(l2.text), true
-        )
-        binding.spnBatchSize.setSelection(
+        iteratorBinding.spnBatchSize.setSelection(
             batchSizes.indexOf(batchSize.text), true
         )
-        binding.spnEpochs.setSelection(
-            epochs.indexOf(epoch.text), true
-        )
-        binding.spnIteratorDistribution.setSelection(
+        iteratorBinding.spnIteratorDistribution.setSelection(
             iteratorDistributions.indexOf(iteratorDistribution.text), true
         )
-        binding.spnMaxSamples.setSelection(
+        iteratorBinding.spnMaxSamples.setSelection(
             maxTestSamples.indexOf(maxTestSample.text), true
         )
-        binding.spnGar.setSelection(
+        neuralNetworkBinding.spnOptimizer.setSelection(
+            optimizers.indexOf(optimizer.text), true
+        )
+        neuralNetworkBinding.spnLearningRate.setSelection(
+            learningRates.indexOf(learningRate.text), true
+        )
+        neuralNetworkBinding.spnMomentum.setSelection(
+            momentums.indexOf(momentum.text), true
+        )
+        neuralNetworkBinding.spnL2Regularization.setSelection(
+            l2Regularizations.indexOf(l2.text), true
+        )
+        trainingBinding.spnEpochs.setSelection(
+            epochs.indexOf(epoch.text), true
+        )
+        trainingBinding.spnGar.setSelection(
             gars.indexOf(gar.text), true
         )
-        binding.spnCommunicationPattern.setSelection(
+        trainingBinding.spnCommunicationPattern.setSelection(
             communicationPatterns.indexOf(communicationPattern.text), true
         )
-        binding.spnBehavior.setSelection(
+        trainingBinding.spnBehavior.setSelection(
             behaviors.indexOf(behavior.text), true
+        )
+        modelPoisoningBinding.spnAttack.setSelection(
+            modelPoisoningAttacks.indexOf(modelPoisoningAttack.text), true
+        )
+        modelPoisoningBinding.spnNumAttackers.setSelection(
+            numAttackers.indexOf(numAttacker.text), true
         )
     }
 

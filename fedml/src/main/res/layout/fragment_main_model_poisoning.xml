@@ -1,37 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/Card">
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <LinearLayout style="@style/outerLinearLayout">
+    <androidx.cardview.widget.CardView style="@style/Card">
 
-        <TextView
-            style="@style/CardLabel"
-            android:text="@string/model_poisoning" />
+        <LinearLayout style="@style/outerLinearLayout">
 
-        <GridLayout style="@style/GridLayout">
+            <TextView
+                style="@style/CardLabel"
+                android:text="@string/model_poisoning" />
 
-            <LinearLayout style="@style/innerLinearLayout">
+            <GridLayout style="@style/GridLayout">
 
-                <TextView
-                    style="@style/InputLabel"
-                    android:text="@string/spnAttack" />
+                <LinearLayout style="@style/innerLinearLayout">
 
-                <Spinner
-                    android:id="@+id/spnAttack"
-                    style="@style/Spinner" />
-            </LinearLayout>
+                    <TextView
+                        style="@style/InputLabel"
+                        android:text="@string/spnAttack" />
+
+                    <Spinner
+                        android:id="@+id/spnAttack"
+                        style="@style/Spinner" />
+                </LinearLayout>
 
 
-            <LinearLayout style="@style/innerLinearLayout">
+                <LinearLayout style="@style/innerLinearLayout">
 
-                <TextView
-                    style="@style/InputLabel"
-                    android:text="@string/spnNumPeers" />
+                    <TextView
+                        style="@style/InputLabel"
+                        android:text="@string/spnNumAttackers" />
 
-                <Spinner
-                    android:id="@+id/spnNumPeers"
-                    style="@style/Spinner" />
-            </LinearLayout>
-        </GridLayout>
-    </LinearLayout>
-</androidx.cardview.widget.CardView>
+                    <Spinner
+                        android:id="@+id/spnNumAttackers"
+                        style="@style/Spinner" />
+                </LinearLayout>
+            </GridLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</merge>

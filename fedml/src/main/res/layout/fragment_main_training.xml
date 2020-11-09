@@ -1,61 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/Card">
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <LinearLayout style="@style/outerLinearLayout">
+    <androidx.cardview.widget.CardView style="@style/Card">
 
-        <TextView
-            style="@style/CardLabel"
-            android:text="@string/training" />
+        <LinearLayout style="@style/outerLinearLayout">
 
-        <GridLayout style="@style/GridLayout">
+            <TextView
+                style="@style/CardLabel"
+                android:text="@string/training" />
 
-            <LinearLayout style="@style/innerLinearLayout">
+            <GridLayout style="@style/GridLayout">
 
-                <TextView
-                    style="@style/InputLabel"
-                    android:text="@string/spnEpochs" />
+                <LinearLayout style="@style/innerLinearLayout">
 
-                <Spinner
-                    android:id="@+id/spnEpochs"
-                    style="@style/Spinner" />
-            </LinearLayout>
+                    <TextView
+                        style="@style/InputLabel"
+                        android:text="@string/spnEpochs" />
 
-            <LinearLayout style="@style/innerLinearLayout">
+                    <Spinner
+                        android:id="@+id/spnEpochs"
+                        style="@style/Spinner" />
+                </LinearLayout>
 
-                <TextView
-                    style="@style/InputLabel"
-                    android:text="@string/spnGar" />
+                <LinearLayout style="@style/innerLinearLayout">
 
-                <Spinner
-                    android:id="@+id/spnGar"
-                    style="@style/Spinner" />
+                    <TextView
+                        style="@style/InputLabel"
+                        android:text="@string/spnGar" />
 
-            </LinearLayout>
+                    <Spinner
+                        android:id="@+id/spnGar"
+                        style="@style/Spinner" />
 
-            <LinearLayout style="@style/innerLinearLayout">
+                </LinearLayout>
 
-                <TextView
-                    style="@style/InputLabel"
-                    android:text="@string/spnCommunicationPattern" />
+                <LinearLayout style="@style/innerLinearLayout">
 
-                <Spinner
-                    android:id="@+id/spnCommunicationPattern"
-                    style="@style/Spinner" />
+                    <TextView
+                        style="@style/InputLabel"
+                        android:text="@string/spnCommunicationPattern" />
 
-            </LinearLayout>
+                    <Spinner
+                        android:id="@+id/spnCommunicationPattern"
+                        style="@style/Spinner" />
 
-            <LinearLayout style="@style/innerLinearLayout">
+                </LinearLayout>
 
-                <TextView
-                    style="@style/InputLabel"
-                    android:text="@string/spnBehavior" />
+                <LinearLayout style="@style/innerLinearLayout">
 
-                <Spinner
-                    android:id="@+id/spnBehavior"
-                    style="@style/Spinner" />
+                    <TextView
+                        style="@style/InputLabel"
+                        android:text="@string/spnBehavior" />
 
-            </LinearLayout>
-        </GridLayout>
-    </LinearLayout>
-</androidx.cardview.widget.CardView>
+                    <Spinner
+                        android:id="@+id/spnBehavior"
+                        style="@style/Spinner" />
+
+                </LinearLayout>
+            </GridLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</merge>
