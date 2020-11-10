@@ -10,14 +10,14 @@ private val logger = KotlinLogging.logger("Average")
 
 class Average : AggregationRule() {
     override fun integrateParameters(
-        myModel: INDArray,
+        oldModel: INDArray,
         gradient: INDArray,
         otherModels: List<INDArray>,
         network: MultiLayerNetwork,
         testDataSetIterator: DataSetIterator
     ): INDArray {
         logger.debug { formatName("Simple average") }
-        val models: MutableList<INDArray> = arrayListOf(myModel.sub(gradient))
+        val models: MutableList<INDArray> = arrayListOf(oldModel.sub(gradient))
         otherModels.forEach { models.add(it) }
         logger.debug { "Found ${models.size} models in total" }
         val modelsAsArrays = models.map { it.toFloatMatrix()[0] }

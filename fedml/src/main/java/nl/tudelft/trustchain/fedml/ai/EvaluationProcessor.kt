@@ -18,12 +18,13 @@ class EvaluationProcessor(
     runner: String,
     mlConfiguration: MLConfiguration,
     seed: Int,
-    private val extraElementNames: List<String>
+    private val extraElementNames: List<String>,
+    filenameAddition: String = ""
 ) : EvaluationCallback {
     private val dataLines: MutableList<Array<String>> = ArrayList()
     private val fileDirectory: File = File(baseDirectory.path, "evaluations")
-    private val fileResults: File = File(fileDirectory, "evaluation-${DATE_FORMAT.format(Date())}.csv")
-    private var fileMeta: File = File(fileDirectory, "evaluation-${DATE_FORMAT.format(Date())}.meta.csv")
+    private val fileResults: File = File(fileDirectory, "evaluation$filenameAddition-${DATE_FORMAT.format(Date())}.csv")
+    private var fileMeta: File = File(fileDirectory, "evaluation$filenameAddition-${DATE_FORMAT.format(Date())}.meta.csv")
     internal var epoch: Int = 0
     internal var iteration: Int = 0
     internal var extraElements: Map<String, String> = HashMap()

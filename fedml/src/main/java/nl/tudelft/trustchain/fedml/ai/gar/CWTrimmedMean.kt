@@ -14,14 +14,14 @@ class CWTrimmedMean(private val b: Int) : AggregationRule() {
     private val minimumModels = 2 * b + 1
 
     override fun integrateParameters(
-        myModel: INDArray,
+        oldModel: INDArray,
         gradient: INDArray,
         otherModels: List<INDArray>,
         network: MultiLayerNetwork,
         testDataSetIterator: DataSetIterator
     ): INDArray {
         logger.debug { formatName("Coordinate-Wise Trimmed Mean") }
-        val models: MutableList<INDArray> = arrayListOf(myModel.sub(gradient))
+        val models: MutableList<INDArray> = arrayListOf(oldModel.sub(gradient))
         otherModels.forEach { models.add(it) }
         logger.debug { "Found ${models.size} models in total" }
         return if (models.size < minimumModels) {

@@ -12,18 +12,18 @@ class Bridge(private val b: Int) : AggregationRule() {
     private val minimumModels = 2 * b + 1
 
     override fun integrateParameters(
-        myModel: INDArray,
+        oldModel: INDArray,
         gradient: INDArray,
         otherModels: List<INDArray>,
         network: MultiLayerNetwork,
         testDataSetIterator: DataSetIterator
     ): INDArray {
         logger.debug { formatName("BRIDGE") }
-        val models: MutableList<INDArray> = arrayListOf(myModel)
+        val models: MutableList<INDArray> = arrayListOf(oldModel)
         otherModels.forEach { models.add(it) }
         logger.debug { "Found ${models.size} models in total" }
         return if (models.size < minimumModels) {
-            myModel.sub(gradient)
+            oldModel.sub(gradient)
         } else {
             val modelsAsArrays = models.map { it.toFloatMatrix()[0] }
             val newMatrix = Array(1) { FloatArray(modelsAsArrays[0].size) }

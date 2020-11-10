@@ -28,7 +28,7 @@ fun getKrum(models: MutableList<INDArray>, b: Int): Int {
 
 class Krum(private val b: Int) : AggregationRule() {
     override fun integrateParameters(
-        myModel: INDArray,
+        oldModel: INDArray,
         gradient: INDArray,
         otherModels: List<INDArray>,
         network: MultiLayerNetwork,
@@ -39,10 +39,10 @@ class Krum(private val b: Int) : AggregationRule() {
         otherModels.forEach { models.add(it) }
         logger.debug { "Found ${models.size} models in total" }
         return if (models.size == 1) {
-            myModel.sub(gradient)
+            oldModel.sub(gradient)
         } else {
             val bestCandidate = getKrum(models, b)
-            val newModel = myModel.sub(gradient).add(models[bestCandidate]).div(2)
+            val newModel = oldModel.sub(gradient).add(models[bestCandidate]).div(2)
             newModel
         }
     }

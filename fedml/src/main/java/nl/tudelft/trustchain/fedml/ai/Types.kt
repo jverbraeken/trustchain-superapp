@@ -141,6 +141,7 @@ enum class IteratorDistributions(val id: String, val text: String, val value: Li
 }
 
 enum class MaxSamples(val id: String, val text: String, val value: Int) {
+    NUM_40("num_40", "40", 40),
     NUM_200("num_200", "200", 200)
 }
 

@@ -89,11 +89,11 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
             evaluationProcessor.epoch = epoch
             trainDataSetIterator.reset()
             val start = System.currentTimeMillis()
+            var oldParams = network.params().dup()
             while (true) {
 
                 // Train
                 var endEpoch = false
-                val oldParams = network.params().dup()
                 try {
                     network.fit(trainDataSetIterator.next())
                 } catch (e: NoSuchElementException) {
@@ -143,6 +143,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                         averageParams = gar.integrateParameters(oldParams, gradient, paramBuffer, network, testDataSetIterator)
                         paramBuffer.clear()
                         network.setParameters(averageParams)
+                        oldParams = averageParams.dup()
                         val end2 = System.currentTimeMillis()
 
                         execEvaluationProcessor(
