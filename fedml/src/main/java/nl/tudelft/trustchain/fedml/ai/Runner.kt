@@ -3,6 +3,10 @@ package nl.tudelft.trustchain.fedml.ai
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import nl.tudelft.trustchain.fedml.Behaviors
+import nl.tudelft.trustchain.fedml.Datasets
+import nl.tudelft.trustchain.fedml.LearningRates
+import nl.tudelft.trustchain.fedml.Optimizers
 import nl.tudelft.trustchain.fedml.ai.dataset.cifar.CustomCifar10DataSetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.har.HARDataFetcher
 import nl.tudelft.trustchain.fedml.ai.dataset.har.HARIterator

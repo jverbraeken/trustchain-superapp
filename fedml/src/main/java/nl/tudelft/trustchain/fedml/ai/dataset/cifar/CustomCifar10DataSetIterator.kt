@@ -1,6 +1,6 @@
 package nl.tudelft.trustchain.fedml.ai.dataset.cifar
 
-import nl.tudelft.trustchain.fedml.ai.Behaviors
+import nl.tudelft.trustchain.fedml.Behaviors
 import nl.tudelft.trustchain.fedml.ai.DatasetIteratorConfiguration
 import org.deeplearning4j.datasets.datavec.RecordReaderDataSetIterator
 import org.deeplearning4j.datasets.fetchers.Cifar10Fetcher

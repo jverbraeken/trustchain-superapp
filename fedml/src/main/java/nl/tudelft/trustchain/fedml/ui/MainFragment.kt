@@ -13,7 +13,7 @@ import kotlinx.coroutines.isActive
 import mu.KotlinLogging
 import nl.tudelft.trustchain.common.ui.BaseFragment
 import nl.tudelft.trustchain.common.util.viewBinding
-import nl.tudelft.trustchain.fedml.R
+import nl.tudelft.trustchain.fedml.*
 import nl.tudelft.trustchain.fedml.ai.*
 import nl.tudelft.trustchain.fedml.databinding.*
 import nl.tudelft.trustchain.fedml.ipv8.FedMLCommunity
@@ -44,7 +44,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private val batchSizes = BatchSizes.values().map { it.text }
     private val epochs = Epochs.values().map { it.text }
     private val iteratorDistributions = IteratorDistributions.values().map { it.text }
-    private val maxTestSamples = MaxSamples.values().map { it.text }
+    private val maxTestSamples = MaxTestSamples.values().map { it.text }
     private val gars = GARs.values().map { it.text }
     private val communicationPatterns = CommunicationPatterns.values().map { it.text }
     private val behaviors = Behaviors.values().map { it.text }
@@ -59,7 +59,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private var batchSize: BatchSizes = dataset.defaultBatchSize
     private var epoch: Epochs = Epochs.EPOCH_5
     private var iteratorDistribution: IteratorDistributions = dataset.defaultIteratorDistribution
-    private var maxTestSample = MaxSamples.NUM_40
+    private var maxTestSample = MaxTestSamples.NUM_40
     private var gar = GARs.BRISTLE
     private var communicationPattern = CommunicationPatterns.RANDOM
     private var behavior = Behaviors.BENIGN
@@ -141,60 +141,59 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
 
         val dataset = extras?.getString("dataset")
         if (dataset != null) {
-            this.dataset = Datasets.values().first { it.id == dataset }
-        }
-        val optimizer = extras?.getString("optimizer")
-        if (dataset != null) {
-            this.optimizer = Optimizers.values().first { it.id == optimizer }
-        }
-        val learningRate = extras?.getString("learningRate")
-        if (learningRate != null) {
-            this.learningRate = LearningRates.values().first { it.id == learningRate }
-        }
-        val momentum = extras?.getString("momentum")
-        if (momentum != null) {
-            this.momentum = Momentums.values().first { it.id == momentum }
-        }
-        val l2 = extras?.getString("l2Regularization")
-        if (l2 != null) {
-            this.l2 = L2Regularizations.values().first { it.id == l2 }
+            this.dataset = loadDataset(dataset)
         }
         val batchSize = extras?.getString("batchSize")
         if (batchSize != null) {
-            this.batchSize = BatchSizes.values().first { it.id == batchSize }
-        }
-        val epoch = extras?.getString("epoch")
-        if (epoch != null) {
-            this.epoch = Epochs.values().first { it.id == epoch }
+            this.batchSize = loadBatchSize(batchSize)
         }
         val iteratorDistribution = extras?.getString("iteratorDistribution")
         if (iteratorDistribution != null) {
-            this.iteratorDistribution =
-                IteratorDistributions.values().first { it.id == iteratorDistribution }
+            this.iteratorDistribution = loadIteratorDistribution(iteratorDistribution)
         }
         val maxTestSample = extras?.getString("maxTestSample")
         if (maxTestSample != null) {
-            this.maxTestSample = MaxSamples.values().first { it.id == maxTestSample }
+            this.maxTestSample = loadMaxTestSample(maxTestSample)
+        }
+        val optimizer = extras?.getString("optimizer")
+        if (optimizer != null) {
+            this.optimizer = loadOptimizer(optimizer)
+        }
+        val learningRate = extras?.getString("learningRate")
+        if (learningRate != null) {
+            this.learningRate = loadLearningRate(learningRate)
+        }
+        val momentum = extras?.getString("momentum")
+        if (momentum != null) {
+            this.momentum = loadMomentum(momentum)
+        }
+        val l2 = extras?.getString("l2Regularization")
+        if (l2 != null) {
+            this.l2 = loadL2Regularization(l2)
+        }
+        val epoch = extras?.getString("epoch")
+        if (epoch != null) {
+            this.epoch = loadEpoch(epoch)
         }
         val gar = extras?.getString("gar")
         if (gar != null) {
-            this.gar = GARs.values().first { it.id == gar }
+            this.gar = loadGAR(gar)
         }
         val communicationPattern = extras?.getString("communicationPattern")
         if (communicationPattern != null) {
-            this.communicationPattern = CommunicationPatterns.values().first { it.id == communicationPattern }
+            this.communicationPattern = loadCommunicationPattern(communicationPattern)
         }
         val behavior = extras?.getString("behavior")
         if (behavior != null) {
-            this.behavior = Behaviors.values().first { it.id == behavior }
+            this.behavior = loadBehavior(behavior)
         }
         val modelPoisoningAttack = extras?.getString("modelPoisoningAttack")
         if (modelPoisoningAttack != null) {
-            this.modelPoisoningAttack = ModelPoisoningAttacks.values().first { it.id == modelPoisoningAttack }
+            this.modelPoisoningAttack = loadModelPoisoningAttack(modelPoisoningAttack)
         }
         val numAttackers = extras?.getString("numAttackers")
         if (numAttackers != null) {
-            this.numAttacker = NumAttackers.values().first { it.id == numAttackers }
+            this.numAttacker = loadNumAttackers(numAttackers)
         }
     }
 
@@ -320,7 +319,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
             iteratorBinding.spnIteratorDistribution.id -> iteratorDistribution =
                 IteratorDistributions.values().first { it.text == iteratorDistributions[position] }
             iteratorBinding.spnMaxSamples.id -> maxTestSample =
-                MaxSamples.values().first { it.text == maxTestSamples[position] }
+                MaxTestSamples.values().first { it.text == maxTestSamples[position] }
             neuralNetworkBinding.spnOptimizer.id -> optimizer =
                 Optimizers.values().first { it.text == optimizers[position] }
             neuralNetworkBinding.spnLearningRate.id -> learningRate =

@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import nl.tudelft.trustchain.fedml.ai.Behaviors;
+import nl.tudelft.trustchain.fedml.Behaviors;
 import nl.tudelft.trustchain.fedml.ai.dataset.DatasetManager;
 
 

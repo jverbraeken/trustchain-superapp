@@ -15,7 +15,7 @@ import org.nd4j.base.Preconditions;
 import java.io.File;
 import java.util.Random;
 
-import nl.tudelft.trustchain.fedml.ai.IteratorDistributions;
+import nl.tudelft.trustchain.fedml.IteratorDistributions;
 
 public class CustomCifar10Fetcher extends Cifar10Fetcher {
     private final IteratorDistributions iteratorDistribution;

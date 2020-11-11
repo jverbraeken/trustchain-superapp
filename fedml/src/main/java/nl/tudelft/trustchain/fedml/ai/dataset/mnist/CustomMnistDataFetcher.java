@@ -24,7 +24,7 @@ import java.util.stream.IntStream;
 import java.util.zip.Adler32;
 import java.util.zip.Checksum;
 
-import nl.tudelft.trustchain.fedml.ai.Behaviors;
+import nl.tudelft.trustchain.fedml.Behaviors;
 
 
 public class CustomMnistDataFetcher extends BaseDataFetcher {

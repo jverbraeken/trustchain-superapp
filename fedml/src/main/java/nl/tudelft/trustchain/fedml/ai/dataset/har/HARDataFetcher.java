@@ -17,8 +17,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import nl.tudelft.trustchain.fedml.ai.MaxSamples;
-
 
 /**
  * Data fetcher for the HAL dataset

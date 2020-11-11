@@ -1,5 +1,7 @@
 package nl.tudelft.trustchain.fedml.ai
 
+import nl.tudelft.trustchain.fedml.*
+
 data class MLConfiguration(
     val dataset: Datasets,
     val datasetIteratorConfiguration: DatasetIteratorConfiguration,
@@ -11,7 +13,7 @@ data class MLConfiguration(
 data class DatasetIteratorConfiguration(
     val batchSize: BatchSizes,
     val distribution: IteratorDistributions,
-    val maxTestSamples: MaxSamples?
+    val maxTestSamples: MaxTestSamples?
 )
 
 data class NNConfiguration(

@@ -1,7 +1,7 @@
 package nl.tudelft.trustchain.fedml.ai.modelPoisoningAttack
 
 import mu.KotlinLogging
-import nl.tudelft.trustchain.fedml.ai.NumAttackers
+import nl.tudelft.trustchain.fedml.NumAttackers
 import nl.tudelft.trustchain.fedml.ai.gar.getKrum
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.cpu.nativecpu.NDArray

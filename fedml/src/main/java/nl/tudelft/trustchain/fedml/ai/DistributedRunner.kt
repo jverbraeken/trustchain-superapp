@@ -3,6 +3,8 @@ package nl.tudelft.trustchain.fedml.ai
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import nl.tudelft.ipv8.Peer
+import nl.tudelft.trustchain.fedml.Behaviors
+import nl.tudelft.trustchain.fedml.CommunicationPatterns
 import nl.tudelft.trustchain.fedml.ipv8.FedMLCommunity
 import nl.tudelft.trustchain.fedml.ipv8.FedMLCommunity.MessageId
 import nl.tudelft.trustchain.fedml.ipv8.MessageListener

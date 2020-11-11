@@ -2,6 +2,7 @@ package nl.tudelft.trustchain.fedml.ai
 
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
+import nl.tudelft.trustchain.fedml.Behaviors
 import org.deeplearning4j.optimize.listeners.EvaluativeListener
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener
 import java.io.File
