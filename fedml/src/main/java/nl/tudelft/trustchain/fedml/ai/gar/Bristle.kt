@@ -12,9 +12,16 @@ import kotlin.math.min
 
 private val logger = KotlinLogging.logger("Mozi")
 
-class Mozi(private val fracBenign: Double) : AggregationRule() {
+/**
+ * (practical yet robust) byzantine-resilient decentralized stochastic federated learning
+ *
+ *
+ * byzantine-resilient decentralized stochastic gradient descent federated learning, non i.i.d., history-sensitive (= more robust), practical
+ */
+class Bristle(private val fracBenign: Double) : AggregationRule() {
     private val TEST_BATCH = 50
 
+    @ExperimentalStdlibApi
     override fun integrateParameters(
         oldModel: INDArray,
         gradient: INDArray,
@@ -26,7 +33,8 @@ class Mozi(private val fracBenign: Double) : AggregationRule() {
         logger.debug { formatName("MOZI") }
         logger.debug { "Found ${otherModels.size} other models" }
         logger.debug { "oldModel: " + oldModel.getDouble(0) }
-        val Ndistance: List<INDArray> = applyDistanceFilter(oldModel, otherModels)
+        val newModel = oldModel.sub(gradient)
+        val Ndistance: List<INDArray> = applyDistanceFilter(oldModel, newModel, otherModels, allOtherModelsBuffer)
         logger.debug { "After distance filter, remaining:${Ndistance.size}" }
         val Nperformance: List<INDArray> = applyPerformanceFilter(oldModel, Ndistance, network, testDataSetIterator)
         logger.debug { "After performance filter, remaining:${Nperformance.size}" }
@@ -74,17 +82,24 @@ class Mozi(private val fracBenign: Double) : AggregationRule() {
 
     private fun applyDistanceFilter(
         oldModel: INDArray,
-        otherModels: List<INDArray>
+        newModel: INDArray,
+        otherModels: List<INDArray>,
+        allOtherModelsBuffer: ConcurrentLinkedDeque<INDArray>
     ): List<INDArray> {
-        val distances: MutableMap<INDArray, Double> = hashMapOf()
-        for (otherModel in otherModels) {
-            logger.debug { "Distance calculated: ${oldModel.distance2(otherModel)}" }
-            distances[otherModel] = oldModel.distance2(otherModel)
+        val distances: MutableMap<Int, Double> = hashMapOf()
+        for ((index, otherModel) in otherModels.withIndex()) {
+            logger.debug { "Distance calculated: ${min(otherModel.distance2(oldModel), otherModel.distance2(newModel))}" }
+            distances[index] = min(otherModel.distance2(oldModel), otherModel.distance2(newModel))
         }
-        val sortedDistances: Map<INDArray, Double> = distances.toList().sortedBy { (_, value) -> value }.toMap()
+        for (i in 0 until min(20 - distances.size, allOtherModelsBuffer.size)) {
+            val otherModel = allOtherModelsBuffer.elementAt(allOtherModelsBuffer.size - 1 - i)
+            distances[1000000 + i] = min(otherModel.distance2(oldModel), otherModel.distance2(newModel))
+        }
+        val sortedDistances: Map<Int, Double> = distances.toList().sortedBy { (_, value) -> value }.toMap()
         val numBenign = ceil(fracBenign * otherModels.size).toLong()
         logger.debug { "#benign: $numBenign" }
-        return sortedDistances.keys.stream().limit(numBenign).collect(Collectors.toList())
+        return sortedDistances.keys.stream().limit(numBenign).filter { it < 1000000 }.map { otherModels[it] }
+            .collect(Collectors.toList())
     }
 
     private fun applyPerformanceFilter(

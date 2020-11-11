@@ -8,6 +8,7 @@ import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.cpu.nativecpu.NDArray
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 import java.io.File
+import java.util.concurrent.ConcurrentLinkedDeque
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.concurrent.thread
 import kotlin.random.Random
@@ -15,8 +16,10 @@ import kotlin.random.Random
 private val logger = KotlinLogging.logger("SimulatedRunner")
 
 class SimulatedRunner : Runner() {
-    private val paramBuffers: MutableList<CopyOnWriteArrayList<INDArray>> = ArrayList()
+    private val newOtherModelBuffers: MutableList<CopyOnWriteArrayList<INDArray>> = ArrayList()
+    private val recentOtherModelsBuffers: MutableList<ConcurrentLinkedDeque<INDArray>> = ArrayList()
     private val randoms: MutableList<Random> = ArrayList()
+    override val iterationsBeforeEvaluation = 100
 
     override fun run(
         baseDirectory: File,
@@ -25,7 +28,8 @@ class SimulatedRunner : Runner() {
     ) {
         val numThreads = 2
         for (i in 0 until numThreads) {
-            paramBuffers.add(CopyOnWriteArrayList())
+            newOtherModelBuffers.add(CopyOnWriteArrayList())
+            recentOtherModelsBuffers.add(ConcurrentLinkedDeque())
             randoms.add(Random(i))
             thread {
                 val trainDataSetIterator = getTrainDatasetIterator(
@@ -82,7 +86,8 @@ class SimulatedRunner : Runner() {
         trainConfiguration: TrainConfiguration,
         modelPoisoningConfiguration: ModelPoisoningConfiguration
     ) {
-        val paramBuffer = paramBuffers[simulationIndex]
+        val newOtherModels = newOtherModelBuffers[simulationIndex]
+        val recentOtherModels = recentOtherModelsBuffers[simulationIndex]
         val random = randoms[simulationIndex]
         val batchSize = trainDataSetIterator.batch()
         val gar = trainConfiguration.gar.obj
@@ -125,29 +130,39 @@ class SimulatedRunner : Runner() {
                     )
 
                     // Integrate parameters of other peers
-                    network.setParams(oldParams)
                     val attack = modelPoisoningConfiguration.attack
                     val attackVectors = attack.obj.generateAttack(
                         modelPoisoningConfiguration.numAttackers,
                         oldParams,
                         gradient,
-                        paramBuffer,
+                        newOtherModels,
                         random
                     )
-                    paramBuffer.addAll(attackVectors)
-                    val numPeers = paramBuffer.size + 1
+                    newOtherModels.addAll(attackVectors)
+                    val numPeers = newOtherModels.size + 1
                     val averageParams: INDArray
                     if (numPeers == 1) {
                         logger.debug { "No received params => skipping integration evaluation" }
                         averageParams = newParams
+                        network.setParameters(averageParams)
                     } else {
                         logger.debug { "Params received => executing aggregation rule" }
 
                         val start2 = System.currentTimeMillis()
-                        averageParams = gar.integrateParameters(oldParams, gradient, paramBuffer, network, testDataSetIterator)
-                        paramBuffer.clear()
+                        averageParams = gar.integrateParameters(
+                            oldParams,
+                            gradient,
+                            newOtherModels,
+                            network,
+                            testDataSetIterator,
+                            recentOtherModels
+                        )
+                        recentOtherModels.addAll(newOtherModels)
+                        while (recentOtherModels.size > 20) {
+                            recentOtherModels.removeFirst()
+                        }
+                        newOtherModels.clear()
                         network.setParameters(averageParams)
-                        oldParams = averageParams.dup()
                         val end2 = System.currentTimeMillis()
 
                         execEvaluationProcessor(
@@ -163,14 +178,15 @@ class SimulatedRunner : Runner() {
                     // Send new parameters to other peers
                     val message = craftMessage(averageParams, trainConfiguration.behavior, random)
                     when (trainConfiguration.communicationPattern) {
-                        CommunicationPatterns.ALL -> paramBuffers.filterIndexed { index, _ -> index != simulationIndex }
+                        CommunicationPatterns.ALL -> newOtherModelBuffers.filterIndexed { index, _ -> index != simulationIndex }
                             .forEach { it.add(message) }
-                        CommunicationPatterns.RANDOM -> paramBuffers.filterIndexed { index, _ -> index != simulationIndex }
+                        CommunicationPatterns.RANDOM -> newOtherModelBuffers.filterIndexed { index, _ -> index != simulationIndex }
                             .random().add(message)
                         CommunicationPatterns.RR -> throw IllegalArgumentException("Not implemented yet")
                         CommunicationPatterns.RING -> throw IllegalArgumentException("Not implemented yet")
                     }
                 }
+                oldParams = network.params().dup()
                 if (endEpoch) {
                     break
                 }

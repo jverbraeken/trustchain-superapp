@@ -134,8 +134,8 @@ enum class Epochs(val id: String, val text: String, val value: Int) {
 }
 
 enum class IteratorDistributions(val id: String, val text: String, val value: List<Int>) {
-    DISTRIBUTION_MNIST_1("mnist_1", "MNIST 100", arrayListOf(100, 100, 100, 100, 100, 100, 100, 100, 100, 100)),
-    DISTRIBUTION_MNIST_2("mnist_2", "MNIST 500", arrayListOf(500, 500, 500, 500, 500, 500, 500, 500, 500, 500)),
+    DISTRIBUTION_MNIST_1("mnist_100", "MNIST 100", arrayListOf(100, 100, 100, 100, 100, 100, 100, 100, 100, 100)),
+    DISTRIBUTION_MNIST_2("mnist_500", "MNIST 500", arrayListOf(500, 500, 500, 500, 500, 500, 500, 500, 500, 500)),
     DISTRIBUTION_CIFAR_1("cifar_1", "CIFAR 1", arrayListOf(100, 100, 100, 100, 100, 100, 100, 100, 100, 100)),
     DISTRIBUTION_HAR_1("har_1", "HAR 1", arrayListOf(100, 100, 100, 100, 100, 100)),
 }
@@ -152,7 +152,8 @@ enum class GARs(val id: String, val text: String, val obj: AggregationRule, val 
     CWTRIMMEDMEAN("cwtrimmedmean", "Trimmed Mean (b=1)", CWTrimmedMean(1), ModelPoisoningAttacks.FANG_2020_TRIMMED_MEAN),
     KRUM("krum", "Krum (b=1)", Krum(1), ModelPoisoningAttacks.FANG_2020_KRUM),
     BRIDGE("bridge", "Bridge (b=1)", Bridge(1), ModelPoisoningAttacks.NONE),
-    MOZI("mozi", "Mozi (frac=0.5)", Mozi(0.5), ModelPoisoningAttacks.NONE)
+    MOZI("mozi", "Mozi (frac=0.5)", Mozi(0.5), ModelPoisoningAttacks.NONE),
+    BRISTLE("bristle", "Bristle (frac=0.5)", Bristle(0.5), ModelPoisoningAttacks.NONE)
 }
 
 enum class CommunicationPatterns(val id: String, val text: String) {

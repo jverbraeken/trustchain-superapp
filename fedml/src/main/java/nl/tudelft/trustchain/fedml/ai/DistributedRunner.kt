@@ -14,12 +14,15 @@ import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.cpu.nativecpu.NDArray
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 import java.io.File
+import java.util.concurrent.ConcurrentLinkedDeque
+import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.random.Random
 
 private val logger = KotlinLogging.logger("DistributedRunner")
 
 class DistributedRunner(private val community: FedMLCommunity) : Runner(), MessageListener {
-    private val paramBuffer: MutableList<INDArray> = ArrayList()
+    private val newOtherModels: CopyOnWriteArrayList<INDArray> = CopyOnWriteArrayList()
+    private val recentOtherModels: ConcurrentLinkedDeque<INDArray> = ConcurrentLinkedDeque()
     private lateinit var random: Random
 
     override fun run(
@@ -121,29 +124,39 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                     )
 
                     // Integrate parameters of other peers
-                    network.setParams(oldParams)
                     val attack = modelPoisoningConfiguration.attack
                     val attackVectors = attack.obj.generateAttack(
                         modelPoisoningConfiguration.numAttackers,
                         oldParams,
                         gradient,
-                        paramBuffer,
+                        newOtherModels,
                         random
                     )
-                    paramBuffer.addAll(attackVectors)
-                    val numPeers = paramBuffer.size + 1
+                    newOtherModels.addAll(attackVectors)
+                    val numPeers = newOtherModels.size + 1
                     val averageParams: INDArray
                     if (numPeers == 1) {
                         logger.debug { "No received params => skipping integration evaluation" }
                         averageParams = newParams
+                        network.setParameters(averageParams)
                     } else {
                         logger.debug { "Params received => executing aggregation rule" }
 
                         val start2 = System.currentTimeMillis()
-                        averageParams = gar.integrateParameters(oldParams, gradient, paramBuffer, network, testDataSetIterator)
-                        paramBuffer.clear()
+                        averageParams = gar.integrateParameters(
+                            oldParams,
+                            gradient,
+                            newOtherModels,
+                            network,
+                            testDataSetIterator,
+                            recentOtherModels
+                        )
+                        recentOtherModels.addAll(newOtherModels)
+                        while (recentOtherModels.size > 20) {
+                            recentOtherModels.removeFirst()
+                        }
+                        newOtherModels.clear()
                         network.setParameters(averageParams)
-                        oldParams = averageParams.dup()
                         val end2 = System.currentTimeMillis()
 
                         execEvaluationProcessor(
@@ -166,6 +179,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                     }
                     sendMessage(MessageId.MSG_PARAM_UPDATE, MsgParamUpdate(message))
                 }
+                oldParams = network.params().dup()
                 if (endEpoch) {
                     break
                 }
@@ -218,7 +232,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         when (messageId) {
             MessageId.MSG_PARAM_UPDATE -> {
                 val paramUpdate = payload as MsgParamUpdate
-                paramBuffer.add(paramUpdate.array)
+                newOtherModels.add(paramUpdate.array)
             }
             else -> throw Exception("Other messages should not be listened to...")
         }

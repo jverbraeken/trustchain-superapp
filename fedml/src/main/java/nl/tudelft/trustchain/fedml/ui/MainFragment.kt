@@ -59,9 +59,9 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private var batchSize: BatchSizes = dataset.defaultBatchSize
     private var epoch: Epochs = Epochs.EPOCH_5
     private var iteratorDistribution: IteratorDistributions = dataset.defaultIteratorDistribution
-    private var maxTestSample = MaxSamples.NUM_200
-    private var gar = GARs.MOZI
-    private var communicationPattern = CommunicationPatterns.RR
+    private var maxTestSample = MaxSamples.NUM_40
+    private var gar = GARs.BRISTLE
+    private var communicationPattern = CommunicationPatterns.RANDOM
     private var behavior = Behaviors.BENIGN
     private var modelPoisoningAttack = ModelPoisoningAttacks.NONE
     private var numAttacker = NumAttackers.NUM_2

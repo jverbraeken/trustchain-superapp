@@ -4,6 +4,7 @@ import mu.KotlinLogging
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
+import java.util.concurrent.ConcurrentLinkedDeque
 
 private val logger = KotlinLogging.logger("Krum")
 
@@ -32,7 +33,8 @@ class Krum(private val b: Int) : AggregationRule() {
         gradient: INDArray,
         otherModels: List<INDArray>,
         network: MultiLayerNetwork,
-        testDataSetIterator: DataSetIterator
+        testDataSetIterator: DataSetIterator,
+        allOtherModelsBuffer: ConcurrentLinkedDeque<INDArray>
     ): INDArray {
         logger.debug { formatName("Krum") }
         val models: MutableList<INDArray> = arrayListOf()
