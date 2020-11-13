@@ -48,4 +48,8 @@ class Krum(private val b: Int) : AggregationRule() {
             newModel
         }
     }
+
+    override fun isDirectIntegration(): Boolean {
+        return false
+    }
 }

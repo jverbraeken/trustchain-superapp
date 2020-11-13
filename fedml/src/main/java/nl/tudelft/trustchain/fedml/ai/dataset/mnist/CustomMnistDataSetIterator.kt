@@ -21,4 +21,8 @@ class CustomMnistDataSetIterator(
         iteratorConfiguration.maxTestSamples?.value ?: Integer.MAX_VALUE,
         behavior
     )
-)
+) {
+    override fun getLabels(): List<String> {
+        return (fetcher as CustomMnistDataFetcher).labels
+    }
+}

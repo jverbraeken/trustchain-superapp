@@ -31,4 +31,8 @@ class Average : AggregationRule() {
         }
         return NDArray(newMatrix)
     }
+
+    override fun isDirectIntegration(): Boolean {
+        return false
+    }
 }

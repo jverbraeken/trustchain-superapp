@@ -39,4 +39,8 @@ class CWTrimmedMean(private val b: Int) : AggregationRule() {
             NDArray(newMatrix)
         }
     }
+
+    override fun isDirectIntegration(): Boolean {
+        return false
+    }
 }

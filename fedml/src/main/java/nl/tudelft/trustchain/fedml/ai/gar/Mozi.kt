@@ -8,7 +8,6 @@ import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 import java.util.concurrent.ConcurrentLinkedDeque
 import java.util.stream.Collectors
 import kotlin.math.ceil
-import kotlin.math.min
 
 private val logger = KotlinLogging.logger("Mozi")
 
@@ -123,5 +122,9 @@ class Mozi(private val fracBenign: Double) : AggregationRule() {
             logger.debug { "Arr = " + arr.getDouble(0) }
         }
         return arr!!.div(list.size)
+    }
+
+    override fun isDirectIntegration(): Boolean {
+        return false
     }
 }

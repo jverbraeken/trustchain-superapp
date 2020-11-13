@@ -7,6 +7,7 @@ import org.deeplearning4j.datasets.mnist.MnistLabelFile;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import nl.tudelft.trustchain.fedml.Behaviors;
@@ -89,6 +90,10 @@ public class CustomMnistManager extends DatasetManager {
      */
     public MnistImageFile getImages() {
         return mnistImageFile;
+    }
+
+    public List<String> getLabels() {
+        return Arrays.stream(labelsArr).distinct().mapToObj(Integer::toString).collect(Collectors.toList());
     }
 
     /* Why??? does Java not support tuples??? */

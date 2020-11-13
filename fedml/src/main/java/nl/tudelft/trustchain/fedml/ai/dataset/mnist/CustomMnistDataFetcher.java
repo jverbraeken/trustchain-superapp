@@ -7,6 +7,7 @@ import org.deeplearning4j.common.resources.DL4JResources;
 import org.deeplearning4j.common.resources.ResourceType;
 import org.deeplearning4j.datasets.fetchers.DataSetType;
 import org.deeplearning4j.datasets.fetchers.MnistDataFetcher;
+import org.jetbrains.annotations.NotNull;
 import org.nd4j.linalg.api.buffer.DataType;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
@@ -191,5 +192,10 @@ public class CustomMnistDataFetcher extends BaseDataFetcher {
         cursor = 0;
         curr = null;
         MathUtils.shuffleArray(order, rng);
+    }
+
+    @NotNull
+    public List<String> getLabels() {
+        return man.getLabels();
     }
 }

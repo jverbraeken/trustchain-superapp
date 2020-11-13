@@ -57,6 +57,10 @@ class Bristle(private val fracBenign: Double) : AggregationRule() {
         return result
     }
 
+    override fun isDirectIntegration(): Boolean {
+        return true
+    }
+
     private fun calculateLoss(
         model: INDArray,
         network: MultiLayerNetwork,

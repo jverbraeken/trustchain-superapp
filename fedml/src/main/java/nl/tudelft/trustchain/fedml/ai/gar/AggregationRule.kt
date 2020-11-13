@@ -15,6 +15,8 @@ abstract class AggregationRule {
         allOtherModelsBuffer: ConcurrentLinkedDeque<INDArray>
     ): INDArray
 
+    abstract fun isDirectIntegration(): Boolean
+
     protected fun formatName(name: String): String {
         return "<====      $name      ====>"
     }

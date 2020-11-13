@@ -37,4 +37,8 @@ class Bridge(private val b: Int) : AggregationRule() {
             NDArray(newMatrix).sub(gradient)
         }
     }
+
+    override fun isDirectIntegration(): Boolean {
+        return false
+    }
 }
