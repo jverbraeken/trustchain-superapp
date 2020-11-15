@@ -15,15 +15,18 @@ import org.nd4j.base.Preconditions;
 import java.io.File;
 import java.util.Random;
 
+import nl.tudelft.trustchain.fedml.Behaviors;
 import nl.tudelft.trustchain.fedml.IteratorDistributions;
 
 public class CustomCifar10Fetcher extends Cifar10Fetcher {
     private final IteratorDistributions iteratorDistribution;
     private final int maxTestSamples;
+    private final Behaviors behavior;
 
-    public CustomCifar10Fetcher(IteratorDistributions iteratorDistribution, int maxTestSamples) {
+    public CustomCifar10Fetcher(IteratorDistributions iteratorDistribution, int maxTestSamples, Behaviors behavior) {
         this.iteratorDistribution = iteratorDistribution;
         this.maxTestSamples = maxTestSamples;
+        this.behavior = behavior;
     }
 
     @Override

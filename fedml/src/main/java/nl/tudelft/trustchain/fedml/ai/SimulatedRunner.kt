@@ -1,5 +1,3 @@
-@file:Suppress("UnstableApiUsage")
-
 package nl.tudelft.trustchain.fedml.ai
 
 import com.google.common.hash.BloomFilter
@@ -7,6 +5,8 @@ import com.google.common.hash.Funnel
 import com.google.common.hash.PrimitiveSink
 import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.*
+import nl.tudelft.trustchain.fedml.ipv8.MsgPsiCaClientToServer
+import nl.tudelft.trustchain.fedml.ipv8.MsgPsiCaServerToClient
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.deeplearning4j.optimize.listeners.EvaluativeListener
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener
@@ -27,29 +27,10 @@ private val logger = KotlinLogging.logger("SimulatedRunner")
 private const val NUM_RECENT_OTHER_MODELS: Int = 20
 
 class SimulatedRunner : Runner() {
-    private val newOtherModelBuffers: MutableList<CopyOnWriteArrayList<INDArray>> = ArrayList()
-    private val recentOtherModelsBuffers: MutableList<ConcurrentLinkedDeque<INDArray>> = ArrayList()
-    private val toServerMessageBuffers: MutableList<CopyOnWriteArrayList<ToServerMessage>> = ArrayList()
-    private val toClientMessageBuffers1: MutableList<CopyOnWriteArrayList<ToClientMessage1>> = ArrayList()
-    private val toClientMessageBuffers2: MutableList<CopyOnWriteArrayList<ToClientMessage2>> = ArrayList()
-    private val sraKeyPairs: MutableList<SRAKeyPair> = ArrayList()
-    private val randoms: MutableList<Random> = ArrayList()
+    private val newOtherModelBuffers = ArrayList<CopyOnWriteArrayList<INDArray>>()
+    private val recentOtherModelsBuffers = ArrayList<ConcurrentLinkedDeque<INDArray>>()
+    private val randoms = ArrayList<Random>()
     override val iterationsBeforeEvaluation = 100
-
-    private data class ToServerMessage(
-        val encryptedLabels: List<BigInteger>,
-        val client: Int
-    )
-
-    private data class ToClientMessage1(
-        val encryptedLabels: List<BigInteger>,
-        val server: Int
-    )
-
-    private data class ToClientMessage2(
-        val bloomFilter: BloomFilter<BigInteger>,
-        val server: Int
-    )
 
     override fun run(
         baseDirectory: File,
@@ -58,15 +39,16 @@ class SimulatedRunner : Runner() {
     ) {
         val config = loadConfig(baseDirectory)
         // All these things have to be initialized before any of the runner threads start
+        val toServerMessageBuffers = ArrayList<CopyOnWriteArrayList<MsgPsiCaClientToServer>>()
+        val toClientMessageBuffers = ArrayList<CopyOnWriteArrayList<MsgPsiCaServerToClient>>()
+        val sraKeyPairs: MutableList<SRAKeyPair> = ArrayList()
         for (i in config.indices) {
             newOtherModelBuffers.add(CopyOnWriteArrayList())
             recentOtherModelsBuffers.add(ConcurrentLinkedDeque())
             randoms.add(Random(i))
-            val p = BigInteger("100012421")
             toServerMessageBuffers.add(CopyOnWriteArrayList())
-            toClientMessageBuffers1.add(CopyOnWriteArrayList())
-            toClientMessageBuffers2.add(CopyOnWriteArrayList())
-            sraKeyPairs.add(SRAKeyPair.create(p, java.util.Random(i.toLong())))
+            toClientMessageBuffers.add(CopyOnWriteArrayList())
+            sraKeyPairs.add(SRAKeyPair.create(bigPrime, java.util.Random(i.toLong())))
         }
         for (i in config.indices) {
             thread {
@@ -105,33 +87,35 @@ class SimulatedRunner : Runner() {
 
 
 
-                clientsRequestsServerLabels(
-                    i,
-                    trainDataSetIterator,
-                    toServerMessageBuffers,
+                val encryptedLabels = clientsRequestsServerLabels(
+                    trainDataSetIterator.labels,
                     sraKeyPairs[i]
                 )
+                toServerMessageBuffers
+                    .filterIndexed { index, _ -> index != i }
+                    .forEach { it.add(MsgPsiCaClientToServer(encryptedLabels, i)) }
 
                 while (toServerMessageBuffers[i].size < toServerMessageBuffers.size - 1) {
                     Thread.sleep(1)
                 }
 
-                serverRespondsClientRequests(
-                    i,
-                    trainDataSetIterator,
-                    toServerMessageBuffers[i],
-                    toClientMessageBuffers1,
-                    toClientMessageBuffers2,
-                    sraKeyPairs[i]
-                )
+                for (toServerMessage in toServerMessageBuffers[i]) {
+                    val (reEncryptedLabels, filter) = serverRespondsClientRequests(
+                        trainDataSetIterator.labels,
+                        toServerMessage,
+                        sraKeyPairs[i]
+                    )
+                    val message = MsgPsiCaServerToClient(reEncryptedLabels, filter, i)
+                    toClientMessageBuffers[toServerMessage.client].add(message)
+                }
 
-                while (toClientMessageBuffers2[i].size < toClientMessageBuffers2.size - 1) {
+                while (toClientMessageBuffers[i].size < toClientMessageBuffers.size - 1) {
                     Thread.sleep(1)
                 }
 
                 val similarPeers = clientReceivesServerResponses(
-                    toClientMessageBuffers1[i],
-                    toClientMessageBuffers2[i],
+                    i,
+                    toClientMessageBuffers[i],
                     sraKeyPairs[i]
                 )
 
@@ -274,74 +258,6 @@ class SimulatedRunner : Runner() {
         }
         logger.debug { "Done training the network" }
         evaluationProcessor.done()
-    }
-
-    private fun clientsRequestsServerLabels(
-        simulationIndex: Int,
-        trainDataSetIterator: DataSetIterator,
-        toServerMessageBuffers: MutableList<CopyOnWriteArrayList<ToServerMessage>>,
-        sraKeyPair: SRAKeyPair
-    ) {
-        val labels = trainDataSetIterator.labels
-        val encryptedLabels = ArrayList<BigInteger>(labels.size)
-        for (label in labels) {
-            val message = BigInteger.valueOf(label.hashCode().toLong())
-            val encryptedLabel = sraKeyPair.encrypt(message)
-            encryptedLabels.add(encryptedLabel)
-        }
-        toServerMessageBuffers.filterIndexed { index, _ -> index != simulationIndex }
-            .forEach { it.add(ToServerMessage(encryptedLabels, simulationIndex)) }
-    }
-
-    private class BigIntegerFunnel : Funnel<BigInteger> {
-        override fun funnel(from: BigInteger, into: PrimitiveSink) {
-            into.putBytes(from.toByteArray())
-        }
-    }
-
-    private fun serverRespondsClientRequests(
-        i: Int,
-        trainDataSetIterator: DataSetIterator,
-        toServerMessages: CopyOnWriteArrayList<ToServerMessage>,
-        toClientMessageBuffers1: MutableList<CopyOnWriteArrayList<ToClientMessage1>>,
-        toClientMessageBuffers2: MutableList<CopyOnWriteArrayList<ToClientMessage2>>,
-        sraKeyPair: SRAKeyPair
-    ) {
-        val clientEncryptedLabels = ArrayList(toServerMessages)
-
-        val labels = trainDataSetIterator.labels
-        val encryptedLabels = ArrayList<BigInteger>(labels.size)
-        for (label in labels) {
-            val message = BigInteger.valueOf(label.hashCode().toLong())
-            val encryptedLabel = sraKeyPair.encrypt(message)
-            encryptedLabels.add(encryptedLabel)
-        }
-        val filter = BloomFilter.create(BigIntegerFunnel(), 1000)
-        encryptedLabels.forEach { filter.put(it) }
-
-        for (client in clientEncryptedLabels) {
-            val shuffledLabels = client.encryptedLabels.shuffled()
-            val reEncryptedLabels = shuffledLabels.stream().map { sraKeyPair.encrypt(it) }.collect(Collectors.toList())
-            toClientMessageBuffers1[client.client].add(ToClientMessage1(reEncryptedLabels, i))
-        }
-        toClientMessageBuffers2.filterIndexed { index, _ -> index != i }.forEach { it.add(ToClientMessage2(filter, i)) }
-    }
-
-    private fun clientReceivesServerResponses(
-        toClientMessageBuffers1: CopyOnWriteArrayList<ToClientMessage1>,
-        toClientMessageBuffers2: CopyOnWriteArrayList<ToClientMessage2>,
-        sraKeyPair: SRAKeyPair
-    ): List<Int> {
-        val similarPeers = ArrayList<Int>()
-        for (buffer1 in toClientMessageBuffers1) {
-            val semiDecryptedLabels = buffer1.encryptedLabels.map { sraKeyPair.decrypt(it) }
-            val bloomFilter = toClientMessageBuffers2.first { it.server == buffer1.server }.bloomFilter
-            val count = semiDecryptedLabels.filter { bloomFilter.mightContain(it) }.count()
-            if (count > 5) {
-                similarPeers.add(buffer1.server)
-            }
-        }
-        return similarPeers
     }
 
     private fun craftMessage(first: INDArray, behavior: Behaviors, random: Random): INDArray {

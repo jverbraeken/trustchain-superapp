@@ -10,7 +10,7 @@ import java.util.stream.Collectors
 import kotlin.math.ceil
 import kotlin.math.min
 
-private val logger = KotlinLogging.logger("Mozi")
+private val logger = KotlinLogging.logger("Bristle")
 
 /**
  * (practical yet robust) byzantine-resilient decentralized stochastic federated learning
@@ -30,7 +30,7 @@ class Bristle(private val fracBenign: Double) : AggregationRule() {
         testDataSetIterator: DataSetIterator,
         allOtherModelsBuffer: ConcurrentLinkedDeque<INDArray>
     ): INDArray {
-        logger.debug { formatName("MOZI") }
+        logger.debug { formatName("BRISTLE") }
         logger.debug { "Found ${otherModels.size} other models" }
         logger.debug { "oldModel: " + oldModel.getDouble(0) }
         val newModel = oldModel.sub(gradient)

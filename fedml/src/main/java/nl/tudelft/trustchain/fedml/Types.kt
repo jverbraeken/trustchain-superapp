@@ -60,16 +60,16 @@ enum class Datasets(
         IteratorDistributions.DISTRIBUTION_MNIST_1,
         Runner::generateDefaultTinyImageNetConfiguration
     ),
-    HAL(
-        "hal",
-        "HAL",
+    HAR(
+        "har",
+        "HAR",
         Optimizers.ADAM,
         LearningRates.RATE_1EM3,
         Momentums.NONE,
         L2Regularizations.L2_1EM4,
         BatchSizes.BATCH_32,
         IteratorDistributions.DISTRIBUTION_HAR_1,
-        Runner::generateDefaultHALConfiguration
+        Runner::generateDefaultHARConfiguration
     ),
 }
 
@@ -90,6 +90,7 @@ enum class IteratorDistributions(val id: String, val text: String, val value: Li
     DISTRIBUTION_MNIST_2("mnist_500", "MNIST 500", arrayListOf(500, 500, 500, 500, 500, 500, 500, 500, 500, 500)),
     DISTRIBUTION_MNIST_3("mnist_0_to_7_with_100", "MNIST 0 to 7 with 100", arrayListOf(100, 100, 100, 100, 100, 100, 100, 0, 0, 0)),
     DISTRIBUTION_MNIST_4("mnist_4_to_10_with_100", "MNIST 4 to 10 with 100", arrayListOf(0, 0, 0, 0, 100, 100, 100, 100, 100, 100)),
+    DISTRIBUTION_MNIST_5("mnist_7_to_4_with_100", "MNIST 0 to 7 with 100", arrayListOf(100, 100, 100, 0, 0, 0, 0, 100, 100, 100)),
     DISTRIBUTION_CIFAR_1("cifar_1", "CIFAR 1", arrayListOf(100, 100, 100, 100, 100, 100, 100, 100, 100, 100)),
     DISTRIBUTION_HAR_1("har_1", "HAR 1", arrayListOf(100, 100, 100, 100, 100, 100)),
 }

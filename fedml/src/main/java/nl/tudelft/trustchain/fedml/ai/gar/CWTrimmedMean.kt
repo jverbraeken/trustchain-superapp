@@ -23,7 +23,7 @@ class CWTrimmedMean(private val b: Int) : AggregationRule() {
         allOtherModelsBuffer: ConcurrentLinkedDeque<INDArray>
     ): INDArray {
         logger.debug { formatName("Coordinate-Wise Trimmed Mean") }
-        val models: MutableList<INDArray> = arrayListOf(oldModel.sub(gradient))
+        val models = arrayListOf(oldModel.sub(gradient))
         otherModels.forEach { models.add(it) }
         logger.debug { "Found ${models.size} models in total" }
         return if (models.size < minimumModels) {

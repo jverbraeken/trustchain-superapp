@@ -6,7 +6,7 @@ import java.util.*
 
 class SRAKeyPair private constructor(
     private val prime: BigInteger,
-    val secret: BigInteger,
+    private val secret: BigInteger,
     private val secretInverse: BigInteger
 ) {
     fun encrypt(message: BigInteger): BigInteger {
@@ -19,17 +19,9 @@ class SRAKeyPair private constructor(
 
     companion object {
         private const val DEFAULT_NUM_BITS = 32
-        fun create(prime: BigInteger, secret: BigInteger): SRAKeyPair {
-            val d = secret.modInverse(prime.subtract(BigInteger.ONE))
-            return SRAKeyPair(prime, secret, d)
-        }
 
         fun create(prime: BigInteger, random: Random): SRAKeyPair {
-            return create(DEFAULT_NUM_BITS, prime, random)
-        }
-
-        fun create(numBits: Int, prime: BigInteger, random: Random): SRAKeyPair {
-            val secret = generateEncryptionKey(prime, numBits, random)
+            val secret = generateEncryptionKey(prime, DEFAULT_NUM_BITS, random)
             val secretInverse = secret.modInverse(prime.subtract(BigInteger.ONE))
             return SRAKeyPair(prime, secret, secretInverse)
         }
@@ -40,7 +32,6 @@ class SRAKeyPair private constructor(
             random: Random
         ): BigInteger {
             val phiP = p.subtract(BigInteger.ONE)
-
             // Choose a key that is invertible in mod phi(prime)
             var k = BigInteger(numBits, random)
             while (k.gcd(phiP) != BigInteger.ONE) {
@@ -49,5 +40,4 @@ class SRAKeyPair private constructor(
             return k
         }
     }
-
 }

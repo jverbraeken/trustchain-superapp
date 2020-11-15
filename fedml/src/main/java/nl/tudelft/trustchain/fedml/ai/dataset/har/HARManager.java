@@ -8,7 +8,9 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
+import nl.tudelft.trustchain.fedml.Behaviors;
 import nl.tudelft.trustchain.fedml.ai.dataset.DatasetManager;
 
 
@@ -16,12 +18,17 @@ public class HARManager extends DatasetManager {
     private final String[][] dataArr;
     private final int[] labelsArr;
 
-    public HARManager(File[] dataFiles, File labelsFile, List<Integer> iteratorDistribution, int maxTestSamples, int seed) throws IOException {
+    public HARManager(File[] dataFiles, File labelsFile, List<Integer> iteratorDistribution, int maxTestSamples, int seed, Behaviors behavior) throws IOException {
         final List<String>[] tmpDataArr = loadData(dataFiles);
-        int[] tmpLabelsArr = loadLabels(labelsFile);
+        final int[] tmpLabelsArr = loadLabels(labelsFile);
+        int[] tmpLabelsArr2 = Arrays.copyOf(tmpLabelsArr, tmpLabelsArr.length);
+        if (behavior == Behaviors.LABEL_FLIP) {
+            IntStream.range(0, tmpLabelsArr.length).filter(i -> tmpLabelsArr[i] == 1).forEach(i -> tmpLabelsArr2[i] = 2);
+            IntStream.range(0, tmpLabelsArr.length).filter(i -> tmpLabelsArr[i] == 2).forEach(i -> tmpLabelsArr2[i] = 1);
+        }
 
-        int totalExamples = calculateTotalExamples(iteratorDistribution, maxTestSamples, tmpLabelsArr);
-        final DataLabelContainer res = sampleData(tmpDataArr, tmpLabelsArr, totalExamples, iteratorDistribution, maxTestSamples, seed);
+        int totalExamples = calculateTotalExamples(iteratorDistribution, maxTestSamples, tmpLabelsArr2);
+        final DataLabelContainer res = sampleData(tmpDataArr, tmpLabelsArr2, totalExamples, iteratorDistribution, maxTestSamples, seed);
         dataArr = res.data;
         labelsArr = res.labels;
     }
@@ -59,6 +66,7 @@ public class HARManager extends DatasetManager {
     }
 
     private List<String>[] loadData(File[] dataFiles) throws IOException {
+        @SuppressWarnings("unchecked")
         final List<String>[] data = (List<String>[]) new List[dataFiles.length];
         for (int i = 0; i < dataFiles.length; i++) {
             try (BufferedReader reader = new BufferedReader(new FileReader(dataFiles[i]))) {
@@ -77,14 +85,17 @@ public class HARManager extends DatasetManager {
     }
 
     public int getNumSamples() {
-        assert dataArr.length == labelsArr.length;
         return dataArr.length;
+    }
+
+    public List<String> getLabels() {
+        return Arrays.stream(labelsArr).distinct().mapToObj(Integer::toString).collect(Collectors.toList());
     }
 
     /* Why??? does Java not support tuples??? */
     private static class DataLabelContainer {
-        private String[][] data;
-        private int[] labels;
+        private final String[][] data;
+        private final int[] labels;
 
         public DataLabelContainer(String[][] data, int[] labels) {
             this.data = data;

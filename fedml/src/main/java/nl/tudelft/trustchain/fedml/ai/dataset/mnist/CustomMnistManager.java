@@ -79,7 +79,6 @@ public class CustomMnistManager extends DatasetManager {
     }
 
     public int getNumSamples() {
-        assert imagesArr.length == labelsArr.length;
         return imagesArr.length;
     }
 

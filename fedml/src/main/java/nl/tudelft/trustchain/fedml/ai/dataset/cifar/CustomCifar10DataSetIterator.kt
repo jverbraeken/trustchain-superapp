@@ -8,16 +8,21 @@ import org.deeplearning4j.datasets.fetchers.DataSetType
 
 
 class CustomCifar10DataSetIterator(
-    iteratorConfiguration: DatasetIteratorConfiguration,
+    private val iteratorConfiguration: DatasetIteratorConfiguration,
     seed: Long,
     dataSetType: DataSetType,
     behavior: Behaviors
 ) : RecordReaderDataSetIterator(
     CustomCifar10Fetcher(
         iteratorConfiguration.distribution,
-        iteratorConfiguration.maxTestSamples?.value ?: Integer.MAX_VALUE
+        iteratorConfiguration.maxTestSamples?.value ?: Integer.MAX_VALUE,
+        behavior
     ).getRecordReader(seed, null, dataSetType, null),
     iteratorConfiguration.batchSize.value,
     1,
     Cifar10Fetcher.NUM_LABELS
-)
+) {
+    override fun getLabels(): List<String> {
+        return iteratorConfiguration.distribution.value.filter { it > 0 }.map { it.toString() }.toCollection(ArrayList())
+    }
+}

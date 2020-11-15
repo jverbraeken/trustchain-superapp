@@ -2,6 +2,7 @@ package nl.tudelft.trustchain.fedml.ai.dataset.har;
 
 
 import org.deeplearning4j.datasets.fetchers.DataSetType;
+import org.jetbrains.annotations.NotNull;
 import org.nd4j.linalg.api.buffer.DataType;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
@@ -17,9 +18,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import nl.tudelft.trustchain.fedml.Behaviors;
+
 
 /**
- * Data fetcher for the HAL dataset
+ * Data fetcher for the HAR dataset
  */
 public class HARDataFetcher extends BaseDataFetcher {
     public static final int NUM_ATTRIBUTES = 561;
@@ -32,7 +35,7 @@ public class HARDataFetcher extends BaseDataFetcher {
     protected Random rng;
     private double[][][] featureData = null;  // samples => time step => feature
 
-    public HARDataFetcher(File baseDirectory, int seed, List<Integer> iteratorDistribution, DataSetType dataSetType, int maxTestSamples) throws IOException {
+    public HARDataFetcher(File baseDirectory, int seed, List<Integer> iteratorDistribution, DataSetType dataSetType, int maxTestSamples, Behaviors behavior) throws IOException {
         File[] data = new File[NUM_DIMENSIONS];
         File labels;
         if (dataSetType == DataSetType.TRAIN) {
@@ -58,7 +61,7 @@ public class HARDataFetcher extends BaseDataFetcher {
             data[8] = Paths.get(baseDirectory.getPath(), "test", "Inertial Signals", "total_acc_z_test.txt").toFile();
             labels = new File(new File(baseDirectory, "test"), "y_test.txt");
         }
-        man = new HARManager(data, labels, iteratorDistribution, dataSetType == DataSetType.TRAIN ? Integer.MAX_VALUE : maxTestSamples, seed);
+        man = new HARManager(data, labels, iteratorDistribution, dataSetType == DataSetType.TRAIN ? Integer.MAX_VALUE : maxTestSamples, seed, behavior);
 
         totalExamples = man.getNumSamples();
         numOutcomes = NUM_LABELS;
@@ -148,5 +151,10 @@ public class HARDataFetcher extends BaseDataFetcher {
         }
 
         curr = new DataSet(features, labels);
+    }
+
+    @NotNull
+    public List<String> getLabels() {
+        return man.getLabels();
     }
 }

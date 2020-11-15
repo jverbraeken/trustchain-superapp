@@ -1,14 +1,14 @@
 package nl.tudelft.trustchain.fedml.ai
 
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import nl.tudelft.ipv8.Peer
-import nl.tudelft.trustchain.fedml.Behaviors
-import nl.tudelft.trustchain.fedml.CommunicationPatterns
-import nl.tudelft.trustchain.fedml.ipv8.FedMLCommunity
+import nl.tudelft.trustchain.fedml.*
+import nl.tudelft.trustchain.fedml.ipv8.*
 import nl.tudelft.trustchain.fedml.ipv8.FedMLCommunity.MessageId
-import nl.tudelft.trustchain.fedml.ipv8.MessageListener
-import nl.tudelft.trustchain.fedml.ipv8.MsgParamUpdate
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.deeplearning4j.optimize.listeners.EvaluativeListener
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener
@@ -21,19 +21,30 @@ import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.random.Random
 
 private val logger = KotlinLogging.logger("DistributedRunner")
+private const val SIZE_RECENT_OTHER_MODELS = 20
 
 class DistributedRunner(private val community: FedMLCommunity) : Runner(), MessageListener {
-    private val newOtherModels: CopyOnWriteArrayList<INDArray> = CopyOnWriteArrayList()
-    private val recentOtherModels: ConcurrentLinkedDeque<INDArray> = ConcurrentLinkedDeque()
+    private val newOtherModels = CopyOnWriteArrayList<INDArray>()
+    private val recentOtherModels = ConcurrentLinkedDeque<INDArray>()
+    private val psiCaMessagesFromServers = CopyOnWriteArrayList<MsgPsiCaServerToClient>()
     private lateinit var random: Random
+    private lateinit var labels: List<String>
+    private lateinit var sraKeyPair: SRAKeyPair
+    private var deferred = CompletableDeferred<Unit>()
+
+    init {
+        FedMLCommunity.registerMessageListener(MessageId.MSG_PARAM_UPDATE, this)
+        FedMLCommunity.registerMessageListener(MessageId.MSG_PSI_CA_CLIENT_TO_SERVER, this)
+        FedMLCommunity.registerMessageListener(MessageId.MSG_PSI_CA_SERVER_TO_CLIENT, this)
+    }
 
     override fun run(
         baseDirectory: File,
         seed: Int,
         mlConfiguration: MLConfiguration
     ) {
-        FedMLCommunity.registerMessageListener(MessageId.MSG_PARAM_UPDATE, this)
         this.random = Random(seed)
+        sraKeyPair = SRAKeyPair.create(bigPrime, java.util.Random(seed.toLong()))
         scope.launch {
             val trainDataSetIterator = getTrainDatasetIterator(
                 baseDirectory,
@@ -66,15 +77,51 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
             )
             network.setListeners(ScoreIterationListener(printScoreIterations))
 
+            val port = community.myEstimatedWan.port
+            val numPeers = community.getPeers().size
+            labels = trainDataSetIterator.labels
+            val similarPeers = getSimilarPeers(port, labels, sraKeyPair, numPeers, psiCaMessagesFromServers)
+
             trainTestSendNetwork(
                 network,
                 evaluationProcessor,
                 trainDataSetIterator,
                 testDataSetIterator,
                 mlConfiguration.trainConfiguration,
-                mlConfiguration.modelPoisoningConfiguration
+                mlConfiguration.modelPoisoningConfiguration,
+                similarPeers
             )
         }
+    }
+
+    private suspend fun getSimilarPeers(
+        port: Int,
+        labels: List<String>,
+        sraKeyPair: SRAKeyPair,
+        numPeers: Int,
+        psiCaMessagesFromServers: CopyOnWriteArrayList<MsgPsiCaServerToClient>
+    ): List<Int> {
+        val encryptedLabels = clientsRequestsServerLabels(
+            labels,
+            sraKeyPair
+        )
+        community.sendToAll(
+            MessageId.MSG_PSI_CA_CLIENT_TO_SERVER,
+            MsgPsiCaClientToServer(encryptedLabels, port),
+            reliable = true
+        )
+
+        deferred.complete(Unit)
+
+        while (psiCaMessagesFromServers.size < numPeers) {
+            delay(200)
+        }
+
+        return clientReceivesServerResponses(
+            port,
+            psiCaMessagesFromServers,
+            sraKeyPair
+        )
     }
 
     private fun trainTestSendNetwork(
@@ -83,7 +130,8 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         trainDataSetIterator: DataSetIterator,
         testDataSetIterator: DataSetIterator,
         trainConfiguration: TrainConfiguration,
-        modelPoisoningConfiguration: ModelPoisoningConfiguration
+        modelPoisoningConfiguration: ModelPoisoningConfiguration,
+        similarPeers: List<Int>
     ) {
         val batchSize = trainDataSetIterator.batch()
         val gar = trainConfiguration.gar.obj
@@ -154,7 +202,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                             recentOtherModels
                         )
                         recentOtherModels.addAll(newOtherModels)
-                        while (recentOtherModels.size > 20) {
+                        while (recentOtherModels.size > SIZE_RECENT_OTHER_MODELS) {
                             recentOtherModels.removeFirst()
                         }
                         newOtherModels.clear()
@@ -172,14 +220,12 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                     }
 
                     // Send new parameters to other peers
-                    val message = craftMessage(averageParams, trainConfiguration.behavior)
-                    val sendMessage = when (trainConfiguration.communicationPattern) {
-                        CommunicationPatterns.ALL -> community::sendToAll
-                        CommunicationPatterns.RANDOM -> community::sendToRandomPeer
-                        CommunicationPatterns.RR -> community::sendToNextPeerRR
-                        CommunicationPatterns.RING -> community::sendToNextPeerRing
-                    }
-                    sendMessage(MessageId.MSG_PARAM_UPDATE, MsgParamUpdate(message))
+                    sendModelToPeers(
+                        averageParams,
+                        trainConfiguration.behavior,
+                        trainConfiguration.communicationPattern,
+                        similarPeers
+                    )
                 }
                 oldParams = network.params().dup()
                 if (endEpoch) {
@@ -189,6 +235,22 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         }
         logger.debug { "Done training the network" }
         evaluationProcessor.done()
+    }
+
+    private fun sendModelToPeers(
+        averageParams: INDArray,
+        behavior: Behaviors,
+        communicationPattern: CommunicationPatterns,
+        similarPeers: List<Int>
+    ) {
+        val message = craftMessage(averageParams, behavior)
+        val sendMessage = when (communicationPattern) {
+            CommunicationPatterns.ALL -> community::sendToAll
+            CommunicationPatterns.RANDOM -> community::sendToRandomPeer
+            CommunicationPatterns.RR -> community::sendToNextPeerRR
+            CommunicationPatterns.RING -> community::sendToNextPeerRing
+        }
+        sendMessage(MessageId.MSG_PARAM_UPDATE, MsgParamUpdate(message), similarPeers, false)
     }
 
     private fun craftMessage(first: INDArray, behavior: Behaviors): INDArray {
@@ -235,6 +297,20 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
             MessageId.MSG_PARAM_UPDATE -> {
                 val paramUpdate = payload as MsgParamUpdate
                 newOtherModels.add(paramUpdate.array)
+            }
+            MessageId.MSG_PSI_CA_CLIENT_TO_SERVER -> scope.launch(Dispatchers.IO) {
+                deferred.await()
+                val (reEncryptedLabels, filter) = serverRespondsClientRequests(
+                    labels,
+                    payload as MsgPsiCaClientToServer,
+                    sraKeyPair
+                )
+                val port = community.myEstimatedWan.port
+                val message = MsgPsiCaServerToClient(reEncryptedLabels, filter, port)
+                community.sendToPeer(peer, MessageId.MSG_PSI_CA_SERVER_TO_CLIENT, message)
+            }
+            MessageId.MSG_PSI_CA_SERVER_TO_CLIENT -> {
+                psiCaMessagesFromServers.add(payload as MsgPsiCaServerToClient)
             }
             else -> throw Exception("Other messages should not be listened to...")
         }

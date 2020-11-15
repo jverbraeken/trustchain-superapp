@@ -1,28 +1,35 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.3.72'
-    ext.ktlint_version = '0.36.0'
-    ext.coroutines_version = '1.3.7'
-    ext.ktlint_gradle_version = '9.1.1'
-    ext.sqldelight_version = '1.2.1'
-    ext.nav_version = "2.2.1"
-    ext.fragment_version = '1.2.5'
-    ext.lifecycle_version = "2.2.0"
+    ext.appcompat_version = "1.2.0"
+    ext.core_ktx_version = "1.3.2"
+    ext.coroutines_version = "1.3.7"
     ext.dokka_version = "0.10.1"
+    ext.espresso_version = "3.3.0"
+    ext.fragment_version = "1.2.5"
+    ext.junit_version = "1.1.2"
+    ext.kotlin_version = "1.3.72"
+    ext.ktlint_version = "0.36.0"
+    ext.ktlint_gradle_version = "9.1.1"
+    ext.lifecycle_version = "2.2.0"
+    ext.microutils_version = "1.7.7"
+    ext.nav_version = "2.2.1"
+    ext.recyclerview_version = "1.1.0"
+    ext.sqldelight_version = "1.2.1"
+
     repositories {
         google()
         jcenter()
         maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.0.1'
+        classpath "com.android.tools.build:gradle:4.1.1"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jlleitschuh.gradle:ktlint-gradle:$ktlint_gradle_version"
         classpath "com.squareup.sqldelight:gradle-plugin:$sqldelight_version"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:$dokka_version"
-        classpath 'com.google.gms:google-services:4.3.3'
+        classpath "com.google.gms:google-services:4.3.4"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -38,7 +45,7 @@ allprojects {
         jcenter()
         maven { url "https://dl.bintray.com/mattskala/maven" }
         maven { url "https://dl.bintray.com/terl/lazysodium-maven" }
-        maven { url 'https://jitpack.io' }
+        maven { url "https://jitpack.io" }
     }
 
     // Temp fix for issue https://github.com/mockk/mockk/issues/281

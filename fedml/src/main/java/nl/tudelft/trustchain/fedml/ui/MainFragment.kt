@@ -66,10 +66,12 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private var modelPoisoningAttack = ModelPoisoningAttacks.NONE
     private var numAttacker = NumAttackers.NUM_2
 
-    private fun getCommunity(): FedMLCommunity {
-        return getIpv8().getOverlay()
+    private val community by lazy { getIpv8().getOverlay<FedMLCommunity>()
             ?: throw java.lang.IllegalStateException("FedMLCommunity is not configured")
     }
+    private val localRunner by lazy { LocalRunner() }
+    private val simulatedRunner by lazy { SimulatedRunner() }
+    private val distributedRunner = DistributedRunner(community)  // Initialize asap so it can already receive messages
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -249,11 +251,11 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     ////// BUTTON CLICK LISTENERS
 
     private fun onBtnPingClicked() {
-        getCommunity().sendToAll(MessageId.MSG_PING, MsgPing("Ping"))
+        community.sendToAll(MessageId.MSG_PING, MsgPing("Ping"))
     }
 
     private fun onBtnRunLocallyClicked() {
-        LocalRunner().run(
+        localRunner.run(
             baseDirectory,
             getSeed(),
             createMLConfiguration()
@@ -261,7 +263,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     }
 
     private fun onBtnSimulateDistributedLocallyClicked() {
-        SimulatedRunner().run(
+        simulatedRunner.run(
             baseDirectory,
             getSeed(),
             createMLConfiguration()
@@ -269,7 +271,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     }
 
     private fun onBtnRunDistributedClicked() {
-        DistributedRunner(getCommunity()).run(
+        distributedRunner.run(
             baseDirectory,
             getSeed(),
             createMLConfiguration()
@@ -277,7 +279,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     }
 
     private fun getSeed(): Int {
-        return getCommunity().myEstimatedWan.port
+        return community.myEstimatedWan.port
     }
 
     private fun createMLConfiguration(): MLConfiguration {

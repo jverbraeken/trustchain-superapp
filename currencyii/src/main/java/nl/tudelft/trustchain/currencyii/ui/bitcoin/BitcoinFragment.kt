@@ -91,24 +91,26 @@ class BitcoinFragment : BaseFragment(R.layout.fragment_bitcoin),
 
         bitcoin_refresh_swiper.setOnRefreshListener {
             this.refresh()
-            Handler().postDelayed({
+            /** Handler() IS DEPRECATED, CODE DOESN'T COMPILE ANYMORE... **/
+            /*Handler().postDelayed({
                 try {
                     bitcoin_refresh_swiper.isRefreshing = false
                 } catch (e: IllegalStateException) {
                 }
-            }, 1500)
+            }, 1500)*/
         }
     }
 
     private fun refresh(animation: Boolean? = false) {
         if (animation!!) {
             bitcoin_refresh_swiper.isRefreshing = true
-            Handler().postDelayed({
+            /** Handler() IS DEPRECATED, CODE DOESN'T COMPILE ANYMORE... **/
+            /*Handler().postDelayed({
                 try {
                     bitcoin_refresh_swiper.isRefreshing = false
                 } catch (e: IllegalStateException) {
                 }
-            }, 1500)
+            }, 1500)*/
         }
 
         if (!WalletManagerAndroid.isRunning) {
@@ -181,9 +183,10 @@ class BitcoinFragment : BaseFragment(R.layout.fragment_bitcoin),
 
     override fun onImportDone() {
         this.refresh(true)
-        Handler().postDelayed({
+        /** Handler() IS DEPRECATED, CODE DOESN'T COMPILE ANYMORE... **/
+        /*Handler().postDelayed({
             findNavController().navigate(BitcoinFragmentDirections.actionBitcoinFragmentToBlockchainDownloadFragment())
-        }, 1500)
+        }, 1500)*/
     }
 
     fun copyToClipboard(text: String) {

@@ -28,13 +28,15 @@ import org.nd4j.linalg.dataset.api.preprocessor.ImagePreProcessingScaler
 import org.nd4j.linalg.learning.config.*
 import org.nd4j.linalg.lossfunctions.LossFunctions
 import java.io.File
+import java.math.BigInteger
 
 abstract class Runner {
+    protected open val printScoreIterations = 5
+    protected open val iterationsBeforeEvaluation = 300
+    protected val bigPrime = BigInteger("100012421")
     internal val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private var trainDatasetIterator: DataSetIterator? = null
     private var testDatasetIterator: DataSetIterator? = null
-    protected open val printScoreIterations = 5
-    protected open val iterationsBeforeEvaluation = 300
 
     fun generateNetwork(
         dataset: Datasets,
@@ -354,7 +356,7 @@ abstract class Runner {
             .build()
     }
 
-    fun generateDefaultHALConfiguration(
+    fun generateDefaultHARConfiguration(
         nnConfiguration: NNConfiguration,
         seed: Int
     ): MultiLayerConfiguration {
@@ -421,7 +423,7 @@ abstract class Runner {
                     null,
                     seed.toLong()
                 )
-                Datasets.HAL -> HARIterator(
+                Datasets.HAR -> HARIterator(
                     iteratorConfiguration,
                     seed,
                     DataSetType.TRAIN,
@@ -470,7 +472,7 @@ abstract class Runner {
                     iterator.preProcessor = ImagePreProcessingScaler(-0.5, 0.5)
                     iterator
                 }
-                Datasets.HAL -> {
+                Datasets.HAR -> {
                     val iterator =
                         HARIterator(
                             iteratorConfiguration,
