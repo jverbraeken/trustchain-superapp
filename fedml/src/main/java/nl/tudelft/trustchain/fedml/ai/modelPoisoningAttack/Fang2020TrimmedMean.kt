@@ -42,11 +42,11 @@ class Fang2020TrimmedMean(private val b: Int) : ModelPoisoningAttack() {
             val elements = ArrayList<Float>(modelsAsArrays.size)
             modelsAsArrays.forEach { elements.add(it[i]) }
             newMatrix[0][i] = if (gradient.getDouble(i) < 0) {
-                val max = elements.max()!!.toDouble()
+                val max = elements.maxOrNull()!!.toDouble()
                 if (max > 0) random.nextDouble(max, b * max).toFloat()
                 else random.nextDouble(max, max / b).toFloat()
             } else {
-                val min = elements.min()!!.toDouble()
+                val min = elements.minOrNull()!!.toDouble()
                 if (min > 0) random.nextDouble(min / b, min).toFloat()
                 else random.nextDouble(b * min, min).toFloat()
             }

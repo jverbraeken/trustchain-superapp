@@ -1,5 +1,6 @@
 package nl.tudelft.trustchain.fedml.ai.gar
 
+import mu.KLogger
 import mu.KotlinLogging
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.nd4j.linalg.api.ndarray.INDArray
@@ -10,7 +11,10 @@ import java.util.stream.Collectors
 import kotlin.math.ceil
 import kotlin.math.min
 
-private val logger = KotlinLogging.logger("Bristle")
+private val mpl = KotlinLogging.logger("Bristle")
+private fun debug(msg: () -> Any?) {
+    mpl.debug(msg)
+}
 
 /**
  * (practical yet robust) byzantine-resilient decentralized stochastic federated learning
@@ -19,7 +23,9 @@ private val logger = KotlinLogging.logger("Bristle")
  * byzantine-resilient decentralized stochastic gradient descent federated learning, non i.i.d., history-sensitive (= more robust), practical
  */
 class Bristle(private val fracBenign: Double) : AggregationRule() {
-    private val TEST_BATCH = 50
+    private val TEST_BATCH = 500
+    private val NUM_MODELS_TO_EVALUATE = 10
+    private val EXPLORATION_RATIO = 0.1
 
     @ExperimentalStdlibApi
     override fun integrateParameters(
@@ -28,37 +34,82 @@ class Bristle(private val fracBenign: Double) : AggregationRule() {
         otherModels: List<INDArray>,
         network: MultiLayerNetwork,
         testDataSetIterator: DataSetIterator,
-        allOtherModelsBuffer: ConcurrentLinkedDeque<INDArray>
+        allOtherModelsBuffer: ConcurrentLinkedDeque<INDArray>,
+        logging: Boolean
     ): INDArray {
-        logger.debug { formatName("BRISTLE") }
-        logger.debug { "Found ${otherModels.size} other models" }
-        logger.debug { "oldModel: " + oldModel.getDouble(0) }
+        debug { formatName("BRISTLE") }
+        debug { "Found ${otherModels.size} other models" }
+        debug { "oldModel: ${oldModel.getDouble(0) }" }
         val newModel = oldModel.sub(gradient)
-        val Ndistance: List<INDArray> = applyDistanceFilter(oldModel, newModel, otherModels, allOtherModelsBuffer)
-        logger.debug { "After distance filter, remaining:${Ndistance.size}" }
-        val Nperformance: List<INDArray> = applyPerformanceFilter(oldModel, Ndistance, network, testDataSetIterator)
-        logger.debug { "After performance filter, remaining:${Nperformance.size}" }
-//        if (Nperformance.isEmpty()) {
-//            logger.debug("Nperformance empty => taking ${Ndistance[0].getDouble(0)}")
-//            Nperformance = arrayListOf(Ndistance[0])
-//        }
+        debug { "newModel: ${newModel.getDouble(0) }" }
+        debug { "otherModels: ${otherModels.map { it.getDouble(0) }.toCollection(ArrayList())}" }
 
-        // This is not included in the original algorithm!!!!
-        if (Nperformance.isEmpty()) {
-            return oldModel.sub(gradient)
+        val distances = getDistances(oldModel, newModel, otherModels, allOtherModelsBuffer)
+        debug { "distances: $distances"}
+        val numCloseModels1 = NUM_MODELS_TO_EVALUATE - NUM_MODELS_TO_EVALUATE * EXPLORATION_RATIO
+        val numCloseModels2 = ceil(fracBenign * otherModels.size)
+        val numCloseModels = min(numCloseModels1, numCloseModels2).toLong()
+        debug { "#numCloseModels: $numCloseModels" }
+        val closeModels = distances
+            .keys
+            .stream()
+            .limit(numCloseModels)
+            .filter { it < 1000000 }
+            .map { otherModels[it] }
+            .collect(Collectors.toList())
+        debug { "closeModels: ${closeModels.map { it.getDouble(0) }.toCollection(ArrayList())}" }
+
+        val notCloseModels = distances
+            .keys
+            .stream()
+            .skip(numCloseModels)
+            .filter { it < 1000000 }
+            .map { otherModels[it] }
+            .collect(Collectors.toList())
+        notCloseModels.shuffle()
+        notCloseModels.take(NUM_MODELS_TO_EVALUATE - closeModels.size)  // perhaps not enough elements...
+        debug { "notCloseModels: ${notCloseModels.map { it.getDouble(0) }.toCollection(ArrayList())}" }
+
+        val combinedModels = listOf(closeModels, notCloseModels).flatten()
+        debug { "combinedModels: ${combinedModels.map { it.getDouble(0) }.toCollection(ArrayList())}" }
+        testDataSetIterator.reset()
+        val sample = testDataSetIterator.next(TEST_BATCH)
+        val oldLoss = calculateLoss(oldModel, network, sample)
+        debug { "oldLoss: $oldLoss" }
+        val losses = calculateLosses(combinedModels, network, sample)
+        debug { "losses: $losses"}
+        val oldLoss2 = calculateLoss(oldModel, network, sample)
+        debug { "oldLoss2: $oldLoss2" }
+        val modelsToWeight = mapLossesToWeight(losses, oldLoss)
+        debug { "modelsToWeight: $modelsToWeight"}
+
+        return if (modelsToWeight.isEmpty()) {
+            newModel
+        } else {
+            weightedAverage(modelsToWeight, combinedModels, newModel)
         }
-
-        val Rmozi: INDArray = average(Nperformance)
-        logger.debug("average: ${Rmozi.getDouble(0)}")
-        val alpha = 0.5
-        val part1 = oldModel.mul(alpha)
-        val result = part1.add(Rmozi.mul(1 - alpha))
-        logger.debug("result: ${result.getDouble(0)}")
-        return result
     }
 
     override fun isDirectIntegration(): Boolean {
         return true
+    }
+
+    private fun getDistances(
+        oldModel: INDArray,
+        newModel: INDArray,
+        otherModels: List<INDArray>,
+        allOtherModelsBuffer: ConcurrentLinkedDeque<INDArray>
+    ): Map<Int, Double> {
+        val distances = hashMapOf<Int, Double>()
+        for ((index, otherModel) in otherModels.withIndex()) {
+            debug { "Distance calculated: ${min(otherModel.distance2(oldModel), otherModel.distance2(newModel))}" }
+            distances[index] = min(otherModel.distance2(oldModel), otherModel.distance2(newModel))
+        }
+        for (i in 0 until min(20 - distances.size, allOtherModelsBuffer.size)) {
+            val otherModel = allOtherModelsBuffer.elementAt(allOtherModelsBuffer.size - 1 - i)
+            distances[1000000 + i] = min(otherModel.distance2(oldModel), otherModel.distance2(newModel))
+        }
+        return distances.toList().sortedBy { (_, value) -> value }.toMap()
     }
 
     private fun calculateLoss(
@@ -67,80 +118,48 @@ class Bristle(private val fracBenign: Double) : AggregationRule() {
         sample: DataSet
     ): Double {
         network.setParameters(model)
-        return network.scoreExamples(sample, true).sumNumber().toDouble()
+        return network.score(sample)
     }
 
-    private fun calculateLoss(
+    private fun calculateLosses(
         models: List<INDArray>,
         network: MultiLayerNetwork,
         sample: DataSet
-    ): List<Double> {
-        val scores: MutableList<Double> = mutableListOf()
-        for (model in models) {
+    ): Map<Int, Double> {
+        val scores = mutableMapOf<Int, Double>()
+        for ((index, model) in models.withIndex()) {
             network.setParameters(model)
-            scores.add(network.scoreExamples(sample, true).sumNumber().toDouble())
-            logger.debug { "otherLoss = ${scores[scores.size - 1]}" }
+            scores[index] = network.score(sample)
         }
         return scores
     }
 
-    private fun applyDistanceFilter(
-        oldModel: INDArray,
-        newModel: INDArray,
-        otherModels: List<INDArray>,
-        allOtherModelsBuffer: ConcurrentLinkedDeque<INDArray>
-    ): List<INDArray> {
-        val distances: MutableMap<Int, Double> = hashMapOf()
-        for ((index, otherModel) in otherModels.withIndex()) {
-            logger.debug { "Distance calculated: ${min(otherModel.distance2(oldModel), otherModel.distance2(newModel))}" }
-            distances[index] = min(otherModel.distance2(oldModel), otherModel.distance2(newModel))
-        }
-        for (i in 0 until min(20 - distances.size, allOtherModelsBuffer.size)) {
-            val otherModel = allOtherModelsBuffer.elementAt(allOtherModelsBuffer.size - 1 - i)
-            distances[1000000 + i] = min(otherModel.distance2(oldModel), otherModel.distance2(newModel))
-        }
-        val sortedDistances: Map<Int, Double> = distances.toList().sortedBy { (_, value) -> value }.toMap()
-        val numBenign = ceil(fracBenign * otherModels.size).toLong()
-        logger.debug { "#benign: $numBenign" }
-        return sortedDistances.keys.stream().limit(numBenign).filter { it < 1000000 }.map { otherModels[it] }
-            .collect(Collectors.toList())
-    }
-
-    private fun applyPerformanceFilter(
-        oldModel: INDArray,
-        otherModels: List<INDArray>,
-        network: MultiLayerNetwork,
-        testDataSetIterator: DataSetIterator
-    ): List<INDArray> {
-        val result: MutableList<INDArray> = arrayListOf()
-        testDataSetIterator.reset()
-        val sample = testDataSetIterator.next(TEST_BATCH)
-        val oldLoss = calculateLoss(oldModel, network, sample)
-        logger.debug { "oldLoss: $oldLoss" }
-        val otherLosses = calculateLoss(otherModels, network, sample)
-        for ((index, otherLoss) in otherLosses.withIndex()) {
-            logger.debug { "otherLoss $index: $otherLoss" }
-            if (otherLoss <= oldLoss) {
-                result.add(otherModels[index])
-                logger.debug { "ADDING model($index): " + otherModels[index].getDouble(0) }
-            } else {
-                logger.debug { "NOT adding model($index): " + otherModels[index].getDouble(0) }
+    private fun mapLossesToWeight(otherLosses: Map<Int, Double>, oldLoss: Double): Map<Int, Double> {
+        val minWeight = 1
+        val maxWeight = 5
+        return otherLosses
+            .filter { it.value < oldLoss }
+            .map { (index, loss) ->
+                val weightDistance = maxWeight - minWeight
+                val performance = (1 - (loss / oldLoss))
+                Pair(index, minWeight + weightDistance * performance)
             }
-        }
-        return result
+            .toMap()
     }
 
-    private fun average(list: List<INDArray>): INDArray {
+    private fun weightedAverage(modelsToWeight: Map<Int, Double>, otherModels: List<INDArray>, newModel: INDArray): INDArray {
         var arr: INDArray? = null
-        for ((index, value) in list.iterator().withIndex()) {
-            logger.debug { "Averaging: " + value.getDouble(0) }
+        for ((index, weight) in modelsToWeight.entries) {
             if (index == 0) {
-                arr = value
+                arr = otherModels[index].mul(weight)
                 continue
             }
-            arr = arr!!.add(value)
-            logger.debug { "Arr = " + arr.getDouble(0) }
+            arr = arr!!.add(otherModels[index].mul(weight))
         }
-        return arr!!.div(list.size)
+        arr = arr!!.add(newModel)
+        val totalWeight = modelsToWeight.values.sum() + 1  // + 1 for the new model
+        debug { "totalWeight: $totalWeight"}
+        debug { "weightedAverage: ${arr!!.div(totalWeight)}" }
+        return arr!!.div(totalWeight)
     }
 }

@@ -20,7 +20,8 @@ class Mozi(private val fracBenign: Double) : AggregationRule() {
         otherModels: List<INDArray>,
         network: MultiLayerNetwork,
         testDataSetIterator: DataSetIterator,
-        allOtherModelsBuffer: ConcurrentLinkedDeque<INDArray>
+        allOtherModelsBuffer: ConcurrentLinkedDeque<INDArray>,
+        logging: Boolean
     ): INDArray {
         logger.debug { formatName("MOZI") }
         logger.debug { "Found ${otherModels.size} other models" }
@@ -42,7 +43,7 @@ class Mozi(private val fracBenign: Double) : AggregationRule() {
         val Rmozi: INDArray = average(Nperformance)
         logger.debug("average: ${Rmozi.getDouble(0)}")
         val alpha = 0.5
-        val part1 = oldModel.mul(alpha)
+        val part1 = oldModel.sub(gradient).mul(alpha)
         val result = part1.add(Rmozi.mul(1 - alpha))
         logger.debug("result: ${result.getDouble(0)}")
         return result
@@ -54,7 +55,7 @@ class Mozi(private val fracBenign: Double) : AggregationRule() {
         sample: DataSet
     ): Double {
         network.setParameters(model)
-        return network.scoreExamples(sample, true).sumNumber().toDouble()
+        return network.score(sample)
     }
 
     private fun calculateLoss(
@@ -65,7 +66,7 @@ class Mozi(private val fracBenign: Double) : AggregationRule() {
         val scores: MutableList<Double> = mutableListOf()
         for (model in models) {
             network.setParameters(model)
-            scores.add(network.scoreExamples(sample, true).sumNumber().toDouble())
+            scores.add(network.score(sample))
             logger.debug { "otherLoss = ${scores[scores.size - 1]}" }
         }
         return scores

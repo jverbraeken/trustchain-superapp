@@ -199,7 +199,8 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                             newOtherModels,
                             network,
                             testDataSetIterator,
-                            recentOtherModels
+                            recentOtherModels,
+                            true
                         )
                         recentOtherModels.addAll(newOtherModels)
                         while (recentOtherModels.size > SIZE_RECENT_OTHER_MODELS) {

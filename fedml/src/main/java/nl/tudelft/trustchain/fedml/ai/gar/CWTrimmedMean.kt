@@ -20,7 +20,8 @@ class CWTrimmedMean(private val b: Int) : AggregationRule() {
         otherModels: List<INDArray>,
         network: MultiLayerNetwork,
         testDataSetIterator: DataSetIterator,
-        allOtherModelsBuffer: ConcurrentLinkedDeque<INDArray>
+        allOtherModelsBuffer: ConcurrentLinkedDeque<INDArray>,
+        logging: Boolean
     ): INDArray {
         logger.debug { formatName("Coordinate-Wise Trimmed Mean") }
         val models = arrayListOf(oldModel.sub(gradient))

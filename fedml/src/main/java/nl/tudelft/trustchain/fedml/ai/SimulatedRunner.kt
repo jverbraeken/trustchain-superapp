@@ -130,7 +130,8 @@ class SimulatedRunner : Runner() {
                     testDataSetIterator,
                     config[i].trainConfiguration,
                     config[i].modelPoisoningConfiguration,
-                    similarPeers
+                    similarPeers,
+                    i == 0
                 )
             }
         }
@@ -144,7 +145,8 @@ class SimulatedRunner : Runner() {
         testDataSetIterator: DataSetIterator,
         trainConfiguration: TrainConfiguration,
         modelPoisoningConfiguration: ModelPoisoningConfiguration,
-        similarPeers: List<Int>
+        similarPeers: List<Int>,
+        logging: Boolean
     ) {
         val newOtherModels = newOtherModelBuffers[simulationIndex]
         val recentOtherModels = recentOtherModelsBuffers[simulationIndex]
@@ -160,6 +162,9 @@ class SimulatedRunner : Runner() {
             val start = System.currentTimeMillis()
             var oldParams = network.params().dup()
             while (true) {
+                if (iterationsToEvaluation >= iterationsBeforeEvaluation) {
+                    iterationsToEvaluation = 0
+                }
 
                 // Train
                 var endEpoch = false
@@ -177,7 +182,6 @@ class SimulatedRunner : Runner() {
 
                     if (iterationsToEvaluation >= iterationsBeforeEvaluation) {
                         // Test
-                        iterationsToEvaluation = 0
                         val end = System.currentTimeMillis()
                         logger.debug { "Evaluating network " }
                         evaluationProcessor.iteration = iterations
@@ -211,13 +215,21 @@ class SimulatedRunner : Runner() {
                         logger.debug { "Params received => executing aggregation rule" }
 
                         val start2 = System.currentTimeMillis()
+                        logger.debug { "Integrating newOtherModels: ${newOtherModels[0].getDouble(0)}, ${newOtherModels[0].getDouble(1)}, ${newOtherModels[0].getDouble(2)}, ${newOtherModels[0].getDouble(3)}"}
+                        testDataSetIterator.reset()
+                        val sample = testDataSetIterator.next(500)
+                        network.setParameters(newOtherModels[0])
+                        logger.debug { "loss -> ${network.score(sample)}"}
+                        network.setParameters(newOtherModels[0])
+                        logger.debug { "loss -> ${network.score(sample)}"}
                         averageParams = gar.integrateParameters(
                             oldParams,
                             gradient,
                             newOtherModels,
                             network,
                             testDataSetIterator,
-                            recentOtherModels
+                            recentOtherModels,
+                            logging
                         )
                         recentOtherModels.addAll(newOtherModels)
                         while (recentOtherModels.size > NUM_RECENT_OTHER_MODELS) {
@@ -240,14 +252,21 @@ class SimulatedRunner : Runner() {
                     }
 
                     // Send new parameters to other peers
-                    val message = craftMessage(averageParams, trainConfiguration.behavior, random)
-                    when (trainConfiguration.communicationPattern) {
-                        CommunicationPatterns.ALL -> newOtherModelBuffers.filterIndexed { index, _ -> index != simulationIndex && index in similarPeers }
-                            .forEach { it.add(message) }
-                        CommunicationPatterns.RANDOM -> newOtherModelBuffers.filterIndexed { index, _ -> index != simulationIndex && index in similarPeers }
-                            .random().add(message)
-                        CommunicationPatterns.RR -> throw IllegalArgumentException("Not implemented yet")
-                        CommunicationPatterns.RING -> throw IllegalArgumentException("Not implemented yet")
+                    if (iterationsToEvaluation >= iterationsBeforeEvaluation) {
+                        logger.debug { "Sending model to peers: ${averageParams.getDouble(0)}, ${averageParams.getDouble(1)}, ${averageParams.getDouble(2)}, ${averageParams.getDouble(3)}"}
+                        testDataSetIterator.reset()
+                        val sample = testDataSetIterator.next(500)
+                        network.setParameters(averageParams)
+                        logger.debug { "loss => ${network.score(sample)}"}
+                        val message = craftMessage(averageParams, trainConfiguration.behavior, random)
+                        when (trainConfiguration.communicationPattern) {
+                            CommunicationPatterns.ALL -> newOtherModelBuffers.filterIndexed { index, _ -> index != simulationIndex && index in similarPeers }
+                                .forEach { it.add(message) }
+                            CommunicationPatterns.RANDOM -> newOtherModelBuffers.filterIndexed { index, _ -> index != simulationIndex && index in similarPeers }
+                                .random().add(message)
+                            CommunicationPatterns.RR -> throw IllegalArgumentException("Not implemented yet")
+                            CommunicationPatterns.RING -> throw IllegalArgumentException("Not implemented yet")
+                        }
                     }
                 }
                 oldParams = network.params().dup()

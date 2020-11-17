@@ -18,7 +18,8 @@ class Bridge(private val b: Int) : AggregationRule() {
         otherModels: List<INDArray>,
         network: MultiLayerNetwork,
         testDataSetIterator: DataSetIterator,
-        allOtherModelsBuffer: ConcurrentLinkedDeque<INDArray>
+        allOtherModelsBuffer: ConcurrentLinkedDeque<INDArray>,
+        logging: Boolean
     ): INDArray {
         logger.debug { formatName("BRIDGE") }
         val models: MutableList<INDArray> = arrayListOf(oldModel)

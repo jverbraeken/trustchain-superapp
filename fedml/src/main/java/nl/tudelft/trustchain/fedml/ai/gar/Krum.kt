@@ -24,7 +24,7 @@ fun getKrum(models: MutableList<INDArray>, b: Int): Int {
         copy.sort()
         copy.take(models.size - b/* - 2*/).sum()
     }
-    return summedDistances.indexOf(summedDistances.min())
+    return summedDistances.indexOf(summedDistances.minOrNull())
 }
 
 class Krum(private val b: Int) : AggregationRule() {
@@ -34,7 +34,8 @@ class Krum(private val b: Int) : AggregationRule() {
         otherModels: List<INDArray>,
         network: MultiLayerNetwork,
         testDataSetIterator: DataSetIterator,
-        allOtherModelsBuffer: ConcurrentLinkedDeque<INDArray>
+        allOtherModelsBuffer: ConcurrentLinkedDeque<INDArray>,
+        logging: Boolean
     ): INDArray {
         logger.debug { formatName("Krum") }
         val models: MutableList<INDArray> = arrayListOf()

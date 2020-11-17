@@ -19,7 +19,8 @@ class Median : AggregationRule() {
         otherModels: List<INDArray>,
         network: MultiLayerNetwork,
         testDataSetIterator: DataSetIterator,
-        allOtherModelsBuffer: ConcurrentLinkedDeque<INDArray>
+        allOtherModelsBuffer: ConcurrentLinkedDeque<INDArray>,
+        logging: Boolean
     ): INDArray {
         logger.debug { formatName("Median") }
         val models: MutableList<INDArray> = arrayListOf(oldModel)

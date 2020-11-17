@@ -16,10 +16,11 @@ class Average : AggregationRule() {
         otherModels: List<INDArray>,
         network: MultiLayerNetwork,
         testDataSetIterator: DataSetIterator,
-        allOtherModelsBuffer: ConcurrentLinkedDeque<INDArray>
+        allOtherModelsBuffer: ConcurrentLinkedDeque<INDArray>,
+        logging: Boolean
     ): INDArray {
         logger.debug { formatName("Simple average") }
-        val models: MutableList<INDArray> = arrayListOf(oldModel.sub(gradient))
+        val models = arrayListOf(oldModel.sub(gradient))
         otherModels.forEach { models.add(it) }
         logger.debug { "Found ${models.size} models in total" }
         val modelsAsArrays = models.map { it.toFloatMatrix()[0] }
