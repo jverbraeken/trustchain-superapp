@@ -2,19 +2,19 @@ package nl.tudelft.trustchain.fedml.ai.dataset.har
 
 import nl.tudelft.trustchain.fedml.Behaviors
 import nl.tudelft.trustchain.fedml.ai.DatasetIteratorConfiguration
-import nl.tudelft.trustchain.fedml.ai.dataset.mnist.CustomMnistDataFetcher
+import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDatasetIterator
 import org.deeplearning4j.datasets.fetchers.DataSetType
-import org.nd4j.linalg.dataset.api.iterator.BaseDatasetIterator
+import org.nd4j.linalg.dataset.api.DataSet
 import java.io.File
 
 
-class HARIterator(
+class HARDataSetIterator(
     iteratorConfiguration: DatasetIteratorConfiguration,
-    seed: Int,
+    seed: Long,
     dataSetType: DataSetType,
     baseDirectory: File,
     behavior: Behaviors
-) : BaseDatasetIterator(
+) : CustomBaseDatasetIterator(
     iteratorConfiguration.batchSize.value,
     -1,
     HARDataFetcher(
@@ -26,8 +26,22 @@ class HARIterator(
         behavior
     )
 ) {
+    override val testBatches: List<DataSet> by lazy {customFetcher.testBatches}
+
     override fun getLabels(): List<String> {
         return (fetcher as HARDataFetcher).labels
+    }
+
+    companion object {
+        fun create(
+            iteratorConfiguration: DatasetIteratorConfiguration,
+            seed: Long,
+            dataSetType: DataSetType,
+            baseDirectory: File,
+            behavior: Behaviors
+        ): HARDataSetIterator {
+            return HARDataSetIterator(iteratorConfiguration, seed, dataSetType, baseDirectory, behavior)
+        }
     }
 }
 

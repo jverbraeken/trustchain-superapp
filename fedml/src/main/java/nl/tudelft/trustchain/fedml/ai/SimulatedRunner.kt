@@ -1,12 +1,10 @@
 package nl.tudelft.trustchain.fedml.ai
 
-import com.google.common.hash.BloomFilter
-import com.google.common.hash.Funnel
-import com.google.common.hash.PrimitiveSink
 import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.*
 import nl.tudelft.trustchain.fedml.ipv8.MsgPsiCaClientToServer
 import nl.tudelft.trustchain.fedml.ipv8.MsgPsiCaServerToClient
+import org.deeplearning4j.datasets.fetchers.DataSetType
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.deeplearning4j.optimize.listeners.EvaluativeListener
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener
@@ -14,11 +12,9 @@ import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.cpu.nativecpu.NDArray
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 import java.io.File
-import java.math.BigInteger
 import java.nio.file.Paths
 import java.util.concurrent.ConcurrentLinkedDeque
 import java.util.concurrent.CopyOnWriteArrayList
-import java.util.stream.Collectors
 import kotlin.concurrent.thread
 import kotlin.random.Random
 
@@ -52,19 +48,19 @@ class SimulatedRunner : Runner() {
         }
         for (i in config.indices) {
             thread {
-                val trainDataSetIterator = getTrainDatasetIterator(
-                    baseDirectory,
-                    config[i].dataset,
+                val trainDataSetIterator = config[i].dataset.inst(
                     config[i].datasetIteratorConfiguration,
-                    config[i].trainConfiguration.behavior,
-                    i
+                    i.toLong(),
+                    DataSetType.TRAIN,
+                    baseDirectory,
+                    config[i].trainConfiguration.behavior
                 )
-                val testDataSetIterator = getTestDatasetIterator(
-                    baseDirectory,
-                    config[i].dataset,
+                val testDataSetIterator = config[i].dataset.inst(
                     config[i].datasetIteratorConfiguration,
-                    config[i].trainConfiguration.behavior,
-                    i
+                    i.toLong(),
+                    DataSetType.TEST,
+                    baseDirectory,
+                    config[i].trainConfiguration.behavior
                 )
                 val evaluationProcessor = EvaluationProcessor(
                     baseDirectory,
@@ -83,8 +79,6 @@ class SimulatedRunner : Runner() {
                     i
                 )
                 network.setListeners(ScoreIterationListener(printScoreIterations))
-
-
 
 
                 val encryptedLabels = clientsRequestsServerLabels(
@@ -215,13 +209,19 @@ class SimulatedRunner : Runner() {
                         logger.debug { "Params received => executing aggregation rule" }
 
                         val start2 = System.currentTimeMillis()
-                        logger.debug { "Integrating newOtherModels: ${newOtherModels[0].getDouble(0)}, ${newOtherModels[0].getDouble(1)}, ${newOtherModels[0].getDouble(2)}, ${newOtherModels[0].getDouble(3)}"}
+                        logger.debug {
+                            "Integrating newOtherModels: ${newOtherModels[0].getDouble(0)}, ${newOtherModels[0].getDouble(1)}, ${
+                                newOtherModels[0].getDouble(
+                                    2
+                                )
+                            }, ${newOtherModels[0].getDouble(3)}"
+                        }
                         testDataSetIterator.reset()
                         val sample = testDataSetIterator.next(500)
                         network.setParameters(newOtherModels[0])
-                        logger.debug { "loss -> ${network.score(sample)}"}
+                        logger.debug { "loss -> ${network.score(sample)}" }
                         network.setParameters(newOtherModels[0])
-                        logger.debug { "loss -> ${network.score(sample)}"}
+                        logger.debug { "loss -> ${network.score(sample)}" }
                         averageParams = gar.integrateParameters(
                             oldParams,
                             gradient,
@@ -253,11 +253,17 @@ class SimulatedRunner : Runner() {
 
                     // Send new parameters to other peers
                     if (iterationsToEvaluation >= iterationsBeforeEvaluation) {
-                        logger.debug { "Sending model to peers: ${averageParams.getDouble(0)}, ${averageParams.getDouble(1)}, ${averageParams.getDouble(2)}, ${averageParams.getDouble(3)}"}
+                        logger.debug {
+                            "Sending model to peers: ${averageParams.getDouble(0)}, ${averageParams.getDouble(1)}, ${
+                                averageParams.getDouble(
+                                    2
+                                )
+                            }, ${averageParams.getDouble(3)}"
+                        }
                         testDataSetIterator.reset()
                         val sample = testDataSetIterator.next(500)
                         network.setParameters(averageParams)
-                        logger.debug { "loss => ${network.score(sample)}"}
+                        logger.debug { "loss => ${network.score(sample)}" }
                         val message = craftMessage(averageParams, trainConfiguration.behavior, random)
                         when (trainConfiguration.communicationPattern) {
                             CommunicationPatterns.ALL -> newOtherModelBuffers.filterIndexed { index, _ -> index != simulationIndex && index in similarPeers }

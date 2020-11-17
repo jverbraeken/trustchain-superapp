@@ -1,17 +1,22 @@
 package nl.tudelft.trustchain.fedml
 
-import nl.tudelft.trustchain.fedml.ai.NNConfiguration
-import nl.tudelft.trustchain.fedml.ai.Runner
+import nl.tudelft.trustchain.fedml.ai.*
+import nl.tudelft.trustchain.fedml.ai.dataset.cifar.CustomCifar10DataSetIterator
+import nl.tudelft.trustchain.fedml.ai.dataset.har.HARDataSetIterator
+import nl.tudelft.trustchain.fedml.ai.dataset.mnist.CustomMnistDataSetIterator
 import nl.tudelft.trustchain.fedml.ai.gar.*
 import nl.tudelft.trustchain.fedml.ai.modelPoisoningAttack.Fang2020Krum
 import nl.tudelft.trustchain.fedml.ai.modelPoisoningAttack.Fang2020TrimmedMean
 import nl.tudelft.trustchain.fedml.ai.modelPoisoningAttack.ModelPoisoningAttack
 import nl.tudelft.trustchain.fedml.ai.modelPoisoningAttack.NoAttack
+import org.deeplearning4j.datasets.fetchers.DataSetType
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration
+import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
+import org.nd4j.linalg.learning.config.*
 import org.nd4j.linalg.schedule.ISchedule
 import org.nd4j.linalg.schedule.MapSchedule
 import org.nd4j.linalg.schedule.ScheduleType
-import kotlin.reflect.KFunction3
+import java.io.File
 
 
 enum class Datasets(
@@ -23,7 +28,8 @@ enum class Datasets(
     val defaultL2: L2Regularizations,
     val defaultBatchSize: BatchSizes,
     val defaultIteratorDistribution: IteratorDistributions,
-    val architecture: KFunction3<Runner, NNConfiguration, Int, MultiLayerConfiguration>
+    val architecture: (nnConfiguration: NNConfiguration, seed: Int) -> MultiLayerConfiguration,
+    val inst: (iteratorConfiguration: DatasetIteratorConfiguration, seed: Long, dataSetType: DataSetType, baseDirectory: File, behavior: Behaviors) -> DataSetIterator
 ) {
     MNIST(
         "mnist",
@@ -36,7 +42,8 @@ enum class Datasets(
         L2Regularizations.L2_5EM3,
         BatchSizes.BATCH_5,
         IteratorDistributions.DISTRIBUTION_MNIST_2,
-        Runner::generateDefaultMNISTConfiguration
+        ::generateDefaultMNISTConfiguration,
+        CustomMnistDataSetIterator::create
     ),
     CIFAR10(
         "cifar10",
@@ -47,9 +54,11 @@ enum class Datasets(
         L2Regularizations.L2_1EM4,
         BatchSizes.BATCH_64,
         IteratorDistributions.DISTRIBUTION_CIFAR_1,
-        Runner::generateDefaultCIFARConfiguration
+        ::generateDefaultCIFARConfiguration,
+        CustomCifar10DataSetIterator::create
     ),
-    TINYIMAGENET(
+
+    /*TINYIMAGENET(
         "tinyimagenet",
         "Tiny ImageNet",
         Optimizers.AMSGRAD,
@@ -58,8 +67,9 @@ enum class Datasets(
         L2Regularizations.L2_1EM4,
         BatchSizes.BATCH_64,
         IteratorDistributions.DISTRIBUTION_MNIST_1,
-        Runner::generateDefaultTinyImageNetConfiguration
-    ),
+        Runner::generateDefaultTinyImageNetConfiguration,
+        CustomMnistDataSetIterator::create
+    ),*/
     HAR(
         "har",
         "HAR",
@@ -69,7 +79,8 @@ enum class Datasets(
         L2Regularizations.L2_1EM4,
         BatchSizes.BATCH_32,
         IteratorDistributions.DISTRIBUTION_HAR_1,
-        Runner::generateDefaultHARConfiguration
+        ::generateDefaultHARConfiguration,
+        HARDataSetIterator::create
     ),
 }
 
@@ -88,8 +99,16 @@ fun loadBatchSize(batchSize: String) = BatchSizes.values().first { it.id == batc
 enum class IteratorDistributions(val id: String, val text: String, val value: List<Int>) {
     DISTRIBUTION_MNIST_1("mnist_100", "MNIST 100", arrayListOf(100, 100, 100, 100, 100, 100, 100, 100, 100, 100)),
     DISTRIBUTION_MNIST_2("mnist_500", "MNIST 500", arrayListOf(500, 500, 500, 500, 500, 500, 500, 500, 500, 500)),
-    DISTRIBUTION_MNIST_3("mnist_0_to_7_with_100", "MNIST 0 to 7 with 100", arrayListOf(100, 100, 100, 100, 100, 100, 100, 0, 0, 0)),
-    DISTRIBUTION_MNIST_4("mnist_4_to_10_with_100", "MNIST 4 to 10 with 100", arrayListOf(0, 0, 0, 0, 100, 100, 100, 100, 100, 100)),
+    DISTRIBUTION_MNIST_3(
+        "mnist_0_to_7_with_100",
+        "MNIST 0 to 7 with 100",
+        arrayListOf(100, 100, 100, 100, 100, 100, 100, 0, 0, 0)
+    ),
+    DISTRIBUTION_MNIST_4(
+        "mnist_4_to_10_with_100",
+        "MNIST 4 to 10 with 100",
+        arrayListOf(0, 0, 0, 0, 100, 100, 100, 100, 100, 100)
+    ),
     DISTRIBUTION_MNIST_5("mnist_7_to_4_with_100", "MNIST 0 to 7 with 100", arrayListOf(100, 100, 100, 0, 0, 0, 0, 100, 100, 100)),
     DISTRIBUTION_CIFAR_1("cifar_1", "CIFAR 1", arrayListOf(100, 100, 100, 100, 100, 100, 100, 100, 100, 100)),
     DISTRIBUTION_HAR_1("har_1", "HAR 1", arrayListOf(100, 100, 100, 100, 100, 100)),
@@ -107,13 +126,14 @@ fun loadMaxTestSample(maxTestSample: String) = MaxTestSamples.values().first { i
 
 enum class Optimizers(
     val id: String,
-    val text: String
+    val text: String,
+    val inst: (LearningRates) -> IUpdater
 ) {
-    NESTEROVS("nesterovs", "Nesterovs"),
-    ADAM("adam", "Adam"),
-    SGD("sgd", "SGD"),
-    RMSPROP("rmsprop", "RMSprop"),
-    AMSGRAD("amsgrad", "AMSGRAD")
+    NESTEROVS("nesterovs", "Nesterovs", { learningRate -> Nesterovs(learningRate.schedule) }),
+    ADAM("adam", "Adam", { learningRate -> Adam(learningRate.schedule) }),
+    SGD("sgd", "SGD", { learningRate -> Sgd(learningRate.schedule) }),
+    RMSPROP("rmsprop", "RMSprop", { learningRate -> RmsProp(learningRate.schedule) }),
+    AMSGRAD("amsgrad", "AMSGRAD", { learningRate -> AMSGrad(learningRate.schedule) })
 }
 
 fun loadOptimizer(optimizer: String) = Optimizers.values().first { it.id == optimizer }
