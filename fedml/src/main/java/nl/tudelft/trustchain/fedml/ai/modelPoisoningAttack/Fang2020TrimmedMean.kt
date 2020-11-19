@@ -16,19 +16,19 @@ class Fang2020TrimmedMean(private val b: Int) : ModelPoisoningAttack() {
         numAttackers: NumAttackers,
         oldModel: INDArray,
         gradient: INDArray,
-        otherModels: List<INDArray>,
+        otherModels: Map<Int, INDArray>,
         random: Random
-    ): Collection<INDArray> {
+    ): Map<Int, INDArray> {
         logger.debug { formatName("Fang 2020 Trimmed Mean") }
-        val models: MutableList<INDArray> = arrayListOf(oldModel.sub(gradient))
-        otherModels.forEach { models.add(it) }
+        val models = arrayListOf<INDArray>(oldModel.sub(gradient))
+        models.addAll(otherModels.values)
         logger.debug { "Found ${models.size} models in total" }
         val modelsAsArrays = models.map { it.toFloatMatrix()[0] }
         val result = arrayListOf<INDArray>()
         for (i in 0 until numAttackers.num) {
             result.add(generateAttackVector(modelsAsArrays, gradient, random, b))
         }
-        return result
+        return transformToResult(result)
     }
 
     private fun generateAttackVector(

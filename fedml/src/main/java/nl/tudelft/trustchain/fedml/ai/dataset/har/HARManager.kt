@@ -82,14 +82,17 @@ class HARManager(
         return Pair(dataArr.map { it.toTypedArray() }.toTypedArray(), labelsArr)
     }
 
-    fun createTestBatches(): List<Array<Array<String>>> {
-        val result: MutableList<Array<Array<String>>> = ArrayList()
-        for (label in 0..HARDataFetcher.NUM_LABELS) {
-            val correspondingDataIndices = IntStream.range(0, labelsArr.size).filter { i: Int -> labelsArr[i] == label }
-                .limit(50).toArray()
-            result.add(correspondingDataIndices.map { i: Int -> dataArr[i] }.toTypedArray())
-        }
-        return result
+    fun createTestBatches(): Array<Array<Array<String>>> {
+        return (0 until HARDataFetcher.NUM_LABELS).map { label ->
+            val correspondingDataIndices = IntStream
+                .range(0, labelsArr.size)
+                .filter { i: Int -> labelsArr[i] == label }
+                .limit(50)
+                .toArray()
+            correspondingDataIndices
+                .map { i: Int -> dataArr[i] }
+                .toTypedArray()
+        }.toTypedArray()
     }
 
     fun readEntryUnsafe(i: Int): Array<String> {

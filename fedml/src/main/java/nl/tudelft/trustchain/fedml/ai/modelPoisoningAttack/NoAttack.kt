@@ -12,9 +12,9 @@ class NoAttack : ModelPoisoningAttack() {
         numAttackers: NumAttackers,
         oldModel: INDArray,
         gradient: INDArray,
-        otherModels: List<INDArray>,
+        otherModels: Map<Int, INDArray>,
         random: Random
-    ): Collection<INDArray> {
-        return arrayListOf()
+    ): Map<Int, INDArray> {
+        return HashMap()
     }
 }

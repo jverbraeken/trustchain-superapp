@@ -18,12 +18,12 @@ class Fang2020Krum(private val b: Int) : ModelPoisoningAttack() {
         numAttackers: NumAttackers,
         oldModel: INDArray,
         gradient: INDArray,
-        otherModels: List<INDArray>,
+        otherModels: Map<Int, INDArray>,
         random: Random
-    ): Collection<INDArray> {
+    ): Map<Int, INDArray> {
         logger.debug { formatName("Fang 2020 Trimmed Mean") }
-        val models: MutableList<INDArray> = arrayListOf(oldModel.sub(gradient))
-        otherModels.forEach { models.add(it) }
+        val models = arrayListOf<INDArray>(oldModel.sub(gradient))
+        models.addAll(otherModels.values)
         logger.debug { "Found ${models.size} models in total" }
         val modelsAsArrays = models.map { it.toFloatMatrix()[0] }
 
@@ -39,8 +39,8 @@ class Fang2020Krum(private val b: Int) : ModelPoisoningAttack() {
         val m = otherModels.size + numAttackers.num
         val c = numAttackers.num
         var lambda = (1.0 / ((m - 2 * c - 1) * sqrt(d))) *
-            otherModels.map { a -> otherModels.map { it.distance2(a) }.sum() }.minOrNull()!!.toFloat() +
-            (1.0 / sqrt(d)) * otherModels.map { it.distance2(oldModel) }.maxOrNull()!!
+            otherModels.values.map { a -> otherModels.values.map { it.distance2(a) }.sum() }.minOrNull()!!.toFloat() +
+            (1.0 / sqrt(d)) * otherModels.values.map { it.distance2(oldModel) }.maxOrNull()!!
 
         while (lambda >= 1e-5) {
             val w1 = oldModel.sub(ns.mul(lambda))
@@ -52,7 +52,7 @@ class Fang2020Krum(private val b: Int) : ModelPoisoningAttack() {
             val combinedModels = ArrayList(models)
             combinedModels.addAll(newModels)
             if (getKrum(combinedModels, b) >= models.size) {
-                return newModels
+                return transformToResult(newModels)
             }
             lambda /= 2
         }
@@ -61,7 +61,7 @@ class Fang2020Krum(private val b: Int) : ModelPoisoningAttack() {
         for (i in 0 until c) {
             newModels.add(w1)
         }
-        return newModels
+        return transformToResult(newModels)
     }
 
     private fun generateAttackVector(

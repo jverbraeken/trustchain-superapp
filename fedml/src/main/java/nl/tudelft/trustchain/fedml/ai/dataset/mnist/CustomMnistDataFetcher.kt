@@ -10,7 +10,6 @@ import org.deeplearning4j.common.resources.ResourceType
 import org.deeplearning4j.datasets.fetchers.DataSetType
 import org.deeplearning4j.datasets.fetchers.MnistDataFetcher
 import org.nd4j.linalg.api.buffer.DataType
-import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.dataset.DataSet
 import org.nd4j.linalg.factory.Nd4j
 import org.nd4j.linalg.indexing.NDArrayIndex
@@ -35,13 +34,13 @@ class CustomMnistDataFetcher(
     maxTestSamples: Int,
     behavior: Behaviors
 ) : CustomBaseDataFetcher() {
-    override val testBatches: List<DataSet> by lazy { createTestBatches() }
+    override val testBatches by lazy { createTestBatches() }
 
     @Transient
     private var man: CustomMnistManager
     private var order: IntArray
     private var rng: Random
-    private lateinit var featureData: Array<FloatArray>
+    private var featureData = Array(1) { FloatArray(28 * 28) }
 
     init {
         if (!mnistExists()) {
@@ -120,7 +119,7 @@ class CustomMnistDataFetcher(
         try {
             for (i in files.indices) {
                 val f = File(files[i])
-                val adler: Checksum = Adler32()
+                val adler = Adler32()
                 val checksum = if (f.exists()) FileUtils.checksum(f, adler).value else -1
                 check(!(!f.exists() || checksum != checksums[i])) {
                     "Failed checksum: expected " + checksums[i] +
@@ -150,8 +149,7 @@ class CustomMnistDataFetcher(
             actualExamples++
             cursor++
         }
-        val features: INDArray
-        features = if (featureData.size == actualExamples) {
+        val features = if (featureData.size == actualExamples) {
             Nd4j.create(featureData)
         } else {
             Nd4j.create(featureData.copyOfRange(0, actualExamples))
@@ -163,25 +161,32 @@ class CustomMnistDataFetcher(
         curr = DataSet(features, labels)
     }
 
-    private fun createTestBatches(): List<DataSet> {
+    private fun createTestBatches(): List<DataSet?> {
         val testBatches = man.createTestBatches()
-        if (featureData.size < testBatches[0].size) {
-            featureData = Array(testBatches[0].size) { FloatArray(28 * 28) }
-        }
-        var actualExamples = 0
-        val result = arrayListOf<DataSet>()
+        val result = arrayListOf<DataSet?>()
         for ((label, batch) in testBatches.withIndex()) {
-            val labels = Nd4j.zeros(DataType.FLOAT, testBatches[0].size.toLong(), numOutcomes.toLong())
-            for (img in batch) {
-                labels.put(actualExamples, label, 1.0f)
-                for (j in img.indices) {
-                    featureData[actualExamples][j] = (img[j].toInt() and 0xFF).toFloat()
+            val numSamplesInBatch = batch.size
+            if (numSamplesInBatch == 0) {
+                result.add(null)
+            } else {
+                if (featureData.size < numSamplesInBatch) {
+                    featureData = Array(numSamplesInBatch) { FloatArray(28 * 28) }
                 }
-                actualExamples++
+                val labels = Nd4j.zeros(DataType.FLOAT, numSamplesInBatch.toLong(), numOutcomes.toLong())
+                for ((i, img) in batch.withIndex()) {
+                    labels.put(i, label, 1.0f)
+                    for (j in img.indices) {
+                        featureData[i][j] = (img[j].toInt() and 0xFF).toFloat()
+                    }
+                }
+                val features = if (featureData.size == numSamplesInBatch) {
+                    Nd4j.create(featureData)
+                } else {
+                    Nd4j.create(featureData.copyOfRange(0, numSamplesInBatch))
+                }
+                features.divi(255.0)
+                result.add(DataSet(features, labels))
             }
-            val features = Nd4j.create(featureData.copyOf())
-            features.divi(255.0)
-            result.add(DataSet(features, labels))
         }
         return result
     }

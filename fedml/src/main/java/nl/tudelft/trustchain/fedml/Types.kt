@@ -1,6 +1,7 @@
 package nl.tudelft.trustchain.fedml
 
 import nl.tudelft.trustchain.fedml.ai.*
+import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDatasetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.cifar.CustomCifar10DataSetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.har.HARDataSetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.mnist.CustomMnistDataSetIterator
@@ -29,7 +30,7 @@ enum class Datasets(
     val defaultBatchSize: BatchSizes,
     val defaultIteratorDistribution: IteratorDistributions,
     val architecture: (nnConfiguration: NNConfiguration, seed: Int) -> MultiLayerConfiguration,
-    val inst: (iteratorConfiguration: DatasetIteratorConfiguration, seed: Long, dataSetType: DataSetType, baseDirectory: File, behavior: Behaviors) -> DataSetIterator
+    val inst: (iteratorConfiguration: DatasetIteratorConfiguration, seed: Long, dataSetType: DataSetType, baseDirectory: File, behavior: Behaviors) -> CustomBaseDatasetIterator
 ) {
     MNIST(
         "mnist",
@@ -45,7 +46,7 @@ enum class Datasets(
         ::generateDefaultMNISTConfiguration,
         CustomMnistDataSetIterator::create
     ),
-    CIFAR10(
+    /*CIFAR10(
         "cifar10",
         "CIFAR-10",
         Optimizers.RMSPROP,
@@ -56,7 +57,7 @@ enum class Datasets(
         IteratorDistributions.DISTRIBUTION_CIFAR_1,
         ::generateDefaultCIFARConfiguration,
         CustomCifar10DataSetIterator::create
-    ),
+    ),*/
 
     /*TINYIMAGENET(
         "tinyimagenet",

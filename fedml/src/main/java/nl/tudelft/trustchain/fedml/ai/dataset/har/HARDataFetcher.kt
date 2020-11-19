@@ -15,7 +15,7 @@ import java.util.*
 
 fun transposeMatrix(matrix: Array<DoubleArray>): Array<DoubleArray> {
     val m = matrix.size
-    val n: Int = matrix[0].size
+    val n = matrix[0].size
     val transposedMatrix = Array(n) { DoubleArray(m) }
     for (x in 0 until n) {
         for (y in 0 until m) {
@@ -33,7 +33,7 @@ class HARDataFetcher(
     maxTestSamples: Int,
     behavior: Behaviors
 ) : CustomBaseDataFetcher() {
-    override val testBatches: List<DataSet> by lazy { createTestBatches() }
+    override val testBatches by lazy { createTestBatches() }
     val labels: List<String>
         get() = man.getLabels()
 
@@ -41,7 +41,8 @@ class HARDataFetcher(
     private var man: HARManager
     private var order: IntArray
     private var rng: Random
-    private lateinit var featureData: Array<Array<DoubleArray>> // samples => time step => feature
+    /**  samples => time step => feature **/
+    private var featureData = Array(1) { Array(NUM_TIMESTEPS) { DoubleArray(NUM_DIMENSIONS) } }
 
     init {
         val data = arrayListOf<File>()

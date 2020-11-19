@@ -21,14 +21,14 @@ class EvaluationProcessor(
     private val extraElementNames: List<String>,
     filenameAddition: String = ""
 ) : EvaluationCallback {
-    private val dataLines: MutableList<Array<String>> = ArrayList()
-    private val fileDirectory: File = File(baseDirectory.path, "evaluations")
-    private val fileResults: File = File(fileDirectory, "evaluation$filenameAddition-${DATE_FORMAT.format(Date())}.csv")
-    private var fileMeta: File = File(fileDirectory, "evaluation$filenameAddition-${DATE_FORMAT.format(Date())}.meta.csv")
-    internal var epoch: Int = 0
-    internal var iteration: Int = 0
-    internal var extraElements: Map<String, String> = HashMap()
-    internal var elapsedTime: Long = 0
+    private val dataLines = ArrayList<Array<String>>()
+    private val fileDirectory = File(baseDirectory.path, "evaluations")
+    private val fileResults = File(fileDirectory, "evaluation$filenameAddition-${DATE_FORMAT.format(Date())}.csv")
+    private var fileMeta = File(fileDirectory, "evaluation$filenameAddition-${DATE_FORMAT.format(Date())}.meta.csv")
+    internal var epoch = 0
+    internal var iteration = 0
+    internal var extraElements = HashMap<String, String>()
+    internal var elapsedTime = 0
 
     data class EvaluationData(
         val beforeAfterAveraging: String,

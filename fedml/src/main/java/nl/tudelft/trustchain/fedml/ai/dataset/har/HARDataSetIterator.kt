@@ -4,7 +4,7 @@ import nl.tudelft.trustchain.fedml.Behaviors
 import nl.tudelft.trustchain.fedml.ai.DatasetIteratorConfiguration
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDatasetIterator
 import org.deeplearning4j.datasets.fetchers.DataSetType
-import org.nd4j.linalg.dataset.api.DataSet
+import org.nd4j.linalg.dataset.DataSet
 import java.io.File
 
 
@@ -22,11 +22,11 @@ class HARDataSetIterator(
         seed,
         iteratorConfiguration.distribution.value,
         dataSetType,
-        iteratorConfiguration.maxTestSamples?.value ?: Integer.MAX_VALUE,
+        if (dataSetType == DataSetType.TEST) iteratorConfiguration.maxTestSamples.value else Integer.MAX_VALUE,
         behavior
     )
 ) {
-    override val testBatches: List<DataSet> by lazy {customFetcher.testBatches}
+    override val testBatches by lazy {customFetcher.testBatches}
 
     override fun getLabels(): List<String> {
         return (fetcher as HARDataFetcher).labels

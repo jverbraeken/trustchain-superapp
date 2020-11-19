@@ -69,18 +69,20 @@ fun clientReceivesServerResponses(
     i: Int,
     toClientMessageBuffers: CopyOnWriteArrayList<MsgPsiCaServerToClient>,
     sraKeyPair: SRAKeyPair
-): List<Int> {
+): Pair<List<Int>, Map<Int, Int>> {
     val similarPeers = ArrayList<Int>()
+    val countPerPeer = HashMap<Int, Int>()
     for (buffer1 in toClientMessageBuffers) {
         val semiDecryptedLabels = buffer1.reEncryptedLabels.map { sraKeyPair.decrypt(it) }
         val bloomFilter = toClientMessageBuffers.first { it.server == buffer1.server }.bloomFilter
         val count = semiDecryptedLabels.filter { bloomFilter.mightContain(it) }.size
+        countPerPeer[buffer1.server] = count
         if (count >= MIN_PSI_CA) {
             similarPeers.add(buffer1.server)
             logger.debug { "Peer $i will send to peer ${buffer1.server}: overlap = $count" }
         }
     }
-    return similarPeers
+    return Pair(similarPeers, countPerPeer)
 }
 
 private class BigIntegerFunnel : Funnel<BigInteger> {

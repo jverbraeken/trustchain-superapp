@@ -2,6 +2,7 @@ package nl.tudelft.trustchain.fedml.ai
 
 import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.*
+import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDatasetIterator
 import nl.tudelft.trustchain.fedml.ipv8.MsgPsiCaClientToServer
 import nl.tudelft.trustchain.fedml.ipv8.MsgPsiCaServerToClient
 import org.deeplearning4j.datasets.fetchers.DataSetType
@@ -13,18 +14,23 @@ import org.nd4j.linalg.cpu.nativecpu.NDArray
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 import java.io.File
 import java.nio.file.Paths
+import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedDeque
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.NoSuchElementException
+import kotlin.collections.ArrayDeque
+import kotlin.collections.ArrayList
 import kotlin.concurrent.thread
 import kotlin.random.Random
 
 private val logger = KotlinLogging.logger("SimulatedRunner")
 
-private const val NUM_RECENT_OTHER_MODELS: Int = 20
+private const val NUM_RECENT_OTHER_MODELS = 20
 
 class SimulatedRunner : Runner() {
-    private val newOtherModelBuffers = ArrayList<CopyOnWriteArrayList<INDArray>>()
-    private val recentOtherModelsBuffers = ArrayList<ConcurrentLinkedDeque<INDArray>>()
+    private val newOtherModelBuffers = ArrayList<ConcurrentHashMap<Int, INDArray>>()
+    private val recentOtherModelsBuffers = ArrayList<ArrayDeque<Pair<Int, INDArray>>>()
     private val randoms = ArrayList<Random>()
     override val iterationsBeforeEvaluation = 100
 
@@ -37,10 +43,10 @@ class SimulatedRunner : Runner() {
         // All these things have to be initialized before any of the runner threads start
         val toServerMessageBuffers = ArrayList<CopyOnWriteArrayList<MsgPsiCaClientToServer>>()
         val toClientMessageBuffers = ArrayList<CopyOnWriteArrayList<MsgPsiCaServerToClient>>()
-        val sraKeyPairs: MutableList<SRAKeyPair> = ArrayList()
+        val sraKeyPairs = ArrayList<SRAKeyPair>()
         for (i in config.indices) {
-            newOtherModelBuffers.add(CopyOnWriteArrayList())
-            recentOtherModelsBuffers.add(ConcurrentLinkedDeque())
+            newOtherModelBuffers.add(ConcurrentHashMap())
+            recentOtherModelsBuffers.add(ArrayDeque())
             randoms.add(Random(i))
             toServerMessageBuffers.add(CopyOnWriteArrayList())
             toClientMessageBuffers.add(CopyOnWriteArrayList())
@@ -107,7 +113,7 @@ class SimulatedRunner : Runner() {
                     Thread.sleep(1)
                 }
 
-                val similarPeers = clientReceivesServerResponses(
+                val (similarPeers, countPerPeer) = clientReceivesServerResponses(
                     i,
                     toClientMessageBuffers[i],
                     sraKeyPairs[i]
@@ -125,6 +131,7 @@ class SimulatedRunner : Runner() {
                     config[i].trainConfiguration,
                     config[i].modelPoisoningConfiguration,
                     similarPeers,
+                    countPerPeer,
                     i == 0
                 )
             }
@@ -136,10 +143,11 @@ class SimulatedRunner : Runner() {
         network: MultiLayerNetwork,
         evaluationProcessor: EvaluationProcessor,
         trainDataSetIterator: DataSetIterator,
-        testDataSetIterator: DataSetIterator,
+        testDataSetIterator: CustomBaseDatasetIterator,
         trainConfiguration: TrainConfiguration,
         modelPoisoningConfiguration: ModelPoisoningConfiguration,
         similarPeers: List<Int>,
+        countPerPeer: Map<Int, Int>,
         logging: Boolean
     ) {
         val newOtherModels = newOtherModelBuffers[simulationIndex]
@@ -198,7 +206,7 @@ class SimulatedRunner : Runner() {
                         newOtherModels,
                         random
                     )
-                    newOtherModels.addAll(attackVectors)
+                    newOtherModels.putAll(attackVectors)
                     val numPeers = newOtherModels.size + 1
                     val averageParams: INDArray
                     if (numPeers == 1) {
@@ -209,19 +217,13 @@ class SimulatedRunner : Runner() {
                         logger.debug { "Params received => executing aggregation rule" }
 
                         val start2 = System.currentTimeMillis()
-                        logger.debug {
-                            "Integrating newOtherModels: ${newOtherModels[0].getDouble(0)}, ${newOtherModels[0].getDouble(1)}, ${
-                                newOtherModels[0].getDouble(
-                                    2
-                                )
-                            }, ${newOtherModels[0].getDouble(3)}"
-                        }
-                        testDataSetIterator.reset()
-                        val sample = testDataSetIterator.next(500)
-                        network.setParameters(newOtherModels[0])
-                        logger.debug { "loss -> ${network.score(sample)}" }
-                        network.setParameters(newOtherModels[0])
-                        logger.debug { "loss -> ${network.score(sample)}" }
+//                        logger.debug {
+//                            "Integrating newOtherModels: ${newOtherModels[0].second.getDouble(0)}, ${newOtherModels[0].second.getDouble(1)}, ${
+//                                newOtherModels[0].second.getDouble(
+//                                    2
+//                                )
+//                            }, ${newOtherModels[0].second.getDouble(3)}"
+//                        }
                         averageParams = gar.integrateParameters(
                             oldParams,
                             gradient,
@@ -229,9 +231,11 @@ class SimulatedRunner : Runner() {
                             network,
                             testDataSetIterator,
                             recentOtherModels,
-                            logging
+                            logging,
+                            testDataSetIterator.testBatches,
+                            countPerPeer
                         )
-                        recentOtherModels.addAll(newOtherModels)
+                        recentOtherModels.addAll(newOtherModels.toList())
                         while (recentOtherModels.size > NUM_RECENT_OTHER_MODELS) {
                             recentOtherModels.removeFirst()
                         }
@@ -267,9 +271,9 @@ class SimulatedRunner : Runner() {
                         val message = craftMessage(averageParams, trainConfiguration.behavior, random)
                         when (trainConfiguration.communicationPattern) {
                             CommunicationPatterns.ALL -> newOtherModelBuffers.filterIndexed { index, _ -> index != simulationIndex && index in similarPeers }
-                                .forEach { it.add(message) }
+                                .forEach { it.put(simulationIndex, message) }
                             CommunicationPatterns.RANDOM -> newOtherModelBuffers.filterIndexed { index, _ -> index != simulationIndex && index in similarPeers }
-                                .random().add(message)
+                                .random().put(simulationIndex, message)
                             CommunicationPatterns.RR -> throw IllegalArgumentException("Not implemented yet")
                             CommunicationPatterns.RING -> throw IllegalArgumentException("Not implemented yet")
                         }
@@ -328,14 +332,14 @@ class SimulatedRunner : Runner() {
         val lines = file.readLines()
         val configurations = arrayListOf<MLConfiguration>()
 
-        var dataset: Datasets = Datasets.MNIST
-        var optimizer: Optimizers = dataset.defaultOptimizer
-        var learningRate: LearningRates = dataset.defaultLearningRate
-        var momentum: Momentums = dataset.defaultMomentum
-        var l2: L2Regularizations = dataset.defaultL2
-        var batchSize: BatchSizes = dataset.defaultBatchSize
-        var epoch: Epochs = Epochs.EPOCH_5
-        var iteratorDistribution: IteratorDistributions = dataset.defaultIteratorDistribution
+        var dataset = Datasets.MNIST
+        var optimizer = dataset.defaultOptimizer
+        var learningRate = dataset.defaultLearningRate
+        var momentum = dataset.defaultMomentum
+        var l2 = dataset.defaultL2
+        var batchSize = dataset.defaultBatchSize
+        var epoch = Epochs.EPOCH_5
+        var iteratorDistribution = dataset.defaultIteratorDistribution
         var maxTestSample = MaxTestSamples.NUM_40
         var gar = GARs.BRISTLE
         var communicationPattern = CommunicationPatterns.RANDOM

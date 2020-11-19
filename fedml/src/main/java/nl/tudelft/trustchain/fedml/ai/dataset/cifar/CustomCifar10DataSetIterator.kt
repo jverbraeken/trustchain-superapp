@@ -16,7 +16,7 @@ class CustomCifar10DataSetIterator(
 ) : RecordReaderDataSetIterator(
     CustomCifar10Fetcher(
         iteratorConfiguration.distribution,
-        iteratorConfiguration.maxTestSamples?.value ?: Integer.MAX_VALUE,
+        if (dataSetType == DataSetType.TEST) iteratorConfiguration.maxTestSamples.value else Integer.MAX_VALUE,
         behavior
     ).getRecordReader(seed, null, dataSetType, null),
     iteratorConfiguration.batchSize.value,

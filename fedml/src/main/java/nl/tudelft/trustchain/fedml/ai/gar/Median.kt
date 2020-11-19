@@ -4,6 +4,7 @@ import mu.KotlinLogging
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.cpu.nativecpu.NDArray
+import org.nd4j.linalg.dataset.DataSet
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 import java.util.concurrent.ConcurrentLinkedDeque
 
@@ -16,20 +17,23 @@ class Median : AggregationRule() {
     override fun integrateParameters(
         oldModel: INDArray,
         gradient: INDArray,
-        otherModels: List<INDArray>,
+        otherModels: Map<Int, INDArray>,
         network: MultiLayerNetwork,
         testDataSetIterator: DataSetIterator,
-        allOtherModelsBuffer: ConcurrentLinkedDeque<INDArray>,
-        logging: Boolean
+        allOtherModelsBuffer: ArrayDeque<Pair<Int, INDArray>>,
+        logging: Boolean,
+        testBatches: List<DataSet?>,
+        countPerPeer: Map<Int, Int>
     ): INDArray {
         logger.debug { formatName("Median") }
-        val models: MutableList<INDArray> = arrayListOf(oldModel)
-        otherModels.forEach { models.add(it) }
+        val models = HashMap<Int, INDArray>()
+        models[-1] = oldModel
+        models.putAll(otherModels)
         logger.debug { "Found ${models.size} models in total" }
         return if (models.size == 1) {
             oldModel.sub(gradient)
         } else {
-            val modelsAsArrays = models.map { it.toFloatMatrix()[0] }
+            val modelsAsArrays = models.map { it.value.toFloatMatrix()[0] }
             val newMatrix = Array(1) { FloatArray(modelsAsArrays[0].size) }
             for (i in modelsAsArrays[0].indices) {
                 val elements = ArrayList<Float>(modelsAsArrays.size)

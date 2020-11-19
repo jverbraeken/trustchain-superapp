@@ -33,12 +33,12 @@ class FedMLCommunity(
     override val serviceId = "36b098237ff4debfd0278b8b87c583e1c2cce4b7"
     private var peersRR: MutableList<Peer>? = null
     private var peersRing: MutableList<Peer>? = null
-    private var ringCounter: Int = 1
+    private var ringCounter = 1
 
     class Factory(
         private val settings: TrustChainSettings,
         private val database: TrustChainStore,
-        private val crawler: TrustChainCrawler = TrustChainCrawler()
+        private val crawler = TrustChainCrawler()
     ) : Overlay.Factory<FedMLCommunity>(FedMLCommunity::class.java) {
         override fun create(): FedMLCommunity {
             return FedMLCommunity(settings, database, crawler)

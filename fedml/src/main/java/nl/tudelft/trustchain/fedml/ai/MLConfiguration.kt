@@ -13,7 +13,7 @@ data class MLConfiguration(
 data class DatasetIteratorConfiguration(
     val batchSize: BatchSizes,
     val distribution: IteratorDistributions,
-    val maxTestSamples: MaxTestSamples?
+    val maxTestSamples: MaxTestSamples
 )
 
 data class NNConfiguration(

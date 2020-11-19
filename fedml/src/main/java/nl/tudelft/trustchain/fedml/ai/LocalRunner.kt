@@ -3,6 +3,7 @@ package nl.tudelft.trustchain.fedml.ai
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.Behaviors
+import org.deeplearning4j.datasets.fetchers.DataSetType
 import org.deeplearning4j.optimize.listeners.EvaluativeListener
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener
 import java.io.File
@@ -16,19 +17,19 @@ class LocalRunner : Runner() {
         mlConfiguration: MLConfiguration
     ) {
         scope.launch {
-            val trainDataSetIterator = getTrainDatasetIterator(
-                baseDirectory,
-                mlConfiguration.dataset,
+            val trainDataSetIterator = mlConfiguration.dataset.inst(
                 mlConfiguration.datasetIteratorConfiguration,
-                Behaviors.BENIGN,
-                seed
+                seed.toLong(),
+                DataSetType.TRAIN,
+                baseDirectory,
+                Behaviors.BENIGN
             )
-            val testDataSetIterator = getTestDatasetIterator(
-                baseDirectory,
-                mlConfiguration.dataset,
+            val testDataSetIterator = mlConfiguration.dataset.inst(
                 mlConfiguration.datasetIteratorConfiguration,
-                Behaviors.BENIGN,
-                seed
+                seed.toLong(),
+                DataSetType.TEST,
+                baseDirectory,
+                Behaviors.BENIGN
             )
             val network = generateNetwork(
                 mlConfiguration.dataset,

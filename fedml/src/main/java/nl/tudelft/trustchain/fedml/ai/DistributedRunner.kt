@@ -7,8 +7,10 @@ import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import nl.tudelft.ipv8.Peer
 import nl.tudelft.trustchain.fedml.*
+import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDatasetIterator
 import nl.tudelft.trustchain.fedml.ipv8.*
 import nl.tudelft.trustchain.fedml.ipv8.FedMLCommunity.MessageId
+import org.deeplearning4j.datasets.fetchers.DataSetType
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.deeplearning4j.optimize.listeners.EvaluativeListener
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener
@@ -16,6 +18,7 @@ import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.cpu.nativecpu.NDArray
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 import java.io.File
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedDeque
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.random.Random
@@ -24,8 +27,8 @@ private val logger = KotlinLogging.logger("DistributedRunner")
 private const val SIZE_RECENT_OTHER_MODELS = 20
 
 class DistributedRunner(private val community: FedMLCommunity) : Runner(), MessageListener {
-    private val newOtherModels = CopyOnWriteArrayList<INDArray>()
-    private val recentOtherModels = ConcurrentLinkedDeque<INDArray>()
+    private val newOtherModels = ConcurrentHashMap<Int, INDArray>()
+    private val recentOtherModels = ArrayDeque<Pair<Int, INDArray>>()
     private val psiCaMessagesFromServers = CopyOnWriteArrayList<MsgPsiCaServerToClient>()
     private lateinit var random: Random
     private lateinit var labels: List<String>
@@ -46,19 +49,19 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         this.random = Random(seed)
         sraKeyPair = SRAKeyPair.create(bigPrime, java.util.Random(seed.toLong()))
         scope.launch {
-            val trainDataSetIterator = getTrainDatasetIterator(
-                baseDirectory,
-                mlConfiguration.dataset,
+            val trainDataSetIterator = mlConfiguration.dataset.inst(
                 mlConfiguration.datasetIteratorConfiguration,
-                mlConfiguration.trainConfiguration.behavior,
-                seed
+                seed.toLong(),
+                DataSetType.TRAIN,
+                baseDirectory,
+                mlConfiguration.trainConfiguration.behavior
             )
-            val testDataSetIterator = getTestDatasetIterator(
-                baseDirectory,
-                mlConfiguration.dataset,
+            val testDataSetIterator = mlConfiguration.dataset.inst(
                 mlConfiguration.datasetIteratorConfiguration,
-                mlConfiguration.trainConfiguration.behavior,
-                seed
+                seed.toLong(),
+                DataSetType.TEST,
+                baseDirectory,
+                mlConfiguration.trainConfiguration.behavior
             )
             val evaluationProcessor = EvaluationProcessor(
                 baseDirectory,
@@ -80,7 +83,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
             val port = community.myEstimatedWan.port
             val numPeers = community.getPeers().size
             labels = trainDataSetIterator.labels
-            val similarPeers = getSimilarPeers(port, labels, sraKeyPair, numPeers, psiCaMessagesFromServers)
+            val (similarPeers, countPerPeer) = getSimilarPeers(port, labels, sraKeyPair, numPeers, psiCaMessagesFromServers)
 
             trainTestSendNetwork(
                 network,
@@ -89,7 +92,8 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 testDataSetIterator,
                 mlConfiguration.trainConfiguration,
                 mlConfiguration.modelPoisoningConfiguration,
-                similarPeers
+                similarPeers,
+                countPerPeer
             )
         }
     }
@@ -100,7 +104,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         sraKeyPair: SRAKeyPair,
         numPeers: Int,
         psiCaMessagesFromServers: CopyOnWriteArrayList<MsgPsiCaServerToClient>
-    ): List<Int> {
+    ): Pair<List<Int>, Map<Int, Int>> {
         val encryptedLabels = clientsRequestsServerLabels(
             labels,
             sraKeyPair
@@ -128,10 +132,11 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         network: MultiLayerNetwork,
         evaluationProcessor: EvaluationProcessor,
         trainDataSetIterator: DataSetIterator,
-        testDataSetIterator: DataSetIterator,
+        testDataSetIterator: CustomBaseDatasetIterator,
         trainConfiguration: TrainConfiguration,
         modelPoisoningConfiguration: ModelPoisoningConfiguration,
-        similarPeers: List<Int>
+        similarPeers: List<Int>,
+        countPerPeer: Map<Int, Int>
     ) {
         val batchSize = trainDataSetIterator.batch()
         val gar = trainConfiguration.gar.obj
@@ -182,7 +187,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                         newOtherModels,
                         random
                     )
-                    newOtherModels.addAll(attackVectors)
+                    newOtherModels.putAll(attackVectors)
                     val numPeers = newOtherModels.size + 1
                     val averageParams: INDArray
                     if (numPeers == 1) {
@@ -200,9 +205,11 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                             network,
                             testDataSetIterator,
                             recentOtherModels,
-                            true
+                            true,
+                            testDataSetIterator.testBatches,
+                            countPerPeer
                         )
-                        recentOtherModels.addAll(newOtherModels)
+                        recentOtherModels.addAll(newOtherModels.toList())
                         while (recentOtherModels.size > SIZE_RECENT_OTHER_MODELS) {
                             recentOtherModels.removeFirst()
                         }
@@ -297,7 +304,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         when (messageId) {
             MessageId.MSG_PARAM_UPDATE -> {
                 val paramUpdate = payload as MsgParamUpdate
-                newOtherModels.add(paramUpdate.array)
+                newOtherModels.put(peer.address.port, paramUpdate.array)
             }
             MessageId.MSG_PSI_CA_CLIENT_TO_SERVER -> scope.launch(Dispatchers.IO) {
                 deferred.await()

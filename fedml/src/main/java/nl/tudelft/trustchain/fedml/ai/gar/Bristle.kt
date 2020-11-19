@@ -1,19 +1,22 @@
 package nl.tudelft.trustchain.fedml.ai.gar
 
-import mu.KLogger
 import mu.KotlinLogging
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.dataset.DataSet
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
-import java.util.concurrent.ConcurrentLinkedDeque
+import java.util.*
 import java.util.stream.Collectors
+import kotlin.collections.ArrayDeque
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 import kotlin.math.ceil
+import kotlin.math.log
 import kotlin.math.min
 
 private val mpl = KotlinLogging.logger("Bristle")
-private fun debug(msg: () -> Any?) {
-    mpl.debug(msg)
+private fun debug(logging: Boolean, msg: () -> Any?) {
+    if (logging) mpl.debug(msg)
 }
 
 /**
@@ -31,62 +34,72 @@ class Bristle(private val fracBenign: Double) : AggregationRule() {
     override fun integrateParameters(
         oldModel: INDArray,
         gradient: INDArray,
-        otherModels: List<INDArray>,
+        otherModels: Map<Int, INDArray>,
         network: MultiLayerNetwork,
         testDataSetIterator: DataSetIterator,
-        allOtherModelsBuffer: ConcurrentLinkedDeque<INDArray>,
-        logging: Boolean
+        allOtherModelsBuffer: ArrayDeque<Pair<Int, INDArray>>,
+        logging: Boolean,
+        testBatches: List<DataSet?>,
+        countPerPeer: Map<Int, Int>
     ): INDArray {
-        debug { formatName("BRISTLE") }
-        debug { "Found ${otherModels.size} other models" }
-        debug { "oldModel: ${oldModel.getDouble(0) }" }
+        debug(logging) { formatName("BRISTLE") }
+        debug(logging) { "Found ${otherModels.size} other models" }
+        debug(logging) { "oldModel: ${oldModel.getDouble(0)}" }
         val newModel = oldModel.sub(gradient)
-        debug { "newModel: ${newModel.getDouble(0) }" }
-        debug { "otherModels: ${otherModels.map { it.getDouble(0) }.toCollection(ArrayList())}" }
+        debug(logging) { "newModel: ${newModel.getDouble(0)}" }
+        debug(logging) { "otherModels: ${otherModels.map { it.value.getDouble(0) }.toCollection(ArrayList())}" }
 
-        val distances = getDistances(oldModel, newModel, otherModels, allOtherModelsBuffer)
-        debug { "distances: $distances"}
+        val distances = getDistances(oldModel, newModel, otherModels, allOtherModelsBuffer, logging)
+        debug(logging) { "distances: $distances" }
         val numCloseModels1 = NUM_MODELS_TO_EVALUATE - NUM_MODELS_TO_EVALUATE * EXPLORATION_RATIO
         val numCloseModels2 = ceil(fracBenign * otherModels.size)
         val numCloseModels = min(numCloseModels1, numCloseModels2).toLong()
-        debug { "#numCloseModels: $numCloseModels" }
+        debug(logging) { "#numCloseModels: $numCloseModels" }
         val closeModels = distances
             .keys
             .stream()
             .limit(numCloseModels)
             .filter { it < 1000000 }
-            .map { otherModels[it] }
+            .map { Pair(it, otherModels[it]!!) }
             .collect(Collectors.toList())
-        debug { "closeModels: ${closeModels.map { it.getDouble(0) }.toCollection(ArrayList())}" }
+            .toMap()
+        debug(logging) { "closeModels: ${closeModels.map { it.value.getDouble(0) }.toCollection(ArrayList())}" }
 
-        val notCloseModels = distances
+        val notCloseModelsList = distances
             .keys
             .stream()
             .skip(numCloseModels)
             .filter { it < 1000000 }
-            .map { otherModels[it] }
+            .map { Pair(it, otherModels[it]!!) }
             .collect(Collectors.toList())
-        notCloseModels.shuffle()
-        notCloseModels.take(NUM_MODELS_TO_EVALUATE - closeModels.size)  // perhaps not enough elements...
-        debug { "notCloseModels: ${notCloseModels.map { it.getDouble(0) }.toCollection(ArrayList())}" }
+        notCloseModelsList.shuffle()
+        notCloseModelsList.take(NUM_MODELS_TO_EVALUATE - closeModels.size)
+        val notCloseModels = notCloseModelsList.toMap()
+        debug(logging) { "notCloseModels: ${notCloseModels.map { it.value.getDouble(0) }.toCollection(ArrayList())}" }
 
-        val combinedModels = listOf(closeModels, notCloseModels).flatten()
-        debug { "combinedModels: ${combinedModels.map { it.getDouble(0) }.toCollection(ArrayList())}" }
+        val combinedModels = HashMap<Int, INDArray>()
+        combinedModels.putAll(closeModels)
+        combinedModels.putAll(notCloseModels)
+        debug(logging) { "combinedModels: ${combinedModels.map { it.value.getDouble(0) }.toCollection(ArrayList())}" }
         testDataSetIterator.reset()
         val sample = testDataSetIterator.next(TEST_BATCH)
         val oldLoss = calculateLoss(oldModel, network, sample)
-        debug { "oldLoss: $oldLoss" }
+        debug(logging) { "oldLoss: $oldLoss" }
+        val oldLossPerClass = calculateLossPerClass(oldModel, network, testBatches)
+        debug(logging) { "oldLossPerClass: ${oldLossPerClass.toList()}" }
         val losses = calculateLosses(combinedModels, network, sample)
-        debug { "losses: $losses"}
-        val oldLoss2 = calculateLoss(oldModel, network, sample)
-        debug { "oldLoss2: $oldLoss2" }
+        debug(logging) { "losses: $losses" }
+        val lossesPerClass = calculateLossesPerClass(combinedModels, network, testBatches)
+        debug(logging) { "lossesPerClass: ${lossesPerClass.map { Pair(it.key, it.value.toList()) }}" }
         val modelsToWeight = mapLossesToWeight(losses, oldLoss)
-        debug { "modelsToWeight: $modelsToWeight"}
+        debug(logging) { "modelsToWeight: $modelsToWeight" }
+        val modelsPerClassToWeight = mapLossesPerClassToWeight(lossesPerClass, oldLossPerClass, countPerPeer)
+        debug(logging) { "modelsPerClassToWeight: $modelsPerClassToWeight" }
 
-        return if (modelsToWeight.isEmpty()) {
+        return if (modelsPerClassToWeight.isEmpty()) {
             newModel
         } else {
-            weightedAverage(modelsToWeight, combinedModels, newModel)
+            weightedAverage(modelsPerClassToWeight, combinedModels, newModel, logging)
         }
     }
 
@@ -97,17 +110,19 @@ class Bristle(private val fracBenign: Double) : AggregationRule() {
     private fun getDistances(
         oldModel: INDArray,
         newModel: INDArray,
-        otherModels: List<INDArray>,
-        allOtherModelsBuffer: ConcurrentLinkedDeque<INDArray>
+        otherModels: Map<Int, INDArray>,
+        allOtherModelsBuffer: ArrayDeque<Pair<Int, INDArray>>,
+        logging: Boolean
     ): Map<Int, Double> {
         val distances = hashMapOf<Int, Double>()
-        for ((index, otherModel) in otherModels.withIndex()) {
-            debug { "Distance calculated: ${min(otherModel.distance2(oldModel), otherModel.distance2(newModel))}" }
+        for ((index, otherModel) in otherModels) {
+            debug(logging) { "Distance calculated: ${min(otherModel.distance2(oldModel), otherModel.distance2(newModel))}" }
             distances[index] = min(otherModel.distance2(oldModel), otherModel.distance2(newModel))
         }
         for (i in 0 until min(20 - distances.size, allOtherModelsBuffer.size)) {
             val otherModel = allOtherModelsBuffer.elementAt(allOtherModelsBuffer.size - 1 - i)
-            distances[1000000 + i] = min(otherModel.distance2(oldModel), otherModel.distance2(newModel))
+            distances[1000000 + otherModel.first] =
+                min(otherModel.second.distance2(oldModel), otherModel.second.distance2(newModel))
         }
         return distances.toList().sortedBy { (_, value) -> value }.toMap()
     }
@@ -121,17 +136,43 @@ class Bristle(private val fracBenign: Double) : AggregationRule() {
         return network.score(sample)
     }
 
+    private fun calculateLossPerClass(
+        model: INDArray,
+        network: MultiLayerNetwork,
+        testBatches: List<DataSet?>
+    ): Array<Double?> {
+        network.setParameters(model)
+        return testBatches.map { if (it == null) null else network.score(it) }.toTypedArray()
+    }
+
     private fun calculateLosses(
-        models: List<INDArray>,
+        models: Map<Int, INDArray>,
         network: MultiLayerNetwork,
         sample: DataSet
     ): Map<Int, Double> {
-        val scores = mutableMapOf<Int, Double>()
-        for ((index, model) in models.withIndex()) {
+        return models.map { (index, model) ->
             network.setParameters(model)
-            scores[index] = network.score(sample)
-        }
-        return scores
+            Pair(index, network.score(sample))
+        }.toMap()
+    }
+
+    private fun calculateLossesPerClass(
+        models: Map<Int, INDArray>,
+        network: MultiLayerNetwork,
+        testBatches: List<DataSet?>
+    ): Map<Int, Array<Double?>> {
+        return models.map { (index, model) ->
+            Pair(
+                index, testBatches.map { testBatch ->
+                    if (testBatch == null) {
+                        null
+                    } else {
+                        network.setParameters(model)
+                        network.score(testBatch)
+                    }
+                }.toTypedArray()
+            )
+        }.toMap()
     }
 
     private fun mapLossesToWeight(otherLosses: Map<Int, Double>, oldLoss: Double): Map<Int, Double> {
@@ -147,19 +188,36 @@ class Bristle(private val fracBenign: Double) : AggregationRule() {
             .toMap()
     }
 
-    private fun weightedAverage(modelsToWeight: Map<Int, Double>, otherModels: List<INDArray>, newModel: INDArray): INDArray {
+    private fun mapLossesPerClassToWeight(
+        otherLossesPerClass: Map<Int, Array<Double?>>, oldLossPerClass: Array<Double?>, countPerPeer: Map<Int, Int>
+    ): Map<Int, Double> {
+        val numClassesImproved = otherLossesPerClass
+            .map { (index, lossPerClass) ->
+                Pair(index, lossPerClass.zip(oldLossPerClass).filter { (first, second) ->
+                    first != null && second != null && first < second
+                }.size)
+            }.toTypedArray()
+        return numClassesImproved.map { (index, improvements) ->
+            Pair(
+                index,
+                if (improvements >= countPerPeer[index]!!) 1.0 else 0.0
+            )
+        }.toMap()
+    }
+
+    private fun weightedAverage(modelsToWeight: Map<Int, Double>, otherModels: Map<Int, INDArray>, newModel: INDArray, logging: Boolean): INDArray {
         var arr: INDArray? = null
-        for ((index, weight) in modelsToWeight.entries) {
-            if (index == 0) {
-                arr = otherModels[index].mul(weight)
-                continue
+        modelsToWeight.onEachIndexed { indexAsNum, (indexAsPeer, weight) ->
+            if (indexAsNum == 0) {
+                arr = otherModels[indexAsPeer]!!.mul(weight)
+            } else {
+                arr = arr!!.add(otherModels[indexAsPeer]!!.mul(weight))
             }
-            arr = arr!!.add(otherModels[index].mul(weight))
         }
         arr = arr!!.add(newModel)
         val totalWeight = modelsToWeight.values.sum() + 1  // + 1 for the new model
-        debug { "totalWeight: $totalWeight"}
-        debug { "weightedAverage: ${arr!!.div(totalWeight)}" }
+        debug(logging) { "totalWeight: $totalWeight" }
+        debug(logging) { "weightedAverage: ${arr!!.div(totalWeight)}" }
         return arr!!.div(totalWeight)
     }
 }

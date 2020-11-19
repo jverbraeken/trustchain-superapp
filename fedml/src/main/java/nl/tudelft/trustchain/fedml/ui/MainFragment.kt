@@ -27,7 +27,7 @@ private val logger = KotlinLogging.logger("FedML.MainFragment")
 //-e activity fedml -e dataset mnist -e optimizer adam -e learningRate rate_1em3 -e momentum none -e l2Regularization l2_5em3 -e batchSize batch_32 -e epoch epoch_50 -e iteratorDistribution mnist_1 -e maxTestSample num_200 -e gar mozi -e communicationPattern random -e behavior benign -e runner distributed -e run false
 //-e activity fedml -e dataset cifar10 -e optimizer sgd -e learningRate schedule1 -e momentum momentum_1em3 -e l2Regularization l2_1em4 -e batchSize batch_5 -e epoch epoch_25 -e runner distributed -e run true
 class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSelectedListener {
-    private val baseDirectory: File by lazy { requireActivity().filesDir }
+    private val baseDirectory by lazy { requireActivity().filesDir }
     private val networkBinding by viewBinding(FragmentMainNetworkBinding::bind)
     private val buttonsBinding by viewBinding(FragmentMainButtonsBinding::bind)
     private val datasetBinding by viewBinding(FragmentMainDatasetBinding::bind)
@@ -51,14 +51,14 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private val modelPoisoningAttacks = ModelPoisoningAttacks.values().map { it.text }
     private val numAttackers = NumAttackers.values().map { it.text }
 
-    private var dataset: Datasets = Datasets.MNIST
-    private var optimizer: Optimizers = dataset.defaultOptimizer
-    private var learningRate: LearningRates = dataset.defaultLearningRate
-    private var momentum: Momentums = dataset.defaultMomentum
-    private var l2: L2Regularizations = dataset.defaultL2
-    private var batchSize: BatchSizes = dataset.defaultBatchSize
-    private var epoch: Epochs = Epochs.EPOCH_5
-    private var iteratorDistribution: IteratorDistributions = dataset.defaultIteratorDistribution
+    private var dataset = Datasets.MNIST
+    private var optimizer = dataset.defaultOptimizer
+    private var learningRate = dataset.defaultLearningRate
+    private var momentum = dataset.defaultMomentum
+    private var l2 = dataset.defaultL2
+    private var batchSize = dataset.defaultBatchSize
+    private var epoch = Epochs.EPOCH_5
+    private var iteratorDistribution = dataset.defaultIteratorDistribution
     private var maxTestSample = MaxTestSamples.NUM_40
     private var gar = GARs.BRISTLE
     private var communicationPattern = CommunicationPatterns.RANDOM
@@ -200,7 +200,16 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     }
 
     private fun copyAssets() {
-        val assetManager: AssetManager = requireActivity().assets
+        val assetManager = requireActivity().assets
+        try {
+            assetManager.open("simulation.config").use { input ->
+                FileOutputStream(File(baseDirectory, "simulation.config")).use { output ->
+                    copyFile(input, output)
+                }
+            }
+        } catch (e: IOException) {
+            // Probably a directory
+        }
         for (path in arrayOf("train", "test", "train/Inertial Signals", "test/Inertial Signals")) {
             var files: Array<String>? = null
             try {
@@ -244,7 +253,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     }
 
     private fun allowDL4JOnUIThread() {
-        val policy: StrictMode.ThreadPolicy = StrictMode.ThreadPolicy.Builder().permitAll().build()
+        val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
     }
 

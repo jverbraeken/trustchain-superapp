@@ -73,14 +73,17 @@ class CustomMnistManager(
         return Pair(imagesArr, labelsArr)
     }
 
-    fun createTestBatches(): List<Array<ByteArray>> {
-        val result: MutableList<Array<ByteArray>> = ArrayList()
-        for (label in 0..9) {
-            val correspondingImageIndices = IntStream.range(0, labelsArr.size).filter { i: Int -> labelsArr[i] == label }
-                .limit(50).toArray()
-            result.add(correspondingImageIndices.map { i: Int -> imagesArr[i] }.toTypedArray())
-        }
-        return result
+    fun createTestBatches(): Array<Array<ByteArray>> {
+        return (0 until 10).map { label ->
+            val correspondingImageIndices = IntStream
+                .range(0, labelsArr.size)
+                .filter { i: Int -> labelsArr[i] == label }
+                .limit(50)
+                .toArray()
+            correspondingImageIndices
+                .map { i -> imagesArr[i] }
+                .toTypedArray()
+        }.toTypedArray()
     }
 
     fun readImageUnsafe(i: Int): ByteArray {

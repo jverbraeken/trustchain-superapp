@@ -3,12 +3,13 @@ package nl.tudelft.trustchain.fedml.ai.gar
 import mu.KotlinLogging
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.nd4j.linalg.api.ndarray.INDArray
+import org.nd4j.linalg.dataset.DataSet
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 import java.util.concurrent.ConcurrentLinkedDeque
 
 private val logger = KotlinLogging.logger("Krum")
 
-fun getKrum(models: MutableList<INDArray>, b: Int): Int {
+fun getKrum(models: List<INDArray>, b: Int): Int {
     val distances = Array(models.size) { FloatArray(models.size) }
     for (i in 0 until models.size - 1) {
         distances[i][i] = 9999999.0f
@@ -31,20 +32,22 @@ class Krum(private val b: Int) : AggregationRule() {
     override fun integrateParameters(
         oldModel: INDArray,
         gradient: INDArray,
-        otherModels: List<INDArray>,
+        otherModels: Map<Int, INDArray>,
         network: MultiLayerNetwork,
         testDataSetIterator: DataSetIterator,
-        allOtherModelsBuffer: ConcurrentLinkedDeque<INDArray>,
-        logging: Boolean
+        allOtherModelsBuffer: ArrayDeque<Pair<Int, INDArray>>,
+        logging: Boolean,
+        testBatches: List<DataSet?>,
+        countPerPeer: Map<Int, Int>
     ): INDArray {
         logger.debug { formatName("Krum") }
-        val models: MutableList<INDArray> = arrayListOf()
-        otherModels.forEach { models.add(it) }
+        val models = HashMap<Int, INDArray>()
+        models.putAll(otherModels)
         logger.debug { "Found ${models.size} models in total" }
         return if (models.size == 1) {
             oldModel.sub(gradient)
         } else {
-            val bestCandidate = getKrum(models, b)
+            val bestCandidate = getKrum(models.map {it.value}.toList(), b)
             val newModel = oldModel.sub(gradient).add(models[bestCandidate]).div(2)
             newModel
         }
