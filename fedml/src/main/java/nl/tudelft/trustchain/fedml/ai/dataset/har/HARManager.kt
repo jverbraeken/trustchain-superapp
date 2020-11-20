@@ -45,7 +45,6 @@ class HARManager(
                     br.lines().collect(Collectors.toList())
                 }
             }
-
         }.toTypedArray()
     }
 
@@ -53,7 +52,10 @@ class HARManager(
     private fun loadLabels(labelsFile: File): IntArray {
         FileReader(labelsFile).use { fr ->
             BufferedReader(fr).use { br ->
-                return br.lines().mapToInt { i: String -> i.toInt() - 1 }.toArray() // labels start at 1 instead of 0
+                return br
+                    .lines()
+                    .mapToInt { i: String -> i.toInt() - 1 }
+                    .toArray() // labels start at 1 instead of 0
             }
         }
     }
@@ -73,8 +75,11 @@ class HARManager(
             val maxSamplesOfLabel = iteratorDistribution[label]
             val matchingImageIndices = findMatchingImageIndices(label, tmpLabelsArr)
             val shuffledMatchingImageIndices = shuffle(matchingImageIndices, seed)
-            for (j in 0 until min(shuffledMatchingImageIndices.size, maxSamplesOfLabel, maxTestSamples)) {
-                dataArr[count].addAll(tmpDataArr.map { dataFile -> dataFile[shuffledMatchingImageIndices[j]] }.toList())
+            for (j in 0 until minOf(shuffledMatchingImageIndices.size, maxSamplesOfLabel, maxTestSamples)) {
+                dataArr[count].addAll(tmpDataArr
+                    .map { dataFile -> dataFile[shuffledMatchingImageIndices[j]] }
+                    .toList()
+                )
                 labelsArr[count] = tmpLabelsArr[shuffledMatchingImageIndices[j]]
                 count++
             }
@@ -108,6 +113,9 @@ class HARManager(
     }
 
     fun getLabels(): List<String> {
-        return Arrays.stream(labelsArr).distinct().mapToObj { i: Int -> i.toString() }.collect(Collectors.toList())
+        return labelsArr
+            .distinct()
+            .map { i: Int -> i.toString() }
+            .toList()
     }
 }

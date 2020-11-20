@@ -1,7 +1,6 @@
 package nl.tudelft.trustchain.fedml.ai.dataset.cifar
 
 import nl.tudelft.trustchain.fedml.Behaviors
-import nl.tudelft.trustchain.fedml.IteratorDistributions
 import org.datavec.api.io.filters.RandomPathFilter
 import org.datavec.api.io.labels.ParentPathLabelGenerator
 import org.datavec.api.records.reader.RecordReader
@@ -16,7 +15,7 @@ import java.io.File
 import java.util.*
 
 class CustomCifar10Fetcher(
-    private val iteratorDistribution: IteratorDistributions,
+    private val iteratorDistribution: List<Int>,
     private val maxTestSamples: Int,
     private val behavior: Behaviors
 ) : Cifar10Fetcher() {
@@ -51,7 +50,7 @@ class CustomCifar10Fetcher(
         // dataSetType up file paths
         val pathFilter = RandomPathFilter(rng, *BaseImageLoader.ALLOWED_FORMATS)
         val filesInDir = FileSplit(datasetPath, BaseImageLoader.ALLOWED_FORMATS, rng)
-        val filesInDirSplit = filesInDir.sample(pathFilter, *iteratorDistribution.value.map { it.toDouble() }.toDoubleArray())
+        val filesInDirSplit = filesInDir.sample(pathFilter, *iteratorDistribution.map { it.toDouble() }.toDoubleArray())
         val h = imgDim?.get(0) ?: INPUT_HEIGHT
         val w = imgDim?.get(1) ?: INPUT_WIDTH
         val rr = ImageRecordReader(h.toLong(), w.toLong(), INPUT_CHANNELS.toLong(), ParentPathLabelGenerator(), imageTransform)

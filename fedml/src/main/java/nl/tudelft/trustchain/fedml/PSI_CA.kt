@@ -16,21 +16,6 @@ private const val MIN_PSI_CA = 3
 private const val SIZE_BLOOM_FILTER = 1000
 private val logger = KotlinLogging.logger("PSI_CA")
 
-data class ToServerMessage(
-    val encryptedLabels: List<BigInteger>,
-    val client: Int
-)
-
-data class ToClientMessage1(
-    val encryptedLabels: List<BigInteger>,
-    val server: Int
-)
-
-data class ToClientMessage2(
-    val bloomFilter: BloomFilter<BigInteger>,
-    val server: Int
-)
-
 fun clientsRequestsServerLabels(
     labels: List<String>,
     sraKeyPair: SRAKeyPair
@@ -60,7 +45,7 @@ fun serverRespondsClientRequests(
     encryptedLabels.forEach { filter.put(it) }
 
     val shuffledLabels = toServerMessage.encryptedLabels.shuffled()
-    val reEncryptedLabels = shuffledLabels.stream().map { sraKeyPair.encrypt(it) }.collect(Collectors.toList())
+    val reEncryptedLabels = shuffledLabels.map { sraKeyPair.encrypt(it) }.toList()
 
     return Pair(reEncryptedLabels, filter)
 }

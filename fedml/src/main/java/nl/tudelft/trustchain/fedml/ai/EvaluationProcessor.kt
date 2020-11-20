@@ -27,8 +27,8 @@ class EvaluationProcessor(
     private var fileMeta = File(fileDirectory, "evaluation$filenameAddition-${DATE_FORMAT.format(Date())}.meta.csv")
     internal var epoch = 0
     internal var iteration = 0
-    internal var extraElements = HashMap<String, String>()
-    internal var elapsedTime = 0
+    internal var extraElements = mapOf<String, String>()
+    internal var elapsedTime = 0L
 
     data class EvaluationData(
         val beforeAfterAveraging: String,
@@ -58,8 +58,8 @@ class EvaluationProcessor(
                 "l2, ${nnConfiguration.l2.text}",
 
                 "batchSize, ${datasetIteratorConfiguration.batchSize.text}",
-                "iteratorDistribution, ${datasetIteratorConfiguration.distribution.text}",
-                "maxTestSamples, ${datasetIteratorConfiguration.maxTestSamples?.text ?: Integer.MAX_VALUE}",
+                "iteratorDistribution, ${datasetIteratorConfiguration.distribution}",
+                "maxTestSamples, ${datasetIteratorConfiguration.maxTestSamples.text}",
 
                 "gar, ${trainConfiguration.gar.text}",
                 "communicationPattern, ${trainConfiguration.communicationPattern.text}",
@@ -104,8 +104,8 @@ class EvaluationProcessor(
     }
 
     override fun call(
-        listener: EvaluativeListener?,
-        model: Model?,
+        listener: EvaluativeListener,
+        model: Model,
         invocationsCount: Long,
         evaluations: Array<out IEvaluation<IEvaluation<*>>>
     ) {

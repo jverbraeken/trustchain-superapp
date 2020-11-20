@@ -24,7 +24,11 @@ class CustomCifar10DataSetIterator(
     Cifar10Fetcher.NUM_LABELS
 ) {
     override fun getLabels(): List<String> {
-        return iteratorConfiguration.distribution.value.filter { it > 0 }.map { it.toString() }.toCollection(ArrayList())
+        return iteratorConfiguration
+            .distribution
+            .filter { it > 0 }
+            .map { it.toString() }
+            .toCollection(ArrayList())
     }
 
     companion object {

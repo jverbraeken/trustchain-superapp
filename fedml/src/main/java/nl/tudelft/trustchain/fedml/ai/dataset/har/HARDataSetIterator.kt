@@ -20,7 +20,7 @@ class HARDataSetIterator(
     HARDataFetcher(
         baseDirectory,
         seed,
-        iteratorConfiguration.distribution.value,
+        iteratorConfiguration.distribution,
         dataSetType,
         if (dataSetType == DataSetType.TEST) iteratorConfiguration.maxTestSamples.value else Integer.MAX_VALUE,
         behavior

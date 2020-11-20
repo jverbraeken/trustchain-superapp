@@ -1,5 +1,6 @@
 package nl.tudelft.trustchain.fedml.ai.dataset.mnist
 
+import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.Behaviors
 import nl.tudelft.trustchain.fedml.ai.dataset.DatasetManager
 import org.deeplearning4j.datasets.mnist.MnistImageFile
@@ -9,23 +10,23 @@ import java.util.*
 import java.util.stream.Collectors
 import java.util.stream.IntStream
 
+private val logger = KotlinLogging.logger("CustomMnistManager")
+
 class CustomMnistManager(
-    imagesFile: String?,
-    labelsFile: String?,
+    val imagesFile: String,
+    labelsFile: String,
     numExamples: Int,
     iteratorDistribution: List<Int>,
     maxTestSamples: Int,
     seed: Long,
     behavior: Behaviors
 ) : DatasetManager() {
-    private val mnistImageFile = MnistImageFile(imagesFile, "r")
-    private val mnistLabelFile = MnistLabelFile(labelsFile, "r")
     private val imagesArr: Array<ByteArray>
     private val labelsArr: IntArray
 
     init {
-        val tmpImagesArr = loadImages(mnistImageFile, numExamples)
-        val tmpLabelsArr = loadLabels(mnistLabelFile, numExamples)
+        val tmpImagesArr = loadImages(imagesFile, numExamples)
+        val tmpLabelsArr = loadLabels(labelsFile, numExamples)
         val tmpLabelsArr2 = tmpLabelsArr.copyOf(tmpLabelsArr.size)
         if (behavior === Behaviors.LABEL_FLIP) {
             IntStream.range(0, tmpLabelsArr.size).filter { i: Int -> tmpLabelsArr[i] == 1 }
@@ -37,16 +38,6 @@ class CustomMnistManager(
         val res = sampleData(tmpImagesArr, tmpLabelsArr2, totalExamples, iteratorDistribution, maxTestSamples, seed)
         imagesArr = res.first
         labelsArr = res.second
-    }
-
-    @Throws(IOException::class)
-    private fun loadLabels(mnistLabelFile: MnistLabelFile, numExamples: Int): IntArray {
-        return mnistLabelFile.readLabels(numExamples)
-    }
-
-    @Throws(IOException::class)
-    private fun loadImages(mnistImageFile: MnistImageFile, numExamples: Int): Array<ByteArray> {
-        return mnistImageFile.readImagesUnsafe(numExamples)
     }
 
     private fun sampleData(
@@ -64,7 +55,7 @@ class CustomMnistManager(
             val maxSamplesOfLabel = iteratorDistribution[label]
             val matchingImageIndices = findMatchingImageIndices(label, tmpLabelsArr)
             val shuffledMatchingImageIndices = shuffle(matchingImageIndices, seed)
-            for (j in 0 until min(shuffledMatchingImageIndices.size, maxSamplesOfLabel, maxTestSamples)) {
+            for (j in 0 until minOf(shuffledMatchingImageIndices.size, maxSamplesOfLabel, maxTestSamples)) {
                 imagesArr[count] = tmpImagesArr[shuffledMatchingImageIndices[j]]
                 labelsArr[count] = tmpLabelsArr[shuffledMatchingImageIndices[j]]
                 count++
@@ -98,16 +89,39 @@ class CustomMnistManager(
         return imagesArr.size
     }
 
-    /**
-     * Get the underlying images file as [MnistImageFile].
-     *
-     * @return [MnistImageFile].
-     */
-    fun getImages(): MnistImageFile {
-        return mnistImageFile
+    fun getLabels(): List<String> {
+        return labelsArr
+            .distinct()
+            .map { i: Int -> i.toString() }
+            .toList()
     }
 
-    fun getLabels(): List<String> {
-        return Arrays.stream(labelsArr).distinct().mapToObj { i: Int -> i.toString() }.collect(Collectors.toList())
+    fun getInputColumns(): Int {
+        return getImageEntryLength(imagesFile)
+    }
+
+    companion object {
+        private val imageMapping = hashMapOf<String, Array<ByteArray>>()
+        private val labelMapping = hashMapOf<String, IntArray>()
+        private val imageEntryLength = hashMapOf<String, Int>()
+
+        @Synchronized private fun loadImages(filename: String, numExamples: Int): Array<ByteArray> {
+            return imageMapping.getOrPut(filename) {
+                val file = MnistImageFile(filename, "r")
+                imageEntryLength[filename] = file.entryLength
+                file.readImagesUnsafe(numExamples)
+            }
+        }
+
+        @Synchronized private fun loadLabels(filename: String, numExamples: Int): IntArray {
+            return labelMapping.getOrPut(filename) {
+                val file = MnistLabelFile(filename, "r")
+                file.readLabels(numExamples)
+            }
+        }
+
+        @Synchronized private fun getImageEntryLength(imagesFile: String): Int {
+            return imageEntryLength[imagesFile]!!
+        }
     }
 }

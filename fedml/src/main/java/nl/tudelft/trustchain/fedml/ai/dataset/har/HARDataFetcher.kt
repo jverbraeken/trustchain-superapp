@@ -13,7 +13,7 @@ import java.io.File
 import java.nio.file.Paths
 import java.util.*
 
-fun transposeMatrix(matrix: Array<DoubleArray>): Array<DoubleArray> {
+fun transposeMatrix(matrix: Array<Array<Double>>): Array<DoubleArray> {
     val m = matrix.size
     val n = matrix[0].size
     val transposedMatrix = Array(n) { DoubleArray(m) }
@@ -114,7 +114,7 @@ class HARDataFetcher(
             val features = entries.indices.map {
                 entries[it] = entries[it].trim()
                 val parts = entries[it].split("\\s+").toTypedArray()
-                Arrays.stream(parts).mapToDouble { s: String -> s.toDouble() }.toArray()
+                parts.map { s: String -> s.toDouble() }.toTypedArray()
             }.toTypedArray()
             val timeSteps = transposeMatrix(features)
             featureData[actualExamples] = timeSteps
@@ -148,7 +148,7 @@ class HARDataFetcher(
                 val features = seq.map {
                     val trimmed = it.trim()
                     val parts = trimmed.split("\\s+").toTypedArray()
-                    Arrays.stream(parts).mapToDouble { s: String -> s.toDouble() }.toArray()
+                    parts.map { s: String -> s.toDouble() }.toTypedArray()
                 }.toTypedArray()
                 val timeSteps = transposeMatrix(features)
                 featureData[actualExamples] = timeSteps

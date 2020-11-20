@@ -55,13 +55,13 @@ class CustomMnistDataFetcher(
             images = FilenameUtils.concat(mnistRoot, MnistFetcher.TRAINING_FILES_FILENAME_UNZIPPED)
             labels = FilenameUtils.concat(mnistRoot, MnistFetcher.TRAINING_FILE_LABELS_FILENAME_UNZIPPED)
             maxExamples = MnistDataFetcher.NUM_EXAMPLES
-            checksums = CHECKSUMS_TRAIN
+//            checksums = CHECKSUMS_TRAIN
             man = CustomMnistManager(images, labels, maxExamples, iteratorDistribution, Int.MAX_VALUE, seed, behavior)
         } else {
             images = FilenameUtils.concat(mnistRoot, MnistFetcher.TEST_FILES_FILENAME_UNZIPPED)
             labels = FilenameUtils.concat(mnistRoot, MnistFetcher.TEST_FILE_LABELS_FILENAME_UNZIPPED)
             maxExamples = MnistDataFetcher.NUM_EXAMPLES_TEST
-            checksums = CHECKSUMS_TEST
+//            checksums = CHECKSUMS_TEST
             man = CustomMnistManager(images, labels, maxExamples, iteratorDistribution, maxTestSamples, seed, behavior)
         }
         val files = arrayOf(images, labels)
@@ -75,7 +75,7 @@ class CustomMnistDataFetcher(
                 seed,
                 behavior
             )
-            validateFiles(files, checksums)
+//            validateFiles(files, checksums)
         } catch (e: Exception) {
             try {
                 FileUtils.deleteDirectory(File(mnistRoot))
@@ -92,12 +92,12 @@ class CustomMnistDataFetcher(
                 seed,
                 behavior
             )
-            validateFiles(files, checksums)
+//            validateFiles(files, checksums)
         }
         totalExamples = man.getNumSamples()
         numOutcomes = 10
         cursor = 0
-        inputColumns = man.getImages().entryLength
+        inputColumns = man.getInputColumns()
         order = IntStream.range(0, totalExamples).toArray()
         rng = Random(seed)
         reset() //Shuffle order
@@ -115,7 +115,7 @@ class CustomMnistDataFetcher(
         return f.exists()
     }
 
-    private fun validateFiles(files: Array<String>, checksums: LongArray) {
+    /*private fun validateFiles(files: Array<String>, checksums: LongArray) {
         try {
             for (i in files.indices) {
                 val f = File(files[i])
@@ -129,7 +129,7 @@ class CustomMnistDataFetcher(
         } catch (e: Exception) {
             throw RuntimeException(e)
         }
-    }
+    }*/
 
     override fun fetch(numExamples: Int) {
         check(hasMore()) { "Unable to get more; there are no more images" }

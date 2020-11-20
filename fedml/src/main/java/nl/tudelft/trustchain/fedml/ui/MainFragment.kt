@@ -120,6 +120,9 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
             }
         }
 
+        System.setProperty("org.bytedeco.javacpp.maxphysicalbytes", "0");
+        System.setProperty("org.bytedeco.javacpp.maxbytes", "0");
+
         lifecycleScope.launchWhenStarted {
             while (isActive) {
                 updateView()
@@ -297,7 +300,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
             DatasetIteratorConfiguration(
                 batchSize = batchSize,
                 maxTestSamples = maxTestSample,
-                distribution = iteratorDistribution
+                distribution = iteratorDistribution.value
             ),
             NNConfiguration(
                 optimizer = optimizer,

@@ -39,8 +39,13 @@ class Fang2020Krum(private val b: Int) : ModelPoisoningAttack() {
         val m = otherModels.size + numAttackers.num
         val c = numAttackers.num
         var lambda = (1.0 / ((m - 2 * c - 1) * sqrt(d))) *
-            otherModels.values.map { a -> otherModels.values.map { it.distance2(a) }.sum() }.minOrNull()!!.toFloat() +
-            (1.0 / sqrt(d)) * otherModels.values.map { it.distance2(oldModel) }.maxOrNull()!!
+            otherModels.values
+                .map { a -> otherModels.values.map { it.distance2(a) }.sum() }
+                .minOrNull()!!
+                .toFloat() + (1.0 / sqrt(d)) *
+            otherModels.values
+                .map { it.distance2(oldModel) }
+                .maxOrNull()!!
 
         while (lambda >= 1e-5) {
             val w1 = oldModel.sub(ns.mul(lambda))

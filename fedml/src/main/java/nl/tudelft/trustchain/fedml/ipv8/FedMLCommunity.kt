@@ -38,7 +38,7 @@ class FedMLCommunity(
     class Factory(
         private val settings: TrustChainSettings,
         private val database: TrustChainStore,
-        private val crawler = TrustChainCrawler()
+        private val crawler: TrustChainCrawler = TrustChainCrawler()
     ) : Overlay.Factory<FedMLCommunity>(FedMLCommunity::class.java) {
         override fun create(): FedMLCommunity {
             return FedMLCommunity(settings, database, crawler)

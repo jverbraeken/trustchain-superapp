@@ -86,7 +86,12 @@ class Mozi(private val fracBenign: Double) : AggregationRule() {
         val sortedDistances = distances.toList().sortedBy { (_, value) -> value }.toMap()
         val numBenign = ceil(fracBenign * otherModels.size).toLong()
         logger.debug { "#benign: $numBenign" }
-        return sortedDistances.keys.stream().limit(numBenign).map { otherModels[it]!! }.collect(Collectors.toList())
+        return sortedDistances
+            .keys
+            .stream()
+            .limit(numBenign)
+            .map { otherModels[it]!! }
+            .collect(Collectors.toList())
     }
 
     private fun applyPerformanceFilter(

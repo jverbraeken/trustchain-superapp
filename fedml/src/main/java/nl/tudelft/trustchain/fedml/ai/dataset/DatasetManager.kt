@@ -9,22 +9,20 @@ abstract class DatasetManager {
         return IntStream.range(0, tmpLabelsArr.size).filter { j: Int -> label == tmpLabelsArr[j] }.toArray()
     }
 
-    protected fun shuffle(matchingImageIndices: IntArray, seed: Long): IntArray {
-        val tmp = Arrays.stream(matchingImageIndices.clone()).boxed().collect(Collectors.toList())
-        Collections.shuffle(tmp, Random(seed))
-        return tmp.stream().mapToInt { j: Int? -> j!! }.toArray()
+    protected fun shuffle(matchingImageIndices: IntArray, seed: Long): Array<Int> {
+        val tmp = matchingImageIndices.clone().toMutableList()
+        tmp.shuffle(Random(seed))
+        return tmp.toTypedArray()
     }
 
-    protected fun min(a: Int, b: Int, c: Int): Int {
-        return Math.min(Math.min(a, b), c)
-    }
-
-    fun calculateTotalExamples(iteratorDistribution: List<Int>, maxTestSamples: Int, labelsArray: IntArray?): Int {
+    fun calculateTotalExamples(iteratorDistribution: List<Int>, maxTestSamples: Int, labelsArray: IntArray): Int {
         return IntStream.range(0, iteratorDistribution.size).map { i: Int ->
-            min(
+            minOf(
                 iteratorDistribution[i],
-                maxTestSamples, Arrays.stream(labelsArray).filter { j: Int -> j == i }.count()
-                    .toInt()
+                maxTestSamples,
+                labelsArray
+                    .filter { j: Int -> j == i }
+                    .size
             )
         }.sum()
     }

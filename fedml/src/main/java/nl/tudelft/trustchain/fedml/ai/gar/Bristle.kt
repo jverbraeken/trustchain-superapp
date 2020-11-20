@@ -5,13 +5,9 @@ import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.dataset.DataSet
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
-import java.util.*
 import java.util.stream.Collectors
-import kotlin.collections.ArrayDeque
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 import kotlin.math.ceil
-import kotlin.math.log
+import kotlin.math.max
 import kotlin.math.min
 
 private val mpl = KotlinLogging.logger("Bristle")
@@ -93,7 +89,7 @@ class Bristle(private val fracBenign: Double) : AggregationRule() {
         debug(logging) { "lossesPerClass: ${lossesPerClass.map { Pair(it.key, it.value.toList()) }}" }
         val modelsToWeight = mapLossesToWeight(losses, oldLoss)
         debug(logging) { "modelsToWeight: $modelsToWeight" }
-        val modelsPerClassToWeight = mapLossesPerClassToWeight(lossesPerClass, oldLossPerClass, countPerPeer)
+        val modelsPerClassToWeight = mapLossesPerClassToWeight(lossesPerClass, oldLossPerClass, countPerPeer, logging)
         debug(logging) { "modelsPerClassToWeight: $modelsPerClassToWeight" }
 
         return if (modelsPerClassToWeight.isEmpty()) {
@@ -142,7 +138,9 @@ class Bristle(private val fracBenign: Double) : AggregationRule() {
         testBatches: List<DataSet?>
     ): Array<Double?> {
         network.setParameters(model)
-        return testBatches.map { if (it == null) null else network.score(it) }.toTypedArray()
+        return testBatches
+            .map { if (it == null) null else network.score(it) }
+            .toTypedArray()
     }
 
     private fun calculateLosses(
@@ -189,23 +187,34 @@ class Bristle(private val fracBenign: Double) : AggregationRule() {
     }
 
     private fun mapLossesPerClassToWeight(
-        otherLossesPerClass: Map<Int, Array<Double?>>, oldLossPerClass: Array<Double?>, countPerPeer: Map<Int, Int>
+        otherLossesPerClass: Map<Int, Array<Double?>>,
+        oldLossPerClass: Array<Double?>,
+        countPerPeer: Map<Int, Int>,
+        logging: Boolean
     ): Map<Int, Double> {
-        val numClassesImproved = otherLossesPerClass
-            .map { (index, lossPerClass) ->
-                Pair(index, lossPerClass.zip(oldLossPerClass).filter { (first, second) ->
-                    first != null && second != null && first < second
-                }.size)
-            }.toTypedArray()
-        return numClassesImproved.map { (index, improvements) ->
-            Pair(
-                index,
-                if (improvements >= countPerPeer[index]!!) 1.0 else 0.0
-            )
+        val smallestLossPerPeer = otherLossesPerClass
+            .map { (peer, lossPerClass) ->
+                Pair(peer, lossPerClass
+                    .mapIndexed { label, loss -> Pair(label, loss ?: Double.MAX_VALUE) }
+                    .sortedBy { it.second }
+                    .take(countPerPeer[peer]!!)
+                    .toMap())
+            }.toMap()
+        debug(logging) { "smallestLossPerPeer: $smallestLossPerPeer" }
+
+        return smallestLossPerPeer.map { (peer, lossPerLabel) ->
+            val smallestOtherLoss = lossPerLabel.map { (_, smallestLosses) -> smallestLosses }.sum()
+            val smallestOwnLoss = lossPerLabel.map { (label, _) -> oldLossPerClass[label]!!}.sum()
+            Pair(peer, max(0.0, 4.0 + (4 - 4 * (smallestOtherLoss / smallestOwnLoss))))
         }.toMap()
     }
 
-    private fun weightedAverage(modelsToWeight: Map<Int, Double>, otherModels: Map<Int, INDArray>, newModel: INDArray, logging: Boolean): INDArray {
+    private fun weightedAverage(
+        modelsToWeight: Map<Int, Double>,
+        otherModels: Map<Int, INDArray>,
+        newModel: INDArray,
+        logging: Boolean
+    ): INDArray {
         var arr: INDArray? = null
         modelsToWeight.onEachIndexed { indexAsNum, (indexAsPeer, weight) ->
             if (indexAsNum == 0) {

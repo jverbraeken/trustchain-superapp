@@ -14,13 +14,8 @@ import org.nd4j.linalg.cpu.nativecpu.NDArray
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 import java.io.File
 import java.nio.file.Paths
-import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ConcurrentLinkedDeque
 import java.util.concurrent.CopyOnWriteArrayList
-import kotlin.NoSuchElementException
-import kotlin.collections.ArrayDeque
-import kotlin.collections.ArrayList
 import kotlin.concurrent.thread
 import kotlin.random.Random
 
@@ -270,10 +265,12 @@ class SimulatedRunner : Runner() {
                         logger.debug { "loss => ${network.score(sample)}" }
                         val message = craftMessage(averageParams, trainConfiguration.behavior, random)
                         when (trainConfiguration.communicationPattern) {
-                            CommunicationPatterns.ALL -> newOtherModelBuffers.filterIndexed { index, _ -> index != simulationIndex && index in similarPeers }
-                                .forEach { it.put(simulationIndex, message) }
-                            CommunicationPatterns.RANDOM -> newOtherModelBuffers.filterIndexed { index, _ -> index != simulationIndex && index in similarPeers }
-                                .random().put(simulationIndex, message)
+                            CommunicationPatterns.ALL -> newOtherModelBuffers
+                                .filterIndexed { index, _ -> index != simulationIndex && index in similarPeers }
+                                .forEach { it[simulationIndex] = message }
+                            CommunicationPatterns.RANDOM -> newOtherModelBuffers
+                                .filterIndexed { index, _ -> index != simulationIndex && index in similarPeers }
+                                .random()[simulationIndex] = message
                             CommunicationPatterns.RR -> throw IllegalArgumentException("Not implemented yet")
                             CommunicationPatterns.RING -> throw IllegalArgumentException("Not implemented yet")
                         }
@@ -339,7 +336,7 @@ class SimulatedRunner : Runner() {
         var l2 = dataset.defaultL2
         var batchSize = dataset.defaultBatchSize
         var epoch = Epochs.EPOCH_5
-        var iteratorDistribution = dataset.defaultIteratorDistribution
+        var iteratorDistribution = dataset.defaultIteratorDistribution.value
         var maxTestSample = MaxTestSamples.NUM_40
         var gar = GARs.BRISTLE
         var communicationPattern = CommunicationPatterns.RANDOM
@@ -377,11 +374,20 @@ class SimulatedRunner : Runner() {
                 )
                 continue
             }
-            val split = line.split(' ')
+            val split = line.split(' ', limit = 2)
             when (split[0]) {
                 "dataset" -> dataset = loadDataset(split[1])
                 "batchSize" -> batchSize = loadBatchSize(split[1])
-                "iteratorDistribution" -> iteratorDistribution = loadIteratorDistribution(split[1])
+                "iteratorDistribution" -> {
+                    iteratorDistribution = if (split[1].startsWith('[')) {
+                         split[1]
+                             .substring(1, split[1].length-1)
+                             .split(", ")
+                             .map { it.toInt() }
+                    } else {
+                        loadIteratorDistribution(split[1]).value
+                    }
+                }
                 "maxTestSample" -> maxTestSample = loadMaxTestSample(split[1])
                 "optimizer" -> optimizer = loadOptimizer(split[1])
                 "learningRate" -> learningRate = loadLearningRate(split[1])
