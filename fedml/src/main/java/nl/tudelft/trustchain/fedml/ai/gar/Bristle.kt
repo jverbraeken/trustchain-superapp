@@ -6,7 +6,6 @@ import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.dataset.DataSet
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 import java.util.stream.Collectors
-import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 
@@ -21,10 +20,10 @@ private fun debug(logging: Boolean, msg: () -> Any?) {
  *
  * byzantine-resilient decentralized stochastic gradient descent federated learning, non i.i.d., history-sensitive (= more robust), practical
  */
-class Bristle(private val fracBenign: Double) : AggregationRule() {
+class Bristle : AggregationRule() {
     private val TEST_BATCH = 500
-    private val NUM_MODELS_TO_EVALUATE = 10
-    private val EXPLORATION_RATIO = 0.1
+    private val NUM_MODELS_EXPLOITATION = 9
+    private val NUM_MODELS_EXPLORATION = 1
 
     @ExperimentalStdlibApi
     override fun integrateParameters(
@@ -47,35 +46,31 @@ class Bristle(private val fracBenign: Double) : AggregationRule() {
 
         val distances = getDistances(oldModel, newModel, otherModels, allOtherModelsBuffer, logging)
         debug(logging) { "distances: $distances" }
-        val numCloseModels1 = NUM_MODELS_TO_EVALUATE - NUM_MODELS_TO_EVALUATE * EXPLORATION_RATIO
-        val numCloseModels2 = ceil(fracBenign * otherModels.size)
-        val numCloseModels = min(numCloseModels1, numCloseModels2).toLong()
-        debug(logging) { "#numCloseModels: $numCloseModels" }
-        val closeModels = distances
+        val exploitationModels = distances
             .keys
             .stream()
-            .limit(numCloseModels)
+            .limit(NUM_MODELS_EXPLOITATION.toLong())
             .filter { it < 1000000 }
             .map { Pair(it, otherModels[it]!!) }
             .collect(Collectors.toList())
             .toMap()
-        debug(logging) { "closeModels: ${closeModels.map { it.value.getDouble(0) }.toCollection(ArrayList())}" }
+        debug(logging) { "closeModels: ${exploitationModels.map { it.value.getDouble(0) }.toCollection(ArrayList())}" }
 
-        val notCloseModelsList = distances
+        val explorationModelsList = distances
             .keys
             .stream()
-            .skip(numCloseModels)
+            .skip(NUM_MODELS_EXPLOITATION.toLong())
             .filter { it < 1000000 }
             .map { Pair(it, otherModels[it]!!) }
             .collect(Collectors.toList())
-        notCloseModelsList.shuffle()
-        notCloseModelsList.take(NUM_MODELS_TO_EVALUATE - closeModels.size)
-        val notCloseModels = notCloseModelsList.toMap()
-        debug(logging) { "notCloseModels: ${notCloseModels.map { it.value.getDouble(0) }.toCollection(ArrayList())}" }
+        explorationModelsList.shuffle()
+        explorationModelsList.take(NUM_MODELS_EXPLORATION)
+        val explorationModels = explorationModelsList.toMap()
+        debug(logging) { "notCloseModels: ${explorationModels.map { it.value.getDouble(0) }.toCollection(ArrayList())}" }
 
         val combinedModels = HashMap<Int, INDArray>()
-        combinedModels.putAll(closeModels)
-        combinedModels.putAll(notCloseModels)
+        combinedModels.putAll(exploitationModels)
+        combinedModels.putAll(explorationModels)
         debug(logging) { "combinedModels: ${combinedModels.map { it.value.getDouble(0) }.toCollection(ArrayList())}" }
         testDataSetIterator.reset()
         val sample = testDataSetIterator.next(TEST_BATCH)

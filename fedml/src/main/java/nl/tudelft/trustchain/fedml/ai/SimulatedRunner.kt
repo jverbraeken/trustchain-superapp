@@ -7,7 +7,6 @@ import nl.tudelft.trustchain.fedml.ipv8.MsgPsiCaClientToServer
 import nl.tudelft.trustchain.fedml.ipv8.MsgPsiCaServerToClient
 import org.deeplearning4j.datasets.fetchers.DataSetType
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
-import org.deeplearning4j.optimize.listeners.EvaluativeListener
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.cpu.nativecpu.NDArray
@@ -34,11 +33,12 @@ class SimulatedRunner : Runner() {
         seed: Int,
         @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE") _unused: MLConfiguration
     ) {
-        val config = loadConfig(baseDirectory)
+        var config = loadConfig(baseDirectory)
         // All these things have to be initialized before any of the runner threads start
         val toServerMessageBuffers = ArrayList<CopyOnWriteArrayList<MsgPsiCaClientToServer>>()
         val toClientMessageBuffers = ArrayList<CopyOnWriteArrayList<MsgPsiCaServerToClient>>()
         val sraKeyPairs = ArrayList<SRAKeyPair>()
+        config = config.subList(0, 75)
         for (i in config.indices) {
             newOtherModelBuffers.add(ConcurrentHashMap())
             recentOtherModelsBuffers.add(ArrayDeque())
@@ -47,6 +47,7 @@ class SimulatedRunner : Runner() {
             toClientMessageBuffers.add(CopyOnWriteArrayList())
             sraKeyPairs.add(SRAKeyPair.create(bigPrime, java.util.Random(i.toLong())))
         }
+        logger.debug { "config.indices: ${config.indices}" }
         for (i in config.indices) {
             thread {
                 val trainDataSetIterator = config[i].dataset.inst(
@@ -79,43 +80,8 @@ class SimulatedRunner : Runner() {
                     config[i].nnConfiguration,
                     i
                 )
-                network.setListeners(ScoreIterationListener(printScoreIterations))
 
-
-                val encryptedLabels = clientsRequestsServerLabels(
-                    trainDataSetIterator.labels,
-                    sraKeyPairs[i]
-                )
-                toServerMessageBuffers
-                    .filterIndexed { index, _ -> index != i }
-                    .forEach { it.add(MsgPsiCaClientToServer(encryptedLabels, i)) }
-
-                while (toServerMessageBuffers[i].size < toServerMessageBuffers.size - 1) {
-                    Thread.sleep(1)
-                }
-
-                for (toServerMessage in toServerMessageBuffers[i]) {
-                    val (reEncryptedLabels, filter) = serverRespondsClientRequests(
-                        trainDataSetIterator.labels,
-                        toServerMessage,
-                        sraKeyPairs[i]
-                    )
-                    val message = MsgPsiCaServerToClient(reEncryptedLabels, filter, i)
-                    toClientMessageBuffers[toServerMessage.client].add(message)
-                }
-
-                while (toClientMessageBuffers[i].size < toClientMessageBuffers.size - 1) {
-                    Thread.sleep(1)
-                }
-
-                val (similarPeers, countPerPeer) = clientReceivesServerResponses(
-                    i,
-                    toClientMessageBuffers[i],
-                    sraKeyPairs[i]
-                )
-
-
-
+                val (similarPeers, countPerPeer) = getSimilarPeers(trainDataSetIterator, sraKeyPairs[i], toServerMessageBuffers, toClientMessageBuffers, i)
 
                 trainTestSendNetwork(
                     i,
@@ -133,6 +99,126 @@ class SimulatedRunner : Runner() {
         }
     }
 
+    private fun loadConfig(baseDirectory: File): List<MLConfiguration> {
+        val file = Paths.get(baseDirectory.path, "simulation.config").toFile()
+        val lines = file.readLines()
+        val configurations = arrayListOf<MLConfiguration>()
+
+        var dataset = Datasets.MNIST
+        var optimizer = dataset.defaultOptimizer
+        var learningRate = dataset.defaultLearningRate
+        var momentum = dataset.defaultMomentum
+        var l2 = dataset.defaultL2
+        var batchSize = dataset.defaultBatchSize
+        var epoch = Epochs.EPOCH_5
+        var iteratorDistribution = dataset.defaultIteratorDistribution.value
+        var maxTestSample = MaxTestSamples.NUM_40
+        var gar = GARs.BRISTLE
+        var communicationPattern = CommunicationPatterns.RANDOM
+        var behavior = Behaviors.BENIGN
+        var modelPoisoningAttack = ModelPoisoningAttacks.NONE
+        var numAttacker = NumAttackers.NUM_2
+
+        for (line in lines) {
+            if (line == "## end") {
+                configurations.add(
+                    MLConfiguration(
+                        dataset,
+                        DatasetIteratorConfiguration(
+                            batchSize = batchSize,
+                            maxTestSamples = maxTestSample,
+                            distribution = iteratorDistribution
+                        ),
+                        NNConfiguration(
+                            optimizer = optimizer,
+                            learningRate = learningRate,
+                            momentum = momentum,
+                            l2 = l2
+                        ),
+                        TrainConfiguration(
+                            numEpochs = epoch,
+                            gar = gar,
+                            communicationPattern = communicationPattern,
+                            behavior = behavior
+                        ),
+                        ModelPoisoningConfiguration(
+                            attack = modelPoisoningAttack,
+                            numAttackers = numAttacker
+                        )
+                    )
+                )
+                continue
+            }
+            val split = line.split(' ', limit = 2)
+            when (split[0]) {
+                "dataset" -> dataset = loadDataset(split[1])
+                "batchSize" -> batchSize = loadBatchSize(split[1])
+                "iteratorDistribution" -> {
+                    iteratorDistribution = if (split[1].startsWith('[')) {
+                        split[1]
+                            .substring(1, split[1].length-1)
+                            .split(", ")
+                            .map { it.toInt() }
+                    } else {
+                        loadIteratorDistribution(split[1]).value
+                    }
+                }
+                "maxTestSample" -> maxTestSample = loadMaxTestSample(split[1])
+                "optimizer" -> optimizer = loadOptimizer(split[1])
+                "learningRate" -> learningRate = loadLearningRate(split[1])
+                "momentum" -> momentum = loadMomentum(split[1])
+                "l2Regularization" -> l2 = loadL2Regularization(split[1])
+                "epoch" -> epoch = loadEpoch(split[1])
+                "gar" -> gar = loadGAR(split[1])
+                "communicationPattern" -> communicationPattern = loadCommunicationPattern(split[1])
+                "behavior" -> behavior = loadBehavior(split[1])
+                "modelPoisoningAttack" -> modelPoisoningAttack = loadModelPoisoningAttack(split[1])
+                "numAttackers" -> numAttacker = loadNumAttackers(split[1])
+            }
+        }
+        return configurations
+    }
+
+    private fun getSimilarPeers(
+        trainDataSetIterator: CustomBaseDatasetIterator,
+        sraKeyPair: SRAKeyPair,
+        toServerMessageBuffers: ArrayList<CopyOnWriteArrayList<MsgPsiCaClientToServer>>,
+        toClientMessageBuffers: ArrayList<CopyOnWriteArrayList<MsgPsiCaServerToClient>>,
+        i: Int
+    ) : Pair<List<Int>, Map<Int, Int>> {
+        val encryptedLabels = clientsRequestsServerLabels(
+            trainDataSetIterator.labels,
+            sraKeyPair
+        )
+        toServerMessageBuffers
+            .filterIndexed { index, _ -> index != i }
+            .forEach { it.add(MsgPsiCaClientToServer(encryptedLabels, i)) }
+
+        while (toServerMessageBuffers[i].size < toServerMessageBuffers.size - 1) {
+            Thread.sleep(1)
+        }
+
+        for (toServerMessage in toServerMessageBuffers[i]) {
+            val (reEncryptedLabels, filter) = serverRespondsClientRequests(
+                trainDataSetIterator.labels,
+                toServerMessage,
+                sraKeyPair
+            )
+            val message = MsgPsiCaServerToClient(reEncryptedLabels, filter, i)
+            toClientMessageBuffers[toServerMessage.client].add(message)
+        }
+
+        while (toClientMessageBuffers[i].size < toClientMessageBuffers.size - 1) {
+            Thread.sleep(1)
+        }
+
+        return clientReceivesServerResponses(
+            i,
+            toClientMessageBuffers[i],
+            sraKeyPair
+        )
+    }
+
     private fun trainTestSendNetwork(
         simulationIndex: Int,
         network: MultiLayerNetwork,
@@ -145,6 +231,9 @@ class SimulatedRunner : Runner() {
         countPerPeer: Map<Int, Int>,
         logging: Boolean
     ) {
+        if (logging) {
+            network.setListeners(ScoreIterationListener(printScoreIterations))
+        }
         val newOtherModels = newOtherModelBuffers[simulationIndex]
         val recentOtherModels = recentOtherModelsBuffers[simulationIndex]
         val random = randoms[simulationIndex]
@@ -188,7 +277,8 @@ class SimulatedRunner : Runner() {
                             network,
                             EvaluationProcessor.EvaluationData(
                                 "before", "", end - start, network.iterationCount, epoch
-                            )
+                            ),
+                            logging
                         )
                     }
 
@@ -245,7 +335,8 @@ class SimulatedRunner : Runner() {
                                 network,
                                 EvaluationProcessor.EvaluationData(
                                     "after", numPeers.toString(), end2 - start2, iterations, epoch
-                                )
+                                ),
+                                logging
                             )
                         }
                     }
@@ -307,7 +398,8 @@ class SimulatedRunner : Runner() {
         evaluationProcessor: EvaluationProcessor,
         testDataSetIterator: DataSetIterator,
         network: MultiLayerNetwork,
-        evaluationData: EvaluationProcessor.EvaluationData
+        evaluationData: EvaluationProcessor.EvaluationData,
+        logging: Boolean
     ) {
         testDataSetIterator.reset()
         evaluationProcessor.extraElements = mapOf(
@@ -315,92 +407,11 @@ class SimulatedRunner : Runner() {
             Pair("#peers included in current batch", evaluationData.numPeers)
         )
         evaluationProcessor.elapsedTime = evaluationData.elapsedTime
-        val evaluationListener = EvaluativeListener(testDataSetIterator, 999999)
+        val evaluationListener = CustomEvaluativeListener(testDataSetIterator, 999999)
         evaluationListener.callback = evaluationProcessor
         evaluationListener.iterationDone(
             network,
-            evaluationData.iterationCount,
-            evaluationData.epoch
+            logging
         )
-    }
-
-    private fun loadConfig(baseDirectory: File): List<MLConfiguration> {
-        val file = Paths.get(baseDirectory.path, "simulation.config").toFile()
-        val lines = file.readLines()
-        val configurations = arrayListOf<MLConfiguration>()
-
-        var dataset = Datasets.MNIST
-        var optimizer = dataset.defaultOptimizer
-        var learningRate = dataset.defaultLearningRate
-        var momentum = dataset.defaultMomentum
-        var l2 = dataset.defaultL2
-        var batchSize = dataset.defaultBatchSize
-        var epoch = Epochs.EPOCH_5
-        var iteratorDistribution = dataset.defaultIteratorDistribution.value
-        var maxTestSample = MaxTestSamples.NUM_40
-        var gar = GARs.BRISTLE
-        var communicationPattern = CommunicationPatterns.RANDOM
-        var behavior = Behaviors.BENIGN
-        var modelPoisoningAttack = ModelPoisoningAttacks.NONE
-        var numAttacker = NumAttackers.NUM_2
-
-        for (line in lines) {
-            if (line == "## end") {
-                configurations.add(
-                    MLConfiguration(
-                        dataset,
-                        DatasetIteratorConfiguration(
-                            batchSize = batchSize,
-                            maxTestSamples = maxTestSample,
-                            distribution = iteratorDistribution
-                        ),
-                        NNConfiguration(
-                            optimizer = optimizer,
-                            learningRate = learningRate,
-                            momentum = momentum,
-                            l2 = l2
-                        ),
-                        TrainConfiguration(
-                            numEpochs = epoch,
-                            gar = gar,
-                            communicationPattern = communicationPattern,
-                            behavior = behavior
-                        ),
-                        ModelPoisoningConfiguration(
-                            attack = modelPoisoningAttack,
-                            numAttackers = numAttacker
-                        )
-                    )
-                )
-                continue
-            }
-            val split = line.split(' ', limit = 2)
-            when (split[0]) {
-                "dataset" -> dataset = loadDataset(split[1])
-                "batchSize" -> batchSize = loadBatchSize(split[1])
-                "iteratorDistribution" -> {
-                    iteratorDistribution = if (split[1].startsWith('[')) {
-                         split[1]
-                             .substring(1, split[1].length-1)
-                             .split(", ")
-                             .map { it.toInt() }
-                    } else {
-                        loadIteratorDistribution(split[1]).value
-                    }
-                }
-                "maxTestSample" -> maxTestSample = loadMaxTestSample(split[1])
-                "optimizer" -> optimizer = loadOptimizer(split[1])
-                "learningRate" -> learningRate = loadLearningRate(split[1])
-                "momentum" -> momentum = loadMomentum(split[1])
-                "l2Regularization" -> l2 = loadL2Regularization(split[1])
-                "epoch" -> epoch = loadEpoch(split[1])
-                "gar" -> gar = loadGAR(split[1])
-                "communicationPattern" -> communicationPattern = loadCommunicationPattern(split[1])
-                "behavior" -> behavior = loadBehavior(split[1])
-                "modelPoisoningAttack" -> modelPoisoningAttack = loadModelPoisoningAttack(split[1])
-                "numAttackers" -> numAttacker = loadNumAttackers(split[1])
-            }
-        }
-        return configurations
     }
 }

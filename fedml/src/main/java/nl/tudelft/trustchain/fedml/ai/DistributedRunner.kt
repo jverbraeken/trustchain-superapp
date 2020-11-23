@@ -290,12 +290,11 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
             Pair("#peers included in current batch", evaluationData.numPeers)
         )
         evaluationProcessor.elapsedTime = evaluationData.elapsedTime
-        val evaluationListener = EvaluativeListener(testDataSetIterator, 999999)
+        val evaluationListener = CustomEvaluativeListener(testDataSetIterator, 999999)
         evaluationListener.callback = evaluationProcessor
         evaluationListener.iterationDone(
             network,
-            evaluationData.iterationCount,
-            evaluationData.epoch
+            true
         )
     }
 
@@ -304,7 +303,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         when (messageId) {
             MessageId.MSG_PARAM_UPDATE -> {
                 val paramUpdate = payload as MsgParamUpdate
-                newOtherModels.put(peer.address.port, paramUpdate.array)
+                newOtherModels[peer.address.port] = paramUpdate.array
             }
             MessageId.MSG_PSI_CA_CLIENT_TO_SERVER -> scope.launch(Dispatchers.IO) {
                 deferred.await()

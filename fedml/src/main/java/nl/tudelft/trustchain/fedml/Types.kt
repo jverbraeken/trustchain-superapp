@@ -211,7 +211,7 @@ enum class GARs(
     BRIDGE("bridge", "Bridge (b=1)", Bridge(1), ModelPoisoningAttacks.NONE),
     MOZI("mozi", "Mozi (frac=0.5)", Mozi(0.5), ModelPoisoningAttacks.NONE),
     BRISTLE(
-        "bristle", "Bristle (frac=0.5)", Bristle(0.5),
+        "bristle", "Bristle", Bristle(),
         ModelPoisoningAttacks.NONE
     )
 }

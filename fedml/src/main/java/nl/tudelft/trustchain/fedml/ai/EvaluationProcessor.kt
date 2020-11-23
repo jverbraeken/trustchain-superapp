@@ -20,7 +20,7 @@ class EvaluationProcessor(
     seed: Int,
     private val extraElementNames: List<String>,
     filenameAddition: String = ""
-) : EvaluationCallback {
+) : CustomEvaluationCallback {
     private val dataLines = ArrayList<Array<String>>()
     private val fileDirectory = File(baseDirectory.path, "evaluations")
     private val fileResults = File(fileDirectory, "evaluation$filenameAddition-${DATE_FORMAT.format(Date())}.csv")
@@ -104,10 +104,10 @@ class EvaluationProcessor(
     }
 
     override fun call(
-        listener: EvaluativeListener,
+        listener: CustomEvaluativeListener,
         model: Model,
         invocationsCount: Long,
-        evaluations: Array<out IEvaluation<IEvaluation<*>>>
+        evaluations: Array<out IEvaluation<*>>
     ) {
         val accuracy = evaluations[0].getValue(Evaluation.Metric.ACCURACY)
         val f1 = evaluations[0].getValue(Evaluation.Metric.F1)
