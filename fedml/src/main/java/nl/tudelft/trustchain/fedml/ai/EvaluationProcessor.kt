@@ -1,14 +1,14 @@
 package nl.tudelft.trustchain.fedml.ai
 
 import org.deeplearning4j.nn.api.Model
-import org.deeplearning4j.optimize.listeners.EvaluativeListener
-import org.deeplearning4j.optimize.listeners.callbacks.EvaluationCallback
 import org.nd4j.evaluation.IEvaluation
 import org.nd4j.evaluation.classification.Evaluation
 import java.io.File
 import java.io.PrintWriter
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.concurrent.fixedRateTimer
 
 private const val DATE_PATTERN = "yyyy-MM-dd_HH.mm.ss"
 private val DATE_FORMAT = SimpleDateFormat(DATE_PATTERN, Locale.US)
@@ -16,15 +16,14 @@ private val DATE_FORMAT = SimpleDateFormat(DATE_PATTERN, Locale.US)
 class EvaluationProcessor(
     baseDirectory: File,
     runner: String,
-    mlConfiguration: MLConfiguration,
-    seed: Int,
-    private val extraElementNames: List<String>,
-    filenameAddition: String = ""
+    mlConfiguration: List<MLConfiguration>,
+    private val extraElementNames: List<String>
 ) : CustomEvaluationCallback {
+    @Transient
     private val dataLines = ArrayList<Array<String>>()
     private val fileDirectory = File(baseDirectory.path, "evaluations")
-    private val fileResults = File(fileDirectory, "evaluation$filenameAddition-${DATE_FORMAT.format(Date())}.csv")
-    private var fileMeta = File(fileDirectory, "evaluation$filenameAddition-${DATE_FORMAT.format(Date())}.meta.csv")
+    private val fileResults = File(fileDirectory, "evaluation-$runner-${DATE_FORMAT.format(Date())}.csv")
+    private var fileMeta = File(fileDirectory, "evaluation-$runner-${DATE_FORMAT.format(Date())}.meta.csv")
     internal var epoch = 0
     internal var iteration = 0
     internal var extraElements = mapOf<String, String>()
@@ -44,36 +43,61 @@ class EvaluationProcessor(
         }
         fileResults.createNewFile()
         fileMeta.createNewFile()
-        val nnConfiguration = mlConfiguration.nnConfiguration
-        val datasetIteratorConfiguration = mlConfiguration.datasetIteratorConfiguration
-        val trainConfiguration = mlConfiguration.trainConfiguration
-        val modelPoisoningConfiguration = mlConfiguration.modelPoisoningConfiguration
         PrintWriter(fileMeta).use { pw ->
-            arrayOf(
-                "runner, $runner",
-                "dataset, ${mlConfiguration.dataset.text}",
-                "optimizer, ${nnConfiguration.optimizer.text}",
-                "learning rate, ${nnConfiguration.learningRate.text}",
-                "momentum, ${nnConfiguration.momentum?.text ?: "<null>"}",
-                "l2, ${nnConfiguration.l2.text}",
+            pw.println(
+                arrayOf(
+                    "simulationIndex",
+                    "dataset",
+                    "optimizer",
+                    "learning rate",
+                    "momentum",
+                    "l2",
 
-                "batchSize, ${datasetIteratorConfiguration.batchSize.text}",
-                "iteratorDistribution, ${datasetIteratorConfiguration.distribution}",
-                "maxTestSamples, ${datasetIteratorConfiguration.maxTestSamples.text}",
+                    "batchSize",
+                    "iteratorDistribution",
+                    "maxTestSamples",
 
-                "gar, ${trainConfiguration.gar.text}",
-                "communicationPattern, ${trainConfiguration.communicationPattern.text}",
-                "behavior, ${trainConfiguration.behavior.text}",
-                "numEpochs, ${trainConfiguration.numEpochs}",
+                    "gar",
+                    "communicationPattern",
+                    "behavior",
+                    "numEpochs",
 
-                "local model poisoning attack, ${modelPoisoningConfiguration.attack.text}",
-                "#attackers, ${modelPoisoningConfiguration.numAttackers.text}",
+                    "local model poisoning attack",
+                    "#attackers",
+                ).joinToString(",")
+            )
+            mlConfiguration.forEachIndexed { index, configuration ->
+                val nnConfiguration = configuration.nnConfiguration
+                val datasetIteratorConfiguration = configuration.datasetIteratorConfiguration
+                val trainConfiguration = configuration.trainConfiguration
+                val modelPoisoningConfiguration = configuration.modelPoisoningConfiguration
+                pw.println(
+                    arrayOf(
+                        index.toString(),
+                        configuration.dataset.text,
+                        nnConfiguration.optimizer.text,
+                        nnConfiguration.learningRate.text,
+                        nnConfiguration.momentum?.text ?: "<null>",
+                        nnConfiguration.l2.text,
 
-                "seed, $seed"
-            ).forEach(pw::println)
+                        datasetIteratorConfiguration.batchSize.text,
+                        datasetIteratorConfiguration.distribution.toString().replace(", ", "-"),
+                        datasetIteratorConfiguration.maxTestSamples.text,
+
+                        trainConfiguration.gar.text,
+                        trainConfiguration.communicationPattern.text,
+                        trainConfiguration.behavior.text,
+                        trainConfiguration.numEpochs,
+
+                        modelPoisoningConfiguration.attack.text,
+                        modelPoisoningConfiguration.numAttackers.text,
+                    ).joinToString(",")
+                )
+            }
         }
 
         val mainDataLineNames = arrayOf(
+            "simulationIndex",
             "elapsedTime",
             "epoch",
             "iteration",
@@ -82,12 +106,23 @@ class EvaluationProcessor(
             "precision",
             "recall",
             "gmeasure",
-            "mcc"
+            "mcc",
+            "score"
         )
         dataLines.add(Array(mainDataLineNames.size + extraElementNames.size) { "" })
         System.arraycopy(mainDataLineNames, 0, dataLines[0], 0, mainDataLineNames.size)
         for ((index, name) in extraElementNames.withIndex()) {
             dataLines[0][mainDataLineNames.size + index] = name
+        }
+
+        fixedRateTimer(period = 2500) {
+            PrintWriter(fileResults).use { pw ->
+                synchronized(dataLines) {
+                    dataLines
+                        .map(::convertToCSV)
+                        .forEach(pw::println)
+                }
+            }
         }
     }
 
@@ -107,7 +142,9 @@ class EvaluationProcessor(
         listener: CustomEvaluativeListener,
         model: Model,
         invocationsCount: Long,
-        evaluations: Array<out IEvaluation<*>>
+        evaluations: Array<out IEvaluation<*>>,
+        simulationIndex: Int,
+        score: Double
     ) {
         val accuracy = evaluations[0].getValue(Evaluation.Metric.ACCURACY)
         val f1 = evaluations[0].getValue(Evaluation.Metric.F1)
@@ -116,6 +153,7 @@ class EvaluationProcessor(
         val gMeasure = evaluations[0].getValue(Evaluation.Metric.GMEASURE)
         val mcc = evaluations[0].getValue(Evaluation.Metric.MCC)
         val mainDataLineElements = arrayOf(
+            simulationIndex.toString(),
             elapsedTime.toString(),
             epoch.toString(),
             iteration.toString(),
@@ -124,28 +162,27 @@ class EvaluationProcessor(
             precision.toString(),
             recall.toString(),
             gMeasure.toString(),
-            mcc.toString()
+            mcc.toString(),
+            score.toString()
         )
-        dataLines.add(Array(mainDataLineElements.size + extraElements.size) { "" })
-        System.arraycopy(mainDataLineElements, 0, dataLines.last(), 0, mainDataLineElements.size)
-        for ((name, value) in extraElements) {
-            dataLines.last()[mainDataLineElements.size + extraElementNames.indexOf(name)] = value
-        }
-
-        PrintWriter(fileResults).use { pw ->
-            dataLines.stream()
-                .map(::convertToCSV)
-                .forEach(pw::println)
+        synchronized(dataLines) {
+            dataLines.add(Array(mainDataLineElements.size + extraElements.size) { "" })
+            System.arraycopy(mainDataLineElements, 0, dataLines.last(), 0, mainDataLineElements.size)
+            for ((name, value) in extraElements) {
+                dataLines.last()[mainDataLineElements.size + extraElementNames.indexOf(name)] = value
+            }
         }
     }
 
     fun done() {
-        dataLines.add(Array(dataLines[0].size) { "DONE" })
+        synchronized(dataLines) {
+            dataLines.add(Array(dataLines[0].size) { "DONE" })
 
-        PrintWriter(fileResults).use { pw ->
-            dataLines.stream()
-                .map(::convertToCSV)
-                .forEach(pw::println)
+            PrintWriter(fileResults).use { pw ->
+                dataLines
+                    .map(::convertToCSV)
+                    .forEach(pw::println)
+            }
         }
     }
 }

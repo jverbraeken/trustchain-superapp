@@ -30,7 +30,7 @@ enum class Datasets(
     val defaultBatchSize: BatchSizes,
     val defaultIteratorDistribution: IteratorDistributions,
     val architecture: (nnConfiguration: NNConfiguration, seed: Int) -> MultiLayerConfiguration,
-    val inst: (iteratorConfiguration: DatasetIteratorConfiguration, seed: Long, dataSetType: DataSetType, baseDirectory: File, behavior: Behaviors) -> CustomBaseDatasetIterator
+    val inst: (iteratorConfiguration: DatasetIteratorConfiguration, seed: Long, dataSetType: CustomDataSetType, baseDirectory: File, behavior: Behaviors) -> CustomBaseDatasetIterator
 ) {
     MNIST(
         "mnist",
@@ -247,6 +247,7 @@ fun loadModelPoisoningAttack(modelPoisoningAttack: String) =
     ModelPoisoningAttacks.values().first { it.id == modelPoisoningAttack }
 
 enum class NumAttackers(val id: String, val text: String, val num: Int) {
+    NUM_0("num_0", "0", 0),
     NUM_1("num_1", "1", 1),
     NUM_2("num_2", "2", 2),
     NUM_3("num_3", "3", 3),

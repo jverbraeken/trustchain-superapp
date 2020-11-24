@@ -20,14 +20,14 @@ class LocalRunner : Runner() {
             val trainDataSetIterator = mlConfiguration.dataset.inst(
                 mlConfiguration.datasetIteratorConfiguration,
                 seed.toLong(),
-                DataSetType.TRAIN,
+                CustomDataSetType.TRAIN,
                 baseDirectory,
                 Behaviors.BENIGN
             )
             val testDataSetIterator = mlConfiguration.dataset.inst(
                 mlConfiguration.datasetIteratorConfiguration,
                 seed.toLong(),
-                DataSetType.TEST,
+                CustomDataSetType.TEST,
                 baseDirectory,
                 Behaviors.BENIGN
             )
@@ -36,18 +36,16 @@ class LocalRunner : Runner() {
                 mlConfiguration.nnConfiguration,
                 seed
             )
-            var evaluationListener = EvaluativeListener(testDataSetIterator, 999999)
+            var evaluationListener = CustomEvaluativeListener(testDataSetIterator, 999999)
             val evaluationProcessor = EvaluationProcessor(
                 baseDirectory,
                 "local",
-                mlConfiguration,
-                seed,
+                listOf(mlConfiguration),
                 ArrayList()
             )
             evaluationListener.callback = evaluationProcessor
             network.setListeners(
-                ScoreIterationListener(printScoreIterations),
-                evaluationListener
+                ScoreIterationListener(printScoreIterations)
             )
 
             var epoch = 0
@@ -76,9 +74,9 @@ class LocalRunner : Runner() {
                         val end = System.currentTimeMillis()
                         evaluationProcessor.iteration = iterations
                         evaluationProcessor.elapsedTime = end - start
-                        evaluationListener = EvaluativeListener(testDataSetIterator, 999999)
+                        evaluationListener = CustomEvaluativeListener(testDataSetIterator, 999999)
                         evaluationListener.callback = evaluationProcessor
-                        evaluationListener.iterationDone(network, iterations, epoch)
+                        evaluationListener.invokeListener(network, iterations, true)
                     }
                     if (endEpoch) {
                         break

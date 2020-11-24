@@ -87,7 +87,7 @@ class FedMLCommunity(
         send(peer, packet, reliable)
     }
 
-    internal fun sendToAll(messageID: MessageId, message: Serializable, priorityPeers: List<Int>? = null, reliable: Boolean = false) {
+    internal fun sendToAll(messageID: MessageId, message: Serializable, priorityPeers: Set<Int>? = null, reliable: Boolean = false) {
         logger.debug { "sendToAll" }
         for (peer in getAllowedPeers(priorityPeers)) {
             logger.debug { "Peer: ${peer.address}" }
@@ -95,7 +95,7 @@ class FedMLCommunity(
         }
     }
 
-    internal fun sendToRandomPeer(messageID: MessageId, message: Serializable, priorityPeers: List<Int>? = null, reliable: Boolean = false) {
+    internal fun sendToRandomPeer(messageID: MessageId, message: Serializable, priorityPeers: Set<Int>? = null, reliable: Boolean = false) {
         logger.debug { "sendToRandomPeer" }
         val peers = getAllowedPeers(priorityPeers)
         if (peers.isNotEmpty()) {
@@ -105,12 +105,12 @@ class FedMLCommunity(
         }
     }
 
-    private fun getAllowedPeers(peers: List<Int>?): List<Peer> {
+    private fun getAllowedPeers(peers: Set<Int>?): List<Peer> {
         return getPeers().filter { if (peers == null) true else it.address.port in peers }
     }
 
     // Round Robin
-    internal fun sendToNextPeerRR(messageID: MessageId, message: Serializable, priorityPeers: List<Int>? = null, reliable: Boolean = false) {
+    internal fun sendToNextPeerRR(messageID: MessageId, message: Serializable, priorityPeers: Set<Int>? = null, reliable: Boolean = false) {
         logger.debug { "sendToNextPeerRR" }
         if (!nl.tudelft.ipv8.messaging.utp.canSend()) {
             logger.debug { "Skipped because busy sending" }
@@ -123,7 +123,7 @@ class FedMLCommunity(
         }
     }
 
-    private fun getAndSetNextPeerRR(priorityPeers: List<Int>? = null): Peer? {
+    private fun getAndSetNextPeerRR(priorityPeers: Set<Int>? = null): Peer? {
         if (peersRR.isNullOrEmpty()) {
             peersRR = getAllowedPeers(priorityPeers).toMutableList()
         }
@@ -135,7 +135,7 @@ class FedMLCommunity(
         }
     }
 
-    internal fun sendToNextPeerRing(messageID: MessageId, message: Serializable, priorityPeers: List<Int>? = null, reliable: Boolean = false) {
+    internal fun sendToNextPeerRing(messageID: MessageId, message: Serializable, priorityPeers: Set<Int>? = null, reliable: Boolean = false) {
         logger.debug { "sendToNextPeerRing" }
         if (!nl.tudelft.ipv8.messaging.utp.canSend()) {
             logger.debug { "Skipped because busy sending" }
@@ -148,7 +148,7 @@ class FedMLCommunity(
         }
     }
 
-    private fun getAndSetNextPeerRing(priorityPeers: List<Int>? = null): Peer? {
+    private fun getAndSetNextPeerRing(priorityPeers: Set<Int>? = null): Peer? {
         if (peersRing.isNullOrEmpty() || peersRing!!.size < ringCounter) {
             peersRing = getAllowedPeers(priorityPeers).toMutableList()
             peersRing!!.sortBy { it.address.port }

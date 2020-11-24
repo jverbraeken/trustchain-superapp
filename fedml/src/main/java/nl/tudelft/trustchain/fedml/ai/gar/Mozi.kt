@@ -1,12 +1,11 @@
 package nl.tudelft.trustchain.fedml.ai.gar
 
 import mu.KotlinLogging
+import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDatasetIterator
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.dataset.DataSet
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
-import java.util.concurrent.ConcurrentLinkedDeque
-import java.util.stream.Collectors
 import kotlin.math.ceil
 
 private val logger = KotlinLogging.logger("Mozi")
@@ -15,20 +14,19 @@ class Mozi(private val fracBenign: Double) : AggregationRule() {
     private val TEST_BATCH = 50
 
     override fun integrateParameters(
+        network: MultiLayerNetwork,
         oldModel: INDArray,
         gradient: INDArray,
-        otherModels: Map<Int, INDArray>,
-        network: MultiLayerNetwork,
-        testDataSetIterator: DataSetIterator,
-        allOtherModelsBuffer: ArrayDeque<Pair<Int, INDArray>>,
-        logging: Boolean,
-        testBatches: List<DataSet?>,
-        countPerPeer: Map<Int, Int>
+        newOtherModels: Map<Int, INDArray>,
+        recentOtherModels: ArrayDeque<Pair<Int, INDArray>>,
+        testDataSetIterator: CustomBaseDatasetIterator,
+        countPerPeer: Map<Int, Int>,
+        logging: Boolean
     ): INDArray {
         logger.debug { formatName("MOZI") }
-        logger.debug { "Found ${otherModels.size} other models" }
+        logger.debug { "Found ${newOtherModels.size} other models" }
         logger.debug { "oldModel: " + oldModel.getDouble(0) }
-        val Ndistance = applyDistanceFilter(oldModel, otherModels)
+        val Ndistance = applyDistanceFilter(oldModel, newOtherModels)
         logger.debug { "After distance filter, remaining:${Ndistance.size}" }
         val Nperformance = applyPerformanceFilter(oldModel, Ndistance, network, testDataSetIterator)
         logger.debug { "After performance filter, remaining:${Nperformance.size}" }
@@ -76,27 +74,25 @@ class Mozi(private val fracBenign: Double) : AggregationRule() {
 
     private fun applyDistanceFilter(
         oldModel: INDArray,
-        otherModels: Map<Int, INDArray>
+        newOtherModels: Map<Int, INDArray>
     ): List<INDArray> {
         val distances = hashMapOf<Int, Double>()
-        for (otherModel in otherModels) {
+        for (otherModel in newOtherModels) {
             logger.debug { "Distance calculated: ${oldModel.distance2(otherModel.value)}" }
             distances[otherModel.key] = oldModel.distance2(otherModel.value)
         }
         val sortedDistances = distances.toList().sortedBy { (_, value) -> value }.toMap()
-        val numBenign = ceil(fracBenign * otherModels.size).toLong()
+        val numBenign = ceil(fracBenign * newOtherModels.size).toInt()
         logger.debug { "#benign: $numBenign" }
         return sortedDistances
             .keys
-            .stream()
-            .limit(numBenign)
-            .map { otherModels[it]!! }
-            .collect(Collectors.toList())
+            .take(numBenign)
+            .map { newOtherModels[it]!! }
     }
 
     private fun applyPerformanceFilter(
         oldModel: INDArray,
-        otherModels: List<INDArray>,
+        newOtherModels: List<INDArray>,
         network: MultiLayerNetwork,
         testDataSetIterator: DataSetIterator
     ): List<INDArray> {
@@ -105,14 +101,14 @@ class Mozi(private val fracBenign: Double) : AggregationRule() {
         val sample = testDataSetIterator.next(TEST_BATCH)
         val oldLoss = calculateLoss(oldModel, network, sample)
         logger.debug { "oldLoss: $oldLoss" }
-        val otherLosses = calculateLoss(otherModels, network, sample)
+        val otherLosses = calculateLoss(newOtherModels, network, sample)
         for ((index, otherLoss) in otherLosses.withIndex()) {
             logger.debug { "otherLoss $index: $otherLoss" }
             if (otherLoss <= oldLoss) {
-                result.add(otherModels[index])
-                logger.debug { "ADDING model($index): " + otherModels[index].getDouble(0) }
+                result.add(newOtherModels[index])
+                logger.debug { "ADDING model($index): " + newOtherModels[index].getDouble(0) }
             } else {
-                logger.debug { "NOT adding model($index): " + otherModels[index].getDouble(0) }
+                logger.debug { "NOT adding model($index): " + newOtherModels[index].getDouble(0) }
             }
         }
         return result

@@ -49,25 +49,34 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         this.random = Random(seed)
         sraKeyPair = SRAKeyPair.create(bigPrime, java.util.Random(seed.toLong()))
         scope.launch {
-            val trainDataSetIterator = mlConfiguration.dataset.inst(
-                mlConfiguration.datasetIteratorConfiguration,
+            val dataset = mlConfiguration.dataset
+            val datasetIteratorConfiguration = mlConfiguration.datasetIteratorConfiguration
+            val behavior = mlConfiguration.trainConfiguration.behavior
+            val trainDataSetIterator = dataset.inst(
+                datasetIteratorConfiguration,
                 seed.toLong(),
-                DataSetType.TRAIN,
+                CustomDataSetType.TRAIN,
                 baseDirectory,
-                mlConfiguration.trainConfiguration.behavior
+                behavior
             )
-            val testDataSetIterator = mlConfiguration.dataset.inst(
-                mlConfiguration.datasetIteratorConfiguration,
+            val testDataSetIterator = dataset.inst(
+                datasetIteratorConfiguration,
                 seed.toLong(),
-                DataSetType.TEST,
+                CustomDataSetType.TEST,
                 baseDirectory,
-                mlConfiguration.trainConfiguration.behavior
+                behavior
+            )
+            val fullTestDataSetIterator = dataset.inst(
+                datasetIteratorConfiguration,
+                seed.toLong(),
+                CustomDataSetType.FULL_TEST,
+                baseDirectory,
+                behavior
             )
             val evaluationProcessor = EvaluationProcessor(
                 baseDirectory,
                 "distributed",
-                mlConfiguration,
-                seed,
+                listOf(mlConfiguration),
                 listOf(
                     "before or after averaging",
                     "#peers included in current batch"
@@ -83,16 +92,19 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
             val port = community.myEstimatedWan.port
             val numPeers = community.getPeers().size
             labels = trainDataSetIterator.labels
-            val (similarPeers, countPerPeer) = getSimilarPeers(port, labels, sraKeyPair, numPeers, psiCaMessagesFromServers)
+            val countPerPeer = getSimilarPeers(port, labels, sraKeyPair, numPeers, psiCaMessagesFromServers)
 
             trainTestSendNetwork(
                 network,
+
                 evaluationProcessor,
+                fullTestDataSetIterator,
+
                 trainDataSetIterator,
-                testDataSetIterator,
                 mlConfiguration.trainConfiguration,
                 mlConfiguration.modelPoisoningConfiguration,
-                similarPeers,
+
+                testDataSetIterator,
                 countPerPeer
             )
         }
@@ -104,7 +116,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         sraKeyPair: SRAKeyPair,
         numPeers: Int,
         psiCaMessagesFromServers: CopyOnWriteArrayList<MsgPsiCaServerToClient>
-    ): Pair<List<Int>, Map<Int, Int>> {
+    ): Map<Int, Int> {
         val encryptedLabels = clientsRequestsServerLabels(
             labels,
             sraKeyPair
@@ -129,14 +141,21 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
     }
 
     private fun trainTestSendNetwork(
+        // General information
         network: MultiLayerNetwork,
+
+        // Evaluation results
         evaluationProcessor: EvaluationProcessor,
+        fullTestDataSetIterator: CustomBaseDatasetIterator,
+
+        // Training the network
         trainDataSetIterator: DataSetIterator,
-        testDataSetIterator: CustomBaseDatasetIterator,
         trainConfiguration: TrainConfiguration,
         modelPoisoningConfiguration: ModelPoisoningConfiguration,
-        similarPeers: List<Int>,
-        countPerPeer: Map<Int, Int>
+
+        // Integrating and distributing information to peers
+        testDataSetIterator: CustomBaseDatasetIterator,
+        countPerPeer: Map<Int, Int>,
     ) {
         val batchSize = trainDataSetIterator.batch()
         val gar = trainConfiguration.gar.obj
@@ -171,7 +190,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                     evaluationProcessor.iteration = iterations
                     execEvaluationProcessor(
                         evaluationProcessor,
-                        testDataSetIterator,
+                        fullTestDataSetIterator,
                         network,
                         EvaluationProcessor.EvaluationData(
                             "before", "", end - start, network.iterationCount, epoch
@@ -206,7 +225,6 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                             testDataSetIterator,
                             recentOtherModels,
                             true,
-                            testDataSetIterator.testBatches,
                             countPerPeer
                         )
                         recentOtherModels.addAll(newOtherModels.toList())
@@ -219,7 +237,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
 
                         execEvaluationProcessor(
                             evaluationProcessor,
-                            testDataSetIterator,
+                            fullTestDataSetIterator,
                             network,
                             EvaluationProcessor.EvaluationData(
                                 "after", numPeers.toString(), end2 - start2, iterations, epoch
@@ -232,7 +250,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                         averageParams,
                         trainConfiguration.behavior,
                         trainConfiguration.communicationPattern,
-                        similarPeers
+                        countPerPeer
                     )
                 }
                 oldParams = network.params().dup()
@@ -249,7 +267,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         averageParams: INDArray,
         behavior: Behaviors,
         communicationPattern: CommunicationPatterns,
-        similarPeers: List<Int>
+        countPerPeer: Map<Int, Int>
     ) {
         val message = craftMessage(averageParams, behavior)
         val sendMessage = when (communicationPattern) {
@@ -258,7 +276,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
             CommunicationPatterns.RR -> community::sendToNextPeerRR
             CommunicationPatterns.RING -> community::sendToNextPeerRing
         }
-        sendMessage(MessageId.MSG_PARAM_UPDATE, MsgParamUpdate(message), similarPeers, false)
+        sendMessage(MessageId.MSG_PARAM_UPDATE, MsgParamUpdate(message), countPerPeer.keys, false)
     }
 
     private fun craftMessage(first: INDArray, behavior: Behaviors): INDArray {
@@ -292,8 +310,9 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         evaluationProcessor.elapsedTime = evaluationData.elapsedTime
         val evaluationListener = CustomEvaluativeListener(testDataSetIterator, 999999)
         evaluationListener.callback = evaluationProcessor
-        evaluationListener.iterationDone(
+        evaluationListener.invokeListener(
             network,
+            1,
             true
         )
     }

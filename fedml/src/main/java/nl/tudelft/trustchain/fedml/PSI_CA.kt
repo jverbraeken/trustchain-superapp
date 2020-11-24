@@ -10,7 +10,6 @@ import nl.tudelft.trustchain.fedml.ipv8.MsgPsiCaClientToServer
 import nl.tudelft.trustchain.fedml.ipv8.MsgPsiCaServerToClient
 import java.math.BigInteger
 import java.util.concurrent.CopyOnWriteArrayList
-import java.util.stream.Collectors
 
 private const val MIN_PSI_CA = 3
 private const val SIZE_BLOOM_FILTER = 1000
@@ -54,20 +53,18 @@ fun clientReceivesServerResponses(
     i: Int,
     toClientMessageBuffers: CopyOnWriteArrayList<MsgPsiCaServerToClient>,
     sraKeyPair: SRAKeyPair
-): Pair<List<Int>, Map<Int, Int>> {
-    val similarPeers = ArrayList<Int>()
+): Map<Int, Int> {
     val countPerPeer = HashMap<Int, Int>()
     for (buffer1 in toClientMessageBuffers) {
         val semiDecryptedLabels = buffer1.reEncryptedLabels.map { sraKeyPair.decrypt(it) }
         val bloomFilter = toClientMessageBuffers.first { it.server == buffer1.server }.bloomFilter
         val count = semiDecryptedLabels.filter { bloomFilter.mightContain(it) }.size
-        countPerPeer[buffer1.server] = count
         if (count >= MIN_PSI_CA) {
-            similarPeers.add(buffer1.server)
+            countPerPeer[buffer1.server] = count
             logger.debug { "Peer $i will send to peer ${buffer1.server}: overlap = $count" }
         }
     }
-    return Pair(similarPeers, countPerPeer)
+    return countPerPeer
 }
 
 private class BigIntegerFunnel : Funnel<BigInteger> {

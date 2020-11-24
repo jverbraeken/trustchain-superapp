@@ -1,6 +1,7 @@
 package nl.tudelft.trustchain.fedml.ai.dataset.mnist
 
 import nl.tudelft.trustchain.fedml.Behaviors
+import nl.tudelft.trustchain.fedml.ai.CustomDataSetType
 import nl.tudelft.trustchain.fedml.ai.DatasetIteratorConfiguration
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDatasetIterator
 import org.deeplearning4j.datasets.fetchers.DataSetType
@@ -10,7 +11,7 @@ import java.io.File
 class CustomMnistDataSetIterator(
     iteratorConfiguration: DatasetIteratorConfiguration,
     seed: Long,
-    dataSetType: DataSetType,
+    dataSetType: CustomDataSetType,
     behavior: Behaviors
 ) : CustomBaseDatasetIterator(
     iteratorConfiguration.batchSize.value,
@@ -19,7 +20,7 @@ class CustomMnistDataSetIterator(
         iteratorConfiguration.distribution,
         seed,
         dataSetType,
-        if (dataSetType == DataSetType.TEST) iteratorConfiguration.maxTestSamples.value else Integer.MAX_VALUE,
+        if (dataSetType == CustomDataSetType.TEST) iteratorConfiguration.maxTestSamples.value else Integer.MAX_VALUE,
         behavior
     )
 ) {
@@ -33,7 +34,7 @@ class CustomMnistDataSetIterator(
         fun create(
             iteratorConfiguration: DatasetIteratorConfiguration,
             seed: Long,
-            dataSetType: DataSetType,
+            dataSetType: CustomDataSetType,
             baseDirectory: File,
             behavior: Behaviors
         ): CustomMnistDataSetIterator {

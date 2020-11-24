@@ -6,6 +6,7 @@ import org.deeplearning4j.nn.api.Model
 import org.deeplearning4j.nn.graph.ComputationGraph
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.deeplearning4j.optimize.api.InvocationType
+import org.deeplearning4j.optimize.api.TrainingListener
 import org.nd4j.evaluation.IEvaluation
 import org.nd4j.evaluation.classification.Evaluation
 import org.nd4j.linalg.api.ndarray.INDArray
@@ -69,11 +70,7 @@ class CustomEvaluativeListener {
         invocationType = type
     }
 
-    fun iterationDone(model: Model, logging: Boolean) {
-        if (invocationType == InvocationType.ITERATION_END) invokeListener(model, logging)
-    }
-
-    private fun invokeListener(model: Model, logging: Boolean) {
+    fun invokeListener(model: Model, simulationIndex: Int, logging: Boolean) {
         if (iterationCount.get() == null) iterationCount.set(AtomicLong(0))
         if (iterationCount.get()!!.getAndIncrement() % frequency != 0L) return
         for (evaluation in evaluations) evaluation.reset()
@@ -111,7 +108,7 @@ class CustomEvaluativeListener {
         for (evaluation in evaluations) {
             if (logging) logger.debug { "${evaluation.javaClass.simpleName}:\n${evaluation.stats()}" }
         }
-        if (callback != null) callback!!.call(this, model, invocationCount.get(), evaluations)
+        if (callback != null) callback!!.call(this, model, invocationCount.get(), evaluations, simulationIndex, model.score())
     }
 
     private fun evalAtIndex(evaluation: IEvaluation<*>, labels: Array<INDArray?>, predictions: Array<INDArray?>, index: Int) {

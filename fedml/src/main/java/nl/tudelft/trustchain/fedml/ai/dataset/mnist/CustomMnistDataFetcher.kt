@@ -1,6 +1,7 @@
 package nl.tudelft.trustchain.fedml.ai.dataset.mnist
 
 import nl.tudelft.trustchain.fedml.Behaviors
+import nl.tudelft.trustchain.fedml.ai.CustomDataSetType
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDataFetcher
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
@@ -17,20 +18,11 @@ import org.nd4j.linalg.util.MathUtils
 import java.io.File
 import java.util.*
 import java.util.stream.IntStream
-import java.util.zip.Adler32
-import java.util.zip.Checksum
-
-const val CHECKSUM_TRAIN_FEATURES = 2094436111L
-const val CHECKSUM_TRAIN_LABELS = 4008842612L
-const val CHECKSUM_TEST_FEATURES = 2165396896L
-const val CHECKSUM_TEST_LABELS = 2212998611L
-val CHECKSUMS_TRAIN = longArrayOf(CHECKSUM_TRAIN_FEATURES, CHECKSUM_TRAIN_LABELS)
-val CHECKSUMS_TEST = longArrayOf(CHECKSUM_TEST_FEATURES, CHECKSUM_TEST_LABELS)
 
 class CustomMnistDataFetcher(
     iteratorDistribution: List<Int>,
     seed: Long,
-    dataSetType: DataSetType,
+    dataSetType: CustomDataSetType,
     maxTestSamples: Int,
     behavior: Behaviors
 ) : CustomBaseDataFetcher() {
@@ -49,33 +41,26 @@ class CustomMnistDataFetcher(
         val mnistRoot = DL4JResources.getDirectory(ResourceType.DATASET, "MNIST").absolutePath
         val images: String
         val labels: String
-        val checksums: LongArray
         val maxExamples: Int
-        if (dataSetType == DataSetType.TRAIN) {
+        if (dataSetType == CustomDataSetType.TRAIN) {
             images = FilenameUtils.concat(mnistRoot, MnistFetcher.TRAINING_FILES_FILENAME_UNZIPPED)
             labels = FilenameUtils.concat(mnistRoot, MnistFetcher.TRAINING_FILE_LABELS_FILENAME_UNZIPPED)
             maxExamples = MnistDataFetcher.NUM_EXAMPLES
-//            checksums = CHECKSUMS_TRAIN
-            man = CustomMnistManager(images, labels, maxExamples, iteratorDistribution, Int.MAX_VALUE, seed, behavior)
         } else {
             images = FilenameUtils.concat(mnistRoot, MnistFetcher.TEST_FILES_FILENAME_UNZIPPED)
             labels = FilenameUtils.concat(mnistRoot, MnistFetcher.TEST_FILE_LABELS_FILENAME_UNZIPPED)
             maxExamples = MnistDataFetcher.NUM_EXAMPLES_TEST
-//            checksums = CHECKSUMS_TEST
-            man = CustomMnistManager(images, labels, maxExamples, iteratorDistribution, maxTestSamples, seed, behavior)
         }
-        val files = arrayOf(images, labels)
         try {
             man = CustomMnistManager(
                 images,
                 labels,
                 maxExamples,
-                iteratorDistribution,
-                if (dataSetType == DataSetType.TRAIN) Int.MAX_VALUE else maxTestSamples,
+                if (dataSetType == CustomDataSetType.FULL_TEST) null else iteratorDistribution,
+                if (dataSetType == CustomDataSetType.TRAIN) Int.MAX_VALUE else maxTestSamples,
                 seed,
                 behavior
             )
-//            validateFiles(files, checksums)
         } catch (e: Exception) {
             try {
                 FileUtils.deleteDirectory(File(mnistRoot))
@@ -87,12 +72,11 @@ class CustomMnistDataFetcher(
                 images,
                 labels,
                 maxExamples,
-                iteratorDistribution,
-                if (dataSetType == DataSetType.TRAIN) Int.MAX_VALUE else maxTestSamples,
+                if (dataSetType == CustomDataSetType.FULL_TEST) null else iteratorDistribution,
+                if (dataSetType == CustomDataSetType.TRAIN) Int.MAX_VALUE else maxTestSamples,
                 seed,
                 behavior
             )
-//            validateFiles(files, checksums)
         }
         totalExamples = man.getNumSamples()
         numOutcomes = 10
@@ -114,22 +98,6 @@ class CustomMnistDataFetcher(
         f = File(mnistRoot, MnistFetcher.TEST_FILE_LABELS_FILENAME_UNZIPPED)
         return f.exists()
     }
-
-    /*private fun validateFiles(files: Array<String>, checksums: LongArray) {
-        try {
-            for (i in files.indices) {
-                val f = File(files[i])
-                val adler = Adler32()
-                val checksum = if (f.exists()) FileUtils.checksum(f, adler).value else -1
-                check(!(!f.exists() || checksum != checksums[i])) {
-                    "Failed checksum: expected " + checksums[i] +
-                        ", got " + checksum + " for file: " + f
-                }
-            }
-        } catch (e: Exception) {
-            throw RuntimeException(e)
-        }
-    }*/
 
     override fun fetch(numExamples: Int) {
         check(hasMore()) { "Unable to get more; there are no more images" }

@@ -1,11 +1,10 @@
 package nl.tudelft.trustchain.fedml.ai.gar
 
 import mu.KotlinLogging
+import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDatasetIterator
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.dataset.DataSet
-import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
-import java.util.stream.Collectors
 import kotlin.math.max
 import kotlin.math.min
 
@@ -27,45 +26,40 @@ class Bristle : AggregationRule() {
 
     @ExperimentalStdlibApi
     override fun integrateParameters(
+        network: MultiLayerNetwork,
         oldModel: INDArray,
         gradient: INDArray,
-        otherModels: Map<Int, INDArray>,
-        network: MultiLayerNetwork,
-        testDataSetIterator: DataSetIterator,
-        allOtherModelsBuffer: ArrayDeque<Pair<Int, INDArray>>,
-        logging: Boolean,
-        testBatches: List<DataSet?>,
-        countPerPeer: Map<Int, Int>
+        newOtherModels: Map<Int, INDArray>,
+        recentOtherModels: ArrayDeque<Pair<Int, INDArray>>,
+        testDataSetIterator: CustomBaseDatasetIterator,
+        countPerPeer: Map<Int, Int>,
+        logging: Boolean
     ): INDArray {
         debug(logging) { formatName("BRISTLE") }
-        debug(logging) { "Found ${otherModels.size} other models" }
+        debug(logging) { "Found ${newOtherModels.size} other models" }
         debug(logging) { "oldModel: ${oldModel.getDouble(0)}" }
         val newModel = oldModel.sub(gradient)
         debug(logging) { "newModel: ${newModel.getDouble(0)}" }
-        debug(logging) { "otherModels: ${otherModels.map { it.value.getDouble(0) }.toCollection(ArrayList())}" }
+        debug(logging) { "otherModels: ${newOtherModels.map { it.value.getDouble(0) }.toCollection(ArrayList())}" }
 
-        val distances = getDistances(oldModel, newModel, otherModels, allOtherModelsBuffer, logging)
+        val distances = getDistances(oldModel, newModel, newOtherModels, recentOtherModels, logging)
         debug(logging) { "distances: $distances" }
         val exploitationModels = distances
             .keys
-            .stream()
-            .limit(NUM_MODELS_EXPLOITATION.toLong())
+            .take(NUM_MODELS_EXPLOITATION)
             .filter { it < 1000000 }
-            .map { Pair(it, otherModels[it]!!) }
-            .collect(Collectors.toList())
+            .map { Pair(it, newOtherModels[it]!!) }
             .toMap()
         debug(logging) { "closeModels: ${exploitationModels.map { it.value.getDouble(0) }.toCollection(ArrayList())}" }
 
-        val explorationModelsList = distances
+        val explorationModels = distances
             .keys
-            .stream()
-            .skip(NUM_MODELS_EXPLOITATION.toLong())
+            .drop(NUM_MODELS_EXPLOITATION)
             .filter { it < 1000000 }
-            .map { Pair(it, otherModels[it]!!) }
-            .collect(Collectors.toList())
-        explorationModelsList.shuffle()
-        explorationModelsList.take(NUM_MODELS_EXPLORATION)
-        val explorationModels = explorationModelsList.toMap()
+            .map { Pair(it, newOtherModels[it]!!) }
+            .shuffled()
+            .take(NUM_MODELS_EXPLORATION)
+            .toMap()
         debug(logging) { "notCloseModels: ${explorationModels.map { it.value.getDouble(0) }.toCollection(ArrayList())}" }
 
         val combinedModels = HashMap<Int, INDArray>()
@@ -76,11 +70,11 @@ class Bristle : AggregationRule() {
         val sample = testDataSetIterator.next(TEST_BATCH)
         val oldLoss = calculateLoss(oldModel, network, sample)
         debug(logging) { "oldLoss: $oldLoss" }
-        val oldLossPerClass = calculateLossPerClass(oldModel, network, testBatches)
+        val oldLossPerClass = calculateLossPerClass(oldModel, network, testDataSetIterator.testBatches)
         debug(logging) { "oldLossPerClass: ${oldLossPerClass.toList()}" }
         val losses = calculateLosses(combinedModels, network, sample)
         debug(logging) { "losses: $losses" }
-        val lossesPerClass = calculateLossesPerClass(combinedModels, network, testBatches)
+        val lossesPerClass = calculateLossesPerClass(combinedModels, network, testDataSetIterator.testBatches)
         debug(logging) { "lossesPerClass: ${lossesPerClass.map { Pair(it.key, it.value.toList()) }}" }
         val modelsToWeight = mapLossesToWeight(losses, oldLoss)
         debug(logging) { "modelsToWeight: $modelsToWeight" }
@@ -192,14 +186,14 @@ class Bristle : AggregationRule() {
                 Pair(peer, lossPerClass
                     .mapIndexed { label, loss -> Pair(label, loss ?: Double.MAX_VALUE) }
                     .sortedBy { it.second }
-                    .take(countPerPeer[peer]!!)
+                    .take(countPerPeer.getValue(peer))
                     .toMap())
             }.toMap()
         debug(logging) { "smallestLossPerPeer: $smallestLossPerPeer" }
 
         return smallestLossPerPeer.map { (peer, lossPerLabel) ->
             val smallestOtherLoss = lossPerLabel.map { (_, smallestLosses) -> smallestLosses }.sum()
-            val smallestOwnLoss = lossPerLabel.map { (label, _) -> oldLossPerClass[label]!!}.sum()
+            val smallestOwnLoss = lossPerLabel.map { (label, _) -> oldLossPerClass[label]!! }.sum()
             Pair(peer, max(0.0, 4.0 + (4 - 4 * (smallestOtherLoss / smallestOwnLoss))))
         }.toMap()
     }

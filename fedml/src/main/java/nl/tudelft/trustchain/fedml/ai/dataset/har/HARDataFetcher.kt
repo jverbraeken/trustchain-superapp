@@ -1,6 +1,7 @@
 package nl.tudelft.trustchain.fedml.ai.dataset.har
 
 import nl.tudelft.trustchain.fedml.Behaviors
+import nl.tudelft.trustchain.fedml.ai.CustomDataSetType
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDataFetcher
 import org.deeplearning4j.datasets.fetchers.DataSetType
 import org.nd4j.linalg.api.buffer.DataType
@@ -29,7 +30,7 @@ class HARDataFetcher(
     baseDirectory: File,
     seed: Long,
     iteratorDistribution: List<Int>,
-    dataSetType: DataSetType,
+    dataSetType: CustomDataSetType,
     maxTestSamples: Int,
     behavior: Behaviors
 ) : CustomBaseDataFetcher() {
@@ -47,7 +48,7 @@ class HARDataFetcher(
     init {
         val data = arrayListOf<File>()
         val labels: File
-        if (dataSetType == DataSetType.TRAIN) {
+        if (dataSetType == CustomDataSetType.TRAIN) {
             val basePath = Paths.get(baseDirectory.path, "train", "Inertial Signals")
             data.add(basePath.resolve("body_acc_x_train.txt").toFile())
             data.add(basePath.resolve("body_acc_y_train.txt").toFile())
@@ -75,8 +76,8 @@ class HARDataFetcher(
         man = HARManager(
             data.toTypedArray(),
             labels,
-            iteratorDistribution,
-            if (dataSetType == DataSetType.TRAIN) Int.MAX_VALUE else maxTestSamples,
+            if (dataSetType == CustomDataSetType.FULL_TEST) null else iteratorDistribution,
+            if (dataSetType == CustomDataSetType.TRAIN) Int.MAX_VALUE else maxTestSamples,
             seed,
             behavior
         )

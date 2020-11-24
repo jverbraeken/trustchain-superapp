@@ -5,7 +5,6 @@ import nl.tudelft.trustchain.fedml.*
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDatasetIterator
 import nl.tudelft.trustchain.fedml.ipv8.MsgPsiCaClientToServer
 import nl.tudelft.trustchain.fedml.ipv8.MsgPsiCaServerToClient
-import org.deeplearning4j.datasets.fetchers.DataSetType
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener
 import org.nd4j.linalg.api.ndarray.INDArray
@@ -33,13 +32,13 @@ class SimulatedRunner : Runner() {
         seed: Int,
         @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE") _unused: MLConfiguration
     ) {
-        var config = loadConfig(baseDirectory)
+        var configs = loadConfig(baseDirectory)
         // All these things have to be initialized before any of the runner threads start
         val toServerMessageBuffers = ArrayList<CopyOnWriteArrayList<MsgPsiCaClientToServer>>()
         val toClientMessageBuffers = ArrayList<CopyOnWriteArrayList<MsgPsiCaServerToClient>>()
         val sraKeyPairs = ArrayList<SRAKeyPair>()
-        config = config.subList(0, 75)
-        for (i in config.indices) {
+        configs = configs.subList(0, 10)
+        for (i in configs.indices) {
             newOtherModelBuffers.add(ConcurrentHashMap())
             recentOtherModelsBuffers.add(ArrayDeque())
             randoms.add(Random(i))
@@ -47,53 +46,71 @@ class SimulatedRunner : Runner() {
             toClientMessageBuffers.add(CopyOnWriteArrayList())
             sraKeyPairs.add(SRAKeyPair.create(bigPrime, java.util.Random(i.toLong())))
         }
-        logger.debug { "config.indices: ${config.indices}" }
-        for (i in config.indices) {
+        logger.debug { "config.indices: ${configs.indices}" }
+        val evaluationProcessor = EvaluationProcessor(
+            baseDirectory,
+            "simulated",
+            configs,
+            listOf(
+                "before or after averaging",
+                "#peers included in current batch"
+            )
+        )
+        for (simulationIndex in configs.indices) {
             thread {
-                val trainDataSetIterator = config[i].dataset.inst(
-                    config[i].datasetIteratorConfiguration,
-                    i.toLong(),
-                    DataSetType.TRAIN,
+                val config = configs[simulationIndex]
+                val dataset = config.dataset
+                val datasetIteratorConfiguration = config.datasetIteratorConfiguration
+                val behavior = config.trainConfiguration.behavior
+                val trainDataSetIterator = dataset.inst(
+                    datasetIteratorConfiguration,
+                    simulationIndex.toLong(),
+                    CustomDataSetType.TRAIN,
                     baseDirectory,
-                    config[i].trainConfiguration.behavior
+                    behavior
                 )
-                val testDataSetIterator = config[i].dataset.inst(
-                    config[i].datasetIteratorConfiguration,
-                    i.toLong(),
-                    DataSetType.TEST,
+                val testDataSetIterator = dataset.inst(
+                    datasetIteratorConfiguration,
+                    simulationIndex.toLong(),
+                    CustomDataSetType.TEST,
                     baseDirectory,
-                    config[i].trainConfiguration.behavior
+                    behavior
                 )
-                val evaluationProcessor = EvaluationProcessor(
+                val fullTestDataSetIterator = dataset.inst(
+                    datasetIteratorConfiguration,
+                    simulationIndex.toLong(),
+                    CustomDataSetType.FULL_TEST,
                     baseDirectory,
-                    "simulated",
-                    config[i],
-                    i,
-                    listOf(
-                        "before or after averaging",
-                        "#peers included in current batch"
-                    ),
-                    "-simulation-$i"
+                    behavior
                 )
                 val network = generateNetwork(
-                    config[i].dataset,
-                    config[i].nnConfiguration,
-                    i
+                    dataset,
+                    config.nnConfiguration,
+                    simulationIndex
                 )
 
-                val (similarPeers, countPerPeer) = getSimilarPeers(trainDataSetIterator, sraKeyPairs[i], toServerMessageBuffers, toClientMessageBuffers, i)
+                val countPerPeer = getSimilarPeers(
+                    trainDataSetIterator,
+                    sraKeyPairs[simulationIndex],
+                    toServerMessageBuffers,
+                    toClientMessageBuffers,
+                    simulationIndex
+                )
 
                 trainTestSendNetwork(
-                    i,
+                    simulationIndex,
                     network,
+                    simulationIndex == 0,
+
                     evaluationProcessor,
+                    fullTestDataSetIterator,
+
                     trainDataSetIterator,
+                    configs[simulationIndex].trainConfiguration,
+                    configs[simulationIndex].modelPoisoningConfiguration,
+
                     testDataSetIterator,
-                    config[i].trainConfiguration,
-                    config[i].modelPoisoningConfiguration,
-                    similarPeers,
                     countPerPeer,
-                    i == 0
                 )
             }
         }
@@ -156,7 +173,7 @@ class SimulatedRunner : Runner() {
                 "iteratorDistribution" -> {
                     iteratorDistribution = if (split[1].startsWith('[')) {
                         split[1]
-                            .substring(1, split[1].length-1)
+                            .substring(1, split[1].length - 1)
                             .split(", ")
                             .map { it.toInt() }
                     } else {
@@ -185,7 +202,7 @@ class SimulatedRunner : Runner() {
         toServerMessageBuffers: ArrayList<CopyOnWriteArrayList<MsgPsiCaClientToServer>>,
         toClientMessageBuffers: ArrayList<CopyOnWriteArrayList<MsgPsiCaServerToClient>>,
         i: Int
-    ) : Pair<List<Int>, Map<Int, Int>> {
+    ): Map<Int, Int> {
         val encryptedLabels = clientsRequestsServerLabels(
             trainDataSetIterator.labels,
             sraKeyPair
@@ -220,17 +237,24 @@ class SimulatedRunner : Runner() {
     }
 
     private fun trainTestSendNetwork(
+        // General information
         simulationIndex: Int,
         network: MultiLayerNetwork,
+        logging: Boolean,
+
+        // Evaluation results
         evaluationProcessor: EvaluationProcessor,
+        fullTestDataSetIterator: CustomBaseDatasetIterator,
+
+        // Training the network
         trainDataSetIterator: DataSetIterator,
-        testDataSetIterator: CustomBaseDatasetIterator,
         trainConfiguration: TrainConfiguration,
         modelPoisoningConfiguration: ModelPoisoningConfiguration,
-        similarPeers: List<Int>,
+
+        // Integrating and distributing information to peers
+        testDataSetIterator: CustomBaseDatasetIterator,
         countPerPeer: Map<Int, Int>,
-        logging: Boolean
-    ) {
+        ) {
         if (logging) {
             network.setListeners(ScoreIterationListener(printScoreIterations))
         }
@@ -269,15 +293,16 @@ class SimulatedRunner : Runner() {
                     if (iterationsToEvaluation >= iterationsBeforeEvaluation) {
                         // Test
                         val end = System.currentTimeMillis()
-                        logger.debug { "Evaluating network " }
+                        if (logging) logger.debug { "Evaluating network " }
                         evaluationProcessor.iteration = iterations
                         execEvaluationProcessor(
                             evaluationProcessor,
-                            testDataSetIterator,
+                            fullTestDataSetIterator,
                             network,
                             EvaluationProcessor.EvaluationData(
                                 "before", "", end - start, network.iterationCount, epoch
                             ),
+                            simulationIndex,
                             logging
                         )
                     }
@@ -317,7 +342,6 @@ class SimulatedRunner : Runner() {
                             testDataSetIterator,
                             recentOtherModels,
                             logging,
-                            testDataSetIterator.testBatches,
                             countPerPeer
                         )
                         recentOtherModels.addAll(newOtherModels.toList())
@@ -331,11 +355,12 @@ class SimulatedRunner : Runner() {
                             val end2 = System.currentTimeMillis()
                             execEvaluationProcessor(
                                 evaluationProcessor,
-                                testDataSetIterator,
+                                fullTestDataSetIterator,
                                 network,
                                 EvaluationProcessor.EvaluationData(
                                     "after", numPeers.toString(), end2 - start2, iterations, epoch
                                 ),
+                                simulationIndex,
                                 logging
                             )
                         }
@@ -357,10 +382,10 @@ class SimulatedRunner : Runner() {
                         val message = craftMessage(averageParams, trainConfiguration.behavior, random)
                         when (trainConfiguration.communicationPattern) {
                             CommunicationPatterns.ALL -> newOtherModelBuffers
-                                .filterIndexed { index, _ -> index != simulationIndex && index in similarPeers }
+                                .filterIndexed { index, _ -> index != simulationIndex && index in countPerPeer.keys }
                                 .forEach { it[simulationIndex] = message }
                             CommunicationPatterns.RANDOM -> newOtherModelBuffers
-                                .filterIndexed { index, _ -> index != simulationIndex && index in similarPeers }
+                                .filterIndexed { index, _ -> index != simulationIndex && index in countPerPeer.keys }
                                 .random()[simulationIndex] = message
                             CommunicationPatterns.RR -> throw IllegalArgumentException("Not implemented yet")
                             CommunicationPatterns.RING -> throw IllegalArgumentException("Not implemented yet")
@@ -399,6 +424,7 @@ class SimulatedRunner : Runner() {
         testDataSetIterator: DataSetIterator,
         network: MultiLayerNetwork,
         evaluationData: EvaluationProcessor.EvaluationData,
+        simulationIndex: Int,
         logging: Boolean
     ) {
         testDataSetIterator.reset()
@@ -409,8 +435,9 @@ class SimulatedRunner : Runner() {
         evaluationProcessor.elapsedTime = evaluationData.elapsedTime
         val evaluationListener = CustomEvaluativeListener(testDataSetIterator, 999999)
         evaluationListener.callback = evaluationProcessor
-        evaluationListener.iterationDone(
+        evaluationListener.invokeListener(
             network,
+            simulationIndex,
             logging
         )
     }

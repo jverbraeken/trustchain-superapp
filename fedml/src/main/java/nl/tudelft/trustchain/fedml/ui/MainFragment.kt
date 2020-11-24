@@ -64,7 +64,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private var communicationPattern = CommunicationPatterns.RANDOM
     private var behavior = Behaviors.BENIGN
     private var modelPoisoningAttack = ModelPoisoningAttacks.NONE
-    private var numAttacker = NumAttackers.NUM_2
+    private var numAttacker = NumAttackers.NUM_0
 
     private val community by lazy { getIpv8().getOverlay<FedMLCommunity>()
             ?: throw java.lang.IllegalStateException("FedMLCommunity is not configured")
