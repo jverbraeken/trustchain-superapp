@@ -3,6 +3,7 @@ package nl.tudelft.trustchain.fedml.ai
 import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.*
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDatasetIterator
+import nl.tudelft.trustchain.fedml.ai.gar.Average
 import nl.tudelft.trustchain.fedml.ipv8.MsgPsiCaClientToServer
 import nl.tudelft.trustchain.fedml.ipv8.MsgPsiCaServerToClient
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
@@ -320,11 +321,11 @@ class SimulatedRunner : Runner() {
                     val numPeers = newOtherModels.size + 1
                     val averageParams: INDArray
                     if (numPeers == 1) {
-                        logger.debug { "No received params => skipping integration evaluation" }
+                        if (logging) logger.debug { "No received params => skipping integration evaluation" }
                         averageParams = newParams
                         network.setParameters(averageParams)
                     } else {
-                        logger.debug { "Params received => executing aggregation rule" }
+                        if (logging) logger.debug { "Params received => executing aggregation rule" }
 
                         val start2 = System.currentTimeMillis()
 //                        logger.debug {
@@ -335,14 +336,14 @@ class SimulatedRunner : Runner() {
 //                            }, ${newOtherModels[0].second.getDouble(3)}"
 //                        }
                         averageParams = gar.integrateParameters(
+                            network,
                             oldParams,
                             gradient,
                             newOtherModels,
-                            network,
-                            testDataSetIterator,
                             recentOtherModels,
-                            logging,
-                            countPerPeer
+                            testDataSetIterator,
+                            countPerPeer,
+                            logging
                         )
                         recentOtherModels.addAll(newOtherModels.toList())
                         while (recentOtherModels.size > NUM_RECENT_OTHER_MODELS) {
@@ -368,7 +369,7 @@ class SimulatedRunner : Runner() {
 
                     // Send new parameters to other peers
                     if (iterationsToEvaluation >= iterationsBeforeEvaluation) {
-                        logger.debug {
+                        if (logging) logger.debug {
                             "Sending model to peers: ${averageParams.getDouble(0)}, ${averageParams.getDouble(1)}, ${
                                 averageParams.getDouble(
                                     2
@@ -378,7 +379,7 @@ class SimulatedRunner : Runner() {
                         testDataSetIterator.reset()
                         val sample = testDataSetIterator.next(500)
                         network.setParameters(averageParams)
-                        logger.debug { "loss => ${network.score(sample)}" }
+                        if (logging) logger.debug { "loss => ${network.score(sample)}" }
                         val message = craftMessage(averageParams, trainConfiguration.behavior, random)
                         when (trainConfiguration.communicationPattern) {
                             CommunicationPatterns.ALL -> newOtherModelBuffers

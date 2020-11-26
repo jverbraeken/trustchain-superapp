@@ -26,11 +26,11 @@ class CWTrimmedMean(private val b: Int) : AggregationRule() {
         countPerPeer: Map<Int, Int>,
         logging: Boolean
     ): INDArray {
-        logger.debug { formatName("Coordinate-Wise Trimmed Mean") }
+        debug(logging) { formatName("Coordinate-Wise Trimmed Mean") }
         val models = HashMap<Int, INDArray>()
         models[-1] = oldModel.sub(gradient)
         models.putAll(newOtherModels)
-        logger.debug { "Found ${models.size} models in total" }
+        debug(logging) { "Found ${models.size} models in total" }
         return if (models.size < minimumModels) {
             oldModel.sub(gradient)
         } else {

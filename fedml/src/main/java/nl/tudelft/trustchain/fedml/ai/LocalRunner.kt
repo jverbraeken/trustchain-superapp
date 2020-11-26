@@ -3,8 +3,6 @@ package nl.tudelft.trustchain.fedml.ai
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.Behaviors
-import org.deeplearning4j.datasets.fetchers.DataSetType
-import org.deeplearning4j.optimize.listeners.EvaluativeListener
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener
 import java.io.File
 
@@ -14,7 +12,7 @@ class LocalRunner : Runner() {
     override fun run(
         baseDirectory: File,
         seed: Int,
-        mlConfiguration: MLConfiguration
+        mlConfiguration: MLConfiguration,
     ) {
         scope.launch {
             val trainDataSetIterator = mlConfiguration.dataset.inst(
@@ -76,7 +74,7 @@ class LocalRunner : Runner() {
                         evaluationProcessor.elapsedTime = end - start
                         evaluationListener = CustomEvaluativeListener(testDataSetIterator, 999999)
                         evaluationListener.callback = evaluationProcessor
-                        evaluationListener.invokeListener(network, iterations, true)
+                        evaluationListener.invokeListener(network, 0, true)
                     }
                     if (endEpoch) {
                         break

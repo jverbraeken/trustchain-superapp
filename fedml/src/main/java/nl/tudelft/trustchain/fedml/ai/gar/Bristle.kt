@@ -1,17 +1,11 @@
 package nl.tudelft.trustchain.fedml.ai.gar
 
-import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDatasetIterator
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.dataset.DataSet
 import kotlin.math.max
 import kotlin.math.min
-
-private val mpl = KotlinLogging.logger("Bristle")
-private fun debug(logging: Boolean, msg: () -> Any?) {
-    if (logging) mpl.debug(msg)
-}
 
 /**
  * (practical yet robust) byzantine-resilient decentralized stochastic federated learning
@@ -33,7 +27,7 @@ class Bristle : AggregationRule() {
         recentOtherModels: ArrayDeque<Pair<Int, INDArray>>,
         testDataSetIterator: CustomBaseDatasetIterator,
         countPerPeer: Map<Int, Int>,
-        logging: Boolean
+        logging: Boolean,
     ): INDArray {
         debug(logging) { formatName("BRISTLE") }
         debug(logging) { "Found ${newOtherModels.size} other models" }
@@ -48,7 +42,7 @@ class Bristle : AggregationRule() {
             .keys
             .take(NUM_MODELS_EXPLOITATION)
             .filter { it < 1000000 }
-            .map { Pair(it, newOtherModels[it]!!) }
+            .map { Pair(it, newOtherModels.getValue(it)) }
             .toMap()
         debug(logging) { "closeModels: ${exploitationModels.map { it.value.getDouble(0) }.toCollection(ArrayList())}" }
 
@@ -56,7 +50,7 @@ class Bristle : AggregationRule() {
             .keys
             .drop(NUM_MODELS_EXPLOITATION)
             .filter { it < 1000000 }
-            .map { Pair(it, newOtherModels[it]!!) }
+            .map { Pair(it, newOtherModels.getValue(it)) }
             .shuffled()
             .take(NUM_MODELS_EXPLORATION)
             .toMap()
@@ -97,7 +91,7 @@ class Bristle : AggregationRule() {
         newModel: INDArray,
         otherModels: Map<Int, INDArray>,
         allOtherModelsBuffer: ArrayDeque<Pair<Int, INDArray>>,
-        logging: Boolean
+        logging: Boolean,
     ): Map<Int, Double> {
         val distances = hashMapOf<Int, Double>()
         for ((index, otherModel) in otherModels) {
@@ -115,7 +109,7 @@ class Bristle : AggregationRule() {
     private fun calculateLoss(
         model: INDArray,
         network: MultiLayerNetwork,
-        sample: DataSet
+        sample: DataSet,
     ): Double {
         network.setParameters(model)
         return network.score(sample)
@@ -124,7 +118,7 @@ class Bristle : AggregationRule() {
     private fun calculateLossPerClass(
         model: INDArray,
         network: MultiLayerNetwork,
-        testBatches: List<DataSet?>
+        testBatches: List<DataSet?>,
     ): Array<Double?> {
         network.setParameters(model)
         return testBatches
@@ -135,7 +129,7 @@ class Bristle : AggregationRule() {
     private fun calculateLosses(
         models: Map<Int, INDArray>,
         network: MultiLayerNetwork,
-        sample: DataSet
+        sample: DataSet,
     ): Map<Int, Double> {
         return models.map { (index, model) ->
             network.setParameters(model)
@@ -146,7 +140,7 @@ class Bristle : AggregationRule() {
     private fun calculateLossesPerClass(
         models: Map<Int, INDArray>,
         network: MultiLayerNetwork,
-        testBatches: List<DataSet?>
+        testBatches: List<DataSet?>,
     ): Map<Int, Array<Double?>> {
         return models.map { (index, model) ->
             Pair(
@@ -179,7 +173,7 @@ class Bristle : AggregationRule() {
         otherLossesPerClass: Map<Int, Array<Double?>>,
         oldLossPerClass: Array<Double?>,
         countPerPeer: Map<Int, Int>,
-        logging: Boolean
+        logging: Boolean,
     ): Map<Int, Double> {
         val smallestLossPerPeer = otherLossesPerClass
             .map { (peer, lossPerClass) ->
@@ -194,7 +188,7 @@ class Bristle : AggregationRule() {
         return smallestLossPerPeer.map { (peer, lossPerLabel) ->
             val smallestOtherLoss = lossPerLabel.map { (_, smallestLosses) -> smallestLosses }.sum()
             val smallestOwnLoss = lossPerLabel.map { (label, _) -> oldLossPerClass[label]!! }.sum()
-            Pair(peer, max(0.0, 4.0 + (4 - 4 * (smallestOtherLoss / smallestOwnLoss))))
+            Pair(peer, max(0.0, 1.0 + (0 - 0 * (smallestOtherLoss / smallestOwnLoss))))
         }.toMap()
     }
 
@@ -202,14 +196,14 @@ class Bristle : AggregationRule() {
         modelsToWeight: Map<Int, Double>,
         otherModels: Map<Int, INDArray>,
         newModel: INDArray,
-        logging: Boolean
+        logging: Boolean,
     ): INDArray {
         var arr: INDArray? = null
         modelsToWeight.onEachIndexed { indexAsNum, (indexAsPeer, weight) ->
-            if (indexAsNum == 0) {
-                arr = otherModels[indexAsPeer]!!.mul(weight)
+            arr = if (indexAsNum == 0) {
+                otherModels.getValue(indexAsPeer).mul(weight)
             } else {
-                arr = arr!!.add(otherModels[indexAsPeer]!!.mul(weight))
+                arr!!.add(otherModels.getValue(indexAsPeer).mul(weight))
             }
         }
         arr = arr!!.add(newModel)

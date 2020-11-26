@@ -25,11 +25,11 @@ class Median : AggregationRule() {
         countPerPeer: Map<Int, Int>,
         logging: Boolean
     ): INDArray {
-        logger.debug { formatName("Median") }
+        debug(logging) { formatName("Median") }
         val models = HashMap<Int, INDArray>()
         models[-1] = oldModel
         models.putAll(newOtherModels)
-        logger.debug { "Found ${models.size} models in total" }
+        debug(logging) { "Found ${models.size} models in total" }
         return if (models.size == 1) {
             oldModel.sub(gradient)
         } else {

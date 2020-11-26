@@ -22,11 +22,11 @@ class Average : AggregationRule() {
         countPerPeer: Map<Int, Int>,
         logging: Boolean
     ): INDArray {
-        logger.debug { formatName("Simple average") }
+        debug(logging) { formatName("Simple average") }
         val models = HashMap<Int, INDArray>()
         models[-1] = oldModel.sub(gradient)
         models.putAll(newOtherModels)
-        logger.debug { "Found ${models.size} models in total" }
+        debug(logging) { "Found ${models.size} models in total" }
         val modelsAsArrays = models.map { it.value.toFloatMatrix()[0] }
         val newMatrix = Array(1) { FloatArray(modelsAsArrays[0].size) }
         for (i in modelsAsArrays[0].indices) {

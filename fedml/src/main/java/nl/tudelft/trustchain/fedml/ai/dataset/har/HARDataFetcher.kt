@@ -3,21 +3,17 @@ package nl.tudelft.trustchain.fedml.ai.dataset.har
 import nl.tudelft.trustchain.fedml.Behaviors
 import nl.tudelft.trustchain.fedml.ai.CustomDataSetType
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDataFetcher
-import org.deeplearning4j.datasets.fetchers.DataSetType
 import org.nd4j.linalg.api.buffer.DataType
-import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.dataset.DataSet
 import org.nd4j.linalg.factory.Nd4j
 import org.nd4j.linalg.indexing.NDArrayIndex
-import org.nd4j.linalg.util.MathUtils
 import java.io.File
 import java.nio.file.Paths
-import java.util.*
 
-fun transposeMatrix(matrix: Array<Array<Double>>): Array<DoubleArray> {
+fun transposeMatrix(matrix: Array<Array<Float>>): Array<FloatArray> {
     val m = matrix.size
     val n = matrix[0].size
-    val transposedMatrix = Array(n) { DoubleArray(m) }
+    val transposedMatrix = Array(n) { FloatArray(m) }
     for (x in 0 until n) {
         for (y in 0 until m) {
             transposedMatrix[x][y] = matrix[y][x]
@@ -32,18 +28,17 @@ class HARDataFetcher(
     iteratorDistribution: List<Int>,
     dataSetType: CustomDataSetType,
     maxTestSamples: Int,
-    behavior: Behaviors
-) : CustomBaseDataFetcher() {
+    behavior: Behaviors,
+) : CustomBaseDataFetcher(seed) {
     override val testBatches by lazy { createTestBatches() }
     val labels: List<String>
         get() = man.getLabels()
 
     @Transient
     private var man: HARManager
-    private var order: IntArray
-    private var rng: Random
+
     /**  samples => time step => feature **/
-    private var featureData = Array(1) { Array(NUM_TIMESTEPS) { DoubleArray(NUM_DIMENSIONS) } }
+    private var featureData = Array(1) { Array(NUM_TIMESTEPS) { FloatArray(NUM_DIMENSIONS) } }
 
     init {
         val data = arrayListOf<File>()
@@ -89,21 +84,14 @@ class HARDataFetcher(
         for (i in order.indices) {
             order[i] = i
         }
-        rng = Random(seed)
         reset()
-    }
-
-    override fun reset() {
-        cursor = 0
-        curr = null
-        MathUtils.shuffleArray(order, rng)
     }
 
     override fun fetch(numExamples: Int) {
         check(hasMore()) { "Unable to get more" }
         var labels = Nd4j.zeros(DataType.FLOAT, numExamples.toLong(), numOutcomes.toLong())
         if (featureData.size < numExamples) {
-            featureData = Array(numExamples) { Array(NUM_TIMESTEPS) { DoubleArray(NUM_DIMENSIONS) } }
+            featureData = Array(numExamples) { Array(NUM_TIMESTEPS) { FloatArray(NUM_DIMENSIONS) } }
         }
         var actualExamples = 0
         var i = 0
@@ -112,53 +100,53 @@ class HARDataFetcher(
             val entries = man.readEntryUnsafe(order[cursor])
             val label = man.readLabel(order[cursor])
             labels.put(actualExamples, label, 1.0f)
-            val features = entries.indices.map {
-                entries[it] = entries[it].trim()
-                val parts = entries[it].split("\\s+").toTypedArray()
-                parts.map { s: String -> s.toDouble() }.toTypedArray()
-            }.toTypedArray()
-            val timeSteps = transposeMatrix(features)
-            featureData[actualExamples] = timeSteps
+            featureData[actualExamples] = extractFeatures(entries)
             actualExamples++
             i++
             cursor++
         }
-        val features: INDArray
-        features = if (featureData.size == actualExamples) {
-            Nd4j.create(featureData)
-        } else {
-            Nd4j.create(featureData.copyOfRange(0, actualExamples))
-        }
+        val features = Nd4j.create(
+            if (featureData.size == actualExamples) featureData
+            else featureData.copyOfRange(0, actualExamples)
+        )
         if (actualExamples < numExamples) {
             labels = labels[NDArrayIndex.interval(0, actualExamples), NDArrayIndex.all()]
         }
         curr = DataSet(features, labels)
     }
 
-    private fun createTestBatches(): List<DataSet> {
+    private fun createTestBatches(): List<DataSet?> {
         val testBatches = man.createTestBatches()
         if (featureData.size < testBatches[0].size) {
-            featureData = Array(testBatches[0].size) { Array(NUM_TIMESTEPS) { DoubleArray(NUM_DIMENSIONS) } }
+            featureData = Array(testBatches[0].size) { Array(NUM_TIMESTEPS) { FloatArray(NUM_DIMENSIONS) } }
         }
-        var actualExamples = 0
-        val result = arrayListOf<DataSet>()
+        val result = arrayListOf<DataSet?>()
         for ((label, batch) in testBatches.withIndex()) {
-            val labels = Nd4j.zeros(DataType.FLOAT, testBatches[0].size.toLong(), numOutcomes.toLong())
-            for (seq in batch) {
-                labels.put(actualExamples, label, 1.0f)
-                val features = seq.map {
-                    val trimmed = it.trim()
-                    val parts = trimmed.split("\\s+").toTypedArray()
-                    parts.map { s: String -> s.toDouble() }.toTypedArray()
-                }.toTypedArray()
-                val timeSteps = transposeMatrix(features)
-                featureData[actualExamples] = timeSteps
-                actualExamples++
-            }
-            val features = Nd4j.create(featureData.copyOf())
-            result.add(DataSet(features, labels))
+            result.add(
+                if (batch.isEmpty()) null
+                else createTestBatch(label, batch)
+            )
         }
         return result
+    }
+
+    private fun extractFeatures(entries: Array<String>): Array<FloatArray> {
+        val features = entries.map {
+            val trimmed = it.trim()
+            val parts = trimmed.split("\\s+".toRegex()).toTypedArray()
+            parts.map { s: String -> s.toFloat() }.toTypedArray()
+        }.toTypedArray()
+        return transposeMatrix(features)
+    }
+
+    private fun createTestBatch(label: Int, batch: Array<Array<String>>): DataSet {
+        val labels = Nd4j.zeros(DataType.FLOAT, batch.size.toLong(), numOutcomes.toLong())
+        for ((i, seq) in batch.withIndex()) {
+            labels.put(i, label, 1.0f)
+            featureData[i] = extractFeatures(seq)
+        }
+        val features = Nd4j.create(featureData.copyOf())
+        return DataSet(features, labels)
     }
 
     companion object {

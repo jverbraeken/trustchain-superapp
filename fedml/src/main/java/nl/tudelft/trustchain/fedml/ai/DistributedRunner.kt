@@ -218,14 +218,14 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
 
                         val start2 = System.currentTimeMillis()
                         averageParams = gar.integrateParameters(
+                            network,
                             oldParams,
                             gradient,
                             newOtherModels,
-                            network,
-                            testDataSetIterator,
                             recentOtherModels,
-                            true,
-                            countPerPeer
+                            testDataSetIterator,
+                            countPerPeer,
+                            true
                         )
                         recentOtherModels.addAll(newOtherModels.toList())
                         while (recentOtherModels.size > SIZE_RECENT_OTHER_MODELS) {

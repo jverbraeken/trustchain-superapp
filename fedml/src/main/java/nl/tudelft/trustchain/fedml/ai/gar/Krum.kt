@@ -40,10 +40,10 @@ class Krum(private val b: Int) : AggregationRule() {
         countPerPeer: Map<Int, Int>,
         logging: Boolean
     ): INDArray {
-        logger.debug { formatName("Krum") }
+        debug(logging) { formatName("Krum") }
         val models = HashMap<Int, INDArray>()
         models.putAll(newOtherModels)
-        logger.debug { "Found ${models.size} models in total" }
+        debug(logging) { "Found ${models.size} models in total" }
         return if (models.size == 1) {
             oldModel.sub(gradient)
         } else {

@@ -32,7 +32,7 @@ fun generateDefaultMNISTConfiguration(
         .list()
         .layer(
             ConvolutionLayer.Builder(5, 5)
-                .nIn(1)
+//                .nIn(1)
                 .stride(1, 1)
                 .nOut(10)
                 .activation(Activation.IDENTITY)
@@ -60,7 +60,7 @@ fun generateDefaultMNISTConfiguration(
         .layer(
             DenseLayer.Builder()
                 .activation(Activation.RELU)
-                .nOut(500)
+                .nOut(512)
                 .build()
         )
         .layer(
