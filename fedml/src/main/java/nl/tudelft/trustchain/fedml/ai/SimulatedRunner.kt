@@ -3,18 +3,19 @@ package nl.tudelft.trustchain.fedml.ai
 import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.*
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDatasetIterator
-import nl.tudelft.trustchain.fedml.ai.gar.Average
 import nl.tudelft.trustchain.fedml.ipv8.MsgPsiCaClientToServer
 import nl.tudelft.trustchain.fedml.ipv8.MsgPsiCaServerToClient
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
-import org.deeplearning4j.optimize.listeners.ScoreIterationListener
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.cpu.nativecpu.NDArray
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 import java.io.File
 import java.nio.file.Paths
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.collections.ArrayDeque
+import kotlin.collections.ArrayList
 import kotlin.concurrent.thread
 import kotlin.random.Random
 
@@ -31,14 +32,14 @@ class SimulatedRunner : Runner() {
     override fun run(
         baseDirectory: File,
         seed: Int,
-        @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE") _unused: MLConfiguration
+        @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE") _unused: MLConfiguration,
     ) {
         var configs = loadConfig(baseDirectory)
         // All these things have to be initialized before any of the runner threads start
         val toServerMessageBuffers = ArrayList<CopyOnWriteArrayList<MsgPsiCaClientToServer>>()
         val toClientMessageBuffers = ArrayList<CopyOnWriteArrayList<MsgPsiCaServerToClient>>()
         val sraKeyPairs = ArrayList<SRAKeyPair>()
-        configs = configs.subList(0, 10)
+        configs = configs.subList(0, 1)
         for (i in configs.indices) {
             newOtherModelBuffers.add(ConcurrentHashMap())
             recentOtherModelsBuffers.add(ArrayDeque())
@@ -57,6 +58,186 @@ class SimulatedRunner : Runner() {
                 "#peers included in current batch"
             )
         )
+        val globalNetworks = (0 until 10).map {
+            generateNetwork(
+                configs[0].dataset,
+                configs[0].nnConfiguration,
+                0
+            )
+        }
+        val trainDataSetIterators = (0 until 10).map {
+            configs[0].dataset.inst(
+                DatasetIteratorConfiguration(BatchSizes.BATCH_5,
+                    listOf(if (it == 0) 200 else 0,
+                        if (it == 1) 200 else 0,
+                        if (it == 2) 200 else 0,
+                        if (it == 3) 200 else 0,
+                        if (it == 4) 200 else 0,
+                        if (it == 5) 200 else 0,
+                        if (it == 6) 200 else 0,
+                        if (it == 7) 200 else 0,
+                        if (it == 8) 200 else 0,
+                        if (it == 9) 200 else 0),
+                    MaxTestSamples.NUM_200),
+                0L,
+                CustomDataSetType.TRAIN,
+                baseDirectory,
+                Behaviors.BENIGN
+            )
+        }
+        val testDataSetIterator = configs[0].dataset.inst(
+            DatasetIteratorConfiguration(BatchSizes.BATCH_5,
+                listOf(200, 200, 200, 200, 200, 200, 200, 200, 200, 200),
+                MaxTestSamples.NUM_200),
+            0L,
+            CustomDataSetType.FULL_TEST,
+            baseDirectory,
+            Behaviors.BENIGN
+        )
+
+
+
+
+
+
+
+        repeat(50) {
+            repeat(10) { task ->
+                val precisionMatrices = globalNetworks[0]
+                    .paramTable()
+                    .map { (key, value) ->
+                        Pair(
+                            key,
+                            NDArray(value.shape().map { dimension -> dimension.toInt() }.toIntArray()))
+                    }
+                    .toMap()
+                val oldTasks = (1 until task).map { subTask ->
+                    (0 until 9).map {
+                        try {
+                            trainDataSetIterators[subTask].next()  //
+                        } catch (e: NoSuchElementException) {
+                            trainDataSetIterators[subTask].reset()  //
+                            trainDataSetIterators[subTask].next()  //
+                        }
+                    }
+                }.flatten()
+                var count = 0
+                for (dataset in oldTasks) {
+                    for (i in 0 until dataset.features.size(0)) {
+                        count++
+                        globalNetworks[0].input = dataset.features.slice(i).reshape(1, 784)
+                        globalNetworks[0].labels = dataset.labels.slice(i).reshape(1, 10)
+                        globalNetworks[0].computeGradient()
+                        val gradient = globalNetworks[0].gradient()
+                        val gradientForVariable = gradient.gradientForVariable()
+                        precisionMatrices.forEach { matrix ->
+                            matrix.value.addi(gradientForVariable[matrix.key]!!.mul(gradientForVariable[matrix.key]))
+                        }
+                    }
+                }
+                precisionMatrices.forEach { matrix -> matrix.value.divi(count) }
+                LossEWC.precisionMatrices = precisionMatrices
+                LossEWC.model = globalNetworks[0]
+                LossEWC.means = globalNetworks[0].paramTable().map{(k, v) -> Pair(k, v.dup())}.toMap()
+
+
+
+
+
+
+                repeat(15) {
+                    val elem = try {
+                        trainDataSetIterators[task].next()  //
+                    } catch (e: NoSuchElementException) {
+                        trainDataSetIterators[task].reset()  //
+                        trainDataSetIterators[task].next()  //
+                    }
+
+                    globalNetworks[0].fit(elem)
+                }
+                logger.error { "index: $task" }
+            }
+            evaluationProcessor.iteration = 0
+            execEvaluationProcessor(
+                evaluationProcessor,
+                testDataSetIterator,
+                globalNetworks[0],
+                EvaluationProcessor.EvaluationData(
+                    "before", "", 0, globalNetworks[0].iterationCount, 0
+                ),
+                0,
+                true
+            )
+        }
+
+
+
+
+
+
+
+
+
+
+        repeat(50) {
+            repeat(20) {
+                globalNetworks.zip(trainDataSetIterators).forEach {
+                    val elem = try {
+                        it.second.next()
+                    } catch (e: NoSuchElementException) {
+                        it.second.reset()
+                        it.second.next()
+                    }
+                    it.first.fit(elem)
+
+                    val precision_matrices = it.first
+                        .paramTable()
+                        .map { (key, value) ->
+                            Pair(
+                                key,
+                                NDArray(value.shape().map { dimension -> dimension.toInt() }.toIntArray()))
+                        }
+                        .toMap()
+                    for (i in 0 until elem.features.size(0)) {
+                        val asdf = elem.features.shape().map { it.toInt() }.toIntArray()
+                        NDArray(asdf)
+                        it.first.input = elem.features.slice(i).reshape(1, 784)
+                        it.first.labels = elem.labels.slice(i).reshape(1, 10)
+                        it.first.computeGradientAndScore()
+                        val gradient = it.first.gradient()
+                        val gradientForVariable = gradient.gradientForVariable()
+                        precision_matrices.forEach { matrix ->
+                            matrix.value.addi(gradientForVariable[matrix.key]!!.mul(gradientForVariable[matrix.key]))
+                        }
+                    }
+                    precision_matrices.forEach { matrix -> matrix.value.divi(elem.features.size(0)) }
+                }
+            }
+            var newParams = globalNetworks[0].params().dup()
+            (1 until 10).forEach {
+                newParams = newParams.add(globalNetworks[it].params().dup())
+            }
+            newParams = newParams.div(10)
+            globalNetworks.forEach { it.setParams(newParams.dup()) }
+            evaluationProcessor.iteration = 0
+            execEvaluationProcessor(
+                evaluationProcessor,
+                testDataSetIterator,
+                globalNetworks[0],
+                EvaluationProcessor.EvaluationData(
+                    "before", "", 0, globalNetworks[0].iterationCount, 0
+                ),
+                0,
+                true
+            )
+        }
+
+
+
+
+
+
+
         for (simulationIndex in configs.indices) {
             thread {
                 val config = configs[simulationIndex]
@@ -84,11 +265,23 @@ class SimulatedRunner : Runner() {
                     baseDirectory,
                     behavior
                 )
-                val network = generateNetwork(
+                /*val network = generateNetwork(
                     dataset,
                     config.nnConfiguration,
                     simulationIndex
                 )
+                network.setParams(globalNetwork.params().dup())
+                evaluationProcessor.iteration = 0
+                execEvaluationProcessor(
+                    evaluationProcessor,
+                    fullTestDataSetIterator,
+                    network,
+                    EvaluationProcessor.EvaluationData(
+                        "before", "", 0, globalNetwork.iterationCount, 0
+                    ),
+                    0,
+                    true
+                )*/
 
                 val countPerPeer = getSimilarPeers(
                     trainDataSetIterator,
@@ -98,7 +291,7 @@ class SimulatedRunner : Runner() {
                     simulationIndex
                 )
 
-                trainTestSendNetwork(
+                /*trainTestSendNetwork(
                     simulationIndex,
                     network,
                     simulationIndex == 0,
@@ -112,7 +305,7 @@ class SimulatedRunner : Runner() {
 
                     testDataSetIterator,
                     countPerPeer,
-                )
+                )*/
             }
         }
     }
@@ -202,7 +395,7 @@ class SimulatedRunner : Runner() {
         sraKeyPair: SRAKeyPair,
         toServerMessageBuffers: ArrayList<CopyOnWriteArrayList<MsgPsiCaClientToServer>>,
         toClientMessageBuffers: ArrayList<CopyOnWriteArrayList<MsgPsiCaServerToClient>>,
-        i: Int
+        i: Int,
     ): Map<Int, Int> {
         val encryptedLabels = clientsRequestsServerLabels(
             trainDataSetIterator.labels,
@@ -255,7 +448,53 @@ class SimulatedRunner : Runner() {
         // Integrating and distributing information to peers
         testDataSetIterator: CustomBaseDatasetIterator,
         countPerPeer: Map<Int, Int>,
-        ) {
+    ) {
+        /*evaluationProcessor.iteration = 0
+        execEvaluationProcessor(
+            evaluationProcessor,
+            fullTestDataSetIterator,
+            network,
+            EvaluationProcessor.EvaluationData(
+                "before", "", 0, network.iterationCount, 0
+            ),
+            simulationIndex,
+            logging
+        )*/
+        var iterationsToEvaluation = 0
+        while (true) {
+            if (iterationsToEvaluation >= iterationsBeforeEvaluation) {
+                iterationsToEvaluation = 0
+            }
+
+            // Train
+            var endEpoch = false
+            try {
+                repeat(3) {
+                    network.fit(trainDataSetIterator.next())
+                }
+            } catch (e: NoSuchElementException) {
+                endEpoch = true
+            }
+            iterationsToEvaluation += trainDataSetIterator.batch()
+            if (/*iterationsToEvaluation >= iterationsBeforeEvaluation*/true) {
+                // Test
+                val end = System.currentTimeMillis()
+                if (logging) logger.debug { "Evaluating network " }
+                evaluationProcessor.iteration = 0
+                execEvaluationProcessor(
+                    evaluationProcessor,
+                    fullTestDataSetIterator,
+                    network,
+                    EvaluationProcessor.EvaluationData(
+                        "before", "", 0, network.iterationCount, 0
+                    ),
+                    simulationIndex,
+                    logging
+                )
+            }
+        }
+        /*
+
         if (logging) {
             network.setListeners(ScoreIterationListener(printScoreIterations))
         }
@@ -400,7 +639,7 @@ class SimulatedRunner : Runner() {
             }
         }
         logger.debug { "Done training the network" }
-        evaluationProcessor.done()
+        evaluationProcessor.done()*/
     }
 
     private fun craftMessage(first: INDArray, behavior: Behaviors, random: Random): INDArray {
@@ -426,7 +665,7 @@ class SimulatedRunner : Runner() {
         network: MultiLayerNetwork,
         evaluationData: EvaluationProcessor.EvaluationData,
         simulationIndex: Int,
-        logging: Boolean
+        logging: Boolean,
     ) {
         testDataSetIterator.reset()
         evaluationProcessor.extraElements = mapOf(

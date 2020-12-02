@@ -64,7 +64,7 @@ fun generateDefaultMNISTConfiguration(
                 .build()
         )
         .layer(
-            OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
+            OutputLayer.Builder(LossEWC())
                 .nOut(10)
                 .activation(Activation.SOFTMAX)
                 .build()
@@ -363,8 +363,8 @@ abstract class Runner {
         dataset: Datasets,
         nnConfiguration: NNConfiguration,
         seed: Int
-    ): MultiLayerNetwork {
-        val network = MultiLayerNetwork(dataset.architecture(nnConfiguration, seed))
+    ): CustomMultiLayerNetwork {
+        val network = CustomMultiLayerNetwork(dataset.architecture(nnConfiguration, seed))
         network.init()
         return network
     }
