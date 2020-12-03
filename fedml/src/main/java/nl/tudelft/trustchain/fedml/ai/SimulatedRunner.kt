@@ -10,6 +10,7 @@ import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.cpu.nativecpu.NDArray
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 import java.io.File
+import java.lang.IllegalStateException
 import java.nio.file.Paths
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -68,16 +69,16 @@ class SimulatedRunner : Runner() {
         val trainDataSetIterators = (0 until 10).map {
             configs[0].dataset.inst(
                 DatasetIteratorConfiguration(BatchSizes.BATCH_5,
-                    listOf(if (it == 0) 200 else 0,
-                        if (it == 1) 200 else 0,
-                        if (it == 2) 200 else 0,
-                        if (it == 3) 200 else 0,
-                        if (it == 4) 200 else 0,
-                        if (it == 5) 200 else 0,
-                        if (it == 6) 200 else 0,
-                        if (it == 7) 200 else 0,
-                        if (it == 8) 200 else 0,
-                        if (it == 9) 200 else 0),
+                    listOf(if (it == 0) 800 else 0,
+                        if (it == 1) 800 else 0,
+                        if (it == 2) 800 else 0,
+                        if (it == 3) 800 else 0,
+                        if (it == 4) 800 else 0,
+                        if (it == 5) 800 else 0,
+                        if (it == 6) 800 else 0,
+                        if (it == 7) 800 else 0,
+                        if (it == 8) 800 else 0,
+                        if (it == 9) 800 else 0),
                     MaxTestSamples.NUM_200),
                 0L,
                 CustomDataSetType.TRAIN,
@@ -85,6 +86,16 @@ class SimulatedRunner : Runner() {
                 Behaviors.BENIGN
             )
         }
+        val ewcTrainDataSetIterator =
+            configs[0].dataset.inst(
+                DatasetIteratorConfiguration(BatchSizes.BATCH_5,
+                    listOf(800, 800, 800, 800, 800, 800, 800, 800, 800, 800),
+                    MaxTestSamples.NUM_200),
+                0L,
+                CustomDataSetType.TRAIN,
+                baseDirectory,
+                Behaviors.BENIGN
+            )
         val testDataSetIterator = configs[0].dataset.inst(
             DatasetIteratorConfiguration(BatchSizes.BATCH_5,
                 listOf(200, 200, 200, 200, 200, 200, 200, 200, 200, 200),
@@ -100,10 +111,10 @@ class SimulatedRunner : Runner() {
 
 
 
-
+        LossEWC.model = globalNetworks[0]
         repeat(50) {
             repeat(10) { task ->
-                val precisionMatrices = globalNetworks[0]
+                /*val precisionMatrices = globalNetworks[0]
                     .paramTable()
                     .map { (key, value) ->
                         Pair(
@@ -138,36 +149,96 @@ class SimulatedRunner : Runner() {
                 precisionMatrices.forEach { matrix -> matrix.value.divi(count) }
                 LossEWC.precisionMatrices = precisionMatrices
                 LossEWC.model = globalNetworks[0]
-                LossEWC.means = globalNetworks[0].paramTable().map{(k, v) -> Pair(k, v.dup())}.toMap()
+                LossEWC.means = globalNetworks[0].paramTable().map{(k, v) -> Pair(k, v.dup())}.toMap()*/
 
 
 
 
 
-
-                repeat(15) {
+                repeat(75) {
                     val elem = try {
                         trainDataSetIterators[task].next()  //
                     } catch (e: NoSuchElementException) {
                         trainDataSetIterators[task].reset()  //
                         trainDataSetIterators[task].next()  //
                     }
-
                     globalNetworks[0].fit(elem)
                 }
-                logger.error { "index: $task" }
+                logger.error { "Finished index: $task" }
+
+
+                // consolidate
+                LossEWC.old_var_list = globalNetworks[0].paramTable().map { (n, p) -> Pair(n, p.dup()) }.toMap()
+                val grads: MutableMap<String, INDArray> = globalNetworks[0]
+                    .paramTable()
+                    .map { (key, value) ->
+                        Pair(
+                            key,
+                            NDArray(value.shape().map { dimension -> dimension.toInt() }.toIntArray()))
+                    }
+                    .toMap()
+                    .toMutableMap()
+                repeat(75) {
+                    val batch = try {
+                        trainDataSetIterators[task].next()
+                    } catch (e: IllegalStateException) {
+                        trainDataSetIterators[task].reset()
+                        trainDataSetIterators[task].next()
+                    }
+                    for (i in 0 until batch.features.size(0)) {
+                        val input = batch.features.slice(i).reshape(1, 28 * 28)
+                        val label = batch.labels.slice(i).reshape(1, 10)
+                        grads.putAll(globalNetworks[0].calculateGradients(
+                            input,
+                            label,
+                            null,
+                            null
+                        ).first.gradientForVariable())
+                    }
+                }
+                for (entry in grads) {
+                    grads[entry.key] = entry.value.mul(entry.value)
+                }
+
+
+
+                LossEWC.fishers = {
+                    val gradientForVariable: MutableMap<String, INDArray> = globalNetworks[0]
+                        .paramTable()
+                        .map { (key, value) ->
+                            Pair(
+                                key,
+                                NDArray(value.shape().map { dimension -> dimension.toInt() }.toIntArray()))
+                        }
+                        .toMap()
+                        .toMutableMap()
+
+                    for (i in 0 until a.features.size(0)) {
+//                    globalNetworks[0].input = a.features.slice(i).reshape(1, 784)
+//                    globalNetworks[0].labels = a.labels.slice(i).reshape(1, 10)
+                        val gradientAndAsdf = globalNetworks[0].calculateGradients(
+                            a.features.slice(i).reshape(1, 28 * 28),
+                            a.labels.slice(i).reshape(1, 10),
+                            null,
+                            null
+                        )
+                        gradientForVariable.putAll(gradientAndAsdf.first.gradientForVariable())
+                    }
+                    gradientForVariable.forEach { it.value.mul(it.value).div(a.features.size(0)) }
+                    gradientForVariable
+                }.invoke()
+                evaluationProcessor.iteration = 0
+                execEvaluationProcessor(
+                    evaluationProcessor,
+                    testDataSetIterator,
+                    globalNetworks[0],
+                    EvaluationProcessor.EvaluationData(
+                        "before", "", 0, globalNetworks[0].iterationCount, 0
+                    ),
+                    0,
+                    true
+                )
             }
-            evaluationProcessor.iteration = 0
-            execEvaluationProcessor(
-                evaluationProcessor,
-                testDataSetIterator,
-                globalNetworks[0],
-                EvaluationProcessor.EvaluationData(
-                    "before", "", 0, globalNetworks[0].iterationCount, 0
-                ),
-                0,
-                true
-            )
         }
 
 
@@ -179,12 +250,13 @@ class SimulatedRunner : Runner() {
 
 
 
-        repeat(50) {
+        repeat(50)
+        {
             repeat(20) {
                 globalNetworks.zip(trainDataSetIterators).forEach {
                     val elem = try {
                         it.second.next()
-                    } catch (e: NoSuchElementException) {
+                    } catch (e: IllegalStateException) {
                         it.second.reset()
                         it.second.next()
                     }
@@ -567,13 +639,13 @@ class SimulatedRunner : Runner() {
                         if (logging) logger.debug { "Params received => executing aggregation rule" }
 
                         val start2 = System.currentTimeMillis()
-//                        logger.debug {
-//                            "Integrating newOtherModels: ${newOtherModels[0].second.getDouble(0)}, ${newOtherModels[0].second.getDouble(1)}, ${
-//                                newOtherModels[0].second.getDouble(
-//                                    2
-//                                )
-//                            }, ${newOtherModels[0].second.getDouble(3)}"
-//                        }
+    //                        logger.debug {
+    //                            "Integrating newOtherModels: ${newOtherModels[0].second.getDouble(0)}, ${newOtherModels[0].second.getDouble(1)}, ${
+    //                                newOtherModels[0].second.getDouble(
+    //                                    2
+    //                                )
+    //                            }, ${newOtherModels[0].second.getDouble(3)}"
+    //                        }
                         averageParams = gar.integrateParameters(
                             network,
                             oldParams,

@@ -1,12 +1,10 @@
 package nl.tudelft.trustchain.fedml.ai
 
 import mu.KotlinLogging
-import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.nd4j.base.Preconditions
 import org.nd4j.linalg.activations.IActivation
 import org.nd4j.linalg.activations.impl.ActivationSoftmax
 import org.nd4j.linalg.api.ndarray.INDArray
-import org.nd4j.linalg.cpu.nativecpu.NDArray
 import org.nd4j.linalg.indexing.BooleanIndexing
 import org.nd4j.linalg.indexing.conditions.Conditions
 import org.nd4j.linalg.lossfunctions.ILossFunction
@@ -67,23 +65,29 @@ class LossEWC(private val softmaxClipEps: Double = DEFAULT_SOFTMAX_CLIPPING_EPSI
         if (average) {
             score /= scoreArr.size(0).toDouble()
         }
-        val penalty = model.paramTable().map { (n, p) ->
-            val v = precisionMatrices.getValue(n).mul(p.sub(means[n])).sumNumber().toDouble()
-            v * v
-        }.sum()
-        logger.debug { "LossEWC: $score - ${importance * penalty}" }
-        return score + importance * penalty
+        return if (old_var_list != null && fishers != null) {
+            val penalty = model.paramTable().map { (n, p) ->
+                fishers!!.getValue(n).mul(p.sub(old_var_list!![n]).mul(p.sub(old_var_list!![n]))).sumNumber().toDouble()
+            }.sum()
+            logger.debug { "LossEWC: $score  <->  ${1000 * penalty}" }
+            score + 1000 * penalty
+        } else {
+            score
+        }
     }
 
     override fun computeScoreArray(labels: INDArray, preOutput: INDArray, activationFn: IActivation, mask: INDArray?): INDArray {
         val scoreArr = scoreArray(labels, preOutput, activationFn, mask)
-        val penalty = model.paramTable().map { (n, p) ->
-            val v = precisionMatrices.getValue(n).mul(p.sub(means[n])).sumNumber().toDouble()
-            v * v
-        }.sum()
         val a = scoreArr.sum(true, 1).muli(-1)
-        val b = importance * penalty
-        logger.debug { "LossEWC: $a - $b" }
+        val b = if (old_var_list != null && fishers != null) {
+            val penalty = model.paramTable().map { (n, p) ->
+                fishers!!.getValue(n).mul(p.sub(old_var_list!![n]).mul(p.sub(old_var_list!![n]))).sumNumber().toDouble()
+            }.sum()
+            20 * penalty
+        } else {
+            0
+        }
+        logger.debug { "LossEWC: $a ... $b" }
         return a.add(b)
     }
 
@@ -157,9 +161,10 @@ class LossEWC(private val softmaxClipEps: Double = DEFAULT_SOFTMAX_CLIPPING_EPSI
     }
 
     companion object {
-        lateinit var means: Map<String, INDArray>
-        lateinit var model: MultiLayerNetwork
-        lateinit var precisionMatrices: Map<String, NDArray>
+        var old_var_list: Map<String, INDArray>? = null
+        var fishers: Map<String, INDArray>? = null
+        lateinit var model: CustomMultiLayerNetwork
+        var calculateFisher = false
         private const val DEFAULT_SOFTMAX_CLIPPING_EPSILON = 1e-10
     }
 }
