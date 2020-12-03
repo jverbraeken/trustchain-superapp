@@ -188,18 +188,22 @@ class SimulatedRunner : Runner() {
                     for (i in 0 until batch.features.size(0)) {
                         val input = batch.features.slice(i).reshape(1, 28 * 28)
                         val label = batch.labels.slice(i).reshape(1, 10)
-                        grads.putAll(globalNetworks[0].calculateGradients(
+                        val gradientForVariable = globalNetworks[0].calculateGradients(
                             input,
                             label,
                             null,
                             null
-                        ).first.gradientForVariable())
+                        ).first.gradientForVariable()
+                        grads.forEach { matrix ->
+                            matrix.value.addi(gradientForVariable[matrix.key])
+                        }
                     }
                 }
                 for (entry in grads) {
-                    grads[entry.key] = entry.value.mul(entry.value)
+                    grads[entry.key] = entry.value.mul(entry.value).div(75 * 5)
                 }
-
+//                val fisher_delta = grads.entries.map { (key, value) -> Pair(key, value.sumNumber().toDouble()) }.toMap()
+                GEBLEVEN BIJ NETWORK.SET_TRAIN_STEP()
 
 
                 LossEWC.fishers = {
