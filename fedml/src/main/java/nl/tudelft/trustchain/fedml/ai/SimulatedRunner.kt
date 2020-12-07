@@ -89,7 +89,8 @@ class SimulatedRunner : Runner() {
         val ewcTrainDataSetIterator =
             configs[0].dataset.inst(
                 DatasetIteratorConfiguration(BatchSizes.BATCH_5,
-                    listOf(800, 800, 800, 800, 800, 800, 800, 800, 800, 800),
+                    listOf(800, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+//                    listOf(800, 800, 800, 800, 800, 800, 800, 800, 800, 800),
                     MaxTestSamples.NUM_200),
                 0L,
                 CustomDataSetType.TRAIN,
@@ -98,8 +99,9 @@ class SimulatedRunner : Runner() {
             )
         val testDataSetIterator = configs[0].dataset.inst(
             DatasetIteratorConfiguration(BatchSizes.BATCH_5,
-                listOf(200, 200, 200, 200, 200, 200, 200, 200, 200, 200),
-                MaxTestSamples.NUM_200),
+//                listOf(200, 200, 200, 200, 200, 200, 200, 200, 200, 200),
+                listOf(100, 100, 100, 100, 100, 100, 100, 100, 100, 100),
+                MaxTestSamples.NUM_100),
             0L,
             CustomDataSetType.FULL_TEST,
             baseDirectory,
@@ -112,6 +114,8 @@ class SimulatedRunner : Runner() {
 
 
         LossEWC.model = globalNetworks[0]
+        EWCAdamUpdater.model = globalNetworks[0]
+        val oldfisher = globalNetworks[0].params().dup()
         repeat(50) {
             repeat(10) { task ->
                 /*val precisionMatrices = globalNetworks[0]
@@ -154,8 +158,7 @@ class SimulatedRunner : Runner() {
 
 
 
-
-                repeat(75) {
+                repeat(30) {
                     val elem = try {
                         trainDataSetIterators[task].next()  //
                     } catch (e: NoSuchElementException) {
@@ -168,8 +171,9 @@ class SimulatedRunner : Runner() {
 
 
                 // consolidate
-                LossEWC.old_var_list = globalNetworks[0].paramTable().map { (n, p) -> Pair(n, p.dup()) }.toMap()
-                val grads: MutableMap<String, INDArray> = globalNetworks[0]
+                LossEWC.old_var_list = globalNetworks[0].params().dup()
+                EWCAdamUpdater.old_var_list = globalNetworks[0].params().dup()
+                /*val grads: MutableMap<String, INDArray> = globalNetworks[0]
                     .paramTable()
                     .map { (key, value) ->
                         Pair(
@@ -203,34 +207,42 @@ class SimulatedRunner : Runner() {
                     grads[entry.key] = entry.value.mul(entry.value).div(75 * 5)
                 }
 //                val fisher_delta = grads.entries.map { (key, value) -> Pair(key, value.sumNumber().toDouble()) }.toMap()
-                GEBLEVEN BIJ NETWORK.SET_TRAIN_STEP()
+                GEBLEVEN BIJ NETWORK.SET_TRAIN_STEP()*/
 
 
-                LossEWC.fishers = {
-                    val gradientForVariable: MutableMap<String, INDArray> = globalNetworks[0]
-                        .paramTable()
-                        .map { (key, value) ->
-                            Pair(
-                                key,
-                                NDArray(value.shape().map { dimension -> dimension.toInt() }.toIntArray()))
-                        }
-                        .toMap()
-                        .toMutableMap()
+                /*val fisher = {
+                    val gradient = NDArray(globalNetworks[0].params().shape().map { dimension -> dimension.toInt() }.toIntArray())
 
-                    for (i in 0 until a.features.size(0)) {
+                    ewcTrainDataSetIterator.reset()
+                    val batch = ewcTrainDataSetIterator.next()
+                    val tmpnet = generateNetwork(
+                        configs[0].dataset,
+                        configs[0].nnConfiguration,
+                        0
+                    )
+                    for (i in 0 until 30L) {
 //                    globalNetworks[0].input = a.features.slice(i).reshape(1, 784)
 //                    globalNetworks[0].labels = a.labels.slice(i).reshape(1, 10)
                         val gradientAndAsdf = globalNetworks[0].calculateGradients(
-                            a.features.slice(i).reshape(1, 28 * 28),
-                            a.labels.slice(i).reshape(1, 10),
+                            batch.features*//*.slice(i).reshape(1, 28 * 28)*//*,
+                            batch.labels*//*.slice(i).reshape(1, 10)*//*,
                             null,
                             null
                         )
-                        gradientForVariable.putAll(gradientAndAsdf.first.gradientForVariable())
+//                        val tmp = gradientAndAsdf.first.gradientForVariable()
+                        gradient.addi(gradientAndAsdf.first.gradient().mul(gradientAndAsdf.first.gradient()))
+//                        gradientForVariable.forEach { matrix ->
+//                            matrix.value.addi(tmp[matrix.key])
+//                        }
                     }
-                    gradientForVariable.forEach { it.value.mul(it.value).div(a.features.size(0)) }
-                    gradientForVariable
-                }.invoke()
+                    gradient.divi(batch.features.size(0))
+                    gradient
+//                    gradientForVariable.forEach { it.value.mul(it.value).div(batch.features.size(0)) }
+//                    gradientForVariable
+                }.invoke()*/
+                val fisher = globalNetworks[0].params().sub(oldfisher.dup())
+                LossEWC.fishers = fisher.dup()
+                EWCAdamUpdater.fisher = fisher.dup()
                 evaluationProcessor.iteration = 0
                 execEvaluationProcessor(
                     evaluationProcessor,

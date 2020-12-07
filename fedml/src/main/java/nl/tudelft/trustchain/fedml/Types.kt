@@ -2,7 +2,6 @@ package nl.tudelft.trustchain.fedml
 
 import nl.tudelft.trustchain.fedml.ai.*
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDatasetIterator
-import nl.tudelft.trustchain.fedml.ai.dataset.cifar.CustomCifar10DataSetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.har.HARDataSetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.mnist.CustomMnistDataSetIterator
 import nl.tudelft.trustchain.fedml.ai.gar.*
@@ -10,9 +9,7 @@ import nl.tudelft.trustchain.fedml.ai.modelPoisoningAttack.Fang2020Krum
 import nl.tudelft.trustchain.fedml.ai.modelPoisoningAttack.Fang2020TrimmedMean
 import nl.tudelft.trustchain.fedml.ai.modelPoisoningAttack.ModelPoisoningAttack
 import nl.tudelft.trustchain.fedml.ai.modelPoisoningAttack.NoAttack
-import org.deeplearning4j.datasets.fetchers.DataSetType
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration
-import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 import org.nd4j.linalg.learning.config.*
 import org.nd4j.linalg.schedule.ISchedule
 import org.nd4j.linalg.schedule.MapSchedule
@@ -30,7 +27,7 @@ enum class Datasets(
     val defaultBatchSize: BatchSizes,
     val defaultIteratorDistribution: IteratorDistributions,
     val architecture: (nnConfiguration: NNConfiguration, seed: Int) -> MultiLayerConfiguration,
-    val inst: (iteratorConfiguration: DatasetIteratorConfiguration, seed: Long, dataSetType: CustomDataSetType, baseDirectory: File, behavior: Behaviors) -> CustomBaseDatasetIterator
+    val inst: (iteratorConfiguration: DatasetIteratorConfiguration, seed: Long, dataSetType: CustomDataSetType, baseDirectory: File, behavior: Behaviors) -> CustomBaseDatasetIterator,
 ) {
     MNIST(
         "mnist",
@@ -92,7 +89,8 @@ enum class BatchSizes(val id: String, val text: String, val value: Int) {
     BATCH_1("batch_1", "1", 1),
     BATCH_5("batch_5", "5", 5),
     BATCH_32("batch_32", "32", 32),
-    BATCH_64("batch_64", "64", 64)
+    BATCH_64("batch_64", "64", 64),
+    BATCH_300("batch_300", "300", 300)
 }
 
 fun loadBatchSize(batchSize: String) = BatchSizes.values().first { it.id == batchSize }
@@ -120,6 +118,7 @@ fun loadIteratorDistribution(iteratorDistribution: String) =
 
 enum class MaxTestSamples(val id: String, val text: String, val value: Int) {
     NUM_40("num_40", "40", 40),
+    NUM_100("num_100", "100", 100),
     NUM_200("num_200", "200", 200)
 }
 
@@ -128,13 +127,14 @@ fun loadMaxTestSample(maxTestSample: String) = MaxTestSamples.values().first { i
 enum class Optimizers(
     val id: String,
     val text: String,
-    val inst: (LearningRates) -> IUpdater
+    val inst: (LearningRates) -> IUpdater,
 ) {
     NESTEROVS("nesterovs", "Nesterovs", { learningRate -> Nesterovs(learningRate.schedule) }),
     ADAM("adam", "Adam", { learningRate -> Adam(learningRate.schedule) }),
     SGD("sgd", "SGD", { learningRate -> Sgd(learningRate.schedule) }),
     RMSPROP("rmsprop", "RMSprop", { learningRate -> RmsProp(learningRate.schedule) }),
-    AMSGRAD("amsgrad", "AMSGRAD", { learningRate -> AMSGrad(learningRate.schedule) })
+    AMSGRAD("amsgrad", "AMSGRAD", { learningRate -> AMSGrad(learningRate.schedule) }),
+    EWCADAM("ewcadam", "EWC-Adam", { learningRate -> EWCAdam(learningRateSchedule = learningRate.schedule) })
 }
 
 fun loadOptimizer(optimizer: String) = Optimizers.values().first { it.id == optimizer }
@@ -199,7 +199,7 @@ enum class GARs(
     val id: String,
     val text: String,
     val obj: AggregationRule,
-    val defaultModelPoisoningAttack: ModelPoisoningAttacks
+    val defaultModelPoisoningAttack: ModelPoisoningAttacks,
 ) {
     AVERAGE("average", "Simple average", Average(), ModelPoisoningAttacks.NONE),
     MEDIAN("median", "Median", Median(), ModelPoisoningAttacks.FANG_2020_MEDIAN),

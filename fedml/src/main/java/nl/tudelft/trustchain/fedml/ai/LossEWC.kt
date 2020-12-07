@@ -66,12 +66,11 @@ class LossEWC(private val softmaxClipEps: Double = DEFAULT_SOFTMAX_CLIPPING_EPSI
             score /= scoreArr.size(0).toDouble()
         }
         return if (old_var_list != null && fishers != null) {
-            val penalty = model.paramTable().map { (n, p) ->
-                fishers!!.getValue(n).mul(p.sub(old_var_list!![n]).mul(p.sub(old_var_list!![n]))).sumNumber().toDouble()
-            }.sum()
-            logger.debug { "LossEWC: $score  <->  ${1000 * penalty}" }
-            score + 1000 * penalty
+            val penalty = 1000 * fishers!!.mul(model.params().sub(old_var_list!!).mul(model.params().sub(old_var_list!!))).sumNumber().toDouble()
+            logger.debug { "LossEWC: $score  <->  ${penalty}" }
+            score + penalty
         } else {
+            logger.debug { "LossEWC just returning score..."}
             score
         }
     }
@@ -80,10 +79,10 @@ class LossEWC(private val softmaxClipEps: Double = DEFAULT_SOFTMAX_CLIPPING_EPSI
         val scoreArr = scoreArray(labels, preOutput, activationFn, mask)
         val a = scoreArr.sum(true, 1).muli(-1)
         val b = if (old_var_list != null && fishers != null) {
-            val penalty = model.paramTable().map { (n, p) ->
-                fishers!!.getValue(n).mul(p.sub(old_var_list!![n]).mul(p.sub(old_var_list!![n]))).sumNumber().toDouble()
-            }.sum()
-            20 * penalty
+//            val penalty = model.paramTable().map { (n, p) ->
+//                fishers!!.getValue(n).mul(p.sub(old_var_list!![n]).mul(p.sub(old_var_list!![n]))).sumNumber().toDouble()
+//            }.sum()
+            1000 * fishers!!.mul(model.params().sub(old_var_list!!).mul(model.params().sub(old_var_list!!))).sumNumber().toDouble()
         } else {
             0
         }
@@ -161,8 +160,8 @@ class LossEWC(private val softmaxClipEps: Double = DEFAULT_SOFTMAX_CLIPPING_EPSI
     }
 
     companion object {
-        var old_var_list: Map<String, INDArray>? = null
-        var fishers: Map<String, INDArray>? = null
+        var old_var_list: INDArray? = null
+        var fishers: INDArray? = null
         lateinit var model: CustomMultiLayerNetwork
         var calculateFisher = false
         private const val DEFAULT_SOFTMAX_CLIPPING_EPSILON = 1e-10
