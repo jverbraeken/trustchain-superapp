@@ -83,13 +83,28 @@ class EWCAdamUpdater(private val config: EWCAdam) : GradientUpdater<EWCAdam> {
         gradient.assign(
             if (fisher == null || old_var_list == null) tmp
             else {
-                val diff = model.params().sub(old_var_list)!!.add(tmp)
-                val ones = NDArray(1, fisher!!.size(1).toInt(), Nd4j.order()).addi(1)
-                val b = fisher!!.div(fisher!!.maxNumber())
-                val a = b.replaceWhere(b.mul(-1), Conditions.lessThan(0.0))/*.replaceWhere(ones, Conditions.greaterThan(1.0))*/
-//                val c = ones.sub(ones.sub(a).mul(ones.sub(a)))
+                val ones = NDArray(1, fisher!![0].size(1).toInt(), Nd4j.order()).addi(1)
+                val bufferv = NDArray(1, fisher!![0].size(1).toInt(), Nd4j.order())
+                /*val bufferw = NDArray(1, fisher!![0].size(1).toInt(), Nd4j.order())
+                for (arr in fisher!!.zip(old_var_list!!)) {
+                    val b = arr.first.div(arr.first.maxNumber())
+                    val a = b.replaceWhere(b.mul(-1), Conditions.lessThan(0.0))*//*.replaceWhere(ones, Conditions.greaterThan(1.0))*//*
+//                    val c = ones.sub(ones.sub(a).mul(ones.sub(a))).mul(0.5)
+                    bufferw.addi(a)
 //                val a = fisher!!.div(fisher!!.maxNumber()).mul(diff)
-                tmp.add(a.mul(diff))
+                }
+                a.addi(1e-20)*/
+                for (arr in fisher!!.zip(old_var_list!!)) {
+                    val diff = model.params().sub(arr.second)!!.add(tmp)
+                    val b = arr.first.div(arr.first.maxNumber())
+                    val a = b.replaceWhere(b.mul(-1), Conditions.lessThan(0.0))/*.replaceWhere(ones, Conditions.greaterThan(1.0))*/
+//                    val c = ones.sub(ones.sub(a).mul(ones.sub(a))).mul(0.5)
+                    bufferv.addi(a/*.div(bufferw)*/.mul(diff))
+//                val a = fisher!!.div(fisher!!.maxNumber()).mul(diff)
+                }
+                bufferv.divi(fisher!!.size)//muli(bufferw.replaceWhere(ones, Conditions.greaterThan(1.0)))
+                tmp.addi(bufferv)
+                tmp
 
 //                tmp.add(diff)
 //                val a = fisher!!.mul(diff.mul(diff))
@@ -104,8 +119,8 @@ class EWCAdamUpdater(private val config: EWCAdam) : GradientUpdater<EWCAdam> {
     }
 
     companion object {
-        var fisher: INDArray? = null
-        var old_var_list: INDArray? = null
+        var fisher: List<INDArray>? = null
+        var old_var_list: List<INDArray>? = null
         lateinit var model: CustomMultiLayerNetwork
         const val M_STATE = "M"
         const val V_STATE = "V"
