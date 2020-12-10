@@ -1,6 +1,5 @@
 package nl.tudelft.trustchain.fedml.ui
 
-import android.content.res.AssetManager
 import android.os.Bundle
 import android.os.StrictMode
 import android.view.View
@@ -210,10 +209,35 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
                     copyFile(input, output)
                 }
             }
+            val mnistDir = File(baseDirectory, "mnist")
+            if (!mnistDir.exists()) {
+                mnistDir.mkdirs()
+            }
+            assetManager.open("mnist/t10k-images-idx3-ubyte.bin").use { input ->
+                FileOutputStream(File(mnistDir, "t10k-images-idx3-ubyte.bin")).use { output ->
+                    copyFile(input, output)
+                }
+            }
+            assetManager.open("mnist/t10k-labels-idx1-ubyte.bin").use { input ->
+                FileOutputStream(File(mnistDir, "t10k-labels-idx1-ubyte.bin")).use { output ->
+                    copyFile(input, output)
+                }
+            }
+            assetManager.open("mnist/train-images-idx3-ubyte.bin").use { input ->
+                FileOutputStream(File(mnistDir, "train-images-idx3-ubyte.bin")).use { output ->
+                    copyFile(input, output)
+                }
+            }
+            assetManager.open("mnist/train-labels-idx1-ubyte.bin").use { input ->
+                FileOutputStream(File(mnistDir, "train-labels-idx1-ubyte.bin")).use { output ->
+                    copyFile(input, output)
+                }
+            }
         } catch (e: IOException) {
             // Probably a directory
+            logger.warn { "Skipping copying of file" }
         }
-        for (path in arrayOf("train", "test", "train/Inertial Signals", "test/Inertial Signals")) {
+        /*for (path in arrayOf("train", "test", "train/Inertial Signals", "test/Inertial Signals")) {
             var files: Array<String>? = null
             try {
                 files = assetManager.list(path)
@@ -237,7 +261,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
                     }
                 }
             }
-        }
+        }*/
     }
 
     private fun copyFile(inn: InputStream, out: OutputStream) {
