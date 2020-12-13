@@ -1,33 +1,38 @@
 package nl.tudelft.trustchain.fedml.ai
 
+import mu.KotlinLogging
+import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDatasetIterator
+import org.deeplearning4j.exception.DL4JInvalidInputException
 import org.deeplearning4j.nn.api.Model
+import org.deeplearning4j.nn.graph.ComputationGraph
+import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.nd4j.evaluation.IEvaluation
 import org.nd4j.evaluation.classification.Evaluation
 import java.io.File
 import java.io.PrintWriter
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.atomic.AtomicLong
 import kotlin.collections.ArrayList
 import kotlin.concurrent.fixedRateTimer
 
 private const val DATE_PATTERN = "yyyy-MM-dd_HH.mm.ss"
 private val DATE_FORMAT = SimpleDateFormat(DATE_PATTERN, Locale.US)
+private val logger = KotlinLogging.logger("SimulatedRunner")
 
 class EvaluationProcessor(
     baseDirectory: File,
     runner: String,
-    mlConfiguration: List<MLConfiguration>,
     private val extraElementNames: List<String>
 ) : CustomEvaluationCallback {
     @Transient
     private val dataLines = ArrayList<Array<String>>()
+    @Transient
+    private val configurationLines = ArrayList<String>()
     private val fileDirectory = File(baseDirectory.path, "evaluations")
     private val fileResults = File(fileDirectory, "evaluation-$runner-${DATE_FORMAT.format(Date())}.csv")
     private var fileMeta = File(fileDirectory, "evaluation-$runner-${DATE_FORMAT.format(Date())}.meta.csv")
-    internal var epoch = 0
-    internal var iteration = 0
-    internal var extraElements = mapOf<String, String>()
-    internal var elapsedTime = 0L
+    private lateinit var currentName: String
 
     data class EvaluationData(
         val beforeAfterAveraging: String,
@@ -43,60 +48,34 @@ class EvaluationProcessor(
         }
         fileResults.createNewFile()
         fileMeta.createNewFile()
-        PrintWriter(fileMeta).use { pw ->
-            pw.println(
-                arrayOf(
-                    "simulationIndex",
-                    "dataset",
-                    "optimizer",
-                    "learning rate",
-                    "momentum",
-                    "l2",
+        configurationLines.add(
+            arrayOf(
+                "name",
+                "simulationIndex",
+                "dataset",
+                "optimizer",
+                "learning rate",
+                "momentum",
+                "l2",
 
-                    "batchSize",
-                    "iteratorDistribution",
-                    "maxTestSamples",
+                "batchSize",
+                "iteratorDistribution",
+                "maxTestSamples",
 
-                    "gar",
-                    "communicationPattern",
-                    "behavior",
-                    "numEpochs",
+                "gar",
+                "communicationPattern",
+                "behavior",
+                "numEpochs",
+                "slowdown",
+                "joiningLate",
 
-                    "local model poisoning attack",
-                    "#attackers",
-                ).joinToString(",")
-            )
-            mlConfiguration.forEachIndexed { index, configuration ->
-                val nnConfiguration = configuration.nnConfiguration
-                val datasetIteratorConfiguration = configuration.datasetIteratorConfiguration
-                val trainConfiguration = configuration.trainConfiguration
-                val modelPoisoningConfiguration = configuration.modelPoisoningConfiguration
-                pw.println(
-                    arrayOf(
-                        index.toString(),
-                        configuration.dataset.text,
-                        nnConfiguration.optimizer.text,
-                        nnConfiguration.learningRate.text,
-                        nnConfiguration.momentum?.text ?: "<null>",
-                        nnConfiguration.l2.text,
-
-                        datasetIteratorConfiguration.batchSize.text,
-                        datasetIteratorConfiguration.distribution.toString().replace(", ", "-"),
-                        datasetIteratorConfiguration.maxTestSamples.text,
-
-                        trainConfiguration.gar.text,
-                        trainConfiguration.communicationPattern.text,
-                        trainConfiguration.behavior.text,
-                        trainConfiguration.numEpochs,
-
-                        modelPoisoningConfiguration.attack.text,
-                        modelPoisoningConfiguration.numAttackers.text,
-                    ).joinToString(",")
-                )
-            }
-        }
+                "local model poisoning attack",
+                "#attackers",
+            ).joinToString(",")
+        )
 
         val mainDataLineNames = arrayOf(
+            "name",
             "simulationIndex",
             "elapsedTime",
             "epoch",
@@ -138,13 +117,56 @@ class EvaluationProcessor(
         }
     }
 
+    override fun newSimulation(
+        name: String,
+        mlConfiguration: List<MLConfiguration>
+    ) {
+        this.currentName = name
+        mlConfiguration.forEachIndexed { index, configuration ->
+            val nnConfiguration = configuration.nnConfiguration
+            val datasetIteratorConfiguration = configuration.datasetIteratorConfiguration
+            val trainConfiguration = configuration.trainConfiguration
+            val modelPoisoningConfiguration = configuration.modelPoisoningConfiguration
+            configurationLines.add(
+                arrayOf(
+                    name,
+                    index.toString(),
+                    configuration.dataset.text,
+                    nnConfiguration.optimizer.text,
+                    nnConfiguration.learningRate.text,
+                    nnConfiguration.momentum?.text ?: "<null>",
+                    nnConfiguration.l2.text,
+
+                    datasetIteratorConfiguration.batchSize.text,
+                    datasetIteratorConfiguration.distribution.toString().replace(", ", "-"),
+                    datasetIteratorConfiguration.maxTestSamples.text,
+
+                    trainConfiguration.gar.text,
+                    trainConfiguration.communicationPattern.text,
+                    trainConfiguration.behavior.text,
+                    trainConfiguration.numEpochs.text,
+                    trainConfiguration.slowdown.text,
+                    trainConfiguration.joiningLate.text,
+
+                    modelPoisoningConfiguration.attack.text,
+                    modelPoisoningConfiguration.numAttackers.text,
+                ).joinToString(",")
+            )
+        }
+        PrintWriter(fileMeta).use { pw ->
+            configurationLines.forEach(pw::println)
+        }
+    }
+
     override fun call(
-        listener: CustomEvaluativeListener,
         model: Model,
-        invocationsCount: Long,
         evaluations: Array<out IEvaluation<*>>,
         simulationIndex: Int,
-        score: Double
+        score: Double,
+        extraElements: Map<String, String>,
+        elapsedTime: Long,
+        iterations: Int,
+        epoch: Int
     ) {
         val accuracy = evaluations[0].getValue(Evaluation.Metric.ACCURACY)
         val f1 = evaluations[0].getValue(Evaluation.Metric.F1)
@@ -153,10 +175,11 @@ class EvaluationProcessor(
         val gMeasure = evaluations[0].getValue(Evaluation.Metric.GMEASURE)
         val mcc = evaluations[0].getValue(Evaluation.Metric.MCC)
         val mainDataLineElements = arrayOf(
+            this.currentName,
             simulationIndex.toString(),
             elapsedTime.toString(),
             epoch.toString(),
-            iteration.toString(),
+            iterations.toString(),
             accuracy.toString(),
             f1.toString(),
             precision.toString(),
@@ -184,5 +207,19 @@ class EvaluationProcessor(
                     .forEach(pw::println)
             }
         }
+    }
+
+    fun evaluate(testDataSetIterator: CustomBaseDatasetIterator, network: MultiLayerNetwork, extraElements: Map<String, String>, elapsedTime: Long, iterations: Int, epoch: Int, simulationIndex: Int, logging: Boolean) {
+        testDataSetIterator.reset()
+        val evaluations = arrayOf(Evaluation())
+
+        if (logging) logger.debug { "Starting evaluation, #iterations = $iterations, ${extraElements.getOrDefault("before or after averaging", "")}" }
+        network.doEvaluation(testDataSetIterator, *evaluations)
+
+        for (evaluation in evaluations) {
+            if (logging) logger.debug { "${evaluation.javaClass.simpleName}:\n${evaluation.stats()}" }
+        }
+        network.computeGradientAndScore()
+        call(network, evaluations, simulationIndex, network.score(), extraElements, elapsedTime, iterations, epoch)
     }
 }

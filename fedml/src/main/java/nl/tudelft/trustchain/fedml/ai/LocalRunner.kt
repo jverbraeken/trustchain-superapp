@@ -34,14 +34,12 @@ class LocalRunner : Runner() {
                 mlConfiguration.nnConfiguration,
                 seed
             )
-            var evaluationListener = CustomEvaluativeListener(testDataSetIterator, 999999)
             val evaluationProcessor = EvaluationProcessor(
                 baseDirectory,
                 "local",
-                listOf(mlConfiguration),
                 ArrayList()
             )
-            evaluationListener.callback = evaluationProcessor
+            evaluationProcessor.newSimulation("local run", listOf(mlConfiguration))
             network.setListeners(
                 ScoreIterationListener(printScoreIterations)
             )
@@ -55,7 +53,6 @@ class LocalRunner : Runner() {
                 epoch++
                 trainDataSetIterator.reset()
                 logger.debug { "Starting epoch: $epoch" }
-                evaluationProcessor.epoch = epoch
                 val start = System.currentTimeMillis()
                 while (true) {
                     var endEpoch = false
@@ -70,11 +67,19 @@ class LocalRunner : Runner() {
                     if (iterationsToEvaluation >= iterationsBeforeEvaluation) {
                         iterationsToEvaluation = 0
                         val end = System.currentTimeMillis()
-                        evaluationProcessor.iteration = iterations
-                        evaluationProcessor.elapsedTime = end - start
-                        evaluationListener = CustomEvaluativeListener(testDataSetIterator, 999999)
-                        evaluationListener.callback = evaluationProcessor
-                        evaluationListener.invokeListener(network, 0, true)
+                        evaluationProcessor.evaluate(
+                            testDataSetIterator,
+                            network,
+                            mapOf(
+                                Pair("before or after averaging", "after"),
+                                Pair("#peers included in current batch", "")
+                            ),
+                            end - start,
+                            iterations,
+                            epoch,
+                            0,
+                            true
+                        )
                     }
                     if (endEpoch) {
                         break

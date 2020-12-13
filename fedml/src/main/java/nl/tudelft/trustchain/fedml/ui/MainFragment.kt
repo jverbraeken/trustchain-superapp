@@ -1,6 +1,5 @@
 package nl.tudelft.trustchain.fedml.ui
 
-import android.content.res.AssetManager
 import android.os.Bundle
 import android.os.StrictMode
 import android.view.View
@@ -10,6 +9,8 @@ import android.widget.Spinner
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import kotlinx.serialization.*
+import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import nl.tudelft.trustchain.common.ui.BaseFragment
 import nl.tudelft.trustchain.common.util.viewBinding
@@ -51,6 +52,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private val modelPoisoningAttacks = ModelPoisoningAttacks.values().map { it.text }
     private val numAttackers = NumAttackers.values().map { it.text }
 
+    private var automationFilename: String? = null
     private var dataset = Datasets.MNIST
     private var optimizer = dataset.defaultOptimizer
     private var learningRate = dataset.defaultLearningRate
@@ -144,6 +146,11 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private fun processIntentExtras() {
         val extras = requireActivity().intent?.extras
 
+        val automationFilename = extras?.getString("automationFilename")
+        if (automationFilename != null) {
+            this.automationFilename = automationFilename
+        }
+
         val dataset = extras?.getString("dataset")
         if (dataset != null) {
             this.dataset = loadDataset(dataset)
@@ -205,8 +212,22 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private fun copyAssets() {
         val assetManager = requireActivity().assets
         try {
-            assetManager.open("simulation.config").use { input ->
-                FileOutputStream(File(baseDirectory, "simulation.config")).use { output ->
+            val dir = File(baseDirectory, "automation")
+            if (!dir.exists()) {
+                dir.mkdirs()
+            }
+            assetManager.open("automation/simulation.config").use { input ->
+                FileOutputStream(File(baseDirectory, "automation/simulation.config")).use { output ->
+                    copyFile(input, output)
+                }
+            }
+            assetManager.open("automation/automation1.config").use { input ->
+                FileOutputStream(File(baseDirectory, "automation/automation1.config")).use { output ->
+                    copyFile(input, output)
+                }
+            }
+            assetManager.open("automation/automation2.config").use { input ->
+                FileOutputStream(File(baseDirectory, "automation/automation2.config")).use { output ->
                     copyFile(input, output)
                 }
             }
@@ -275,11 +296,18 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     }
 
     private fun onBtnSimulateDistributedLocallyClicked() {
-        simulatedRunner.run(
-            baseDirectory,
-            getSeed(),
-            createMLConfiguration()
-        )
+        if (automationFilename != null) {
+            simulatedRunner.automate(
+                baseDirectory,
+                automationFilename!!
+            )
+        } else {
+            simulatedRunner.run(
+                baseDirectory,
+                getSeed(),
+                createMLConfiguration()
+            )
+        }
     }
 
     private fun onBtnRunDistributedClicked() {
@@ -312,7 +340,9 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
                 numEpochs = epoch,
                 gar = gar,
                 communicationPattern = communicationPattern,
-                behavior = behavior
+                behavior = behavior,
+                slowdown = Slowdowns.NONE,
+                joiningLate = TransmissionRounds.N0
             ),
             ModelPoisoningConfiguration(
                 attack = modelPoisoningAttack,

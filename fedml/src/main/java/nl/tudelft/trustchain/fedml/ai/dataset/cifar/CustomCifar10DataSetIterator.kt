@@ -1,28 +1,38 @@
 package nl.tudelft.trustchain.fedml.ai.dataset.cifar
 
 import nl.tudelft.trustchain.fedml.Behaviors
+import nl.tudelft.trustchain.fedml.ai.CustomDataSetType
 import nl.tudelft.trustchain.fedml.ai.DatasetIteratorConfiguration
+import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDatasetIterator
+import nl.tudelft.trustchain.fedml.ai.dataset.mnist.CustomMnistDataFetcher
 import org.deeplearning4j.datasets.datavec.RecordReaderDataSetIterator
 import org.deeplearning4j.datasets.fetchers.Cifar10Fetcher
 import org.deeplearning4j.datasets.fetchers.DataSetType
+import org.nd4j.linalg.dataset.DataSet
 import java.io.File
 
 
 class CustomCifar10DataSetIterator(
     private val iteratorConfiguration: DatasetIteratorConfiguration,
     seed: Long,
-    dataSetType: DataSetType,
+    dataSetType: CustomDataSetType,
     behavior: Behaviors
-) : RecordReaderDataSetIterator(
-    CustomCifar10Fetcher(
+) : CustomBaseDatasetIterator(
+    1,
+    1,
+    CustomMnistDataFetcher(arrayListOf(), 0L, CustomDataSetType.FULL_TEST, 0, Behaviors.BENIGN)
+    /*CustomCifar10Fetcher(
         iteratorConfiguration.distribution,
-        if (dataSetType == DataSetType.TEST) iteratorConfiguration.maxTestSamples.value else Integer.MAX_VALUE,
+        if (dataSetType == CustomDataSetType.TEST) iteratorConfiguration.maxTestSamples.value else Integer.MAX_VALUE,
         behavior
-    ).getRecordReader(seed, null, dataSetType, null),
+    ).getRecordReader(seed, null, *//*dataSetType*//*DataSetType.TRAIN, null), // DataSetType.TRAIN I just put there to not having to fix the code right away
     iteratorConfiguration.batchSize.value,
     1,
-    Cifar10Fetcher.NUM_LABELS
+    Cifar10Fetcher.NUM_LABELS*/
 ) {
+    override val testBatches: List<DataSet?>
+        get() = arrayListOf() // complete nonsense
+
     override fun getLabels(): List<String> {
         return iteratorConfiguration
             .distribution
@@ -35,7 +45,7 @@ class CustomCifar10DataSetIterator(
         fun create(
             iteratorConfiguration: DatasetIteratorConfiguration,
             seed: Long,
-            dataSetType: DataSetType,
+            dataSetType: CustomDataSetType,
             baseDirectory: File,
             behavior: Behaviors
         ): CustomCifar10DataSetIterator {

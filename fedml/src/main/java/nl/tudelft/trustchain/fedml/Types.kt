@@ -46,7 +46,7 @@ enum class Datasets(
         ::generateDefaultMNISTConfiguration,
         CustomMnistDataSetIterator::create
     ),
-    /*CIFAR10(
+    CIFAR10(
         "cifar10",
         "CIFAR-10",
         Optimizers.RMSPROP,
@@ -57,7 +57,7 @@ enum class Datasets(
         IteratorDistributions.DISTRIBUTION_CIFAR_1,
         ::generateDefaultCIFARConfiguration,
         CustomCifar10DataSetIterator::create
-    ),*/
+    ),
 
     /*TINYIMAGENET(
         "tinyimagenet",
@@ -119,7 +119,9 @@ fun loadIteratorDistribution(iteratorDistribution: String) =
     IteratorDistributions.values().first { it.id == iteratorDistribution }
 
 enum class MaxTestSamples(val id: String, val text: String, val value: Int) {
+    NUM_20("num_20", "20", 20),
     NUM_40("num_40", "40", 40),
+    NUM_100("num_100", "100", 100),
     NUM_200("num_200", "200", 200)
 }
 
@@ -201,6 +203,7 @@ enum class GARs(
     val obj: AggregationRule,
     val defaultModelPoisoningAttack: ModelPoisoningAttacks
 ) {
+    NONE("none", "None", NoAveraging(), ModelPoisoningAttacks.NONE),
     AVERAGE("average", "Simple average", Average(), ModelPoisoningAttacks.NONE),
     MEDIAN("median", "Median", Median(), ModelPoisoningAttacks.FANG_2020_MEDIAN),
     CWTRIMMEDMEAN(
@@ -236,6 +239,16 @@ enum class Behaviors(val id: String, val text: String) {
 
 fun loadBehavior(behavior: String) = Behaviors.values().first { it.id == behavior }
 
+enum class Slowdowns(val id: String, val text: String, val multiplier: Double) {
+    NONE("none", "-", 1.0),
+    D2("d2", "x 0.5", 0.5),
+}
+
+enum class TransmissionRounds(val id: String, val text: String, val rounds: Int) {
+    N0("n0", "0", 0),
+    N2("n2", "2", 2)
+}
+
 enum class ModelPoisoningAttacks(val id: String, val text: String, val obj: ModelPoisoningAttack) {
     NONE("none", "<none>", NoAttack()),
     FANG_2020_TRIMMED_MEAN("fang_2020_trimmed_mean", "Fang 2020, trimmed mean", Fang2020TrimmedMean(2)),
@@ -251,7 +264,10 @@ enum class NumAttackers(val id: String, val text: String, val num: Int) {
     NUM_1("num_1", "1", 1),
     NUM_2("num_2", "2", 2),
     NUM_3("num_3", "3", 3),
-    NUM_4("num_4", "4", 4)
+    NUM_4("num_4", "4", 4),
+    NUM_10("num_10", "10", 10),
+    NUM_75("num_75", "75", 75),
+    NUM_175("num_175", "175", 175)
 }
 
 fun loadNumAttackers(numAttackers: String) = NumAttackers.values().first { it.id == numAttackers }

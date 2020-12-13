@@ -4,12 +4,19 @@ import org.deeplearning4j.nn.api.Model
 import org.nd4j.evaluation.IEvaluation
 
 interface CustomEvaluationCallback {
+    fun newSimulation(
+        name: String,
+        mlConfiguration: List<MLConfiguration>,
+    )
+
     fun call(
-        listener: CustomEvaluativeListener,
         model: Model,
-        invocationsCount: Long,
         evaluations: Array<out IEvaluation<*>>,
         simulationIndex: Int,
-        score: Double
+        score: Double,
+        extraElements: Map<String, String>,
+        elapsedTime: Long,
+        iterations: Int,
+        epoch: Int
     )
 }

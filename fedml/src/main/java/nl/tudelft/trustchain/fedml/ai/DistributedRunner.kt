@@ -76,12 +76,12 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
             val evaluationProcessor = EvaluationProcessor(
                 baseDirectory,
                 "distributed",
-                listOf(mlConfiguration),
                 listOf(
                     "before or after averaging",
                     "#peers included in current batch"
                 )
             )
+            evaluationProcessor.newSimulation("distributed simulation", listOf(mlConfiguration))
             val network = generateNetwork(
                 mlConfiguration.dataset,
                 mlConfiguration.nnConfiguration,
@@ -163,7 +163,6 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         var iterationsToEvaluation = 0
         for (epoch in 0 until trainConfiguration.numEpochs.value) {
             logger.debug { "Starting epoch: $epoch" }
-            evaluationProcessor.epoch = epoch
             trainDataSetIterator.reset()
             val start = System.currentTimeMillis()
             var oldParams = network.params().dup()
@@ -187,14 +186,18 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                     iterationsToEvaluation = 0
                     val end = System.currentTimeMillis()
                     logger.debug { "Evaluating network " }
-                    evaluationProcessor.iteration = iterations
-                    execEvaluationProcessor(
-                        evaluationProcessor,
+                    evaluationProcessor.evaluate(
                         fullTestDataSetIterator,
                         network,
-                        EvaluationProcessor.EvaluationData(
-                            "before", "", end - start, network.iterationCount, epoch
-                        )
+                        mapOf(
+                            Pair("before or after averaging", "after"),
+                            Pair("#peers included in current batch", "")
+                        ),
+                        end - start,
+                        iterations,
+                        epoch,
+                        0,
+                        true
                     )
 
                     // Integrate parameters of other peers
@@ -234,14 +237,18 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                         newOtherModels.clear()
                         network.setParameters(averageParams)
                         val end2 = System.currentTimeMillis()
-
-                        execEvaluationProcessor(
-                            evaluationProcessor,
+                        evaluationProcessor.evaluate(
                             fullTestDataSetIterator,
                             network,
-                            EvaluationProcessor.EvaluationData(
-                                "after", numPeers.toString(), end2 - start2, iterations, epoch
-                            )
+                            mapOf(
+                                Pair("before or after averaging", "after"),
+                                Pair("#peers included in current batch", numPeers.toString())
+                            ),
+                            end2 - start2,
+                            iterations,
+                            epoch,
+                            0,
+                            true
                         )
                     }
 
@@ -294,27 +301,6 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
             newMatrix[0][i] = random.nextFloat() * 2 - 1
         }
         return NDArray(newMatrix)
-    }
-
-    private fun execEvaluationProcessor(
-        evaluationProcessor: EvaluationProcessor,
-        testDataSetIterator: DataSetIterator,
-        network: MultiLayerNetwork,
-        evaluationData: EvaluationProcessor.EvaluationData
-    ) {
-        testDataSetIterator.reset()
-        evaluationProcessor.extraElements = mapOf(
-            Pair("before or after averaging", evaluationData.beforeAfterAveraging),
-            Pair("#peers included in current batch", evaluationData.numPeers)
-        )
-        evaluationProcessor.elapsedTime = evaluationData.elapsedTime
-        val evaluationListener = CustomEvaluativeListener(testDataSetIterator, 999999)
-        evaluationListener.callback = evaluationProcessor
-        evaluationListener.invokeListener(
-            network,
-            1,
-            true
-        )
     }
 
     override fun onMessageReceived(messageId: MessageId, peer: Peer, payload: Any) {

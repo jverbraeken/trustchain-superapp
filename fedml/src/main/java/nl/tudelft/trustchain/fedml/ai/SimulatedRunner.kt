@@ -1,11 +1,17 @@
 package nl.tudelft.trustchain.fedml.ai
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.*
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDatasetIterator
-import nl.tudelft.trustchain.fedml.ai.gar.Average
 import nl.tudelft.trustchain.fedml.ipv8.MsgPsiCaClientToServer
 import nl.tudelft.trustchain.fedml.ipv8.MsgPsiCaServerToClient
+import nl.tudelft.trustchain.fedml.ui.Automation
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener
 import org.nd4j.linalg.api.ndarray.INDArray
@@ -26,12 +32,241 @@ class SimulatedRunner : Runner() {
     private val newOtherModelBuffers = ArrayList<ConcurrentHashMap<Int, INDArray>>()
     private val recentOtherModelsBuffers = ArrayList<ArrayDeque<Pair<Int, INDArray>>>()
     private val randoms = ArrayList<Random>()
-    override val iterationsBeforeEvaluation = 100
+    override val iterationsBeforeEvaluation = 50
+    private val iterationsBeforeSending = iterationsBeforeEvaluation * 3
+
+    fun automate(
+        baseDirectory: File,
+        automationFilename: String,
+    ) {
+        /*val trainDataSetIterators = (0 until 10).map {
+            Datasets.MNIST.inst(
+                DatasetIteratorConfiguration(BatchSizes.BATCH_5,
+                    listOf(10, 10, 10, 10, 10, 10, 10, 10, 10, 10),
+                    *//*listOf(if (it == 0) 100 else 10,
+                        if (it == 1) 100 else 10,
+                        if (it == 2) 100 else 10,
+                        if (it == 3) 100 else 10,
+                        if (it == 4) 100 else 10,
+                        if (it == 5) 100 else 10,
+                        if (it == 6) 800 else 0,
+                        if (it == 7) 800 else 0,
+                        if (it == 8) 800 else 0,
+                        if (it == 9) 800 else 0),*//*
+                    MaxTestSamples.NUM_200),
+                it.toLong(),
+                CustomDataSetType.TRAIN,
+                baseDirectory,
+                Behaviors.BENIGN
+            )
+        }
+        val testDataSetIterator = Datasets.MNIST.inst(
+            DatasetIteratorConfiguration(BatchSizes.BATCH_5,
+//                listOf(200, 200, 200, 200, 200, 200, 200, 200, 200, 200),
+                listOf(100, 100, 100, 100, 100, 100, 100, 100, 100, 100),
+                MaxTestSamples.NUM_100),
+            0L,
+            CustomDataSetType.FULL_TEST,
+            baseDirectory,
+            Behaviors.BENIGN
+        )
+        val globalNetworks = (0 until 11).map {
+            generateNetwork(
+                Datasets.MNIST,
+                NNConfiguration(Datasets.MNIST.defaultOptimizer, Datasets.MNIST.defaultLearningRate, Datasets.MNIST.defaultMomentum, Datasets.MNIST.defaultL2),
+                0
+            )
+        }
+        logger.debug { "1" }
+        val oldModel = globalNetworks[0].params().dup()
+        (0 until 2).forEach { i ->
+            logger.debug { "2" }
+            repeat(1) {
+                logger.debug { "3" }
+                globalNetworks[i].fit(trainDataSetIterators[i])
+            }
+        }
+        logger.debug { "3" }
+        val newParams = globalNetworks[0].params().dup()
+        val gradient = oldModel.sub(newParams)
+        testDataSetIterator.reset()
+        val evaluations = arrayOf(Evaluation())
+        globalNetworks[0].doEvaluation(testDataSetIterator, *evaluations)
+        for (evaluation in evaluations) {
+            logger.debug { "${evaluation.javaClass.simpleName}:\n${evaluation.stats()}" }
+        }
+        logger.debug { "4" }
+        val op1 = globalNetworks[0].params().add(globalNetworks[1].params()).div(2)
+        globalNetworks[0].setParams(op1)
+        logger.debug { "5" }
+
+        testDataSetIterator.reset()
+        val evaluations2 = arrayOf(Evaluation())
+        globalNetworks[0].doEvaluation(testDataSetIterator, *evaluations2)
+        for (evaluation in evaluations2) {
+            logger.debug { "${evaluation.javaClass.simpleName}:\n${evaluation.stats()}" }
+        }
+
+        val op2 = Average().integrateParameters(globalNetworks[0], oldModel, gradient, listOf(globalNetworks[1]).mapIndexed { index, multiLayerNetwork -> Pair(index, multiLayerNetwork.params().dup()) }.toMap(), ArrayDeque(), testDataSetIterator, mapOf(), true)
+        globalNetworks[0].setParams(op2)
+        logger.debug { "6" }
+
+        testDataSetIterator.reset()
+        val evaluations3 = arrayOf(Evaluation())
+        globalNetworks[0].doEvaluation(testDataSetIterator, *evaluations3)
+        for (evaluation in evaluations3) {
+            logger.debug { "${evaluation.javaClass.simpleName}:\n${evaluation.stats()}" }
+        }
+        print("hoi")*/
+
+        val job = SupervisorJob()
+        val scope = CoroutineScope(Dispatchers.Default + job)
+        scope.launch {
+            val evaluationProcessor = EvaluationProcessor(
+                baseDirectory,
+                "simulated",
+                listOf(
+                    "before or after averaging",
+                    "#peers included in current batch"
+                )
+            )
+
+            val automation = loadAutomation(baseDirectory, automationFilename)
+            val iterations = automation.fixedValues["iterations"]!!.toInt()
+            val batchSize = loadBatchSize(automation.fixedValues["batchSize"]!!)
+            val iteratorDistribution_ = automation.fixedValues["iteratorDistribution"]!!
+            val iteratorDistribution = if (iteratorDistribution_.startsWith('[')) {
+                iteratorDistribution_
+                    .substring(1, iteratorDistribution_.length - 1)
+                    .split(", ")
+                    .map { it.toInt() }
+            } else {
+                loadIteratorDistribution(iteratorDistribution_).value
+            }
+            val maxTestSample = loadMaxTestSample(automation.fixedValues["maxTestSample"]!!)
+            val optimizer = loadOptimizer(automation.fixedValues["optimizer"]!!)
+            val learningRate = loadLearningRate(automation.fixedValues["learningRate"]!!)
+            val momentum = loadMomentum(automation.fixedValues["momentum"]!!)
+            val l2Regularization = loadL2Regularization(automation.fixedValues["l2Regularization"]!!)
+            val epoch = loadEpoch(automation.fixedValues["epoch"]!!)
+            val communicationPattern = loadCommunicationPattern(automation.fixedValues["communicationPattern"]!!)
+            for (figure in automation.figures) {
+                val figureName = figure.name
+                val dataset = loadDataset(figure.fixedValues["dataset"]!!)
+                val behavior = loadBehavior(figure.fixedValues["behavior"]!!)
+                val modelPoisoningAttack = loadModelPoisoningAttack(figure.fixedValues["modelPoisoningAttack"]!!)
+                val numNodes = figure.fixedValues["numNodes"]!!.toInt()
+                val numAttackers = loadNumAttackers(figure.fixedValues["numAttackers"]!!)
+                val firstNodeSpeed = figure.fixedValues["firstNodeSpeed"]?.toInt() ?: 0
+                val firstNodeJoiningLate = figure.fixedValues["firstNodeJoiningLate"]?.equals("true") ?: false
+                val overrideIteratorDistribution = figure.iteratorDistributions
+                for (test in figure.tests) {
+                    val gar = loadGAR(test.gar)
+                    logger.error { "Going to test: $figureName - ${gar.text}" }
+                    val configs = ArrayList<MLConfiguration>()
+                    for (node in 0 until /*numNodes*/5) {
+                        configs.add(
+                            MLConfiguration(
+                                dataset,
+                                DatasetIteratorConfiguration(
+                                    batchSize = batchSize,
+                                    maxTestSamples = maxTestSample,
+                                    distribution = overrideIteratorDistribution?.get(node % overrideIteratorDistribution.size)
+                                        ?: iteratorDistribution
+                                ),
+                                NNConfiguration(
+                                    optimizer = optimizer,
+                                    learningRate = learningRate,
+                                    momentum = momentum,
+                                    l2 = l2Regularization
+                                ),
+                                TrainConfiguration(
+                                    numEpochs = epoch,
+                                    gar = gar,
+                                    communicationPattern = communicationPattern,
+                                    behavior = behavior,
+                                    slowdown = if ((node == 0 && firstNodeSpeed == -1) || (node != 0 && firstNodeSpeed == 1)) Slowdowns.D2 else Slowdowns.NONE,
+                                    joiningLate = if (node == 0 && firstNodeJoiningLate) TransmissionRounds.N2 else TransmissionRounds.N0
+                                ),
+                                ModelPoisoningConfiguration(
+                                    attack = modelPoisoningAttack,
+                                    numAttackers = numAttackers
+                                )
+                            )
+                        )
+                    }
+                    evaluationProcessor.newSimulation(figureName + " - " + gar.id, configs)
+                    // All these things have to be initialized before any of the runner threads start
+                    val toServerMessageBuffers = ArrayList<CopyOnWriteArrayList<MsgPsiCaClientToServer>>()
+                    val toClientMessageBuffers = ArrayList<CopyOnWriteArrayList<MsgPsiCaServerToClient>>()
+                    val sraKeyPairs = ArrayList<SRAKeyPair>()
+                    for (i in configs.indices) {
+                        newOtherModelBuffers.add(ConcurrentHashMap())
+                        recentOtherModelsBuffers.add(ArrayDeque())
+                        randoms.add(Random(i))
+                        toServerMessageBuffers.add(CopyOnWriteArrayList())
+                        toClientMessageBuffers.add(CopyOnWriteArrayList())
+                        sraKeyPairs.add(SRAKeyPair.create(bigPrime, java.util.Random(i.toLong())))
+                    }
+                    logger.debug { "config.indices: ${configs.indices}" }
+                    val threads = ArrayList<Thread>()
+                    for (simulationIndex in configs.indices) {
+                        threads.add(thread {
+                            val config = configs[simulationIndex]
+                            val dataset = config.dataset
+                            val datasetIteratorConfiguration = config.datasetIteratorConfiguration
+                            val behavior = config.trainConfiguration.behavior
+                            val (iterTrain, iterTrainFull, iterTest, iterTestFull) = getDataSetIterators(
+                                dataset,
+                                datasetIteratorConfiguration,
+                                simulationIndex.toLong(),
+                                baseDirectory,
+                                behavior
+                            )
+                            val network = generateNetwork(
+                                dataset,
+                                config.nnConfiguration,
+                                simulationIndex
+                            )
+
+                            val countPerPeer = getSimilarPeers(
+                                iterTrain,
+                                sraKeyPairs[simulationIndex],
+                                toServerMessageBuffers,
+                                toClientMessageBuffers,
+                                simulationIndex
+                            )
+
+                            trainTestSendNetwork(
+                                simulationIndex,
+                                network,
+                                simulationIndex == 0,
+                                iterations,
+
+                                evaluationProcessor,
+                                iterTestFull,
+
+                                iterTrain,
+                                iterTrainFull,
+                                configs[simulationIndex].trainConfiguration,
+                                configs[simulationIndex].modelPoisoningConfiguration,
+
+                                iterTest,
+                                countPerPeer
+                            )
+                        })
+                    }
+                    threads.forEach { it.join() }
+                    logger.warn { "Test finished, iterations=$iterations" }
+                }
+            }
+        }
+    }
 
     override fun run(
         baseDirectory: File,
         seed: Int,
-        @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE") _unused: MLConfiguration
+        @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE") _unused: MLConfiguration,
     ) {
         var configs = loadConfig(baseDirectory)
         // All these things have to be initialized before any of the runner threads start
@@ -51,36 +286,25 @@ class SimulatedRunner : Runner() {
         val evaluationProcessor = EvaluationProcessor(
             baseDirectory,
             "simulated",
-            configs,
             listOf(
                 "before or after averaging",
                 "#peers included in current batch"
             )
         )
+        evaluationProcessor.newSimulation("simulation", configs)
+
+        val job = SupervisorJob()
+        val scope = CoroutineScope(Dispatchers.Default + job)
         for (simulationIndex in configs.indices) {
-            thread {
+            scope.launch {
                 val config = configs[simulationIndex]
                 val dataset = config.dataset
                 val datasetIteratorConfiguration = config.datasetIteratorConfiguration
                 val behavior = config.trainConfiguration.behavior
-                val trainDataSetIterator = dataset.inst(
+                val (iterTrain, iterTrainFull, iterTest, iterTestFull) = getDataSetIterators(
+                    dataset,
                     datasetIteratorConfiguration,
                     simulationIndex.toLong(),
-                    CustomDataSetType.TRAIN,
-                    baseDirectory,
-                    behavior
-                )
-                val testDataSetIterator = dataset.inst(
-                    datasetIteratorConfiguration,
-                    simulationIndex.toLong(),
-                    CustomDataSetType.TEST,
-                    baseDirectory,
-                    behavior
-                )
-                val fullTestDataSetIterator = dataset.inst(
-                    datasetIteratorConfiguration,
-                    simulationIndex.toLong(),
-                    CustomDataSetType.FULL_TEST,
                     baseDirectory,
                     behavior
                 )
@@ -91,7 +315,7 @@ class SimulatedRunner : Runner() {
                 )
 
                 val countPerPeer = getSimilarPeers(
-                    trainDataSetIterator,
+                    iterTrain,
                     sraKeyPairs[simulationIndex],
                     toServerMessageBuffers,
                     toClientMessageBuffers,
@@ -102,23 +326,71 @@ class SimulatedRunner : Runner() {
                     simulationIndex,
                     network,
                     simulationIndex == 0,
+                    -1,
 
                     evaluationProcessor,
-                    fullTestDataSetIterator,
+                    iterTestFull,
 
-                    trainDataSetIterator,
+                    iterTrain,
+                    iterTrainFull,
                     configs[simulationIndex].trainConfiguration,
                     configs[simulationIndex].modelPoisoningConfiguration,
 
-                    testDataSetIterator,
+                    iterTest,
                     countPerPeer,
                 )
             }
         }
     }
 
+    private fun getDataSetIterators(
+        dataset: Datasets,
+        datasetIteratorConfiguration: DatasetIteratorConfiguration,
+        simulationIndex: Long,
+        baseDirectory: File,
+        behavior: Behaviors,
+    ): List<CustomBaseDatasetIterator> {
+        val trainDataSetIterator = dataset.inst(
+            datasetIteratorConfiguration,
+            simulationIndex,
+            CustomDataSetType.TRAIN,
+            baseDirectory,
+            behavior
+        )
+        val fullTrainDataSetIterator = dataset.inst(
+            DatasetIteratorConfiguration(BatchSizes.BATCH_5,
+                listOf(5, 5, 5, 5, 5, 5, 5, 5, 5, 5),
+                MaxTestSamples.NUM_20),
+            simulationIndex,
+            CustomDataSetType.TRAIN,
+            baseDirectory,
+            behavior
+        )
+        val testDataSetIterator = dataset.inst(
+            datasetIteratorConfiguration,
+            simulationIndex,
+            CustomDataSetType.TEST,
+            baseDirectory,
+            behavior
+        )
+        val fullTestDataSetIterator = dataset.inst(
+            datasetIteratorConfiguration,
+            simulationIndex,
+            CustomDataSetType.FULL_TEST,
+            baseDirectory,
+            behavior
+        )
+        return listOf(trainDataSetIterator, fullTrainDataSetIterator, testDataSetIterator, fullTestDataSetIterator)
+    }
+
+    private fun loadAutomation(baseDirectory: File, automationFilename: String): Automation {
+        val file = Paths.get(baseDirectory.path, "automation/$automationFilename.config").toFile()
+        val string = file.readLines().joinToString("")
+        return Json.decodeFromString(string)
+    }
+
     private fun loadConfig(baseDirectory: File): List<MLConfiguration> {
-        val file = Paths.get(baseDirectory.path, "simulation.config").toFile()
+        val file = Paths.get(baseDirectory.path, "automation/simulation.config").toFile()
         val lines = file.readLines()
         val configurations = arrayListOf<MLConfiguration>()
 
@@ -157,7 +429,9 @@ class SimulatedRunner : Runner() {
                             numEpochs = epoch,
                             gar = gar,
                             communicationPattern = communicationPattern,
-                            behavior = behavior
+                            behavior = behavior,
+                            Slowdowns.NONE,
+                            TransmissionRounds.N0
                         ),
                         ModelPoisoningConfiguration(
                             attack = modelPoisoningAttack,
@@ -202,7 +476,7 @@ class SimulatedRunner : Runner() {
         sraKeyPair: SRAKeyPair,
         toServerMessageBuffers: ArrayList<CopyOnWriteArrayList<MsgPsiCaClientToServer>>,
         toClientMessageBuffers: ArrayList<CopyOnWriteArrayList<MsgPsiCaServerToClient>>,
-        i: Int
+        i: Int,
     ): Map<Int, Int> {
         val encryptedLabels = clientsRequestsServerLabels(
             trainDataSetIterator.labels,
@@ -242,6 +516,7 @@ class SimulatedRunner : Runner() {
         simulationIndex: Int,
         network: MultiLayerNetwork,
         logging: Boolean,
+        stopIterations: Int,
 
         // Evaluation results
         evaluationProcessor: EvaluationProcessor,
@@ -249,32 +524,56 @@ class SimulatedRunner : Runner() {
 
         // Training the network
         trainDataSetIterator: DataSetIterator,
+        fullTrainDataSetIterator: DataSetIterator,
         trainConfiguration: TrainConfiguration,
         modelPoisoningConfiguration: ModelPoisoningConfiguration,
 
         // Integrating and distributing information to peers
         testDataSetIterator: CustomBaseDatasetIterator,
         countPerPeer: Map<Int, Int>,
-        ) {
+    ) {
         if (logging) {
             network.setListeners(ScoreIterationListener(printScoreIterations))
         }
         val newOtherModels = newOtherModelBuffers[simulationIndex]
+        if (trainConfiguration.joiningLate != TransmissionRounds.N0) {
+            var count = 0
+            val target = (countPerPeer.keys.size) * trainConfiguration.joiningLate.rounds
+            while (count < target) {
+                logger.debug { "Joining late: found $count of $target" }
+                Thread.sleep(1000)
+                count += newOtherModels.size
+                newOtherModels.clear()
+            }
+            newOtherModels.clear()
+        }
         val recentOtherModels = recentOtherModelsBuffers[simulationIndex]
         val random = randoms[simulationIndex]
         val batchSize = trainDataSetIterator.batch()
         val gar = trainConfiguration.gar.obj
         var iterations = 0
         var iterationsToEvaluation = 0
+        var iterationsToSending = 0
+        var slowDownStart: Long? = null
         for (epoch in 0 until trainConfiguration.numEpochs.value) {
-            logger.debug { "Starting epoch: $epoch" }
-            evaluationProcessor.epoch = epoch
+            if (logging) logger.debug { "Starting epoch: $epoch" }
             trainDataSetIterator.reset()
+            fullTrainDataSetIterator.reset()
             val start = System.currentTimeMillis()
             var oldParams = network.params().dup()
             while (true) {
                 if (iterationsToEvaluation >= iterationsBeforeEvaluation) {
                     iterationsToEvaluation = 0
+                }
+                if (iterationsToSending >= iterationsBeforeSending) {
+                    iterationsToSending = 0
+                }
+                if (trainConfiguration.slowdown != Slowdowns.NONE) {
+                    if (slowDownStart != null) {
+                        val timePassed = System.currentTimeMillis() - slowDownStart
+                        Thread.sleep((timePassed * (1.0 / trainConfiguration.slowdown.multiplier - 1)).toLong())
+                    }
+                    slowDownStart = System.currentTimeMillis()
                 }
 
                 // Train
@@ -284,103 +583,92 @@ class SimulatedRunner : Runner() {
                 } catch (e: NoSuchElementException) {
                     endEpoch = true
                 }
+//                try { only for bristle
+//                    network.fit(fullTrainDataSetIterator.next())
+//                } catch (e: NoSuchElementException) {
+//                    fullTrainDataSetIterator.reset()
+//                    network.fit(fullTrainDataSetIterator.next())
+//                }
                 val newParams = network.params().dup()
                 val gradient = oldParams.sub(newParams)
                 iterations += batchSize
                 iterationsToEvaluation += batchSize
+                iterationsToSending += batchSize
 
-                if (iterationsToEvaluation >= iterationsBeforeEvaluation || (gar.isDirectIntegration() && newOtherModels.size > 0)) {
 
-                    if (iterationsToEvaluation >= iterationsBeforeEvaluation) {
-                        // Test
-                        val end = System.currentTimeMillis()
-                        if (logging) logger.debug { "Evaluating network " }
-                        evaluationProcessor.iteration = iterations
-                        execEvaluationProcessor(
-                            evaluationProcessor,
-                            fullTestDataSetIterator,
-                            network,
-                            EvaluationProcessor.EvaluationData(
-                                "before", "", end - start, network.iterationCount, epoch
-                            ),
-                            simulationIndex,
-                            logging
-                        )
-                    }
 
-                    // Integrate parameters of other peers
-                    val attack = modelPoisoningConfiguration.attack
-                    val attackVectors = attack.obj.generateAttack(
-                        modelPoisoningConfiguration.numAttackers,
-                        oldParams,
-                        gradient,
-                        newOtherModels,
-                        random
+                if (iterationsToEvaluation >= iterationsBeforeEvaluation) {
+                    // Test
+                    if (logging) logger.debug { "Evaluating network " }
+                    val elapsedTime = System.currentTimeMillis() - start
+                    val extraElements = mapOf(
+                        Pair("before or after averaging", "before"),
+                        Pair("#peers included in current batch", "")
                     )
-                    newOtherModels.putAll(attackVectors)
-                    val numPeers = newOtherModels.size + 1
-                    val averageParams: INDArray
-                    if (numPeers == 1) {
-                        if (logging) logger.debug { "No received params => skipping integration evaluation" }
-                        averageParams = newParams
-                        network.setParameters(averageParams)
-                    } else {
-                        if (logging) logger.debug { "Params received => executing aggregation rule" }
+                    evaluationProcessor.evaluate(fullTestDataSetIterator,
+                        network,
+                        extraElements,
+                        elapsedTime,
+                        iterations,
+                        epoch,
+                        simulationIndex,
+                        logging)
 
-                        val start2 = System.currentTimeMillis()
-//                        logger.debug {
-//                            "Integrating newOtherModels: ${newOtherModels[0].second.getDouble(0)}, ${newOtherModels[0].second.getDouble(1)}, ${
-//                                newOtherModels[0].second.getDouble(
-//                                    2
-//                                )
-//                            }, ${newOtherModels[0].second.getDouble(3)}"
-//                        }
-                        averageParams = gar.integrateParameters(
-                            network,
+                    if (iterationsToSending >= iterationsBeforeSending) {
+                        // Attack
+                        val attack = modelPoisoningConfiguration.attack
+                        val attackVectors = attack.obj.generateAttack(
+                            modelPoisoningConfiguration.numAttackers,
                             oldParams,
                             gradient,
                             newOtherModels,
-                            recentOtherModels,
-                            testDataSetIterator,
-                            countPerPeer,
-                            logging
+                            random
                         )
-                        recentOtherModels.addAll(newOtherModels.toList())
-                        while (recentOtherModels.size > NUM_RECENT_OTHER_MODELS) {
-                            recentOtherModels.removeFirst()
-                        }
-                        newOtherModels.clear()
-                        network.setParameters(averageParams)
+                        newOtherModels.putAll(attackVectors)
 
-                        if (iterationsToEvaluation >= iterationsBeforeEvaluation) {
-                            val end2 = System.currentTimeMillis()
-                            execEvaluationProcessor(
-                                evaluationProcessor,
-                                fullTestDataSetIterator,
+                        // Integrate parameters of other peers
+                        val numPeers = newOtherModels.size + 1
+                        val averageParams: INDArray
+                        if (numPeers == 1) {
+                            if (logging) logger.debug { "No received params => skipping integration evaluation" }
+                            averageParams = newParams
+                            network.setParameters(averageParams)
+                        } else {
+                            if (logging) logger.debug { "Params received => executing aggregation rule" }
+                            averageParams = gar.integrateParameters(
                                 network,
-                                EvaluationProcessor.EvaluationData(
-                                    "after", numPeers.toString(), end2 - start2, iterations, epoch
-                                ),
+                                oldParams,
+                                gradient,
+                                newOtherModels,
+                                recentOtherModels,
+                                fullTestDataSetIterator,
+                                countPerPeer,
+                                logging
+                            )
+                            recentOtherModels.addAll(newOtherModels.toList())
+                            while (recentOtherModels.size > NUM_RECENT_OTHER_MODELS) {
+                                recentOtherModels.removeFirst()
+                            }
+                            newOtherModels.clear()
+                            network.setParameters(averageParams)
+                            val elapsedTime2 = System.currentTimeMillis() - start
+                            val extraElements2 = mapOf(
+                                Pair("before or after averaging", "after"),
+                                Pair("#peers included in current batch", numPeers.toString())
+                            )
+                            evaluationProcessor.evaluate(fullTestDataSetIterator,
+                                network,
+                                extraElements2,
+                                elapsedTime2,
+                                iterations,
+                                epoch,
                                 simulationIndex,
                                 logging
                             )
                         }
-                    }
 
-                    // Send new parameters to other peers
-                    if (iterationsToEvaluation >= iterationsBeforeEvaluation) {
-                        if (logging) logger.debug {
-                            "Sending model to peers: ${averageParams.getDouble(0)}, ${averageParams.getDouble(1)}, ${
-                                averageParams.getDouble(
-                                    2
-                                )
-                            }, ${averageParams.getDouble(3)}"
-                        }
-                        testDataSetIterator.reset()
-                        val sample = testDataSetIterator.next(500)
-                        network.setParameters(averageParams)
-                        if (logging) logger.debug { "loss => ${network.score(sample)}" }
-                        val message = craftMessage(averageParams, trainConfiguration.behavior, random)
+                        // Send to other peers
+                        val message = craftMessage(averageParams.dup(), trainConfiguration.behavior, random)
                         when (trainConfiguration.communicationPattern) {
                             CommunicationPatterns.ALL -> newOtherModelBuffers
                                 .filterIndexed { index, _ -> index != simulationIndex && index in countPerPeer.keys }
@@ -392,6 +680,20 @@ class SimulatedRunner : Runner() {
                             CommunicationPatterns.RING -> throw IllegalArgumentException("Not implemented yet")
                         }
                     }
+
+//                    if (iterationsToEvaluation >= iterationsBeforeEvaluation || (gar.isDirectIntegration() && newOtherModels.size > 0)) {
+//                    }
+                    // Send new parameters to other peers
+//                        if (logging) logger.debug {
+//                            "Sending model to peers: ${averageParams.getDouble(0)}, ${averageParams.getDouble(1)}, ${
+//                                averageParams.getDouble(
+//                                    2
+//                                )
+//                            }, ${averageParams.getDouble(3)}"
+//                        }
+                }
+                if (stopIterations >= 0 && iterations >= stopIterations) {
+                    return
                 }
                 oldParams = network.params().dup()
                 if (endEpoch) {
@@ -418,28 +720,5 @@ class SimulatedRunner : Runner() {
             newMatrix[0][i] = random.nextFloat() * 2 - 1
         }
         return NDArray(newMatrix)
-    }
-
-    private fun execEvaluationProcessor(
-        evaluationProcessor: EvaluationProcessor,
-        testDataSetIterator: DataSetIterator,
-        network: MultiLayerNetwork,
-        evaluationData: EvaluationProcessor.EvaluationData,
-        simulationIndex: Int,
-        logging: Boolean
-    ) {
-        testDataSetIterator.reset()
-        evaluationProcessor.extraElements = mapOf(
-            Pair("before or after averaging", evaluationData.beforeAfterAveraging),
-            Pair("#peers included in current batch", evaluationData.numPeers)
-        )
-        evaluationProcessor.elapsedTime = evaluationData.elapsedTime
-        val evaluationListener = CustomEvaluativeListener(testDataSetIterator, 999999)
-        evaluationListener.callback = evaluationProcessor
-        evaluationListener.invokeListener(
-            network,
-            simulationIndex,
-            logging
-        )
     }
 }

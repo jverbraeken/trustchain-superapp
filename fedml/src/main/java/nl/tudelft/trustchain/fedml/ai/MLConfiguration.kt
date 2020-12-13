@@ -27,7 +27,9 @@ data class TrainConfiguration(
     val numEpochs: Epochs,
     val gar: GARs,
     val communicationPattern: CommunicationPatterns,
-    val behavior: Behaviors
+    val behavior: Behaviors,
+    val slowdown: Slowdowns,
+    val joiningLate: TransmissionRounds
 )
 
 data class ModelPoisoningConfiguration(
