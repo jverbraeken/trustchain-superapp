@@ -4,6 +4,7 @@ import nl.tudelft.trustchain.fedml.Behaviors
 import nl.tudelft.trustchain.fedml.ai.CustomDataSetType
 import nl.tudelft.trustchain.fedml.ai.DatasetIteratorConfiguration
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDatasetIterator
+import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
 import org.deeplearning4j.datasets.fetchers.DataSetType
 import org.nd4j.linalg.dataset.DataSet
 import java.io.File
@@ -26,7 +27,7 @@ class HARDataSetIterator(
         if (dataSetType == CustomDataSetType.TEST) iteratorConfiguration.maxTestSamples.value else Integer.MAX_VALUE,
         behavior
     )
-) {
+), CustomDataSetIterator {
     override val testBatches by lazy {customFetcher.testBatches}
 
     override fun getLabels(): List<String> {

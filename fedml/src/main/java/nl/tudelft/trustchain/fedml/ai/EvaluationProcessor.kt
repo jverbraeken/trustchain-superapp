@@ -8,6 +8,7 @@ import org.deeplearning4j.nn.graph.ComputationGraph
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.nd4j.evaluation.IEvaluation
 import org.nd4j.evaluation.classification.Evaluation
+import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 import java.io.File
 import java.io.PrintWriter
 import java.text.SimpleDateFormat
@@ -209,7 +210,7 @@ class EvaluationProcessor(
         }
     }
 
-    fun evaluate(testDataSetIterator: CustomBaseDatasetIterator, network: MultiLayerNetwork, extraElements: Map<String, String>, elapsedTime: Long, iterations: Int, epoch: Int, simulationIndex: Int, logging: Boolean) {
+    fun evaluate(testDataSetIterator: DataSetIterator, network: MultiLayerNetwork, extraElements: Map<String, String>, elapsedTime: Long, iterations: Int, epoch: Int, simulationIndex: Int, logging: Boolean) {
         testDataSetIterator.reset()
         val evaluations = arrayOf(Evaluation())
 
@@ -219,7 +220,7 @@ class EvaluationProcessor(
         for (evaluation in evaluations) {
             if (logging) logger.debug { "${evaluation.javaClass.simpleName}:\n${evaluation.stats()}" }
         }
-        network.computeGradientAndScore()
+//        network.computeGradientAndScore()
         call(network, evaluations, simulationIndex, network.score(), extraElements, elapsedTime, iterations, epoch)
     }
 }

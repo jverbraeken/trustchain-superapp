@@ -2,6 +2,7 @@ package nl.tudelft.trustchain.fedml.ai.gar
 
 import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDatasetIterator
+import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.dataset.DataSet
@@ -19,7 +20,7 @@ class Mozi(private val fracBenign: Double) : AggregationRule() {
         gradient: INDArray,
         newOtherModels: Map<Int, INDArray>,
         recentOtherModels: ArrayDeque<Pair<Int, INDArray>>,
-        testDataSetIterator: CustomBaseDatasetIterator,
+        testDataSetIterator: CustomDataSetIterator,
         countPerPeer: Map<Int, Int>,
         logging: Boolean
     ): INDArray {

@@ -70,10 +70,7 @@ class LocalRunner : Runner() {
                         evaluationProcessor.evaluate(
                             testDataSetIterator,
                             network,
-                            mapOf(
-                                Pair("before or after averaging", "after"),
-                                Pair("#peers included in current batch", "")
-                            ),
+                            mapOf(),
                             end - start,
                             iterations,
                             epoch,

@@ -9,6 +9,7 @@ import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.*
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDatasetIterator
+import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
 import nl.tudelft.trustchain.fedml.ipv8.MsgPsiCaClientToServer
 import nl.tudelft.trustchain.fedml.ipv8.MsgPsiCaServerToClient
 import nl.tudelft.trustchain.fedml.ui.Automation
@@ -349,7 +350,7 @@ class SimulatedRunner : Runner() {
         simulationIndex: Long,
         baseDirectory: File,
         behavior: Behaviors,
-    ): List<CustomBaseDatasetIterator> {
+    ): List<CustomDataSetIterator> {
         val trainDataSetIterator = dataset.inst(
             datasetIteratorConfiguration,
             simulationIndex,
@@ -472,7 +473,7 @@ class SimulatedRunner : Runner() {
     }
 
     private fun getSimilarPeers(
-        trainDataSetIterator: CustomBaseDatasetIterator,
+        trainDataSetIterator: CustomDataSetIterator,
         sraKeyPair: SRAKeyPair,
         toServerMessageBuffers: ArrayList<CopyOnWriteArrayList<MsgPsiCaClientToServer>>,
         toClientMessageBuffers: ArrayList<CopyOnWriteArrayList<MsgPsiCaServerToClient>>,
@@ -520,16 +521,16 @@ class SimulatedRunner : Runner() {
 
         // Evaluation results
         evaluationProcessor: EvaluationProcessor,
-        fullTestDataSetIterator: CustomBaseDatasetIterator,
+        fullTestDataSetIterator: CustomDataSetIterator,
 
         // Training the network
-        trainDataSetIterator: DataSetIterator,
-        fullTrainDataSetIterator: DataSetIterator,
+        trainDataSetIterator: CustomDataSetIterator,
+        fullTrainDataSetIterator: CustomDataSetIterator,
         trainConfiguration: TrainConfiguration,
         modelPoisoningConfiguration: ModelPoisoningConfiguration,
 
         // Integrating and distributing information to peers
-        testDataSetIterator: CustomBaseDatasetIterator,
+        testDataSetIterator: CustomDataSetIterator,
         countPerPeer: Map<Int, Int>,
     ) {
         if (logging) {

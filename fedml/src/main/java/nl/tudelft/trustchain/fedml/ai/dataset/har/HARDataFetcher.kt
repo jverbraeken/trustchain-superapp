@@ -71,7 +71,7 @@ class HARDataFetcher(
         man = HARManager(
             data.toTypedArray(),
             labels,
-            if (dataSetType == CustomDataSetType.FULL_TEST) null else iteratorDistribution,
+            iteratorDistribution,
             if (dataSetType == CustomDataSetType.TRAIN) Int.MAX_VALUE else maxTestSamples,
             seed,
             behavior

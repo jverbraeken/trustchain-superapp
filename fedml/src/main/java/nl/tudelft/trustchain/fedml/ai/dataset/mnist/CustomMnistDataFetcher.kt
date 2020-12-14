@@ -52,7 +52,7 @@ class CustomMnistDataFetcher(
                 images,
                 labels,
                 maxExamples,
-                if (dataSetType == CustomDataSetType.FULL_TEST) null else iteratorDistribution,
+                iteratorDistribution,
                 if (dataSetType == CustomDataSetType.TRAIN) Int.MAX_VALUE else maxTestSamples,
                 seed,
                 behavior
@@ -68,7 +68,7 @@ class CustomMnistDataFetcher(
                 images,
                 labels,
                 maxExamples,
-                if (dataSetType == CustomDataSetType.FULL_TEST) null else iteratorDistribution,
+                iteratorDistribution,
                 if (dataSetType == CustomDataSetType.TRAIN) Int.MAX_VALUE else maxTestSamples,
                 seed,
                 behavior

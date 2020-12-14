@@ -2,6 +2,7 @@ package nl.tudelft.trustchain.fedml
 
 import nl.tudelft.trustchain.fedml.ai.*
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDatasetIterator
+import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.cifar.CustomCifar10DataSetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.har.HARDataSetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.mnist.CustomMnistDataSetIterator
@@ -30,7 +31,7 @@ enum class Datasets(
     val defaultBatchSize: BatchSizes,
     val defaultIteratorDistribution: IteratorDistributions,
     val architecture: (nnConfiguration: NNConfiguration, seed: Int) -> MultiLayerConfiguration,
-    val inst: (iteratorConfiguration: DatasetIteratorConfiguration, seed: Long, dataSetType: CustomDataSetType, baseDirectory: File, behavior: Behaviors) -> CustomBaseDatasetIterator
+    val inst: (iteratorConfiguration: DatasetIteratorConfiguration, seed: Long, dataSetType: CustomDataSetType, baseDirectory: File, behavior: Behaviors) -> CustomDataSetIterator
 ) {
     MNIST(
         "mnist",

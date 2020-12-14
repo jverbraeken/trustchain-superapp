@@ -2,19 +2,16 @@ package nl.tudelft.trustchain.fedml.ai.dataset.har
 
 import nl.tudelft.trustchain.fedml.Behaviors
 import nl.tudelft.trustchain.fedml.ai.dataset.DatasetManager
-import nl.tudelft.trustchain.fedml.ai.dataset.NUM_FULL_TEST_SAMPLES
-import java.io.BufferedReader
 import java.io.File
-import java.io.FileReader
 import java.io.IOException
 
 class HARManager(
     dataFiles: Array<File>,
     labelsFile: File,
-    iteratorDistribution: List<Int>?,
+    iteratorDistribution: List<Int>,
     maxTestSamples: Int,
     seed: Long,
-    behavior: Behaviors
+    behavior: Behaviors,
 ) : DatasetManager() {
     private val dataArr: Array<Array<String>>
     private val labelsArr: IntArray
@@ -57,15 +54,15 @@ class HARManager(
         tmpDataArr: Array<List<String>>,
         tmpLabelsArr: Array<Int>,
         totalExamples: Int,
-        iteratorDistribution: List<Int>?,
+        iteratorDistribution: List<Int>,
         maxTestSamples: Int,
-        seed: Long
+        seed: Long,
     ): Pair<Array<Array<String>>, IntArray> {
         val dataArr = Array(totalExamples) { arrayListOf<String>() }
         val labelsArr = IntArray(totalExamples)
         var count = 0
-        for (label in iteratorDistribution?.indices ?: tmpLabelsArr.distinct()) {
-            val maxSamplesOfLabel = iteratorDistribution?.get(label) ?: NUM_FULL_TEST_SAMPLES
+        for (label in iteratorDistribution.indices) {
+            val maxSamplesOfLabel = iteratorDistribution[label]
             val matchingImageIndices = findMatchingImageIndices(label, tmpLabelsArr)
             val shuffledMatchingImageIndices = shuffle(matchingImageIndices, seed)
             for (j in 0 until minOf(shuffledMatchingImageIndices.size, maxSamplesOfLabel, maxTestSamples)) {

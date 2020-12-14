@@ -8,6 +8,7 @@ import mu.KotlinLogging
 import nl.tudelft.ipv8.Peer
 import nl.tudelft.trustchain.fedml.*
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDatasetIterator
+import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
 import nl.tudelft.trustchain.fedml.ipv8.*
 import nl.tudelft.trustchain.fedml.ipv8.FedMLCommunity.MessageId
 import org.deeplearning4j.datasets.fetchers.DataSetType
@@ -146,15 +147,15 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
 
         // Evaluation results
         evaluationProcessor: EvaluationProcessor,
-        fullTestDataSetIterator: CustomBaseDatasetIterator,
+        fullTestDataSetIterator: CustomDataSetIterator,
 
         // Training the network
-        trainDataSetIterator: DataSetIterator,
+        trainDataSetIterator: CustomDataSetIterator,
         trainConfiguration: TrainConfiguration,
         modelPoisoningConfiguration: ModelPoisoningConfiguration,
 
         // Integrating and distributing information to peers
-        testDataSetIterator: CustomBaseDatasetIterator,
+        testDataSetIterator: CustomDataSetIterator,
         countPerPeer: Map<Int, Int>,
     ) {
         val batchSize = trainDataSetIterator.batch()
