@@ -33,8 +33,6 @@ class SimulatedRunner : Runner() {
     private val newOtherModelBuffers = ArrayList<ConcurrentHashMap<Int, INDArray>>()
     private val recentOtherModelsBuffers = ArrayList<ArrayDeque<Pair<Int, INDArray>>>()
     private val randoms = ArrayList<Random>()
-    override val iterationsBeforeEvaluation = 50
-    private val iterationsBeforeSending = iterationsBeforeEvaluation * 3
 
     fun automate(
         baseDirectory: File,
@@ -294,10 +292,9 @@ class SimulatedRunner : Runner() {
         )
         evaluationProcessor.newSimulation("simulation", configs)
 
-        val job = SupervisorJob()
-        val scope = CoroutineScope(Dispatchers.Default + job)
+        val threads = ArrayList<Thread>()
         for (simulationIndex in configs.indices) {
-            scope.launch {
+            threads.add(thread {
                 val config = configs[simulationIndex]
                 val dataset = config.dataset
                 val datasetIteratorConfiguration = config.datasetIteratorConfiguration
@@ -340,48 +337,8 @@ class SimulatedRunner : Runner() {
                     iterTest,
                     countPerPeer,
                 )
-            }
+            })
         }
-    }
-
-    private fun getDataSetIterators(
-        dataset: Datasets,
-        datasetIteratorConfiguration: DatasetIteratorConfiguration,
-        simulationIndex: Long,
-        baseDirectory: File,
-        behavior: Behaviors,
-    ): List<CustomDataSetIterator> {
-        val trainDataSetIterator = dataset.inst(
-            datasetIteratorConfiguration,
-            simulationIndex,
-            CustomDataSetType.TRAIN,
-            baseDirectory,
-            behavior
-        )
-        val fullTrainDataSetIterator = dataset.inst(
-            DatasetIteratorConfiguration(BatchSizes.BATCH_5,
-                listOf(5, 5, 5, 5, 5, 5, 5, 5, 5, 5),
-                MaxTestSamples.NUM_20),
-            simulationIndex,
-            CustomDataSetType.TRAIN,
-            baseDirectory,
-            behavior
-        )
-        val testDataSetIterator = dataset.inst(
-            datasetIteratorConfiguration,
-            simulationIndex,
-            CustomDataSetType.TEST,
-            baseDirectory,
-            behavior
-        )
-        val fullTestDataSetIterator = dataset.inst(
-            datasetIteratorConfiguration,
-            simulationIndex,
-            CustomDataSetType.FULL_TEST,
-            baseDirectory,
-            behavior
-        )
-        return listOf(trainDataSetIterator, fullTrainDataSetIterator, testDataSetIterator, fullTestDataSetIterator)
     }
 
     private fun loadAutomation(baseDirectory: File, automationFilename: String): Automation {
@@ -536,6 +493,39 @@ class SimulatedRunner : Runner() {
         if (logging) {
             network.setListeners(ScoreIterationListener(printScoreIterations))
         }
+        /*var iterationsToEvaluation = 0
+        for (i in 0 until trainConfiguration.numEpochs.value) {
+            trainDataSetIterator.reset()
+            val start = System.currentTimeMillis()
+            while (true) {
+                var endEpoch = false
+                try {
+                    network.fit(trainDataSetIterator.next())
+                } catch (e: NoSuchElementException) {
+                    endEpoch = true
+                }
+                iterationsToEvaluation += trainDataSetIterator.batch()
+
+                if (iterationsToEvaluation >= iterationsBeforeEvaluation) {
+                    iterationsToEvaluation = 0
+                    val end = System.currentTimeMillis()
+                    evaluationProcessor.evaluate(
+                        testDataSetIterator,
+                        network,
+                        mapOf(),
+                        end - start,
+                        0,
+                        0,
+                        0,
+                        true
+                    )
+                }
+                if (endEpoch) {
+                    break
+                }
+            }
+        }*/
+
         val newOtherModels = newOtherModelBuffers[simulationIndex]
         if (trainConfiguration.joiningLate != TransmissionRounds.N0) {
             var count = 0
@@ -592,9 +582,9 @@ class SimulatedRunner : Runner() {
 //                }
                 val newParams = network.params().dup()
                 val gradient = oldParams.sub(newParams)
-                iterations += batchSize
-                iterationsToEvaluation += batchSize
-                iterationsToSending += batchSize
+                iterations += 1
+                iterationsToEvaluation += 1
+                iterationsToSending += 1
 
 
 
@@ -606,7 +596,8 @@ class SimulatedRunner : Runner() {
                         Pair("before or after averaging", "before"),
                         Pair("#peers included in current batch", "")
                     )
-                    evaluationProcessor.evaluate(fullTestDataSetIterator,
+                    evaluationProcessor.evaluate(
+                        fullTestDataSetIterator,
                         network,
                         extraElements,
                         elapsedTime,
@@ -657,7 +648,8 @@ class SimulatedRunner : Runner() {
                                 Pair("before or after averaging", "after"),
                                 Pair("#peers included in current batch", numPeers.toString())
                             )
-                            evaluationProcessor.evaluate(fullTestDataSetIterator,
+                            evaluationProcessor.evaluate(
+                                fullTestDataSetIterator,
                                 network,
                                 extraElements2,
                                 elapsedTime2,
@@ -704,22 +696,5 @@ class SimulatedRunner : Runner() {
         }
         logger.debug { "Done training the network" }
         evaluationProcessor.done()
-    }
-
-    private fun craftMessage(first: INDArray, behavior: Behaviors, random: Random): INDArray {
-        return when (behavior) {
-            Behaviors.BENIGN -> first
-            Behaviors.NOISE -> craftNoiseMessage(first, random)
-            Behaviors.LABEL_FLIP -> first
-        }
-    }
-
-    private fun craftNoiseMessage(first: INDArray, random: Random): INDArray {
-        val oldMatrix = first.toFloatMatrix()[0]
-        val newMatrix = Array(1) { FloatArray(oldMatrix.size) }
-        for (i in oldMatrix.indices) {
-            newMatrix[0][i] = random.nextFloat() * 2 - 1
-        }
-        return NDArray(newMatrix)
     }
 }

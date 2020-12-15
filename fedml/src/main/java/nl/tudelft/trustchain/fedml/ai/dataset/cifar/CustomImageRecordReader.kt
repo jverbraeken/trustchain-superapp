@@ -8,7 +8,6 @@ import org.datavec.api.records.Record
 import org.datavec.api.records.metadata.RecordMetaData
 import org.datavec.api.records.metadata.RecordMetaDataURI
 import org.datavec.api.records.reader.BaseRecordReader
-import org.datavec.api.split.FileSplit
 import org.datavec.api.split.InputSplit
 import org.datavec.api.split.InputStreamInputSplit
 import org.datavec.api.util.files.FileFromPathIterator
@@ -31,93 +30,51 @@ import java.io.*
 import java.net.URI
 import java.util.*
 
-
 private val logger = KotlinLogging.logger("CustomImageRecordReader")
 
+/**
+ * Specific for CIFAR-10
+ */
 class CustomImageRecordReader(
     private var height: Long,
     private var width: Long,
     private var channels: Long,
     private var labelGenerator: PathLabelGenerator,
-    private var imageTransform: ImageTransform?
+    private var imageTransform: ImageTransform?,
 ) : BaseRecordReader() {
+    private lateinit var conf: Configuration
     private var finishedInputStreamSplit = false
     private var iter: Iterator<File>? = null
-    private lateinit var conf: Configuration
     private var currentFile: File? = null
     private var labelMultiGenerator: PathMultiLabelGenerator? = null
-    private var labels: MutableList<String> = arrayListOf()
-    private var appendLabel = false
+    private var labels = listOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
+    private var uniqueLabels = mutableSetOf<String>()
+    private var appendLabel = true
     private var writeLabel = false
     private var record: List<Writable>? = null
     private var hitImage = false
     private var cropImage = false
     private var imageLoader: BaseImageLoader? = null
-    private var inputSplit: InputSplit? = null
-    private var fileNameMap = LinkedHashMap<String, String>()
-    private var pattern: String? = null
-    private var patternPosition = 0
-
-    private var logLabelCountOnInit = true
-
     private val HEIGHT = "$NAME_SPACE.height"
     private val WIDTH = "$NAME_SPACE.width"
     private val CHANNELS = "$NAME_SPACE.channels"
     private val CROP_IMAGE = "$NAME_SPACE.cropimage"
     private val IMAGE_LOADER = "$NAME_SPACE.imageloader"
 
-    init {
-        this.appendLabel = true
-    }
-
-    fun containsFormat(format: String): Boolean {
-        for (format2 in imageLoader!!.allowedFormats) if (format.endsWith(".$format2")) return true
-        return false
-    }
-
-
     override fun initialize(split: InputSplit) {
         if (imageLoader == null) {
             imageLoader = NativeImageLoader(height, width, channels, imageTransform)
         }
-        if (split is InputStreamInputSplit) {
-            this.inputSplit = split
-            this.finishedInputStreamSplit = false
-            return
-        }
         inputSplit = split
+        iter = FileFromPathIterator(inputSplit.locationsPathIterator()) //This handles randomization internally if necessary
         val locations = split.locations()
-        if (locations != null && locations.isNotEmpty()) {
-            if (appendLabel && labelGenerator.inferLabelClasses()) {
-                val labelsSet: MutableSet<String> = HashSet()
-                for (location in locations) {
-                    val imgFile = File(location)
-                    val name = labelGenerator.getLabelForPath(location).toString()
-                    labelsSet.add(name)
-                    if (pattern != null) {
-                        val label = name.split(pattern!!).toTypedArray()[patternPosition]
-                        fileNameMap[imgFile.toString()] = label
-                    }
-                }
-                labels.clear()
-                labels.addAll(labelsSet)
-                if (logLabelCountOnInit) {
-                    logger.info("ImageRecordReader: ${labelsSet.size} label classes inferred using label generator ${labelGenerator.javaClass.simpleName}")
-                }
-            }
-            iter = FileFromPathIterator(inputSplit.locationsPathIterator()) //This handles randomization internally if necessary
-        } else throw IllegalArgumentException("No path locations found in the split.")
-        if (split is FileSplit) {
-            //remove the root directory
-            labels.remove(split.rootDir)
+        for (location in locations) {
+            val label = labelGenerator.getLabelForPath(location).toString()
+            uniqueLabels.add(label)
         }
-
-        //To ensure consistent order for label assignment (irrespective of file iteration order), we want to sort the list of labels
-        labels.sort()
     }
 
 
-    @Throws(IOException::class, InterruptedException::class)
     override fun initialize(conf: Configuration, split: InputSplit) {
         this.appendLabel = conf.getBoolean(APPEND_LABEL, appendLabel)
         this.labels = ArrayList(conf.getStringCollection(LABELS))
@@ -134,36 +91,7 @@ class CustomImageRecordReader(
         initialize(split)
     }
 
-
-    /**
-     * Called once at initialization.
-     *
-     * @param split          the split that defines the range of records to read
-     * @param imageTransform the image transform to use to transform images while loading them
-     */
-    fun initialize(split: InputSplit, imageTransform: ImageTransform?) {
-        this.imageLoader = null
-        this.imageTransform = imageTransform
-        initialize(split)
-    }
-
-    /**
-     * Called once at initialization.
-     *
-     * @param conf           a configuration for initialization
-     * @param split          the split that defines the range of records to read
-     * @param imageTransform the image transform to use to transform images while loading them
-     * @throws java.io.IOException
-     * @throws InterruptedException
-     */
-    fun initialize(conf: Configuration, split: InputSplit, imageTransform: ImageTransform?) {
-        this.imageLoader = null
-        this.imageTransform = imageTransform
-        initialize(conf, split)
-    }
-
-
-    override fun next(): List<Writable>? {
+    override fun next(): List<Writable> {
         if (inputSplit is InputStreamInputSplit) {
             val inputStreamInputSplit = inputSplit as InputStreamInputSplit
             try {
@@ -198,13 +126,14 @@ class CustomImageRecordReader(
                     }
                 }
             } catch (e: Exception) {
+                e.printStackTrace()
                 throw RuntimeException(e)
             }
             return ret
         } else if (record != null) {
             hitImage = true
             invokeListeners(record)
-            return record
+            return record!!
         }
         throw IllegalStateException("No more elements")
     }
@@ -221,8 +150,12 @@ class CustomImageRecordReader(
         throw IllegalStateException("Indeterminant state: record must not be null, or a file iterator must exist")
     }
 
-    override fun getLabels(): MutableList<String> {
+    override fun getLabels(): List<String> {
         return labels
+    }
+
+    fun getUniqueLabels(): Set<String> {
+        return uniqueLabels
     }
 
     override fun batchesSupported(): Boolean {
@@ -328,25 +261,15 @@ class CustomImageRecordReader(
         return conf
     }
 
-
     /**
      * Get the label from the given path
      *
      * @param path the path to get the label from
      * @return the label for the given path
      */
-    fun getLabel(path: String?): String {
-        return labelGenerator.getLabelForPath(path).toString()
-    }
-
-    /**
-     * Accumulate the label from the path
-     *
-     * @param path the path to get the label from
-     */
-    fun accumulateLabel(path: String?) {
-        val name = getLabel(path)
-        if (!labels.contains(name)) labels.add(name)
+    private fun getLabel(path: String): String {
+        val split = path.split('/')
+        return split[split.size - 2]
     }
 
     override fun reset() {
@@ -365,11 +288,6 @@ class CustomImageRecordReader(
         } else inputSplit.resetSupported()
     }
 
-    fun numLabels(): Int {
-        return labels.size
-    }
-
-    @Throws(IOException::class)
     override fun record(uri: URI, dataInputStream: DataInputStream?): List<Writable>? {
         invokeListeners(uri)
         if (imageLoader == null) {
@@ -387,12 +305,10 @@ class CustomImageRecordReader(
         return org.datavec.api.records.impl.Record(list, RecordMetaDataURI(uri, BaseImageRecordReader::class.java))
     }
 
-    @Throws(IOException::class)
     override fun loadFromMetaData(recordMetaData: RecordMetaData): Record {
         return loadFromMetaData(listOf(recordMetaData))[0]
     }
 
-    @Throws(IOException::class)
     override fun loadFromMetaData(recordMetaDatas: List<RecordMetaData>): List<Record> {
         val out: MutableList<Record> = ArrayList()
         for (meta in recordMetaDatas) {

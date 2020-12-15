@@ -3,7 +3,12 @@ package nl.tudelft.trustchain.fedml.ai
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import mu.KotlinLogging
+import nl.tudelft.trustchain.fedml.BatchSizes
+import nl.tudelft.trustchain.fedml.Behaviors
 import nl.tudelft.trustchain.fedml.Datasets
+import nl.tudelft.trustchain.fedml.MaxTestSamples
+import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.har.HARDataFetcher
 import org.datavec.image.loader.CifarLoader
 import org.deeplearning4j.datasets.fetchers.TinyImageNetFetcher
@@ -15,10 +20,14 @@ import org.deeplearning4j.nn.conf.layers.*
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.deeplearning4j.nn.weights.WeightInit
 import org.nd4j.linalg.activations.Activation
-import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
+import org.nd4j.linalg.api.ndarray.INDArray
+import org.nd4j.linalg.cpu.nativecpu.NDArray
 import org.nd4j.linalg.lossfunctions.LossFunctions
 import java.io.File
 import java.math.BigInteger
+import kotlin.random.Random
+
+private val logger = KotlinLogging.logger("Runner")
 
 fun generateDefaultMNISTConfiguration(
     nnConfiguration: NNConfiguration,
@@ -355,7 +364,8 @@ fun generateDefaultHARConfiguration(
 
 abstract class Runner {
     protected open val printScoreIterations = 5
-    protected open val iterationsBeforeEvaluation = 300
+    protected val iterationsBeforeEvaluation = 5
+    protected val iterationsBeforeSending = iterationsBeforeEvaluation * 2
     protected val bigPrime = BigInteger("100012421")
     protected val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
@@ -374,4 +384,69 @@ abstract class Runner {
         seed: Int,
         mlConfiguration: MLConfiguration
     )
+
+    protected fun getDataSetIterators(
+        dataset: Datasets,
+        datasetIteratorConfiguration: DatasetIteratorConfiguration,
+        seed: Long,
+        baseDirectory: File,
+        behavior: Behaviors,
+    ): List<CustomDataSetIterator> {
+        val trainDataSetIterator = dataset.inst(
+            DatasetIteratorConfiguration(datasetIteratorConfiguration.batchSize,
+                datasetIteratorConfiguration.distribution,
+                datasetIteratorConfiguration.maxTestSamples),
+            seed,
+            CustomDataSetType.TRAIN,
+            baseDirectory,
+            behavior
+        )
+        logger.debug { "Loaded trainDataSetIterator" }
+        val fullTrainDataSetIterator = dataset.inst(
+            DatasetIteratorConfiguration(BatchSizes.BATCH_5,
+                listOf(5, 5, 5, 5, 5, 5, 5, 5, 5, 5),
+                MaxTestSamples.NUM_20),
+            seed,
+            CustomDataSetType.TRAIN,
+            baseDirectory,
+            behavior
+        )
+        logger.debug { "Loaded fullTrainDataSetIterator" }
+        val testDataSetIterator = dataset.inst(
+            datasetIteratorConfiguration,
+            seed,
+            CustomDataSetType.TEST,
+            baseDirectory,
+            behavior
+        )
+        logger.debug { "Loaded testDataSetIterator" }
+        val fullTestDataSetIterator = dataset.inst(
+            DatasetIteratorConfiguration(BatchSizes.BATCH_5,
+                List(datasetIteratorConfiguration.distribution.size) {datasetIteratorConfiguration.maxTestSamples.value},
+                datasetIteratorConfiguration.maxTestSamples),
+            seed,
+            CustomDataSetType.FULL_TEST,
+            baseDirectory,
+            behavior
+        )
+        logger.debug { "Loaded fullTestDataSetIterator" }
+        return listOf(trainDataSetIterator, fullTrainDataSetIterator, testDataSetIterator, fullTestDataSetIterator)
+    }
+
+    protected fun craftMessage(first: INDArray, behavior: Behaviors, random: Random): INDArray {
+        return when (behavior) {
+            Behaviors.BENIGN -> first
+            Behaviors.NOISE -> craftNoiseMessage(first, random)
+            Behaviors.LABEL_FLIP -> first
+        }
+    }
+
+    private fun craftNoiseMessage(first: INDArray, random: Random): INDArray {
+        val oldMatrix = first.toFloatMatrix()[0]
+        val newMatrix = Array(1) { FloatArray(oldMatrix.size) }
+        for (i in oldMatrix.indices) {
+            newMatrix[0][i] = random.nextFloat() * 2 - 1
+        }
+        return NDArray(newMatrix)
+    }
 }

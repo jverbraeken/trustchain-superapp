@@ -1,7 +1,6 @@
 package nl.tudelft.trustchain.fedml
 
 import nl.tudelft.trustchain.fedml.ai.*
-import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDatasetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.cifar.CustomCifar10DataSetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.har.HARDataSetIterator
@@ -11,9 +10,7 @@ import nl.tudelft.trustchain.fedml.ai.modelPoisoningAttack.Fang2020Krum
 import nl.tudelft.trustchain.fedml.ai.modelPoisoningAttack.Fang2020TrimmedMean
 import nl.tudelft.trustchain.fedml.ai.modelPoisoningAttack.ModelPoisoningAttack
 import nl.tudelft.trustchain.fedml.ai.modelPoisoningAttack.NoAttack
-import org.deeplearning4j.datasets.fetchers.DataSetType
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration
-import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 import org.nd4j.linalg.learning.config.*
 import org.nd4j.linalg.schedule.ISchedule
 import org.nd4j.linalg.schedule.MapSchedule
@@ -31,7 +28,7 @@ enum class Datasets(
     val defaultBatchSize: BatchSizes,
     val defaultIteratorDistribution: IteratorDistributions,
     val architecture: (nnConfiguration: NNConfiguration, seed: Int) -> MultiLayerConfiguration,
-    val inst: (iteratorConfiguration: DatasetIteratorConfiguration, seed: Long, dataSetType: CustomDataSetType, baseDirectory: File, behavior: Behaviors) -> CustomDataSetIterator
+    val inst: (iteratorConfiguration: DatasetIteratorConfiguration, seed: Long, dataSetType: CustomDataSetType, baseDirectory: File, behavior: Behaviors) -> CustomDataSetIterator,
 ) {
     MNIST(
         "mnist",
@@ -112,7 +109,7 @@ enum class IteratorDistributions(val id: String, val text: String, val value: Li
         arrayListOf(0, 0, 0, 0, 100, 100, 100, 100, 100, 100)
     ),
     DISTRIBUTION_MNIST_5("mnist_7_to_4_with_100", "MNIST 0 to 7 with 100", arrayListOf(100, 100, 100, 0, 0, 0, 0, 100, 100, 100)),
-    DISTRIBUTION_CIFAR_1("cifar_1", "CIFAR 1", arrayListOf(100, 100, 100, 100, 100, 100, 100, 100, 100, 100)),
+    DISTRIBUTION_CIFAR_1("cifar_1", "CIFAR 1", arrayListOf(5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000)),
     DISTRIBUTION_HAR_1("har_1", "HAR 1", arrayListOf(100, 100, 100, 100, 100, 100)),
 }
 
@@ -131,7 +128,7 @@ fun loadMaxTestSample(maxTestSample: String) = MaxTestSamples.values().first { i
 enum class Optimizers(
     val id: String,
     val text: String,
-    val inst: (LearningRates) -> IUpdater
+    val inst: (LearningRates) -> IUpdater,
 ) {
     NESTEROVS("nesterovs", "Nesterovs", { learningRate -> Nesterovs(learningRate.schedule) }),
     ADAM("adam", "Adam", { learningRate -> Adam(learningRate.schedule) }),
@@ -202,7 +199,7 @@ enum class GARs(
     val id: String,
     val text: String,
     val obj: AggregationRule,
-    val defaultModelPoisoningAttack: ModelPoisoningAttacks
+    val defaultModelPoisoningAttack: ModelPoisoningAttacks,
 ) {
     NONE("none", "None", NoAveraging(), ModelPoisoningAttacks.NONE),
     AVERAGE("average", "Simple average", Average(), ModelPoisoningAttacks.NONE),

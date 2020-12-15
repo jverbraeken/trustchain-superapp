@@ -24,7 +24,7 @@ class HARDataSetIterator(
         seed,
         iteratorConfiguration.distribution,
         dataSetType,
-        if (dataSetType == CustomDataSetType.TEST) iteratorConfiguration.maxTestSamples.value else Integer.MAX_VALUE,
+        if (dataSetType == CustomDataSetType.TEST || dataSetType == CustomDataSetType.FULL_TEST) iteratorConfiguration.maxTestSamples.value else Integer.MAX_VALUE,
         behavior
     )
 ), CustomDataSetIterator {

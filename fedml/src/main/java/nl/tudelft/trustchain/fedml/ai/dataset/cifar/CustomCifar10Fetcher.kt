@@ -161,9 +161,9 @@ class CustomCifar10Fetcher {
         }
         var count = 0
         val maxElements = iteratorDistribution.sum()
-        val labelGenerator = ParentPathLabelGenerator()
         for (uri in filesInDirSplit[0].locations()) {
-            val label = labelGenerator.getLabelForPath(uri).toInt()
+            val split = uri.toString().split('/')
+            val label = split[split.size - 2].toInt()
             val uriSet = uris[label]!!
             if (uriSet.size < min(maxSamples, iteratorDistribution[label])) {
                 uriSet.add(uri)
@@ -173,13 +173,13 @@ class CustomCifar10Fetcher {
                 }
             }
         }
-        val newFilesInDirSplit = CollectionInputSplit(uris.values.toList().flatten())
+        val newFilesInDirSplit = CollectionInputSplit(uris.values.toList().flatten().shuffled(rng))
         val h = imgDim?.get(0) ?: INPUT_HEIGHT
         val w = imgDim?.get(1) ?: INPUT_WIDTH
         val rr = CustomImageRecordReader(h.toLong(),
             w.toLong(),
             INPUT_CHANNELS.toLong(),
-            labelGenerator,
+            ParentPathLabelGenerator(),
             imageTransform)
         try {
             rr.initialize(newFilesInDirSplit)

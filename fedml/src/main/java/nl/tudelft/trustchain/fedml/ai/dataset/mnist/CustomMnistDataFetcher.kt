@@ -53,7 +53,7 @@ class CustomMnistDataFetcher(
                 labels,
                 maxExamples,
                 iteratorDistribution,
-                if (dataSetType == CustomDataSetType.TRAIN) Int.MAX_VALUE else maxTestSamples,
+                maxTestSamples,
                 seed,
                 behavior
             )
