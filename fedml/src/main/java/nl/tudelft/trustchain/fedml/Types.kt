@@ -52,7 +52,7 @@ enum class Datasets(
         Momentums.NONE,
         L2Regularizations.L2_5EM3,
         BatchSizes.BATCH_96,
-        IteratorDistributions.DISTRIBUTION_CIFAR_1,
+        IteratorDistributions.DISTRIBUTION_CIFAR_50,
         ::generateDefaultCIFARConfiguration,
         CustomCifar10DataSetIterator::create
     ),
@@ -77,7 +77,7 @@ enum class Datasets(
         Momentums.NONE,
         L2Regularizations.L2_1EM4,
         BatchSizes.BATCH_32,
-        IteratorDistributions.DISTRIBUTION_HAR_1,
+        IteratorDistributions.DISTRIBUTION_HAR_100,
         ::generateDefaultHARConfiguration,
         HARDataSetIterator::create
     ),
@@ -110,8 +110,8 @@ enum class IteratorDistributions(val id: String, val text: String, val value: Li
         arrayListOf(0, 0, 0, 0, 100, 100, 100, 100, 100, 100)
     ),
     DISTRIBUTION_MNIST_5("mnist_7_to_4_with_100", "MNIST 0 to 7 with 100", arrayListOf(100, 100, 100, 0, 0, 0, 0, 100, 100, 100)),
-    DISTRIBUTION_CIFAR_1("cifar_1", "CIFAR 1", arrayListOf(5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000)),
-    DISTRIBUTION_HAR_1("har_1", "HAR 1", arrayListOf(100, 100, 100, 100, 100, 100)),
+    DISTRIBUTION_CIFAR_50("cifar_50", "CIFAR 50", arrayListOf(50, 50, 50, 50, 50, 50, 50, 50, 50, 50)),
+    DISTRIBUTION_HAR_100("har_100", "HAR 100", arrayListOf(100, 100, 100, 100, 100, 100)),
 }
 
 fun loadIteratorDistribution(iteratorDistribution: String) =

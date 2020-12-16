@@ -99,7 +99,6 @@ fun generateDefaultCIFARConfiguration(
         .updater(nnConfiguration.optimizer.inst(nnConfiguration.learningRate))
         .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
         .weightInit(WeightInit.XAVIER)
-        .gradientNormalization(GradientNormalization.RenormalizeL2PerLayer)
         .list()
         .layer(ConvolutionLayer
                 .Builder(intArrayOf(3, 3), intArrayOf(1, 1), intArrayOf(1, 1))
@@ -130,10 +129,11 @@ fun generateDefaultCIFARConfiguration(
 
         .layer(OutputLayer . Builder (LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
             .name("output")
-            .nOut(numLabels)
             .dropOut(0.8)
+            .nOut(numLabels)
             .activation(Activation.SOFTMAX)
-            .build())
+            .build()
+        )
         .setInputType(InputType.convolutional(height.toLong(), width.toLong(), channels.toLong()))
         .build();
 }
@@ -167,7 +167,7 @@ fun generateDefaultHARConfiguration(
 abstract class Runner {
     protected open val printScoreIterations = 5
     protected val iterationsBeforeEvaluation = 15
-    protected val iterationsBeforeSending = iterationsBeforeEvaluation * 2
+    protected val iterationsBeforeSending = iterationsBeforeEvaluation
     protected val bigPrime = BigInteger("100012421")
     protected val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
@@ -208,7 +208,7 @@ abstract class Runner {
             DatasetIteratorConfiguration(BatchSizes.BATCH_5,
                 listOf(5, 5, 5, 5, 5, 5, 5, 5, 5, 5),
                 MaxTestSamples.NUM_20),
-            seed,
+            seed+1,
             CustomDataSetType.TRAIN,
             baseDirectory,
             behavior
@@ -216,7 +216,7 @@ abstract class Runner {
         logger.debug { "Loaded fullTrainDataSetIterator" }
         val testDataSetIterator = dataset.inst(
             datasetIteratorConfiguration,
-            seed,
+            seed+2,
             CustomDataSetType.TEST,
             baseDirectory,
             behavior
@@ -226,7 +226,7 @@ abstract class Runner {
             DatasetIteratorConfiguration(BatchSizes.BATCH_5,
                 List(datasetIteratorConfiguration.distribution.size) { datasetIteratorConfiguration.maxTestSamples.value },
                 datasetIteratorConfiguration.maxTestSamples),
-            seed,
+            seed+3,
             CustomDataSetType.FULL_TEST,
             baseDirectory,
             behavior

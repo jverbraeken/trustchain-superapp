@@ -3,8 +3,8 @@ set ports[0]=5554
 set ports[1]=5556
 set ports[2]=5558
 set ports[3]=5560
-set redirects[0]=54933
-set redirects[1]=60752
+set redirects[0]=63067
+set redirects[1]=64693
 set redirects[2]=29375
 set redirects[3]=51587
 

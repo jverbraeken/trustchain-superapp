@@ -25,8 +25,8 @@ class LocalRunner : Runner() {
             )
             val testDataSetIterator = mlConfiguration.dataset.inst(
                 mlConfiguration.datasetIteratorConfiguration,
-                seed.toLong(),
-                CustomDataSetType.TEST,
+                seed.toLong() + 1,
+                CustomDataSetType.FULL_TEST,
                 baseDirectory,
                 Behaviors.BENIGN
             )
@@ -84,6 +84,7 @@ class LocalRunner : Runner() {
                     }
                 }
             }
+            logger.debug { "Done training the network" }
             evaluationProcessor.done()
         }
     }

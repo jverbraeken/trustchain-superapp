@@ -218,7 +218,7 @@ class SimulatedRunner : Runner() {
                             val (iterTrain, iterTrainFull, iterTest, iterTestFull) = getDataSetIterators(
                                 dataset,
                                 datasetIteratorConfiguration,
-                                simulationIndex.toLong(),
+                                simulationIndex.toLong() * 10,
                                 baseDirectory,
                                 behavior
                             )
@@ -272,7 +272,7 @@ class SimulatedRunner : Runner() {
         val toServerMessageBuffers = ArrayList<CopyOnWriteArrayList<MsgPsiCaClientToServer>>()
         val toClientMessageBuffers = ArrayList<CopyOnWriteArrayList<MsgPsiCaServerToClient>>()
         val sraKeyPairs = ArrayList<SRAKeyPair>()
-        configs = configs.subList(0, 10)
+        configs = configs.subList(0, 2)
         for (i in configs.indices) {
             newOtherModelBuffers.add(ConcurrentHashMap())
             recentOtherModelsBuffers.add(ArrayDeque())
@@ -493,38 +493,6 @@ class SimulatedRunner : Runner() {
         if (logging) {
             network.setListeners(ScoreIterationListener(printScoreIterations))
         }
-        /*var iterationsToEvaluation = 0
-        for (i in 0 until trainConfiguration.numEpochs.value) {
-            trainDataSetIterator.reset()
-            val start = System.currentTimeMillis()
-            while (true) {
-                var endEpoch = false
-                try {
-                    network.fit(trainDataSetIterator.next())
-                } catch (e: NoSuchElementException) {
-                    endEpoch = true
-                }
-                iterationsToEvaluation += trainDataSetIterator.batch()
-
-                if (iterationsToEvaluation >= iterationsBeforeEvaluation) {
-                    iterationsToEvaluation = 0
-                    val end = System.currentTimeMillis()
-                    evaluationProcessor.evaluate(
-                        testDataSetIterator,
-                        network,
-                        mapOf(),
-                        end - start,
-                        0,
-                        0,
-                        0,
-                        true
-                    )
-                }
-                if (endEpoch) {
-                    break
-                }
-            }
-        }*/
 
         val newOtherModels = newOtherModelBuffers[simulationIndex]
         if (trainConfiguration.joiningLate != TransmissionRounds.N0) {
@@ -540,7 +508,6 @@ class SimulatedRunner : Runner() {
         }
         val recentOtherModels = recentOtherModelsBuffers[simulationIndex]
         val random = randoms[simulationIndex]
-        val batchSize = trainDataSetIterator.batch()
         val gar = trainConfiguration.gar.obj
         var iterations = 0
         var iterationsToEvaluation = 0
@@ -661,17 +628,17 @@ class SimulatedRunner : Runner() {
                         }
 
                         // Send to other peers
-                        val message = craftMessage(averageParams.dup(), trainConfiguration.behavior, random)
-                        when (trainConfiguration.communicationPattern) {
-                            CommunicationPatterns.ALL -> newOtherModelBuffers
-                                .filterIndexed { index, _ -> index != simulationIndex && index in countPerPeer.keys }
-                                .forEach { it[simulationIndex] = message }
-                            CommunicationPatterns.RANDOM -> newOtherModelBuffers
-                                .filterIndexed { index, _ -> index != simulationIndex && index in countPerPeer.keys }
-                                .random()[simulationIndex] = message
-                            CommunicationPatterns.RR -> throw IllegalArgumentException("Not implemented yet")
-                            CommunicationPatterns.RING -> throw IllegalArgumentException("Not implemented yet")
-                        }
+//                        val message = craftMessage(averageParams.dup(), trainConfiguration.behavior, random)
+//                        when (trainConfiguration.communicationPattern) {
+//                            CommunicationPatterns.ALL -> newOtherModelBuffers
+//                                .filterIndexed { index, _ -> index != simulationIndex && index in countPerPeer.keys }
+//                                .forEach { it[simulationIndex] = message }
+//                            CommunicationPatterns.RANDOM -> newOtherModelBuffers
+//                                .filterIndexed { index, _ -> index != simulationIndex && index in countPerPeer.keys }
+//                                .random()[simulationIndex] = message
+//                            CommunicationPatterns.RR -> throw IllegalArgumentException("Not implemented yet")
+//                            CommunicationPatterns.RING -> throw IllegalArgumentException("Not implemented yet")
+//                        }
                     }
 
 //                    if (iterationsToEvaluation >= iterationsBeforeEvaluation || (gar.isDirectIntegration() && newOtherModels.size > 0)) {

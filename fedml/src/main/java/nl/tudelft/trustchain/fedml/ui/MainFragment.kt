@@ -60,7 +60,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private var momentum = dataset.defaultMomentum
     private var l2 = dataset.defaultL2
     private var batchSize = dataset.defaultBatchSize
-    private var epoch = Epochs.EPOCH_5
+    private var epoch = Epochs.EPOCH_50
     private var iteratorDistribution = dataset.defaultIteratorDistribution
     private var maxTestSample = MaxTestSamples.NUM_20
     private var gar = GARs.BRISTLE
