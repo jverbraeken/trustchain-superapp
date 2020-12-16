@@ -14,6 +14,7 @@ import org.datavec.image.loader.CifarLoader
 import org.deeplearning4j.datasets.fetchers.TinyImageNetFetcher
 import org.deeplearning4j.nn.api.OptimizationAlgorithm
 import org.deeplearning4j.nn.conf.ConvolutionMode
+import org.deeplearning4j.nn.conf.GradientNormalization
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration
 import org.deeplearning4j.nn.conf.inputs.InputType
@@ -94,10 +95,11 @@ fun generateDefaultCIFARConfiguration(
     val channels = CifarLoader.CHANNELS
     val numLabels = CifarLoader.NUM_LABELS
     return NeuralNetConfiguration.Builder()
-        .seed(123L)
+        .seed(seed.toLong())
         .updater(nnConfiguration.optimizer.inst(nnConfiguration.learningRate))
         .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
         .weightInit(WeightInit.XAVIER)
+        .gradientNormalization(GradientNormalization.RenormalizeL2PerLayer)
         .list()
         .layer(ConvolutionLayer
                 .Builder(intArrayOf(3, 3), intArrayOf(1, 1), intArrayOf(1, 1))
