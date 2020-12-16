@@ -6,6 +6,7 @@ import nl.tudelft.trustchain.fedml.Behaviors
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener
 import java.io.File
 
+
 private val logger = KotlinLogging.logger("LocalRunner")
 
 class LocalRunner : Runner() {
@@ -61,8 +62,8 @@ class LocalRunner : Runner() {
                     } catch (e: NoSuchElementException) {
                         endEpoch = true
                     }
-                    iterations += datasetIteratorConfiguration.batchSize.value
-                    iterationsToEvaluation += datasetIteratorConfiguration.batchSize.value
+                    iterations += 1
+                    iterationsToEvaluation += 1
 
                     if (iterationsToEvaluation >= iterationsBeforeEvaluation) {
                         iterationsToEvaluation = 0

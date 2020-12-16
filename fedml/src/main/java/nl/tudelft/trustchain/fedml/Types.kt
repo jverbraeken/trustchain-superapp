@@ -47,11 +47,11 @@ enum class Datasets(
     CIFAR10(
         "cifar10",
         "CIFAR-10",
-        Optimizers.RMSPROP,
-        LearningRates.SCHEDULE2,
+        Optimizers.ADAM,
+        LearningRates.RATE_1EM3,
         Momentums.NONE,
-        L2Regularizations.L2_1EM4,
-        BatchSizes.BATCH_64,
+        L2Regularizations.L2_5EM3,
+        BatchSizes.BATCH_96,
         IteratorDistributions.DISTRIBUTION_CIFAR_1,
         ::generateDefaultCIFARConfiguration,
         CustomCifar10DataSetIterator::create
@@ -90,7 +90,8 @@ enum class BatchSizes(val id: String, val text: String, val value: Int) {
     BATCH_1("batch_1", "1", 1),
     BATCH_5("batch_5", "5", 5),
     BATCH_32("batch_32", "32", 32),
-    BATCH_64("batch_64", "64", 64)
+    BATCH_64("batch_64", "64", 64),
+    BATCH_96("batch_96", "96", 96)
 }
 
 fun loadBatchSize(batchSize: String) = BatchSizes.values().first { it.id == batchSize }
@@ -143,6 +144,10 @@ enum class LearningRates(val id: String, val text: String, val schedule: ISchedu
     RATE_1EM3(
         "rate_1em3",
         "1e-3", MapSchedule(ScheduleType.ITERATION, hashMapOf(0 to 1e-3))
+    ),
+    RATE_5EM2(
+        "rate_5em2",
+        "5e-2", MapSchedule(ScheduleType.ITERATION, hashMapOf(0 to 0.05))
     ),
     SCHEDULE1(
         "schedule1",
