@@ -83,13 +83,13 @@ fun generateDefaultCIFARConfiguration(
     val numLabels = CifarLoader.NUM_LABELS
     return NeuralNetConfiguration.Builder()
         .seed(seed.toLong())
+        .activation(Activation.LEAKYRELU)
+        .weightInit(WeightInit.RELU)
         .updater(nnConfiguration.optimizer.inst(nnConfiguration.learningRate))
         .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
-        .weightInit(WeightInit.XAVIER)
         .list()
         .layer(ConvolutionLayer
             .Builder(intArrayOf(3, 3), intArrayOf(1, 1), intArrayOf(1, 1))
-            .activation(Activation.LEAKYRELU)
             .nIn(CifarLoader.CHANNELS)
             .nOut(32)
             .build()
@@ -103,7 +103,6 @@ fun generateDefaultCIFARConfiguration(
 
         .layer(ConvolutionLayer
             .Builder(intArrayOf(1, 1), intArrayOf(1, 1), intArrayOf(1, 1))
-            .activation(Activation.LEAKYRELU)
             .nOut(16)
             .build()
         )
@@ -119,6 +118,7 @@ fun generateDefaultCIFARConfiguration(
             .dropOut(0.8)
             .nOut(numLabels)
             .activation(Activation.SOFTMAX)
+            .weightInit(WeightInit.XAVIER)
             .build()
         )
         .setInputType(InputType.convolutional(height.toLong(), width.toLong(), channels.toLong()))
