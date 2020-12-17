@@ -11,10 +11,7 @@ import nl.tudelft.trustchain.fedml.MaxTestSamples
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.har.HARDataFetcher
 import org.datavec.image.loader.CifarLoader
-import org.deeplearning4j.datasets.fetchers.TinyImageNetFetcher
 import org.deeplearning4j.nn.api.OptimizationAlgorithm
-import org.deeplearning4j.nn.conf.ConvolutionMode
-import org.deeplearning4j.nn.conf.GradientNormalization
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration
 import org.deeplearning4j.nn.conf.inputs.InputType
@@ -24,8 +21,6 @@ import org.deeplearning4j.nn.weights.WeightInit
 import org.nd4j.linalg.activations.Activation
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.cpu.nativecpu.NDArray
-import org.nd4j.linalg.learning.config.AdaDelta
-import org.nd4j.linalg.learning.config.Adam
 import org.nd4j.linalg.lossfunctions.LossFunctions
 import java.io.File
 import java.math.BigInteger
@@ -39,48 +34,40 @@ fun generateDefaultMNISTConfiguration(
 ): MultiLayerConfiguration {
     return NeuralNetConfiguration.Builder()
         .seed(seed.toLong())
+        .activation(Activation.LEAKYRELU)
+        .weightInit(WeightInit.RELU)
         .l2(nnConfiguration.l2.value)
-        .weightInit(WeightInit.XAVIER)
         .updater(nnConfiguration.optimizer.inst(nnConfiguration.learningRate))
         .list()
-        .layer(
-            ConvolutionLayer.Builder(5, 5)
-//                .nIn(1)
-                .stride(1, 1)
-                .nOut(10)
-                .activation(Activation.IDENTITY)
-                .build()
+        .layer(ConvolutionLayer
+            .Builder(intArrayOf(5, 5), intArrayOf(1, 1))
+            .nOut(10)
+            .build()
         )
-        .layer(
-            SubsamplingLayer.Builder(SubsamplingLayer.PoolingType.MAX)
-                .kernelSize(2, 2)
-                .stride(2, 2)
-                .build()
+        .layer(SubsamplingLayer
+            .Builder(SubsamplingLayer.PoolingType.MAX, intArrayOf(2, 2), intArrayOf(2, 2))
+            .build()
         )
-        .layer(
-            ConvolutionLayer.Builder(5, 5)
-                .stride(1, 1)
-                .nOut(50)
-                .activation(Activation.IDENTITY)
-                .build()
+        .layer(ConvolutionLayer
+            .Builder(intArrayOf(5, 5), intArrayOf(1, 1))
+            .nOut(50)
+            .build()
         )
-        .layer(
-            SubsamplingLayer.Builder(SubsamplingLayer.PoolingType.MAX)
-                .kernelSize(2, 2)
-                .stride(2, 2)
-                .build()
+        .layer(SubsamplingLayer
+            .Builder(SubsamplingLayer.PoolingType.MAX, intArrayOf(2, 2), intArrayOf(2, 2))
+            .build()
         )
-        .layer(
-            DenseLayer.Builder()
-                .activation(Activation.RELU)
-                .nOut(512)
-                .build()
+        .layer(DenseLayer
+            .Builder()
+            .nOut(500)
+            .build()
         )
-        .layer(
-            OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
-                .nOut(10)
-                .activation(Activation.SOFTMAX)
-                .build()
+        .layer(OutputLayer
+            .Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
+            .nOut(10)
+            .activation(Activation.SOFTMAX)
+            .weightInit(WeightInit.XAVIER)
+            .build()
         )
         .setInputType(InputType.convolutionalFlat(28, 28, 1))
         .build()
@@ -101,11 +88,11 @@ fun generateDefaultCIFARConfiguration(
         .weightInit(WeightInit.XAVIER)
         .list()
         .layer(ConvolutionLayer
-                .Builder(intArrayOf(3, 3), intArrayOf(1, 1), intArrayOf(1, 1))
-                .activation(Activation.LEAKYRELU)
-                .nIn(CifarLoader.CHANNELS)
-                .nOut(32)
-                .build()
+            .Builder(intArrayOf(3, 3), intArrayOf(1, 1), intArrayOf(1, 1))
+            .activation(Activation.LEAKYRELU)
+            .nIn(CifarLoader.CHANNELS)
+            .nOut(32)
+            .build()
         )
         .layer(BatchNormalization())
         .layer(SubsamplingLayer
@@ -127,7 +114,7 @@ fun generateDefaultCIFARConfiguration(
             .build()
         )
 
-        .layer(OutputLayer . Builder (LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
+        .layer(OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
             .name("output")
             .dropOut(0.8)
             .nOut(numLabels)
@@ -135,7 +122,7 @@ fun generateDefaultCIFARConfiguration(
             .build()
         )
         .setInputType(InputType.convolutional(height.toLong(), width.toLong(), channels.toLong()))
-        .build();
+        .build()
 }
 
 fun generateDefaultHARConfiguration(
@@ -145,20 +132,35 @@ fun generateDefaultHARConfiguration(
     return NeuralNetConfiguration.Builder()
         .seed(seed.toLong())
         .l2(nnConfiguration.l2.value)
-        .weightInit(WeightInit.XAVIER)
+        .activation(Activation.LEAKYRELU)
+        .weightInit(WeightInit.RELU)
         .updater(nnConfiguration.optimizer.inst(nnConfiguration.learningRate))
         .list()
-        .layer(
-            Convolution1DLayer.Builder(3).nIn(128).activation(Activation.RELU).nOut(64).build()
+        .layer(Convolution1DLayer
+            .Builder(3)
+            .nIn(128)
+            .nOut(64)
+            .build()
         )
-        .layer(Convolution1DLayer.Builder(3).activation(Activation.RELU).nOut(64).build())
-        .layer(DropoutLayer.Builder(0.5).nOut(64).build())
-        .layer(GlobalPoolingLayer.Builder(PoolingType.MAX).build())
-        .layer(
-            OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
-                .nOut(HARDataFetcher.NUM_LABELS)
-                .activation(Activation.SOFTMAX)
-                .build()
+        .layer(Subsampling1DLayer
+            .Builder(SubsamplingLayer.PoolingType.MAX, 2, 2)
+            .build()
+        )
+        .layer(Convolution1DLayer
+            .Builder(3)
+            .nOut(64)
+            .build()
+        )
+        .layer(GlobalPoolingLayer
+            .Builder(PoolingType.MAX)
+            .build()
+        )
+        .layer(OutputLayer
+            .Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
+            .nOut(HARDataFetcher.NUM_LABELS)
+            .activation(Activation.SOFTMAX)
+            .weightInit(WeightInit.XAVIER)
+            .build()
         )
         .setInputType(InputType.recurrent(9, 128))
         .build()
@@ -208,7 +210,7 @@ abstract class Runner {
             DatasetIteratorConfiguration(BatchSizes.BATCH_5,
                 listOf(5, 5, 5, 5, 5, 5, 5, 5, 5, 5),
                 MaxTestSamples.NUM_20),
-            seed+1,
+            seed + 1,
             CustomDataSetType.TRAIN,
             baseDirectory,
             behavior
@@ -216,7 +218,7 @@ abstract class Runner {
         logger.debug { "Loaded fullTrainDataSetIterator" }
         val testDataSetIterator = dataset.inst(
             datasetIteratorConfiguration,
-            seed+2,
+            seed + 2,
             CustomDataSetType.TEST,
             baseDirectory,
             behavior
@@ -226,7 +228,7 @@ abstract class Runner {
             DatasetIteratorConfiguration(BatchSizes.BATCH_5,
                 List(datasetIteratorConfiguration.distribution.size) { datasetIteratorConfiguration.maxTestSamples.value },
                 datasetIteratorConfiguration.maxTestSamples),
-            seed+3,
+            seed + 3,
             CustomDataSetType.FULL_TEST,
             baseDirectory,
             behavior
