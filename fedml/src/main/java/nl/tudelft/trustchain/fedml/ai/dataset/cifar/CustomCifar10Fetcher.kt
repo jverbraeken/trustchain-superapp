@@ -13,8 +13,8 @@ import org.datavec.image.transform.ImageTransform
 import org.deeplearning4j.common.resources.DL4JResources
 import org.deeplearning4j.common.resources.ResourceType
 import org.deeplearning4j.datasets.fetchers.DataSetType
-import org.nd4j.base.Preconditions
-import org.nd4j.util.ArchiveUtils
+import org.nd4j.common.util.ArchiveUtils
+import org.nd4j.common.base.Preconditions
 import java.io.File
 import java.io.IOException
 import java.net.URI

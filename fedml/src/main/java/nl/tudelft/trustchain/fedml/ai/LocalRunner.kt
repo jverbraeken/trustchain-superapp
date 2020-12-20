@@ -49,8 +49,7 @@ class LocalRunner : Runner() {
             var iterations = 0
             var iterationsToEvaluation = 0
             val trainConfiguration = mlConfiguration.trainConfiguration
-            val datasetIteratorConfiguration = mlConfiguration.datasetIteratorConfiguration
-            for (i in 0 until trainConfiguration.numEpochs.value) {
+            epochLoop@ while (true) {
                 epoch++
                 trainDataSetIterator.reset()
                 logger.debug { "Starting epoch: $epoch" }
@@ -78,6 +77,9 @@ class LocalRunner : Runner() {
                             0,
                             true
                         )
+                    }
+                    if (iterations >= trainConfiguration.maxIteration.value) {
+                        break@epochLoop
                     }
                     if (endEpoch) {
                         break

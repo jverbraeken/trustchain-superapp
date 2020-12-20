@@ -11,7 +11,7 @@ import org.datavec.api.records.reader.impl.ConcatenatingRecordReader
 import org.datavec.api.records.reader.impl.collection.CollectionRecordReader
 import org.datavec.api.writable.Writable
 import org.deeplearning4j.datasets.datavec.RecordReaderMultiDataSetIterator
-import org.nd4j.base.Preconditions
+import org.nd4j.common.base.Preconditions
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.dataset.DataSet
 import org.nd4j.linalg.dataset.api.DataSetPreProcessor
@@ -52,8 +52,7 @@ open class CustomRecordReaderDataSetIterator : DataSetIterator {
      * @param batchSize    Minibatch size, for each call of .next()
      */
     constructor(recordReader: RecordReader, batchSize: Int) : this(recordReader, SelfWritableConverter(), batchSize, -1, -1,
-        if (recordReader.labels == null) -1 else recordReader.labels.size, -1, false) {
-    }
+        if (recordReader.labels == null) -1 else recordReader.labels.size, -1, false)
 
     /**
      * Main constructor for classification. This will convert the input class index (at position labelIndex, with integer
@@ -67,8 +66,7 @@ open class CustomRecordReaderDataSetIterator : DataSetIterator {
     constructor(
         recordReader: RecordReader, batchSize: Int, labelIndex: Int,
         numPossibleLabels: Int,
-    ) : this(recordReader, SelfWritableConverter(), batchSize, labelIndex, labelIndex, numPossibleLabels, -1, false) {
-    }
+    ) : this(recordReader, SelfWritableConverter(), batchSize, labelIndex, labelIndex, numPossibleLabels, -1, false)
 
     /**
      * Constructor for classification, where the maximum number of returned batches is limited to the specified value
@@ -81,8 +79,7 @@ open class CustomRecordReaderDataSetIterator : DataSetIterator {
     constructor(
         recordReader: RecordReader, batchSize: Int, labelIndex: Int, numPossibleLabels: Int,
         maxNumBatches: Int,
-    ) : this(recordReader, SelfWritableConverter(), batchSize, labelIndex, labelIndex, numPossibleLabels, maxNumBatches, false) {
-    }
+    ) : this(recordReader, SelfWritableConverter(), batchSize, labelIndex, labelIndex, numPossibleLabels, maxNumBatches, false)
 
     /**
      * Main constructor for multi-label regression (i.e., regression with multiple outputs). Can also be used for single
@@ -269,7 +266,7 @@ open class CustomRecordReaderDataSetIterator : DataSetIterator {
                 val m = s as RecordMetaDataComposableMap
                 temp2.add(m.meta[READER_KEY])
             }
-            ds.setExampleMetaData(temp2)
+            ds.exampleMetaData = temp2
         }
 
         //Edge case, for backward compatibility:

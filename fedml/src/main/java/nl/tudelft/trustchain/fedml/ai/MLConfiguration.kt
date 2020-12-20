@@ -24,7 +24,7 @@ data class NNConfiguration(
 )
 
 data class TrainConfiguration(
-    val numEpochs: Epochs,
+    val maxIteration: MaxIterations,
     val gar: GARs,
     val communicationPattern: CommunicationPatterns,
     val behavior: Behaviors,
@@ -35,4 +35,27 @@ data class TrainConfiguration(
 data class ModelPoisoningConfiguration(
     val attack: ModelPoisoningAttacks,
     val numAttackers: NumAttackers
+)
+
+data class MLConfigurationCom(
+    val dataset: String,
+
+    val batchSize: String,
+    val distribution: String,
+    val maxTestSamples: String,
+
+    val optimizer: String,
+    val learningRate: String,
+    val momentum: String,
+    val l2: String,
+
+    val maxIteration: String,
+    val gar: String,
+    val communicationPattern: String,
+    val behavior: String,
+    val slowdown: String,
+    val joiningLate: String,
+
+    val attack: String,
+    val numAttackers: String
 )

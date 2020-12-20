@@ -1,6 +1,4 @@
 @echo off
-
-
 setlocal enableDelayedExpansion
 set "replace=device"
 set "replaced="

@@ -1,6 +1,8 @@
 package nl.tudelft.trustchain.fedml.ui
 
+import android.content.res.AssetManager
 import android.os.Bundle
+import android.os.Debug
 import android.os.StrictMode
 import android.view.View
 import android.widget.AdapterView
@@ -9,8 +11,6 @@ import android.widget.Spinner
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
-import kotlinx.serialization.*
-import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import nl.tudelft.trustchain.common.ui.BaseFragment
 import nl.tudelft.trustchain.common.util.viewBinding
@@ -25,9 +25,9 @@ import java.io.*
 
 private val logger = KotlinLogging.logger("FedML.MainFragment")
 
-//-e activity fedml -e dataset mnist -e optimizer adam -e learningRate rate_1em3 -e momentum none -e l2Regularization l2_5em3 -e batchSize batch_32 -e epoch epoch_50 -e iteratorDistribution mnist_1 -e maxTestSample num_200 -e gar mozi -e communicationPattern random -e behavior benign -e runner distributed -e run false
-//-e activity fedml -e dataset cifar10 -e optimizer sgd -e learningRate schedule1 -e momentum momentum_1em3 -e l2Regularization l2_1em4 -e batchSize batch_5 -e epoch epoch_25 -e runner distributed -e run true
-//-e activity fedml -e automationFilename automation1
+//-e activity fedml -e dataset mnist -e optimizer adam -e learningRate rate_1em3 -e momentum none -e l2Regularization l2_5em3 -e batchSize batch_32 -e maxIteration iter_250 -e iteratorDistribution mnist_1 -e maxTestSample num_200 -e gar mozi -e communicationPattern random -e behavior benign -e runner distributed -e run false
+//-e activity fedml -e dataset cifar10 -e optimizer sgd -e learningRate schedule1 -e momentum momentum_1em3 -e l2Regularization l2_1em4 -e batchSize batch_5 -e maxIteration iter_250 -e runner distributed -e run true
+//-e activity fedml -e automationPart 1
 class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSelectedListener {
     private val baseDirectory by lazy { requireActivity().filesDir }
     private val networkBinding by viewBinding(FragmentMainNetworkBinding::bind)
@@ -44,7 +44,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private val momentums = Momentums.values().map { it.text }
     private val l2Regularizations = L2Regularizations.values().map { it.text }
     private val batchSizes = BatchSizes.values().map { it.text }
-    private val epochs = Epochs.values().map { it.text }
+    private val maxIterations = MaxIterations.values().map { it.text }
     private val iteratorDistributions = IteratorDistributions.values().map { it.text }
     private val maxTestSamples = MaxTestSamples.values().map { it.text }
     private val gars = GARs.values().map { it.text }
@@ -53,14 +53,14 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private val modelPoisoningAttacks = ModelPoisoningAttacks.values().map { it.text }
     private val numAttackers = NumAttackers.values().map { it.text }
 
-    private var automationFilename: String? = null
+    private var automationPart: Int? = null
     private var dataset = Datasets.MNIST
     private var optimizer = dataset.defaultOptimizer
     private var learningRate = dataset.defaultLearningRate
     private var momentum = dataset.defaultMomentum
     private var l2 = dataset.defaultL2
     private var batchSize = dataset.defaultBatchSize
-    private var epoch = Epochs.EPOCH_50
+    private var maxIteration = MaxIterations.ITER_250
     private var iteratorDistribution = dataset.defaultIteratorDistribution
     private var maxTestSample = MaxTestSamples.NUM_20
     private var gar = GARs.BRISTLE
@@ -69,12 +69,13 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private var modelPoisoningAttack = ModelPoisoningAttacks.NONE
     private var numAttacker = NumAttackers.NUM_0
 
-    private val community by lazy { getIpv8().getOverlay<FedMLCommunity>()
+    private val community by lazy {
+        getIpv8().getOverlay<FedMLCommunity>()
             ?: throw java.lang.IllegalStateException("FedMLCommunity is not configured")
     }
     private val localRunner by lazy { LocalRunner() }
     private val simulatedRunner by lazy { SimulatedRunner() }
-    private val distributedRunner = DistributedRunner(community)  // Initialize asap so it can already receive messages
+    private val distributedRunner = DistributedRunner(community)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -92,27 +93,37 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
         bindSpinner(view, neuralNetworkBinding.spnLearningRate, learningRates)
         bindSpinner(view, neuralNetworkBinding.spnMomentum, momentums)
         bindSpinner(view, neuralNetworkBinding.spnL2Regularization, l2Regularizations)
-        bindSpinner(view, trainingBinding.spnEpochs, epochs)
+        bindSpinner(view, trainingBinding.spnMaxIteration, maxIterations)
         bindSpinner(view, trainingBinding.spnGar, gars)
         bindSpinner(view, trainingBinding.spnCommunicationPattern, communicationPatterns)
         bindSpinner(view, trainingBinding.spnBehavior, behaviors)
         bindSpinner(view, modelPoisoningBinding.spnAttack, modelPoisoningAttacks)
         bindSpinner(view, modelPoisoningBinding.spnNumAttackers, numAttackers)
 
-        configureDL4JDirectory()
-        allowDL4JOnUIThread()
         datasetBinding.spnDataset.setSelection(datasets.indexOf(dataset.text))
         iteratorBinding.spnMaxSamples.setSelection(maxTestSamples.indexOf(maxTestSample.text))
-        trainingBinding.spnEpochs.setSelection(epochs.indexOf(epoch.text))
+        trainingBinding.spnMaxIteration.setSelection(maxIterations.indexOf(maxIteration.text))
         trainingBinding.spnGar.setSelection(gars.indexOf(gar.text))
         trainingBinding.spnCommunicationPattern.setSelection(communicationPatterns.indexOf(communicationPattern.text))
         trainingBinding.spnBehavior.setSelection(behaviors.indexOf(behavior.text))
         modelPoisoningBinding.spnAttack.setSelection(modelPoisoningAttacks.indexOf(modelPoisoningAttack.text))
         modelPoisoningBinding.spnNumAttackers.setSelection(numAttackers.indexOf(numAttacker.text))
-        processIntentExtras()
         synchronizeSpinners()
 
+        configureDL4JDirectory()
+        allowDL4JOnUIThread()
+        processIntentExtras()
         copyAssets()
+
+        System.setProperty("org.bytedeco.javacpp.maxphysicalbytes", "0")
+        System.setProperty("org.bytedeco.javacpp.maxbytes", "0")
+
+        lifecycleScope.launchWhenStarted {
+            while (isActive) {
+                updateView()
+                delay(500)
+            }
+        }
 
         if (requireActivity().intent?.extras?.getString("run") == "true") {
             when (requireActivity().intent?.extras?.getString("runner")) {
@@ -120,16 +131,6 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
                 "simulated" -> onBtnSimulateDistributedLocallyClicked()
                 "distributed" -> onBtnRunDistributedClicked()
                 else -> throw IllegalStateException("Runner must be either local, simulated, or distributed")
-            }
-        }
-
-        System.setProperty("org.bytedeco.javacpp.maxphysicalbytes", "0");
-        System.setProperty("org.bytedeco.javacpp.maxbytes", "0");
-
-        lifecycleScope.launchWhenStarted {
-            while (isActive) {
-                updateView()
-                delay(500)
             }
         }
     }
@@ -147,67 +148,30 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private fun processIntentExtras() {
         val extras = requireActivity().intent?.extras
 
-        val automationFilename = extras?.getString("automationFilename")
-        if (automationFilename != null) {
-            this.automationFilename = automationFilename
+        val automationPart = extras?.getString("automationPart")
+        if (automationPart != null) {
+            this.automationPart = automationPart.toInt()
+        }
+        val enableExternalAutomation = extras?.getString("enableExternalAutomation")
+        if (enableExternalAutomation != null) {
+            distributedRunner.baseDirectory = baseDirectory
+            community.enableExternalAutomation(baseDirectory)
         }
 
-        val dataset = extras?.getString("dataset")
-        if (dataset != null) {
-            this.dataset = loadDataset(dataset)
-        }
-        val batchSize = extras?.getString("batchSize")
-        if (batchSize != null) {
-            this.batchSize = loadBatchSize(batchSize)
-        }
-        val iteratorDistribution = extras?.getString("iteratorDistribution")
-        if (iteratorDistribution != null) {
-            this.iteratorDistribution = loadIteratorDistribution(iteratorDistribution)
-        }
-        val maxTestSample = extras?.getString("maxTestSample")
-        if (maxTestSample != null) {
-            this.maxTestSample = loadMaxTestSample(maxTestSample)
-        }
-        val optimizer = extras?.getString("optimizer")
-        if (optimizer != null) {
-            this.optimizer = loadOptimizer(optimizer)
-        }
-        val learningRate = extras?.getString("learningRate")
-        if (learningRate != null) {
-            this.learningRate = loadLearningRate(learningRate)
-        }
-        val momentum = extras?.getString("momentum")
-        if (momentum != null) {
-            this.momentum = loadMomentum(momentum)
-        }
-        val l2 = extras?.getString("l2Regularization")
-        if (l2 != null) {
-            this.l2 = loadL2Regularization(l2)
-        }
-        val epoch = extras?.getString("epoch")
-        if (epoch != null) {
-            this.epoch = loadEpoch(epoch)
-        }
-        val gar = extras?.getString("gar")
-        if (gar != null) {
-            this.gar = loadGAR(gar)
-        }
-        val communicationPattern = extras?.getString("communicationPattern")
-        if (communicationPattern != null) {
-            this.communicationPattern = loadCommunicationPattern(communicationPattern)
-        }
-        val behavior = extras?.getString("behavior")
-        if (behavior != null) {
-            this.behavior = loadBehavior(behavior)
-        }
-        val modelPoisoningAttack = extras?.getString("modelPoisoningAttack")
-        if (modelPoisoningAttack != null) {
-            this.modelPoisoningAttack = loadModelPoisoningAttack(modelPoisoningAttack)
-        }
-        val numAttackers = extras?.getString("numAttackers")
-        if (numAttackers != null) {
-            this.numAttacker = loadNumAttackers(numAttackers)
-        }
+        this.dataset = loadDataset(extras?.getString("dataset")) ?: this.dataset
+        this.batchSize = loadBatchSize(extras?.getString("batchSize")) ?: this.batchSize
+        this.iteratorDistribution = loadIteratorDistribution(extras?.getString("iteratorDistribution")) ?: this.iteratorDistribution
+        this.maxTestSample = loadMaxTestSample(extras?.getString("maxTestSample")) ?: this.maxTestSample
+        this.optimizer = loadOptimizer(extras?.getString("optimizer")) ?: this.optimizer
+        this.learningRate = loadLearningRate(extras?.getString("learningRate")) ?: this.learningRate
+        this.momentum = loadMomentum(extras?.getString("momentum")) ?: this.momentum
+        this.l2 = loadL2Regularization(extras?.getString("l2Regularization")) ?: this.l2
+        this.maxIteration = loadMaxIteration(extras?.getString("maxIteration")) ?: this.maxIteration
+        this.gar = loadGAR(extras?.getString("gar")) ?: this.gar
+        this.communicationPattern = loadCommunicationPattern(extras?.getString("communicationPattern")) ?: this.communicationPattern
+        this.behavior = loadBehavior(extras?.getString("behavior")) ?: this.behavior
+        this.modelPoisoningAttack = loadModelPoisoningAttack(extras?.getString("modelPoisoningAttack")) ?: this.modelPoisoningAttack
+        this.numAttacker = loadNumAttackers(extras?.getString("numAttackers")) ?: this.numAttacker
     }
 
     private fun copyAssets() {
@@ -217,47 +181,35 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
             if (!dir.exists()) {
                 dir.mkdirs()
             }
-            assetManager.open("automation/simulation.config").use { input ->
-                FileOutputStream(File(baseDirectory, "automation/simulation.config")).use { output ->
-                    copyFile(input, output)
-                }
-            }
-            assetManager.open("automation/automation1.config").use { input ->
-                FileOutputStream(File(baseDirectory, "automation/automation1.config")).use { output ->
-                    copyFile(input, output)
-                }
-            }
-            assetManager.open("automation/automation2.config").use { input ->
-                FileOutputStream(File(baseDirectory, "automation/automation2.config")).use { output ->
-                    copyFile(input, output)
-                }
-            }
+            copyAsset(assetManager, "automation.config")
         } catch (e: IOException) {
             // Probably a directory
         }
         for (path in arrayOf("train", "test", "train/Inertial Signals", "test/Inertial Signals")) {
-            var files: Array<String>? = null
-            try {
-                files = assetManager.list(path)
-            } catch (e: IOException) {
-                logger.error { "Failed to get asset file list." }
-            }
+            val files = assetManager.list(path)!!
             val dir = File(baseDirectory, path)
             if (!dir.exists()) {
                 dir.mkdirs()
             }
-            if (files != null) {
-                for (filename in files) {
-                    try {
-                        assetManager.open("$path/$filename").use { input ->
-                            FileOutputStream(File(dir, filename)).use { output ->
-                                copyFile(input, output)
-                            }
+            for (filename in files) {
+                try {
+                    copyAsset(assetManager, "$path/$filename")
+                    /*assetManager.open("$path/$filename").use { input ->
+                        FileOutputStream(File(dir, filename)).use { output ->
+                            copyFile(input, output)
                         }
-                    } catch (e: IOException) {
-                        // Probably a directory
-                    }
+                    }*/
+                } catch (e: IOException) {
+                    // Probably a directory
                 }
+            }
+        }
+    }
+
+    private fun copyAsset(assetManager: AssetManager, asset: String) {
+        assetManager.open(asset).use { input ->
+            FileOutputStream(File(baseDirectory, asset)).use { output ->
+                copyFile(input, output)
             }
         }
     }
@@ -297,10 +249,10 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     }
 
     private fun onBtnSimulateDistributedLocallyClicked() {
-        if (automationFilename != null) {
-            simulatedRunner.automate(
+        if (automationPart != null) {
+            simulatedRunner.simulate(
                 baseDirectory,
-                automationFilename!!
+                automationPart!!
             )
         } else {
             simulatedRunner.run(
@@ -312,11 +264,11 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     }
 
     private fun onBtnRunDistributedClicked() {
-        distributedRunner.run(
+        /*distributedRunner.run(
             baseDirectory,
             getSeed(),
             createMLConfiguration()
-        )
+        )*/
     }
 
     private fun getSeed(): Int {
@@ -338,7 +290,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
                 l2 = l2
             ),
             TrainConfiguration(
-                numEpochs = epoch,
+                maxIteration = maxIteration,
                 gar = gar,
                 communicationPattern = communicationPattern,
                 behavior = behavior,
@@ -373,8 +325,8 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
                 Momentums.values().first { it.text == momentums[position] }
             neuralNetworkBinding.spnL2Regularization.id -> l2 =
                 L2Regularizations.values().first { it.text == l2Regularizations[position] }
-            trainingBinding.spnEpochs.id -> epoch =
-                Epochs.values().first { it.text == epochs[position] }
+            trainingBinding.spnMaxIteration.id -> maxIteration =
+                MaxIterations.values().first { it.text == maxIterations[position] }
             trainingBinding.spnGar.id -> {
                 gar = GARs.values().first { it.text == gars[position] }
                 modelPoisoningAttack = gar.defaultModelPoisoningAttack
@@ -426,8 +378,8 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
         neuralNetworkBinding.spnL2Regularization.setSelection(
             l2Regularizations.indexOf(l2.text), true
         )
-        trainingBinding.spnEpochs.setSelection(
-            epochs.indexOf(epoch.text), true
+        trainingBinding.spnMaxIteration.setSelection(
+            maxIterations.indexOf(maxIteration.text), true
         )
         trainingBinding.spnGar.setSelection(
             gars.indexOf(gar.text), true

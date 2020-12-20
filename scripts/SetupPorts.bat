@@ -3,8 +3,8 @@ set ports[0]=5554
 set ports[1]=5556
 set ports[2]=5558
 set ports[3]=5560
-set redirects[0]=63067
-set redirects[1]=64693
+set redirects[0]=65521
+set redirects[1]=62245
 set redirects[2]=29375
 set redirects[3]=51587
 
@@ -25,3 +25,4 @@ for /L %%i in (0, 1, %x%) do (
 	cscript SetupPortsHelper.vbs !redirects[%%i]!
 )
 endlocal
+exit

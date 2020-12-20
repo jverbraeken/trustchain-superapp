@@ -83,7 +83,7 @@ enum class Datasets(
     ),
 }
 
-fun loadDataset(dataset: String) = Datasets.values().first { it.id == dataset }
+fun loadDataset(dataset: String?) = Datasets.values().firstOrNull { it.id == dataset }
 
 
 enum class BatchSizes(val id: String, val text: String, val value: Int) {
@@ -94,7 +94,7 @@ enum class BatchSizes(val id: String, val text: String, val value: Int) {
     BATCH_96("batch_96", "96", 96)
 }
 
-fun loadBatchSize(batchSize: String) = BatchSizes.values().first { it.id == batchSize }
+fun loadBatchSize(batchSize: String?) = BatchSizes.values().firstOrNull { it.id == batchSize }
 
 enum class IteratorDistributions(val id: String, val text: String, val value: List<Int>) {
     DISTRIBUTION_MNIST_1("mnist_100", "MNIST 100", arrayListOf(100, 100, 100, 100, 100, 100, 100, 100, 100, 100)),
@@ -114,8 +114,8 @@ enum class IteratorDistributions(val id: String, val text: String, val value: Li
     DISTRIBUTION_HAR_100("har_100", "HAR 100", arrayListOf(100, 100, 100, 100, 100, 100)),
 }
 
-fun loadIteratorDistribution(iteratorDistribution: String) =
-    IteratorDistributions.values().first { it.id == iteratorDistribution }
+fun loadIteratorDistribution(iteratorDistribution: String?) =
+    IteratorDistributions.values().firstOrNull { it.id == iteratorDistribution }
 
 enum class MaxTestSamples(val id: String, val text: String, val value: Int) {
     NUM_20("num_20", "20", 20),
@@ -124,7 +124,7 @@ enum class MaxTestSamples(val id: String, val text: String, val value: Int) {
     NUM_200("num_200", "200", 200)
 }
 
-fun loadMaxTestSample(maxTestSample: String) = MaxTestSamples.values().first { it.id == maxTestSample }
+fun loadMaxTestSample(maxTestSample: String?) = MaxTestSamples.values().firstOrNull { it.id == maxTestSample }
 
 enum class Optimizers(
     val id: String,
@@ -138,7 +138,7 @@ enum class Optimizers(
     AMSGRAD("amsgrad", "AMSGRAD", { learningRate -> AMSGrad(learningRate.schedule) })
 }
 
-fun loadOptimizer(optimizer: String) = Optimizers.values().first { it.id == optimizer }
+fun loadOptimizer(optimizer: String?) = Optimizers.values().firstOrNull { it.id == optimizer }
 
 enum class LearningRates(val id: String, val text: String, val schedule: ISchedule) {
     RATE_1EM3(
@@ -160,44 +160,33 @@ enum class LearningRates(val id: String, val text: String, val schedule: ISchedu
                 400 to 0.001
             )
         )
-    ),
-    SCHEDULE2(
-        "schedule2",
-        "{0 -> 0.001|75 -> 0.005|100 -> 0.003}", MapSchedule(
-            ScheduleType.EPOCH,
-            hashMapOf(
-                0 to 0.01,
-                75 to 0.005,
-                100 to 0.003
-            )
-        )
     )
 }
 
-fun loadLearningRate(learningRate: String) = LearningRates.values().first { it.id == learningRate }
+fun loadLearningRate(learningRate: String?) = LearningRates.values().firstOrNull { it.id == learningRate }
 
 enum class Momentums(val id: String, val text: String, val value: Double?) {
     NONE("none", "<none>", null),
     MOMENTUM_1EM3("momentum_1em3", "1e-3", 1e-3)
 }
 
-fun loadMomentum(momentum: String) = Momentums.values().first { it.id == momentum }
+fun loadMomentum(momentum: String?) = Momentums.values().firstOrNull { it.id == momentum }
 
 enum class L2Regularizations(val id: String, val text: String, val value: Double) {
     L2_5EM3("l2_5em3", "5e-3", 5e-3),
-    L2_1EM4("l2_1em4", "1e-4", 1e-4)
+    L2_1EM4("l2_1em4", "1e-4", 1e-4),
 }
 
-fun loadL2Regularization(l2: String) = L2Regularizations.values().first { it.id == l2 }
+fun loadL2Regularization(l2: String?) = L2Regularizations.values().firstOrNull { it.id == l2 }
 
-enum class Epochs(val id: String, val text: String, val value: Int) {
-    EPOCH_1("epoch_1", "1", 1),
-    EPOCH_5("epoch_5", "5", 5),
-    EPOCH_25("epoch_25", "25", 25),
-    EPOCH_50("epoch_50", "50", 50)
+enum class MaxIterations(val id: String, val text: String, val value: Int) {
+    ITER_25("iter_25", "25", 25),
+    ITER_50("iter_50", "50", 50),
+    ITER_250("iter_250", "250", 250),
+    ITER_500("iter_500", "500", 500),
 }
 
-fun loadEpoch(epoch: String) = Epochs.values().first { it.id == epoch }
+fun loadMaxIteration(iteration: String?) = MaxIterations.values().firstOrNull { it.id == iteration }
 
 // Gradient Aggregation Rule
 enum class GARs(
@@ -222,7 +211,7 @@ enum class GARs(
     )
 }
 
-fun loadGAR(gar: String) = GARs.values().first { it.id == gar }
+fun loadGAR(gar: String?) = GARs.values().firstOrNull { it.id == gar }
 
 enum class CommunicationPatterns(val id: String, val text: String) {
     ALL("all", "All"),
@@ -231,8 +220,8 @@ enum class CommunicationPatterns(val id: String, val text: String) {
     RING("ring", "Ring")
 }
 
-fun loadCommunicationPattern(communicationPattern: String) =
-    CommunicationPatterns.values().first { it.id == communicationPattern }
+fun loadCommunicationPattern(communicationPattern: String?) =
+    CommunicationPatterns.values().firstOrNull { it.id == communicationPattern }
 
 enum class Behaviors(val id: String, val text: String) {
     BENIGN("benign", "Benign"),
@@ -240,17 +229,21 @@ enum class Behaviors(val id: String, val text: String) {
     LABEL_FLIP("label_flip", "Label flip")
 }
 
-fun loadBehavior(behavior: String) = Behaviors.values().first { it.id == behavior }
+fun loadBehavior(behavior: String?) = Behaviors.values().firstOrNull { it.id == behavior }
 
 enum class Slowdowns(val id: String, val text: String, val multiplier: Double) {
     NONE("none", "-", 1.0),
     D2("d2", "x 0.5", 0.5),
 }
 
+fun loadSlowdown(slowdown: String?) = Slowdowns.values().firstOrNull { it.id == slowdown }
+
 enum class TransmissionRounds(val id: String, val text: String, val rounds: Int) {
     N0("n0", "0", 0),
     N2("n2", "2", 2)
 }
+
+fun loadTransmissionRound(transmissionRound: String?) = TransmissionRounds.values().firstOrNull { it.id == transmissionRound }
 
 enum class ModelPoisoningAttacks(val id: String, val text: String, val obj: ModelPoisoningAttack) {
     NONE("none", "<none>", NoAttack()),
@@ -259,8 +252,8 @@ enum class ModelPoisoningAttacks(val id: String, val text: String, val obj: Mode
     FANG_2020_KRUM("fang_2020_krum", "Fang 2020, krum", Fang2020Krum(2))
 }
 
-fun loadModelPoisoningAttack(modelPoisoningAttack: String) =
-    ModelPoisoningAttacks.values().first { it.id == modelPoisoningAttack }
+fun loadModelPoisoningAttack(modelPoisoningAttack: String?) =
+    ModelPoisoningAttacks.values().firstOrNull { it.id == modelPoisoningAttack }
 
 enum class NumAttackers(val id: String, val text: String, val num: Int) {
     NUM_0("num_0", "0", 0),
@@ -273,4 +266,4 @@ enum class NumAttackers(val id: String, val text: String, val num: Int) {
     NUM_175("num_175", "175", 175)
 }
 
-fun loadNumAttackers(numAttackers: String) = NumAttackers.values().first { it.id == numAttackers }
+fun loadNumAttackers(numAttackers: String?) = NumAttackers.values().firstOrNull { it.id == numAttackers }

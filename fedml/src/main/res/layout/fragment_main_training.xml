@@ -15,10 +15,10 @@
 
                     <TextView
                         style="@style/InputLabel"
-                        android:text="@string/spnEpochs" />
+                        android:text="@string/spnMaxIteration" />
 
                     <Spinner
-                        android:id="@+id/spnEpochs"
+                        android:id="@+id/spnMaxIteration"
                         style="@style/Spinner" />
                 </LinearLayout>
 

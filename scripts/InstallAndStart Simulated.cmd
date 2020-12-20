@@ -24,7 +24,7 @@ adb -s emulator-5554 root
 adb -s emulator-5556 root
 adb -s emulator-5554 install -t ../app/build/outputs/apk/debug/app-debug.apk
 adb -s emulator-5556 install -t ../app/build/outputs/apk/debug/app-debug.apk
-adb -s emulator-5554 shell am start -n nl.tudelft.trustchain/nl.tudelft.trustchain.app.ui.dashboard.DashboardActivity -e activity fedml -e automationFilename automation1
-adb -s emulator-5556 shell am start -n nl.tudelft.trustchain/nl.tudelft.trustchain.app.ui.dashboard.DashboardActivity -e activity fedml -e automationFilename automation2
+adb -s emulator-5554 shell am start -n nl.tudelft.trustchain/nl.tudelft.trustchain.app.ui.dashboard.DashboardActivity -e activity fedml -e automationPart 1
+adb -s emulator-5556 shell am start -n nl.tudelft.trustchain/nl.tudelft.trustchain.app.ui.dashboard.DashboardActivity -e activity fedml -e automationPart 2
 endlocal
 pause

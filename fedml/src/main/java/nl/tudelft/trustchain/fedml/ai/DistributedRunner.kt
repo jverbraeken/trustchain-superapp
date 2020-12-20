@@ -7,27 +7,23 @@ import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import nl.tudelft.ipv8.Peer
 import nl.tudelft.trustchain.fedml.*
-import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDatasetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
 import nl.tudelft.trustchain.fedml.ipv8.*
 import nl.tudelft.trustchain.fedml.ipv8.FedMLCommunity.MessageId
-import org.deeplearning4j.datasets.fetchers.DataSetType
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
-import org.deeplearning4j.optimize.listeners.EvaluativeListener
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener
 import org.nd4j.linalg.api.ndarray.INDArray
-import org.nd4j.linalg.cpu.nativecpu.NDArray
-import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ConcurrentLinkedDeque
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.concurrent.thread
 import kotlin.random.Random
 
 private val logger = KotlinLogging.logger("DistributedRunner")
 private const val SIZE_RECENT_OTHER_MODELS = 20
 
 class DistributedRunner(private val community: FedMLCommunity) : Runner(), MessageListener {
+    internal lateinit var baseDirectory: File
     private val newOtherModels = ConcurrentHashMap<Int, INDArray>()
     private val recentOtherModels = ArrayDeque<Pair<Int, INDArray>>()
     private val psiCaMessagesFromServers = CopyOnWriteArrayList<MsgPsiCaServerToClient>()
@@ -40,62 +36,14 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         FedMLCommunity.registerMessageListener(MessageId.MSG_PARAM_UPDATE, this)
         FedMLCommunity.registerMessageListener(MessageId.MSG_PSI_CA_CLIENT_TO_SERVER, this)
         FedMLCommunity.registerMessageListener(MessageId.MSG_PSI_CA_SERVER_TO_CLIENT, this)
+        FedMLCommunity.registerMessageListener(MessageId.MSG_NEW_TEST_COMMAND, this)
     }
 
     override fun run(
         baseDirectory: File,
         seed: Int,
         mlConfiguration: MLConfiguration
-    ) {
-        this.random = Random(seed)
-        sraKeyPair = SRAKeyPair.create(bigPrime, java.util.Random(seed.toLong()))
-        scope.launch {
-            val dataset = mlConfiguration.dataset
-            val datasetIteratorConfiguration = mlConfiguration.datasetIteratorConfiguration
-            val behavior = mlConfiguration.trainConfiguration.behavior
-            val (iterTrain, iterTrainFull, iterTest, iterTestFull) = getDataSetIterators(
-                dataset,
-                datasetIteratorConfiguration,
-                seed.toLong(),
-                baseDirectory,
-                behavior
-            )
-            val evaluationProcessor = EvaluationProcessor(
-                baseDirectory,
-                "distributed",
-                listOf(
-                    "before or after averaging",
-                    "#peers included in current batch"
-                )
-            )
-            evaluationProcessor.newSimulation("distributed simulation", listOf(mlConfiguration))
-            val network = generateNetwork(
-                mlConfiguration.dataset,
-                mlConfiguration.nnConfiguration,
-                seed
-            )
-            network.setListeners(ScoreIterationListener(printScoreIterations))
-
-            val port = community.myEstimatedWan.port
-            val numPeers = community.getPeers().size
-            labels = iterTrain.labels
-            val countPerPeer = getSimilarPeers(port, labels, sraKeyPair, numPeers, psiCaMessagesFromServers)
-
-            trainTestSendNetwork(
-                network,
-
-                evaluationProcessor,
-                iterTestFull,
-
-                iterTrain,
-                mlConfiguration.trainConfiguration,
-                mlConfiguration.modelPoisoningConfiguration,
-
-                iterTest,
-                countPerPeer
-            )
-        }
-    }
+    ) {}
 
     private suspend fun getSimilarPeers(
         port: Int,
@@ -144,16 +92,23 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         testDataSetIterator: CustomDataSetIterator,
         countPerPeer: Map<Int, Int>,
     ) {
-        val batchSize = trainDataSetIterator.batch()
+        /**
+         * Joining late logic...
+         */
+
+
         val gar = trainConfiguration.gar.obj
         var iterations = 0
         var iterationsToEvaluation = 0
         var iterationsToSending = 0
-        for (epoch in 0 until trainConfiguration.numEpochs.value) {
+        var epoch = 0
+        val start = System.currentTimeMillis()
+
+        epochLoop@ while (true) {
             logger.debug { "Starting epoch: $epoch" }
             trainDataSetIterator.reset()
-            val start = System.currentTimeMillis()
             var oldParams = network.params().dup()
+
             while (true) {
                 if (iterationsToEvaluation >= iterationsBeforeEvaluation) {
                     iterationsToEvaluation = 0
@@ -161,9 +116,8 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 if (iterationsToSending >= iterationsBeforeSending) {
                     iterationsToSending = 0
                 }
-
-                // Train
                 var endEpoch = false
+
                 try {
                     network.fit(trainDataSetIterator.next())
                 } catch (e: NoSuchElementException) {
@@ -171,9 +125,9 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 }
                 val newParams = network.params().dup()
                 val gradient = oldParams.sub(newParams)
-                iterations += 1
-                iterationsToEvaluation += 1
-                iterationsToSending += 1
+                iterations++
+                iterationsToEvaluation++
+                iterationsToSending++
 
                 if (iterationsToEvaluation >= iterationsBeforeEvaluation) {
                     // Test
@@ -181,9 +135,9 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                     val elapsedTime = System.currentTimeMillis() - start
                     val extraElements = mapOf(
                         Pair("before or after averaging", "before"),
-                        Pair("#peers included in current batch", "")
+                        Pair("#peers included in current batch", "-")
                     )
-                    evaluationProcessor.evaluate(
+                    sendEvaluationToMaster(evaluationProcessor.evaluate(
                         fullTestDataSetIterator,
                         network,
                         extraElements,
@@ -192,7 +146,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                         epoch,
                         0,
                         true
-                    )
+                    ))
 
                     if (iterationsToSending >= iterationsBeforeSending) {
                         // Attack
@@ -236,7 +190,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                                 Pair("before or after averaging", "after"),
                                 Pair("#peers included in current batch", numPeers.toString())
                             )
-                            evaluationProcessor.evaluate(
+                            sendEvaluationToMaster(evaluationProcessor.evaluate(
                                 fullTestDataSetIterator,
                                 network,
                                 extraElements2,
@@ -245,7 +199,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                                 epoch,
                                 0,
                                 true
-                            )
+                            ))
                         }
                         // Send new parameters to other peers
                         sendModelToPeers(
@@ -257,13 +211,26 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                     }
                 }
                 oldParams = network.params().dup()
+                if (iterations >= trainConfiguration.maxIteration.value) {
+                    break@epochLoop
+                }
                 if (endEpoch) {
+                    epoch++
                     break
                 }
             }
         }
         logger.debug { "Done training the network" }
         evaluationProcessor.done()
+        sendCompletionToMaster(true)
+    }
+
+    private fun sendEvaluationToMaster(evaluation: String) {
+        community.sendToMaster(MessageId.MSG_NOTIFY_EVALUATION, MsgNotifyEvaluation(evaluation), reliable = false)
+    }
+
+    private fun sendCompletionToMaster(success: Boolean) {
+        community.sendToMaster(MessageId.MSG_NOTIFY_FINISHED, MsgNotifyFinished(success), reliable = true)
     }
 
     private fun sendModelToPeers(
@@ -286,10 +253,12 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         logger.debug { "onMessageReceived" }
         when (messageId) {
             MessageId.MSG_PARAM_UPDATE -> {
+                logger.debug { "MSG_PARAM_UPDATE" }
                 val paramUpdate = payload as MsgParamUpdate
                 newOtherModels[peer.address.port] = paramUpdate.array
             }
             MessageId.MSG_PSI_CA_CLIENT_TO_SERVER -> scope.launch(Dispatchers.IO) {
+                logger.debug { "MSG_PSI_CA_CLIENT_TO_SERVER" }
                 deferred.await()
                 val (reEncryptedLabels, filter) = serverRespondsClientRequests(
                     labels,
@@ -301,7 +270,59 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 community.sendToPeer(peer, MessageId.MSG_PSI_CA_SERVER_TO_CLIENT, message)
             }
             MessageId.MSG_PSI_CA_SERVER_TO_CLIENT -> {
+                logger.debug { "MSG_PSI_CA_SERVER_TO_CLIENT" }
                 psiCaMessagesFromServers.add(payload as MsgPsiCaServerToClient)
+            }
+            MessageId.MSG_NEW_TEST_COMMAND -> scope.launch {
+                logger.debug { "MSG_NEW_TEST_COMMAND" }
+                val seed = community.myEstimatedWan.port
+                random = Random(seed)
+                sraKeyPair = SRAKeyPair.create(bigPrime, java.util.Random(seed.toLong()))
+                val mlConfiguration = (payload as MsgNewTestCommand).parsedConfiguration
+                val dataset = mlConfiguration.dataset
+                val datasetIteratorConfiguration = mlConfiguration.datasetIteratorConfiguration
+                val behavior = mlConfiguration.trainConfiguration.behavior
+                val (iterTrain, iterTrainFull, iterTest, iterTestFull) = getDataSetIterators(
+                    dataset,
+                    datasetIteratorConfiguration,
+                    seed.toLong(),
+                    baseDirectory,
+                    behavior
+                )
+                val evaluationProcessor = EvaluationProcessor(
+                    baseDirectory,
+                    "distributed",
+                    listOf(
+                        "before or after averaging",
+                        "#peers included in current batch"
+                    )
+                )
+                evaluationProcessor.newSimulation("distributed simulation", listOf(mlConfiguration))
+                val network = generateNetwork(
+                    mlConfiguration.dataset,
+                    mlConfiguration.nnConfiguration,
+                    seed
+                )
+                network.setListeners(ScoreIterationListener(printScoreIterations))
+
+                val port = community.myEstimatedWan.port
+                val numPeers = community.getPeers().size
+                labels = iterTrain.labels
+                val countPerPeer = getSimilarPeers(port, labels, sraKeyPair, numPeers, psiCaMessagesFromServers)
+
+                trainTestSendNetwork(
+                    network,
+
+                    evaluationProcessor,
+                    iterTestFull,
+
+                    iterTrain,
+                    mlConfiguration.trainConfiguration,
+                    mlConfiguration.modelPoisoningConfiguration,
+
+                    iterTest,
+                    countPerPeer
+                )
             }
             else -> throw Exception("Other messages should not be listened to...")
         }
