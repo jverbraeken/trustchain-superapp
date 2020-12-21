@@ -41,7 +41,7 @@
             android:name="nl.tudelft.trustchain.debug.DebugActivity"
             android:parentActivityName=".ui.dashboard.DashboardActivity" />
 
-        <activity
+        <!--<activity
             android:name="nl.tudelft.trustchain.peerchat.PeerChatActivity"
             android:parentActivityName=".ui.dashboard.DashboardActivity"
             android:theme="@style/Theme.PeerChat" />
@@ -72,10 +72,6 @@
             android:parentActivityName=".ui.dashboard.DashboardActivity" />
 
         <activity
-            android:name="nl.tudelft.trustchain.fedml.ui.FedMLActivity"
-            android:parentActivityName=".ui.dashboard.DashboardActivity" />
-
-        <activity
             android:parentActivityName=".ui.dashboard.DashboardActivity"
             android:name="com.example.musicdao.MusicService"
             android:screenOrientation="portrait">
@@ -85,7 +81,11 @@
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
-        </activity>
+        </activity>-->
+
+        <activity
+            android:name="nl.tudelft.trustchain.fedml.ui.FedMLActivity"
+            android:parentActivityName=".ui.dashboard.DashboardActivity" />
 
         <service android:name="nl.tudelft.trustchain.app.service.TrustChainService" />
     </application>

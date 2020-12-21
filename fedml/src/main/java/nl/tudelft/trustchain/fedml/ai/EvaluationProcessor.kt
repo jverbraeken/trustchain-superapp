@@ -1,5 +1,6 @@
 package nl.tudelft.trustchain.fedml.ai
 
+import kotlinx.coroutines.withTimeoutOrNull
 import mu.KotlinLogging
 import org.deeplearning4j.nn.api.Model
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
@@ -203,12 +204,14 @@ class EvaluationProcessor(
         }
     }
 
-    fun evaluate(testDataSetIterator: DataSetIterator, network: MultiLayerNetwork, extraElements: Map<String, String>, elapsedTime: Long, iterations: Int, epoch: Int, simulationIndex: Int, logging: Boolean): String {
+    suspend fun evaluate(testDataSetIterator: DataSetIterator, network: MultiLayerNetwork, extraElements: Map<String, String>, elapsedTime: Long, iterations: Int, epoch: Int, simulationIndex: Int, logging: Boolean): String {
         testDataSetIterator.reset()
         val evaluations = arrayOf(Evaluation())
 
         if (logging) logger.debug { "Starting evaluation, #iterations = $iterations, ${extraElements.getOrDefault("before or after averaging", "")}" }
-        network.doEvaluation(testDataSetIterator, *evaluations)
+        withTimeoutOrNull(8000L) {
+            network.doEvaluation(testDataSetIterator, *evaluations)
+        }
 
         for (evaluation in evaluations) {
             if (logging) logger.debug { "${evaluation.javaClass.simpleName}:\n${evaluation.stats()}" }

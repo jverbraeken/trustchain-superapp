@@ -3,17 +3,17 @@ package nl.tudelft.trustchain.app
 import android.app.Activity
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
-import com.example.musicdao.MusicService
-import nl.tudelft.trustchain.FOC.MainActivityFOC
+//import com.example.musicdao.MusicService
+//import nl.tudelft.trustchain.FOC.MainActivityFOC
 import nl.tudelft.trustchain.common.R
-import nl.tudelft.trustchain.currencyii.CurrencyIIMainActivity
+//import nl.tudelft.trustchain.currencyii.CurrencyIIMainActivity
 import nl.tudelft.trustchain.debug.DebugActivity
-import nl.tudelft.trustchain.distributedAI.DistributedActivity
+//import nl.tudelft.trustchain.distributedAI.DistributedActivity
 import nl.tudelft.trustchain.explorer.ui.TrustChainExplorerActivity
-import nl.tudelft.trustchain.trader.ui.TrustChainTraderActivity
-import nl.tudelft.trustchain.payloadgenerator.ui.TrustChainPayloadGeneratorActivity
-import nl.tudelft.trustchain.peerchat.PeerChatActivity
-import nl.tudelft.trustchain.voting.VotingActivity
+//import nl.tudelft.trustchain.trader.ui.TrustChainTraderActivity
+//import nl.tudelft.trustchain.payloadgenerator.ui.TrustChainPayloadGeneratorActivity
+//import nl.tudelft.trustchain.peerchat.PeerChatActivity
+//import nl.tudelft.trustchain.voting.VotingActivity
 import nl.tudelft.trustchain.fedml.ui.FedMLActivity
 
 enum class AppDefinition(
@@ -23,13 +23,13 @@ enum class AppDefinition(
     @ColorRes val color: Int,
     val activity: Class<out Activity>
 ) {
-    PEERCHAT(
+    /*PEERCHAT(
         "peerchat",
         R.drawable.ic_chat_black_24dp,
         "PeerChat",
         R.color.purple,
         PeerChatActivity::class.java
-    ),
+    ),*/
     TRUSTCHAIN_EXPLORER(
         "explorer",
         R.drawable.ic_device_hub_black_24dp,
@@ -44,7 +44,7 @@ enum class AppDefinition(
         R.color.dark_gray,
         DebugActivity::class.java
     ),
-    CURRENCY_II(
+    /*CURRENCY_II(
         "currencyii",
         R.drawable.ic_bitcoin,
         "Luxury Communism",
@@ -92,7 +92,7 @@ enum class AppDefinition(
         "MusicDAO",
         R.color.black,
         MusicService::class.java
-    ),
+    ),*/
     FEDML(
         "fedml",
         R.drawable.ic_device_hub_black_24dp,

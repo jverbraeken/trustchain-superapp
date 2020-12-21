@@ -6,7 +6,7 @@ import android.os.Build
 import android.util.Log
 import androidx.core.content.getSystemService
 import androidx.preference.PreferenceManager
-import com.example.musicdao.ipv8.MusicCommunity
+//import com.example.musicdao.ipv8.MusicCommunity
 import com.squareup.sqldelight.android.AndroidSqliteDriver
 import nl.tudelft.ipv8.IPv8Configuration
 import nl.tudelft.ipv8.Overlay
@@ -34,11 +34,11 @@ import nl.tudelft.ipv8.util.toHex
 import nl.tudelft.trustchain.common.DemoCommunity
 import nl.tudelft.trustchain.app.service.TrustChainService
 import nl.tudelft.trustchain.common.MarketCommunity
-import nl.tudelft.trustchain.currencyii.CoinCommunity
+//import nl.tudelft.trustchain.currencyii.CoinCommunity
 import nl.tudelft.trustchain.fedml.ipv8.FedMLCommunity
-import nl.tudelft.trustchain.peerchat.community.PeerChatCommunity
-import nl.tudelft.trustchain.peerchat.db.PeerChatStore
-import nl.tudelft.trustchain.voting.VotingCommunity
+//import nl.tudelft.trustchain.peerchat.community.PeerChatCommunity
+//import nl.tudelft.trustchain.peerchat.db.PeerChatStore
+//import nl.tudelft.trustchain.voting.VotingCommunity
 
 class TrustChainApplication : Application() {
     override fun onCreate() {
@@ -99,7 +99,7 @@ class TrustChainApplication : Application() {
             }
         })
 
-        trustchain.addListener(CoinCommunity.JOIN_BLOCK, object : BlockListener {
+        /*trustchain.addListener(CoinCommunity.JOIN_BLOCK, object : BlockListener {
             override fun onBlockReceived(block: TrustChainBlock) {
                 Log.d("Coin", "onBlockReceived: ${block.blockId} ${block.transaction}")
             }
@@ -109,7 +109,7 @@ class TrustChainApplication : Application() {
             override fun onBlockReceived(block: TrustChainBlock) {
                 Log.d("Coin", "onBlockReceived: ${block.blockId} ${block.transaction}")
             }
-        })
+        })*/
     }
 
     private fun createDiscoveryCommunity(): OverlayConfiguration<DiscoveryCommunity> {
@@ -145,14 +145,14 @@ class TrustChainApplication : Application() {
         )
     }
 
-    private fun createPeerChatCommunity(): OverlayConfiguration<PeerChatCommunity> {
+    /*private fun createPeerChatCommunity(): OverlayConfiguration<PeerChatCommunity> {
         val randomWalk = RandomWalk.Factory()
         val store = PeerChatStore.getInstance(this)
         return OverlayConfiguration(
             PeerChatCommunity.Factory(store, this),
             listOf(randomWalk)
         )
-    }
+    }*/
 
     private fun createTFTPCommunity(): OverlayConfiguration<TFTPCommunity> {
         return OverlayConfiguration(
@@ -183,7 +183,7 @@ class TrustChainApplication : Application() {
         )
     }
 
-    private fun createMarketCommunity(): OverlayConfiguration<MarketCommunity> {
+    /*private fun createMarketCommunity(): OverlayConfiguration<MarketCommunity> {
         val randomWalk = RandomWalk.Factory()
         return OverlayConfiguration(
             Overlay.Factory(MarketCommunity::class.java),
@@ -221,7 +221,7 @@ class TrustChainApplication : Application() {
             MusicCommunity.Factory(settings, store),
             listOf(randomWalk)
         )
-    }
+    }*/
 
     private fun createFedMLCommunity(): OverlayConfiguration<FedMLCommunity> {
         val settings = TrustChainSettings()

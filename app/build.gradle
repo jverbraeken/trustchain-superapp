@@ -107,17 +107,17 @@ repositories {
 
 dependencies {
     implementation project(':common')
-    implementation project(':trustchain-voter')
     implementation project(':trustchain-explorer')
-    implementation project(':fedml')
-    implementation project(':trustchain-trader')
-    implementation project(':trustchain-payloadgenerator')
     implementation project(':debug')
-    implementation project(':distributedai')
-    implementation project(':currencyii')
-    implementation project(':freedomOfComputing')
-    implementation project(':musicdao')
-    implementation project(':peerchat')
+//    implementation project(':trustchain-trader')
+//    implementation project(':trustchain-payloadgenerator')
+//    implementation project(':distributedai')
+//    implementation project(':currencyii')
+//    implementation project(':freedomOfComputing')
+//    implementation project(':musicdao')
+//    implementation project(':peerchat')
+//    implementation project(':trustchain-voter')
+    implementation project(':fedml')
 
     // AndroidX
     implementation 'androidx.appcompat:appcompat:1.2.0'

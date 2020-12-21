@@ -75,18 +75,18 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         )
     }
 
-    private fun trainTestSendNetwork(
+    private suspend fun trainTestSendNetwork(
         // General information
         network: MultiLayerNetwork,
-
-        // Evaluation results
-        evaluationProcessor: EvaluationProcessor,
-        fullTestDataSetIterator: CustomDataSetIterator,
 
         // Training the network
         trainDataSetIterator: CustomDataSetIterator,
         trainConfiguration: TrainConfiguration,
         modelPoisoningConfiguration: ModelPoisoningConfiguration,
+
+        // Evaluation results
+        evaluationProcessor: EvaluationProcessor,
+        fullTestDataSetIterator: CustomDataSetIterator,
 
         // Integrating and distributing information to peers
         testDataSetIterator: CustomDataSetIterator,
@@ -313,12 +313,12 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 trainTestSendNetwork(
                     network,
 
-                    evaluationProcessor,
-                    iterTestFull,
-
                     iterTrain,
                     mlConfiguration.trainConfiguration,
                     mlConfiguration.modelPoisoningConfiguration,
+
+                    evaluationProcessor,
+                    iterTestFull,
 
                     iterTest,
                     countPerPeer
