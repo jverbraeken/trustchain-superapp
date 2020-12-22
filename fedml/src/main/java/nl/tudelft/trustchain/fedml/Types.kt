@@ -198,17 +198,10 @@ enum class GARs(
     NONE("none", "None", NoAveraging(), ModelPoisoningAttacks.NONE),
     AVERAGE("average", "Simple average", Average(), ModelPoisoningAttacks.NONE),
     MEDIAN("median", "Median", Median(), ModelPoisoningAttacks.FANG_2020_MEDIAN),
-    CWTRIMMEDMEAN(
-        "cwtrimmedmean", "Trimmed Mean (b=1)", CWTrimmedMean(1),
-        ModelPoisoningAttacks.FANG_2020_TRIMMED_MEAN
-    ),
     KRUM("krum", "Krum (b=1)", Krum(1), ModelPoisoningAttacks.FANG_2020_KRUM),
-    BRIDGE("bridge", "Bridge (b=1)", Bridge(1), ModelPoisoningAttacks.NONE),
+    BRIDGE("bridge", "Bridge (b=1)", Bridge(1), ModelPoisoningAttacks.FANG_2020_TRIMMED_MEAN),
     MOZI("mozi", "Mozi (frac=0.5)", Mozi(0.5), ModelPoisoningAttacks.NONE),
-    BRISTLE(
-        "bristle", "Bristle", Bristle(),
-        ModelPoisoningAttacks.NONE
-    )
+    BRISTLE("bristle", "Bristle", Bristle(), ModelPoisoningAttacks.NONE)
 }
 
 fun loadGAR(gar: String?) = GARs.values().firstOrNull { it.id == gar }

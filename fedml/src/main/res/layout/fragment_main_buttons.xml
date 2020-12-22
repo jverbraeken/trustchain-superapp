@@ -1,28 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <GridLayout
-        style="@style/GridLayout"
-        android:paddingVertical="0dp">
+    <LinearLayout
+        style="@style/outerLinearLayout"
+        android:layout_height="wrap_content">
 
-        <Button
-            android:id="@+id/btnPing"
-            style="@style/button"
-            android:text="@string/ping" />
+        <GridLayout
+            style="@style/GridLayout"
+            android:paddingVertical="0dp">
 
-        <Button
-            android:id="@+id/btnRunLocal"
-            style="@style/button"
-            android:text="@string/run_local" />
+            <Button
+                android:id="@+id/btnPing"
+                style="@style/button"
+                android:text="@string/ping" />
 
-        <Button
-            android:id="@+id/btnRunDistrSim"
-            style="@style/button"
-            android:text="@string/run_distr_sim" />
+            <Button
+                android:id="@+id/btnRunLocal"
+                style="@style/button"
+                android:text="@string/run_local" />
+        </GridLayout>
 
-        <Button
-            android:id="@+id/btnRunDistr"
-            style="@style/button"
-            android:text="@string/run_distr" />
-    </GridLayout>
+        <GridLayout
+            style="@style/GridLayout4"
+            android:paddingVertical="0dp">
+
+            <Button
+                android:id="@+id/btnRunDistrSim0"
+                style="@style/button"
+                android:text="@string/run_distr_sim0" />
+
+            <Button
+                android:id="@+id/btnRunDistrSim1"
+                style="@style/button"
+                android:text="@string/run_distr_sim1" />
+
+            <Button
+                android:id="@+id/btnRunDistrSim2"
+                style="@style/button"
+                android:text="@string/run_distr_sim2" />
+
+            <Button
+                android:id="@+id/btnRunDistrSim3"
+                style="@style/button"
+                android:text="@string/run_distr_sim3" />
+        </GridLayout>
+    </LinearLayout>
 </merge>

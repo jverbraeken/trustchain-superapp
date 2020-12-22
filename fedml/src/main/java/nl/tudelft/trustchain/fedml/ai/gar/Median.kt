@@ -28,21 +28,17 @@ class Median : AggregationRule() {
     ): INDArray {
         debug(logging) { formatName("Median") }
         val models = HashMap<Int, INDArray>()
-        models[-1] = oldModel
+        models[-1] = oldModel.sub(gradient)
         models.putAll(newOtherModels)
         debug(logging) { "Found ${models.size} models in total" }
-        return if (models.size == 1) {
-            oldModel.sub(gradient)
-        } else {
-            val modelsAsArrays = models.map { it.value.toFloatMatrix()[0] }
-            val newMatrix = Array(1) { FloatArray(modelsAsArrays[0].size) }
-            for (i in modelsAsArrays[0].indices) {
-                val elements = ArrayList<Float>(modelsAsArrays.size)
-                modelsAsArrays.forEach { elements.add(it[i]) }
-                newMatrix[0][i] = median(elements)
-            }
-            NDArray(newMatrix).sub(gradient)
+        val modelsAsArrays = models.map { it.value.toFloatMatrix()[0] }
+        val newMatrix = Array(1) { FloatArray(modelsAsArrays[0].size) }
+        for (i in modelsAsArrays[0].indices) {
+            val elements = ArrayList<Float>(modelsAsArrays.size)
+            modelsAsArrays.forEach { elements.add(it[i]) }
+            newMatrix[0][i] = median(elements)
         }
+        return NDArray(newMatrix)
     }
 
     override fun isDirectIntegration(): Boolean {

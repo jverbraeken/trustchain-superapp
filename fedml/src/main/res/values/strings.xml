@@ -17,8 +17,10 @@
     <string name="pong">Pong</string>
 
     <string name="run_local">Run locally</string>
-    <string name="run_distr_sim">Simulate distributed</string>
-    <string name="run_distr">Run distributed</string>
+    <string name="run_distr_sim0">Sim 0</string>
+    <string name="run_distr_sim1">Sim 1</string>
+    <string name="run_distr_sim2">Sim 2</string>
+    <string name="run_distr_sim3">Sim 3</string>
     <string name="dataset">Dataset</string>
     <string name="training">Training</string>
     <string name="neuralnetwork">Neural Network</string>

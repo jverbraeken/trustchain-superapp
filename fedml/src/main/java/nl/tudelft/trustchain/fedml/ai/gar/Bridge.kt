@@ -12,6 +12,8 @@ import java.util.concurrent.ConcurrentLinkedDeque
 
 private val logger = KotlinLogging.logger("Bridge")
 
+fun trimmedMean(b: Int, l: List<Float>) = l.sorted().subList(b, l.size - b).average().toFloat()
+
 class Bridge(private val b: Int) : AggregationRule() {
     private val minimumModels = 2 * b + 1
 
@@ -27,11 +29,11 @@ class Bridge(private val b: Int) : AggregationRule() {
     ): INDArray {
         debug(logging) { formatName("BRIDGE") }
         val models = HashMap<Int, INDArray>()
-        models[-1] = oldModel
+        models[-1] = oldModel.sub(gradient)
         models.putAll(newOtherModels)
         debug(logging) { "Found ${models.size} models in total" }
         return if (models.size < minimumModels) {
-            oldModel.sub(gradient)
+            oldModel
         } else {
             val modelsAsArrays = models.map { it.value.toFloatMatrix()[0] }
             val newMatrix = Array(1) { FloatArray(modelsAsArrays[0].size) }
@@ -40,7 +42,7 @@ class Bridge(private val b: Int) : AggregationRule() {
                 modelsAsArrays.forEach { elements.add(it[i]) }
                 newMatrix[0][i] = trimmedMean(b, elements)
             }
-            NDArray(newMatrix).sub(gradient)
+            NDArray(newMatrix)
         }
     }
 

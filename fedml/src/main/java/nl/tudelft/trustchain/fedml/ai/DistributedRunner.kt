@@ -13,10 +13,10 @@ import nl.tudelft.trustchain.fedml.ipv8.FedMLCommunity.MessageId
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener
 import org.nd4j.linalg.api.ndarray.INDArray
+import org.nd4j.linalg.cpu.nativecpu.NDArray
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
-import kotlin.concurrent.thread
 import kotlin.random.Random
 
 private val logger = KotlinLogging.logger("DistributedRunner")
@@ -42,15 +42,16 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
     override fun run(
         baseDirectory: File,
         seed: Int,
-        mlConfiguration: MLConfiguration
-    ) {}
+        mlConfiguration: MLConfiguration,
+    ) {
+    }
 
     private suspend fun getSimilarPeers(
         port: Int,
         labels: List<String>,
         sraKeyPair: SRAKeyPair,
         numPeers: Int,
-        psiCaMessagesFromServers: CopyOnWriteArrayList<MsgPsiCaServerToClient>
+        psiCaMessagesFromServers: CopyOnWriteArrayList<MsgPsiCaServerToClient>,
     ): Map<Int, Int> {
         val encryptedLabels = clientsRequestsServerLabels(
             labels,
@@ -96,127 +97,112 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
          * Joining late logic...
          */
 
-
         val gar = trainConfiguration.gar.obj
-        var iterations = 0
-        var iterationsToEvaluation = 0
-        var iterationsToSending = 0
-        var epoch = 0
+        var epochEnd = true
+        var epoch = -1
         val start = System.currentTimeMillis()
+        var oldParams: INDArray = NDArray()
 
-        epochLoop@ while (true) {
-            logger.debug { "Starting epoch: $epoch" }
-            trainDataSetIterator.reset()
-            var oldParams = network.params().dup()
+        for (iteration in 0 until trainConfiguration.maxIteration.value) {
+            if (epochEnd) {
+                epoch++
+                logger.debug { "Epoch: $epoch" }
+                epochEnd = false
+                trainDataSetIterator.reset()
+                oldParams = network.params().dup()
+            }
+            logger.debug { "Iteration: $iteration" }
 
-            while (true) {
-                if (iterationsToEvaluation >= iterationsBeforeEvaluation) {
-                    iterationsToEvaluation = 0
+            /**
+             * Slowdown logic
+             */
+
+            try {
+                network.fit(trainDataSetIterator.next())
+            } catch (e: NoSuchElementException) {
+                epochEnd = true
+            }
+            val newParams = network.params().dup()
+            val gradient = oldParams.sub(newParams)
+
+            if (iteration % iterationsBeforeEvaluation == 0) {
+                // Test
+                logger.debug { "Evaluating network " }
+                val elapsedTime = System.currentTimeMillis() - start
+                val extraElements = mapOf(
+                    Pair("before or after averaging", "before"),
+                    Pair("#peers included in current batch", "-")
+                )
+                sendEvaluationToMaster(evaluationProcessor.evaluate(
+                    fullTestDataSetIterator,
+                    network,
+                    extraElements,
+                    elapsedTime,
+                    iteration,
+                    epoch,
+                    0,
+                    true
+                ))
+            }
+
+            if (iteration % iterationsBeforeSending == 0) {
+                // Attack
+                val attack = modelPoisoningConfiguration.attack
+                val attackVectors = attack.obj.generateAttack(
+                    modelPoisoningConfiguration.numAttackers,
+                    oldParams,
+                    gradient,
+                    newOtherModels,
+                    random
+                )
+                newOtherModels.putAll(attackVectors)
+
+                // Integrate parameters of other peers
+                val numPeers = newOtherModels.size + 1
+                val averageParams: INDArray
+                if (numPeers == 1) {
+                    logger.debug { "No received params => skipping integration evaluation" }
+                    averageParams = newParams
+                    network.setParameters(averageParams)
+                } else {
+                    logger.debug { "Params received => executing aggregation rule" }
+                    averageParams = gar.integrateParameters(
+                        network,
+                        oldParams,
+                        gradient,
+                        newOtherModels,
+                        recentOtherModels,
+                        testDataSetIterator,
+                        countPerPeer,
+                        true
+                    )
+                    recentOtherModels.addAll(newOtherModels.toList())
+                    while (recentOtherModels.size > SIZE_RECENT_OTHER_MODELS) {
+                        recentOtherModels.removeFirst()
+                    }
+                    newOtherModels.clear()
+                    network.setParameters(averageParams)
                 }
-                if (iterationsToSending >= iterationsBeforeSending) {
-                    iterationsToSending = 0
-                }
-                var endEpoch = false
+                // Send new parameters to other peers
+                val message = craftMessage(averageParams.dup(), trainConfiguration.behavior, random)
+                sendModelToPeers(message, trainConfiguration.communicationPattern, countPerPeer)
 
-                try {
-                    network.fit(trainDataSetIterator.next())
-                } catch (e: NoSuchElementException) {
-                    endEpoch = true
-                }
-                val newParams = network.params().dup()
-                val gradient = oldParams.sub(newParams)
-                iterations++
-                iterationsToEvaluation++
-                iterationsToSending++
-
-                if (iterationsToEvaluation >= iterationsBeforeEvaluation) {
-                    // Test
-                    logger.debug { "Evaluating network " }
-                    val elapsedTime = System.currentTimeMillis() - start
-                    val extraElements = mapOf(
-                        Pair("before or after averaging", "before"),
-                        Pair("#peers included in current batch", "-")
+                if (iteration % iterationsBeforeEvaluation == 0) {
+                    val elapsedTime2 = System.currentTimeMillis() - start
+                    val extraElements2 = mapOf(
+                        Pair("before or after averaging", "after"),
+                        Pair("#peers included in current batch", numPeers.toString())
                     )
                     sendEvaluationToMaster(evaluationProcessor.evaluate(
                         fullTestDataSetIterator,
                         network,
-                        extraElements,
-                        elapsedTime,
-                        iterations,
+                        extraElements2,
+                        elapsedTime2,
+                        iteration,
                         epoch,
                         0,
                         true
                     ))
-
-                    if (iterationsToSending >= iterationsBeforeSending) {
-                        // Attack
-                        val attack = modelPoisoningConfiguration.attack
-                        val attackVectors = attack.obj.generateAttack(
-                            modelPoisoningConfiguration.numAttackers,
-                            oldParams,
-                            gradient,
-                            newOtherModels,
-                            random
-                        )
-                        newOtherModels.putAll(attackVectors)
-
-                        // Integrate parameters of other peers
-                        val numPeers = newOtherModels.size + 1
-                        val averageParams: INDArray
-                        if (numPeers == 1) {
-                            logger.debug { "No received params => skipping integration evaluation" }
-                            averageParams = newParams
-                            network.setParameters(averageParams)
-                        } else {
-                            logger.debug { "Params received => executing aggregation rule" }
-                            averageParams = gar.integrateParameters(
-                                network,
-                                oldParams,
-                                gradient,
-                                newOtherModels,
-                                recentOtherModels,
-                                testDataSetIterator,
-                                countPerPeer,
-                                true
-                            )
-                            recentOtherModels.addAll(newOtherModels.toList())
-                            while (recentOtherModels.size > SIZE_RECENT_OTHER_MODELS) {
-                                recentOtherModels.removeFirst()
-                            }
-                            newOtherModels.clear()
-                            network.setParameters(averageParams)
-                            val elapsedTime2 = System.currentTimeMillis() - start
-                            val extraElements2 = mapOf(
-                                Pair("before or after averaging", "after"),
-                                Pair("#peers included in current batch", numPeers.toString())
-                            )
-                            sendEvaluationToMaster(evaluationProcessor.evaluate(
-                                fullTestDataSetIterator,
-                                network,
-                                extraElements2,
-                                elapsedTime2,
-                                iterations,
-                                epoch,
-                                0,
-                                true
-                            ))
-                        }
-                        // Send new parameters to other peers
-                        sendModelToPeers(
-                            averageParams,
-                            trainConfiguration.behavior,
-                            trainConfiguration.communicationPattern,
-                            countPerPeer
-                        )
-                    }
-                }
-                oldParams = network.params().dup()
-                if (iterations >= trainConfiguration.maxIteration.value) {
-                    break@epochLoop
-                }
-                if (endEpoch) {
-                    epoch++
-                    break
                 }
             }
         }
@@ -234,12 +220,10 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
     }
 
     private fun sendModelToPeers(
-        averageParams: INDArray,
-        behavior: Behaviors,
+        message: INDArray,
         communicationPattern: CommunicationPatterns,
-        countPerPeer: Map<Int, Int>
+        countPerPeer: Map<Int, Int>,
     ) {
-        val message = craftMessage(averageParams, behavior, random)
         val sendMessage = when (communicationPattern) {
             CommunicationPatterns.ALL -> community::sendToAll
             CommunicationPatterns.RANDOM -> community::sendToRandomPeer

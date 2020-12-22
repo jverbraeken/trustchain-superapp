@@ -82,8 +82,10 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
 
         buttonsBinding.btnPing.setOnClickListener { onBtnPingClicked() }
         buttonsBinding.btnRunLocal.setOnClickListener { onBtnRunLocallyClicked() }
-        buttonsBinding.btnRunDistrSim.setOnClickListener { onBtnSimulateDistributedLocallyClicked() }
-        buttonsBinding.btnRunDistr.setOnClickListener { onBtnRunDistributedClicked() }
+        buttonsBinding.btnRunDistrSim0.setOnClickListener { onBtnSimulateDistributedLocallyClicked(0) }
+        buttonsBinding.btnRunDistrSim1.setOnClickListener { onBtnSimulateDistributedLocallyClicked(1) }
+        buttonsBinding.btnRunDistrSim2.setOnClickListener { onBtnSimulateDistributedLocallyClicked(2) }
+        buttonsBinding.btnRunDistrSim3.setOnClickListener { onBtnSimulateDistributedLocallyClicked(3) }
 
         bindSpinner(view, datasetBinding.spnDataset, datasets)
         bindSpinner(view, iteratorBinding.spnBatchSize, batchSizes)
@@ -128,8 +130,8 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
         if (requireActivity().intent?.extras?.getString("run") == "true") {
             when (requireActivity().intent?.extras?.getString("runner")) {
                 "local" -> onBtnRunLocallyClicked()
-                "simulated" -> onBtnSimulateDistributedLocallyClicked()
-                "distributed" -> onBtnRunDistributedClicked()
+//                "simulated" -> onBtnSimulateDistributedLocallyClicked()
+//                "distributed" -> onBtnRunDistributedClicked()
                 else -> throw IllegalStateException("Runner must be either local, simulated, or distributed")
             }
         }
@@ -248,19 +250,19 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
         )
     }
 
-    private fun onBtnSimulateDistributedLocallyClicked() {
-        if (automationPart != null) {
+    private fun onBtnSimulateDistributedLocallyClicked(automationPart: Int) {
+//        if (automationPart != null) {
             simulatedRunner.simulate(
                 baseDirectory,
-                automationPart!!
+                automationPart
             )
-        } else {
-            simulatedRunner.run(
-                baseDirectory,
-                getSeed(),
-                createMLConfiguration()
-            )
-        }
+//        } else {
+//            simulatedRunner.run(
+//                baseDirectory,
+//                getSeed(),
+//                createMLConfiguration()
+//            )
+//        }
     }
 
     private fun onBtnRunDistributedClicked() {
