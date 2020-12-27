@@ -139,8 +139,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
 
     private fun updateView() {
         val ipv8 = getIpv8()
-        val demo = getDemoCommunity()
-        networkBinding.txtWanAddress.text = demo.myEstimatedWan.toString()
+        networkBinding.txtWanAddress.text = community.network.wanLog.estimateWan()!!.toString()
         networkBinding.txtPeers.text = resources.getString(R.string.peers).format(
             ipv8.overlays.values.first { it.javaClass.simpleName == "FedMLCommunity" }.getPeers().size,
             ipv8.overlays.values.first { it.javaClass.simpleName == "UTPCommunity" }.getPeers().size
@@ -154,8 +153,8 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
         if (automationPart != null) {
             this.automationPart = automationPart.toInt()
         }
-        val enableExternalAutomation = extras?.getString("enableExternalAutomation")
-        if (enableExternalAutomation != null) {
+        val disableExternalAutomation = extras?.getString("disableExternalAutomation")
+        if (disableExternalAutomation == null) {
             distributedRunner.baseDirectory = baseDirectory
             community.enableExternalAutomation(baseDirectory)
         }

@@ -1,7 +1,6 @@
 package nl.tudelft.trustchain.fedml.ipv8
 
 import com.google.common.hash.BloomFilter
-import com.google.common.primitives.Longs
 import mu.KotlinLogging
 import nl.tudelft.ipv8.IPv4Address
 import nl.tudelft.ipv8.Overlay
@@ -14,6 +13,8 @@ import nl.tudelft.ipv8.keyvault.defaultCryptoProvider
 import nl.tudelft.ipv8.messaging.Deserializable
 import nl.tudelft.ipv8.messaging.Packet
 import nl.tudelft.ipv8.messaging.Serializable
+import nl.tudelft.ipv8.messaging.tftp.TFTPCommunity
+import nl.tudelft.ipv8.messaging.utp.UTPCommunity
 import nl.tudelft.trustchain.fedml.*
 import nl.tudelft.trustchain.fedml.ai.*
 import org.nd4j.linalg.api.ndarray.INDArray
@@ -60,7 +61,8 @@ class FedMLCommunity(
         MSG_NOTIFY_HEARTBEAT(110, MsgNotifyHeartbeat.Deserializer),
         MSG_NEW_TEST_COMMAND(111, MsgNewTestCommand.Deserializer),
         MSG_NOTIFY_EVALUATION(112, MsgNotifyEvaluation.Deserializer),
-        MSG_NOTIFY_FINISHED(113, MsgNotifyFinished.Deserializer)
+        MSG_NOTIFY_FINISHED(113, MsgNotifyFinished.Deserializer),
+        MSG_FORCED_INTRODUCTION(114, MsgForcedIntroduction.Deserializer),
     }
 
     init {
@@ -70,10 +72,41 @@ class FedMLCommunity(
         messageHandlers[MessageId.MSG_PSI_CA_CLIENT_TO_SERVER.id] = ::onMsgPsiCaClientToServer
         messageHandlers[MessageId.MSG_PSI_CA_SERVER_TO_CLIENT.id] = ::onMsgPsiCaServerToClient
         messageHandlers[MessageId.MSG_NEW_TEST_COMMAND.id] = ::onMsgNewTestCommand
+        messageHandlers[MessageId.MSG_FORCED_INTRODUCTION.id] = ::onMsgForcedIntroduction
 
         messageListeners[MessageId.MSG_PING]!!.add(object : MessageListener {
             override fun onMessageReceived(messageId: MessageId, peer: Peer, payload: Any) {
                 sendToPeer(peer, MessageId.MSG_PONG, MsgPong("Pong"), reliable = true)
+            }
+        })
+        messageListeners[MessageId.MSG_FORCED_INTRODUCTION]!!.add(object : MessageListener {
+            override fun onMessageReceived(messageId: MessageId, peer: Peer, payload: Any) {
+                logger.debug { "Received MSG_FORCED_INTRODUCTION" }
+                network.removeAllPeers()
+                val msgForcedIntroduction = payload as MsgForcedIntroduction
+                val wan = network.wanLog.estimateWan()!!
+                for (wanPort in msgForcedIntroduction.wanPorts) {
+                    logger.debug { "1: ${getPeers().size}"}
+                    logger.debug { "wanPort: $wanPort" }
+                    val address = IPv4Address(wan.ip, wanPort)
+                    val introPeer = Peer(
+                        defaultCryptoProvider.generateKey(),
+                        address,
+                        address,
+                        address,
+                        supportsTFTP = msgForcedIntroduction.supportsTFTP,
+                        supportsUTP = msgForcedIntroduction.supportsUTP,
+                    )
+                    network.addVerifiedPeer(introPeer)
+                    logger.debug { "2: ${getPeers().size}"}
+                    val services = arrayListOf(msgForcedIntroduction.serviceId)
+                    if (msgForcedIntroduction.supportsTFTP) services.add(TFTPCommunity.SERVICE_ID)
+                    if (msgForcedIntroduction.supportsUTP) services.add(UTPCommunity.SERVICE_ID)
+                    logger.debug { "3: ${getPeers().size}"}
+                    network.discoverServices(introPeer, services)
+                    logger.debug { "4: ${getPeers().size}"}
+                    logger.debug { "discovered services" }
+                }
             }
         })
     }
@@ -86,20 +119,20 @@ class FedMLCommunity(
     }
 
     fun enableExternalAutomation(baseDirectory: File) {
-        writePortNumber(baseDirectory)
+        writeWanAddress(baseDirectory)
         keepSendingHeartbeats()
     }
 
-    private fun writePortNumber(baseDirectory: File) = thread {
+    private fun writeWanAddress(baseDirectory: File) = thread {
         while (myEstimatedWan.port == 0) {
             Thread.sleep(100)
         }
-        val wanPort = myEstimatedWan.port
         val file = File(baseDirectory, "wanPort")
         file.delete()
         file.createNewFile()
         PrintWriter(file).use {
-            it.println(wanPort)
+            it.println(myEstimatedWan.ip)
+            it.println(myEstimatedWan.port)
         }
     }
 
@@ -261,212 +294,13 @@ class FedMLCommunity(
         onMessage(packet, MessageId.MSG_NEW_TEST_COMMAND)
     }
 
+    private fun onMsgForcedIntroduction(packet: Packet) {
+        onMessage(packet, MessageId.MSG_FORCED_INTRODUCTION)
+    }
+
     private fun onMessage(packet: Packet, messageId: MessageId) {
         val (peer, payload) = packet.getAuthPayload(messageId.deserializer)
         logger.debug { "${messageId.name}: ${peer.mid}" }
         messageListeners[messageId]!!.forEach { it.onMessageReceived(messageId, peer, payload) }
-    }
-}
-
-////// MESSAGE DATA CLASSES
-
-data class MsgPing(val message: String) : Serializable {
-    override fun serialize(): ByteArray {
-        return message.toByteArray()
-    }
-
-    companion object Deserializer : Deserializable<MsgPing> {
-        override fun deserialize(buffer: ByteArray, offset: Int): Pair<MsgPing, Int> {
-            val message = buffer.toString(Charsets.UTF_8)
-            return Pair(MsgPing(message), buffer.size)
-        }
-    }
-}
-
-data class MsgPong(val message: String) : Serializable {
-    override fun serialize(): ByteArray {
-        return message.toByteArray()
-    }
-
-    companion object Deserializer : Deserializable<MsgPong> {
-        override fun deserialize(buffer: ByteArray, offset: Int): Pair<MsgPong, Int> {
-            val message = buffer.toString(Charsets.UTF_8)
-            return Pair(MsgPong(message), buffer.size)
-        }
-    }
-}
-
-data class MsgParamUpdate(val array: INDArray) : Serializable {
-    override fun serialize(): ByteArray {
-        return ByteArrayOutputStream().use { ObjectOutputStream(it).writeObject(array); it }.toByteArray()
-    }
-
-    companion object Deserializer : Deserializable<MsgParamUpdate> {
-        override fun deserialize(buffer: ByteArray, offset: Int): Pair<MsgParamUpdate, Int> {
-            val croppedBuffer = buffer.copyOfRange(offset, buffer.size)
-            ByteArrayInputStream(croppedBuffer).use { bis ->
-                ObjectInputStream(bis).use { ois ->
-                    return Pair(MsgParamUpdate(ois.readObject() as INDArray), buffer.size)
-                }
-            }
-        }
-    }
-}
-
-data class MsgPsiCaClientToServer(val encryptedLabels: List<BigInteger>, val client: Int) : Serializable {
-    override fun serialize(): ByteArray {
-        return ByteArrayOutputStream().use { bos ->
-            ObjectOutputStream(bos).use { oos ->
-                oos.writeObject(encryptedLabels)
-                oos.writeInt(client)
-                oos.flush()
-            }
-            bos
-        }.toByteArray()
-    }
-
-    companion object Deserializer : Deserializable<MsgPsiCaClientToServer> {
-        override fun deserialize(buffer: ByteArray, offset: Int): Pair<MsgPsiCaClientToServer, Int> {
-            val croppedBuffer = buffer.copyOfRange(offset, buffer.size)
-            ByteArrayInputStream(croppedBuffer).use { bis ->
-                ObjectInputStream(bis).use { ois ->
-                    return Pair(MsgPsiCaClientToServer(ois.readObject() as List<BigInteger>, ois.readInt()), buffer.size)
-                }
-            }
-        }
-    }
-}
-
-data class MsgPsiCaServerToClient(
-    val reEncryptedLabels: List<BigInteger>,
-    @Suppress("UnstableApiUsage") val bloomFilter: BloomFilter<BigInteger>,
-    val server: Int,
-) : Serializable {
-    override fun serialize(): ByteArray {
-        return ByteArrayOutputStream().use { bos ->
-            ObjectOutputStream(bos).use { oos ->
-                oos.writeObject(reEncryptedLabels)
-                oos.writeObject(bloomFilter)
-                oos.writeInt(server)
-                oos.flush()
-            }
-            bos
-        }.toByteArray()
-    }
-
-    companion object Deserializer : Deserializable<MsgPsiCaServerToClient> {
-        override fun deserialize(buffer: ByteArray, offset: Int): Pair<MsgPsiCaServerToClient, Int> {
-            val croppedBuffer = buffer.copyOfRange(offset, buffer.size)
-            ByteArrayInputStream(croppedBuffer).use { bis ->
-                ObjectInputStream(bis).use { ois ->
-                    return Pair(MsgPsiCaServerToClient(ois.readObject() as List<BigInteger>,
-                        ois.readObject() as BloomFilter<BigInteger>,
-                        ois.readInt()), buffer.size)
-                }
-            }
-        }
-    }
-}
-
-data class MsgNotifyHeartbeat(val unused: Boolean) : Serializable {
-    override fun serialize(): ByteArray {
-        return byteArrayOf()
-    }
-
-    companion object Deserializer : Deserializable<MsgNotifyHeartbeat> {
-        override fun deserialize(buffer: ByteArray, offset: Int): Pair<MsgNotifyHeartbeat, Int> {
-            // Unused
-            throw RuntimeException("Only to be used by the master, not the slave")
-        }
-    }
-}
-
-data class MsgNewTestCommand(val configuration: Map<String, String>) : Serializable {
-    val parsedConfiguration: MLConfiguration
-
-    init {
-        val iteratorDistribution_ = configuration.getValue("iteratorDistribution")
-        val iteratorDistribution = if (iteratorDistribution_.startsWith('[')) {
-            iteratorDistribution_
-                .substring(1, iteratorDistribution_.length - 1)
-                .split(", ")
-                .map { it.toInt() }
-        } else {
-            loadIteratorDistribution(iteratorDistribution_)!!.value
-        }
-        parsedConfiguration = MLConfiguration(
-            loadDataset(configuration.getValue("dataset"))!!,
-            DatasetIteratorConfiguration(
-                batchSize = loadBatchSize(configuration.getValue("batchSize"))!!,
-                maxTestSamples = loadMaxTestSample(configuration.getValue("maxTestSamples"))!!,
-                distribution = iteratorDistribution
-            ),
-            NNConfiguration(
-                optimizer = loadOptimizer(configuration.getValue("optimizer"))!!,
-                learningRate = loadLearningRate(configuration.getValue("learningRate"))!!,
-                momentum = loadMomentum(configuration.getValue("momentum"))!!,
-                l2 = loadL2Regularization(configuration.getValue("l2"))!!
-            ),
-            TrainConfiguration(
-                maxIteration = loadMaxIteration(configuration.getValue("maxIterations"))!!,
-                gar = loadGAR(configuration.getValue("gar"))!!,
-                communicationPattern = loadCommunicationPattern(configuration.getValue("communicationPattern"))!!,
-                behavior = loadBehavior(configuration.getValue("behavior"))!!,
-                slowdown = loadSlowdown(configuration.getValue("slowdown"))!!,
-                joiningLate = loadTransmissionRound(configuration.getValue("joiningLate"))!!
-            ),
-            ModelPoisoningConfiguration(
-                attack = loadModelPoisoningAttack(configuration.getValue("modelPoisoningAttack"))!!,
-                numAttackers = loadNumAttackers(configuration.getValue("numAttackers"))!!
-            )
-        )
-    }
-
-    override fun serialize(): ByteArray {
-        // Unused
-        throw RuntimeException("Only to be used by the master, not the slave")
-    }
-
-    companion object Deserializer : Deserializable<MsgNewTestCommand> {
-        override fun deserialize(buffer: ByteArray, offset: Int): Pair<MsgNewTestCommand, Int> {
-            val croppedBuffer = buffer.copyOfRange(offset, buffer.size)
-            ByteArrayInputStream(croppedBuffer).use { bis ->
-                ObjectInputStream(bis).use { ois ->
-                    return Pair(MsgNewTestCommand(ois.readObject() as Map<String, String>), buffer.size)
-                }
-            }
-        }
-    }
-}
-
-data class MsgNotifyEvaluation(val evaluation: String) : Serializable {
-    override fun serialize(): ByteArray {
-        return ByteArrayOutputStream().use { bos ->
-            ObjectOutputStream(bos).use { oos ->
-                oos.writeObject(evaluation)
-                oos.flush()
-            }
-            bos
-        }.toByteArray()
-    }
-
-    companion object Deserializer : Deserializable<MsgNotifyEvaluation> {
-        override fun deserialize(buffer: ByteArray, offset: Int): Pair<MsgNotifyEvaluation, Int> {
-            // Unused
-            throw RuntimeException("Only to be used by the master, not the slave")
-        }
-    }
-}
-
-data class MsgNotifyFinished(val unused: Boolean) : Serializable {
-    override fun serialize(): ByteArray {
-        return byteArrayOf()
-    }
-
-    companion object Deserializer : Deserializable<MsgNotifyFinished> {
-        override fun deserialize(buffer: ByteArray, offset: Int): Pair<MsgNotifyFinished, Int> {
-            // Unused
-            throw RuntimeException("Only to be used by the master, not the slave")
-        }
     }
 }

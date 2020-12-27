@@ -55,9 +55,9 @@ class TrustChainApplication : Application() {
             createTrustChainCommunity(),
 //            createPeerChatCommunity(),
             createTFTPCommunity(),
-            createFastTFTPCommunity(),
+//            createFastTFTPCommunity(),
             createUTPCommunity(),
-            createDemoCommunity(),
+//            createDemoCommunity(),
 //            createMarketCommunity(),
 //            createCoinCommunity(),
 //            createVotingCommunity(),
@@ -161,12 +161,12 @@ class TrustChainApplication : Application() {
         )
     }
 
-    private fun createFastTFTPCommunity(): OverlayConfiguration<FastTFTPCommunity> {
+    /*private fun createFastTFTPCommunity(): OverlayConfiguration<FastTFTPCommunity> {
         return OverlayConfiguration(
             Overlay.Factory(FastTFTPCommunity::class.java),
             listOf()
         )
-    }
+    }*/
 
     private fun createUTPCommunity(): OverlayConfiguration<UTPCommunity> {
         return OverlayConfiguration(
@@ -175,13 +175,13 @@ class TrustChainApplication : Application() {
         )
     }
 
-    private fun createDemoCommunity(): OverlayConfiguration<DemoCommunity> {
+    /*private fun createDemoCommunity(): OverlayConfiguration<DemoCommunity> {
         val randomWalk = RandomWalk.Factory()
         return OverlayConfiguration(
             Overlay.Factory(DemoCommunity::class.java),
             listOf(randomWalk)
         )
-    }
+    }*/
 
     /*private fun createMarketCommunity(): OverlayConfiguration<MarketCommunity> {
         val randomWalk = RandomWalk.Factory()

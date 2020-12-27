@@ -91,6 +91,33 @@ android {
         exclude 'META-INF/kotlinx-coroutines-core.kotlin_module'
         exclude 'META-INF/DEPENDENCIES'
         exclude 'META-INF/native-image/**'
+        exclude 'lib/armeabi-v7a/**'
+        exclude 'lib/arm64-v8a/**'
+        exclude 'lib/x86/**'
+        exclude 'org/bytedeco/opencv/windows-x86_64/**'
+        exclude 'org/bytedeco/opencv/windows-x86/**'
+        exclude 'org/bytedeco/opencv/ios-x86_64/**'
+        exclude 'org/bytedeco/opencv/ios-arm64/**'
+        exclude 'org/bytedeco/opencv/macosx-x86_64/**'
+        exclude 'org/bytedeco/opencv/linux-arm64/**'
+        exclude 'org/bytedeco/opencv/linux-x86/**'
+        exclude 'org/bytedeco/opencv/linux-armhf/**'
+
+        exclude 'org/bytedeco/openblas/windows-x86_64/**'
+        exclude 'org/bytedeco/openblas/windows-x86/**'
+        exclude 'org/bytedeco/openblas/ios-x86_64/**'
+        exclude 'org/bytedeco/openblas/ios-arm64/**'
+        exclude 'org/bytedeco/openblas/macosx-x86_64/**'
+        exclude 'org/bytedeco/openblas/linux-arm64/**'
+        exclude 'org/bytedeco/openblas/linux-x86/**'
+        exclude 'org/bytedeco/openblas/linux-armhf/**'
+
+        exclude 'org/bytedeco/hdf5/windows-x86_64/**'
+        exclude 'org/bytedeco/hdf5/windows-x86/**'
+        exclude 'org/bytedeco/hdf5/macosx-x86_64/**'
+        exclude 'org/bytedeco/hdf5/linux-arm64/**'
+        exclude 'org/bytedeco/hdf5/linux-x86/**'
+        exclude 'org/bytedeco/hdf5/linux-armhf/**'
     }
 
     // TODO: Find a way to move this to fedml
