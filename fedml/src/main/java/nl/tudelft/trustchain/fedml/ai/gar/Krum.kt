@@ -40,14 +40,16 @@ class Krum(private val b: Int) : AggregationRule() {
         logging: Boolean
     ): INDArray {
         debug(logging) { formatName("Krum") }
-        val models = HashMap<Int, INDArray>()
-        models.putAll(newOtherModels)
+        val modelMap = HashMap<Int, INDArray>()
+        modelMap[-1] = oldModel.sub(gradient)
+        modelMap.putAll(newOtherModels)
+        val models = modelMap.map { it.value }.toList()
         debug(logging) { "Found ${models.size} models in total" }
-        return if (models.size + 1 <= b + 2 + 1) {  // The additional +1 is because we need to add the current peer itself
+        return if (models.size <= b + 2 + 1) {  // The additional +1 is because we need to add the current peer itself
             debug(logging) { "Not using KRUM rule because not enough models found..." }
             oldModel.sub(gradient)
         } else {
-            val bestCandidate = getKrum(models.map { it.value }.toList(), b)
+            val bestCandidate = getKrum(models, b)
             val newModel = oldModel.sub(gradient).add(models[bestCandidate]).div(2)
             newModel
         }

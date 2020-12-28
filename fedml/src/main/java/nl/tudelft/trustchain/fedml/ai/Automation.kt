@@ -27,6 +27,9 @@ fun loadAutomation(baseDirectory: File): Automation {
     return Json.decodeFromString(string)
 }
 
+private const val ISOLATED_FIGURE_NAME = "Figure 2.2"
+private const val ISOLATED_FIGURE_GAR = "krum"
+
 /**
  * @return 1. the configuration per node, per test, per figure ; 2. the names of the figures
  */
@@ -56,10 +59,10 @@ fun generateConfigs(
     val communicationPattern = loadCommunicationPattern(automation.fixedValues.getValue("communicationPattern"))!!
     val figures = automation.figures
     val myFigures =
-        if (automationPart == 0)
-            figures.subList(0, figures.size / 2)
+        if (automationPart == -1)
+            figures.filter { it.name == ISOLATED_FIGURE_NAME }
         else
-            figures.subList(figures.size / 2, figures.size)
+            figures.subList(automationPart * (figures.size / 4), (automationPart + 1) * (figures.size / 4))
 
     for (figure in myFigures) {
         configurations.add(arrayListOf())
@@ -75,8 +78,10 @@ fun generateConfigs(
         val overrideIteratorDistribution_ = figure.iteratorDistributions
 
         for (test in figure.tests) {
-            configurations.last().add(arrayListOf())
             val gar = loadGAR(test.gar)!!
+            if (automationPart == -1 && gar.id != ISOLATED_FIGURE_GAR) continue
+
+            configurations.last().add(arrayListOf())
 
             for (node in 0 until numNodes) {
                 val overrideIteratorDistributionForNode =

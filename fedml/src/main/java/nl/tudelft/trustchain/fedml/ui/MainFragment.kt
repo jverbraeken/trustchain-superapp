@@ -82,6 +82,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
 
         buttonsBinding.btnPing.setOnClickListener { onBtnPingClicked() }
         buttonsBinding.btnRunLocal.setOnClickListener { onBtnRunLocallyClicked() }
+        buttonsBinding.btnRunIsolated.setOnClickListener { onBtnSimulateDistributedLocallyClicked(-1) }
         buttonsBinding.btnRunDistrSim0.setOnClickListener { onBtnSimulateDistributedLocallyClicked(0) }
         buttonsBinding.btnRunDistrSim1.setOnClickListener { onBtnSimulateDistributedLocallyClicked(1) }
         buttonsBinding.btnRunDistrSim2.setOnClickListener { onBtnSimulateDistributedLocallyClicked(2) }

@@ -2,8 +2,6 @@ package nl.tudelft.trustchain.fedml.ai.dataset.cifar
 
 import mu.KotlinLogging
 import org.datavec.api.conf.Configuration
-import org.datavec.api.io.labels.PathLabelGenerator
-import org.datavec.api.io.labels.PathMultiLabelGenerator
 import org.datavec.api.records.Record
 import org.datavec.api.records.metadata.RecordMetaData
 import org.datavec.api.records.metadata.RecordMetaDataURI
@@ -39,14 +37,12 @@ class CustomImageRecordReader(
     private var height: Long,
     private var width: Long,
     private var channels: Long,
-    private var labelGenerator: PathLabelGenerator,
     private var imageTransform: ImageTransform?,
 ) : BaseRecordReader() {
     private lateinit var conf: Configuration
     private var finishedInputStreamSplit = false
     private var iter: Iterator<File>? = null
     private var currentFile: File? = null
-    private var labelMultiGenerator: PathMultiLabelGenerator? = null
     private var labels = listOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
     private var uniqueLabels = mutableSetOf<String>()
     private var appendLabel = true
@@ -69,7 +65,8 @@ class CustomImageRecordReader(
         iter = FileFromPathIterator(inputSplit.locationsPathIterator()) //This handles randomization internally if necessary
         val locations = split.locations()
         for (location in locations) {
-            val label = labelGenerator.getLabelForPath(location).toString()
+            val a = location.toString().split('/')
+            val label = a[a.size - 2]
             uniqueLabels.add(label)
         }
     }
@@ -113,17 +110,7 @@ class CustomImageRecordReader(
                 Nd4j.getAffinityManager().ensureLocation(row, AffinityManager.Location.DEVICE)
                 ret = RecordConverter.toRecord(row)
                 if (appendLabel || writeLabel) {
-                    if (labelMultiGenerator != null) {
-                        ret.addAll(labelMultiGenerator!!.getLabels(image.path))
-                    } else {
-                        if (labelGenerator.inferLabelClasses()) {
-                            //Standard classification use case (i.e., handle String -> integer conversion
-                            ret.add(IntWritable(labels.indexOf(getLabel(image.path))))
-                        } else {
-                            //Regression use cases, and PathLabelGenerator instances that already map to integers
-                            ret.add(labelGenerator.getLabelForPath(image.path))
-                        }
-                    }
+                    ret.add(IntWritable(labels.indexOf(getLabel(image.path))))
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -171,26 +158,14 @@ class CustomImageRecordReader(
         var cnt = 0
         val numCategories = if (appendLabel || writeLabel) labels.size else 0
         var currLabels: MutableList<Int?>? = null
-        var currLabelsWritable: MutableList<Writable>? = null
-        var multiGenLabels: MutableList<List<Writable?>>? = null
         while (cnt < num && iter!!.hasNext()) {
             currentFile = iter!!.next()
             currBatch.add(currentFile!!)
             invokeListeners(currentFile)
             if (appendLabel || writeLabel) {
                 //Collect the label Writables from the label generators
-                if (labelMultiGenerator != null) {
-                    if (multiGenLabels == null) multiGenLabels = ArrayList()
-                    multiGenLabels.add(labelMultiGenerator!!.getLabels(currentFile!!.path))
-                } else {
-                    if (labelGenerator.inferLabelClasses()) {
-                        if (currLabels == null) currLabels = ArrayList()
-                        currLabels.add(labels.indexOf(getLabel(currentFile!!.path)))
-                    } else {
-                        if (currLabelsWritable == null) currLabelsWritable = ArrayList()
-                        currLabelsWritable.add(labelGenerator.getLabelForPath(currentFile!!.path))
-                    }
-                }
+                if (currLabels == null) currLabels = ArrayList()
+                currLabels.add(labels.indexOf(getLabel(currentFile!!.path)))
             }
             cnt++
         }
@@ -210,40 +185,13 @@ class CustomImageRecordReader(
         ret.add(features)
         if (appendLabel || writeLabel) {
             //And convert the previously collected label Writables from the label generators
-            if (labelMultiGenerator != null) {
-                val temp: MutableList<Writable?> = ArrayList()
-                val first = multiGenLabels!![0]
-                for (col in first.indices) {
-                    temp.clear()
-                    for (multiGenLabel in multiGenLabels) {
-                        temp.add(multiGenLabel[col])
-                    }
-                    val currCol = RecordConverter.toMinibatchArray(temp)
-                    ret.add(currCol)
-                }
-            } else {
-                val labels: INDArray
-                if (labelGenerator.inferLabelClasses()) {
-                    //Standard classification use case (i.e., handle String -> integer conversion)
-                    labels = Nd4j.create(cnt.toLong(), numCategories.toLong(), 'c')
-                    Nd4j.getAffinityManager().tagLocation(labels, AffinityManager.Location.HOST)
-                    for (i in currLabels!!.indices) {
-                        labels.putScalar(i.toLong(), currLabels[i]!!.toLong(), 1.0)
-                    }
-                } else {
-                    //Regression use cases, and PathLabelGenerator instances that already map to integers
-                    labels = if (currLabelsWritable!![0] is NDArrayWritable) {
-                        val arr: MutableList<INDArray> = ArrayList()
-                        for (w in currLabelsWritable) {
-                            arr.add((w as NDArrayWritable).get())
-                        }
-                        Nd4j.concat(0, *arr.toTypedArray())
-                    } else {
-                        RecordConverter.toMinibatchArray(currLabelsWritable)
-                    }
-                }
-                ret.add(labels)
+            //Standard classification use case (i.e., handle String -> integer conversion)
+            val labels = Nd4j.create(cnt.toLong(), numCategories.toLong(), 'c')
+            Nd4j.getAffinityManager().tagLocation(labels, AffinityManager.Location.HOST)
+            for (i in currLabels!!.indices) {
+                labels.putScalar(i.toLong(), currLabels[i]!!.toLong(), 1.0)
             }
+            ret.add(labels)
         }
         return NDArrayRecordBatch(ret)
     }

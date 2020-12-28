@@ -146,7 +146,10 @@ class SimulatedRunner : Runner() {
                             }
 
                             try {
-                                network.fit(iterTrains[nodeIndex].next())
+                                val ds = iterTrains[nodeIndex].next()
+                                logger.debug { "Fitting with ${ds.labels.size(0)}"}
+                                network.fit(ds)
+                                logger.debug { "Done fitting" }
                             } catch (e: Exception) {
                                 epochEnd = true
                             }
@@ -159,6 +162,7 @@ class SimulatedRunner : Runner() {
                                     Pair("before or after averaging", "before"),
                                     Pair("#peers included in current batch", "")
                                 )
+                                logger.debug { "1" }
                                 evaluationProcessor.evaluate(
                                     iterTestFull,
                                     network,
@@ -168,9 +172,11 @@ class SimulatedRunner : Runner() {
                                     epoch,
                                     nodeIndex,
                                     nodeIndex == 0)
+                                logger.debug { "2" }
                             }
 
                             if (iteration % iterationsBeforeSending == 0) {
+                                logger.debug { "3" }
                                 // Attack
                                 val attack = nodeConfig.modelPoisoningConfiguration.attack
                                 val attackVectors = attack.obj.generateAttack(
@@ -208,6 +214,7 @@ class SimulatedRunner : Runner() {
                                     newOtherModelBuffer.clear()
                                     network.setParameters(averageParams)
                                 }
+                                logger.debug { "4" }
 
                                 // Send to other peers
                                 val message = craftMessage(averageParams.dup(), nodeConfig.trainConfiguration.behavior, random)
@@ -221,6 +228,7 @@ class SimulatedRunner : Runner() {
                                     CommunicationPatterns.RR -> throw IllegalArgumentException("Not implemented yet")
                                     CommunicationPatterns.RING -> throw IllegalArgumentException("Not implemented yet")
                                 }
+                                logger.debug { "5" }
 
                                 if (iteration % iterationsBeforeEvaluation == 0) {
                                     val elapsedTime2 = System.currentTimeMillis() - start
@@ -238,6 +246,7 @@ class SimulatedRunner : Runner() {
                                         nodeIndex,
                                         nodeIndex == 0
                                     )
+                                    logger.debug { "6" }
                                 }
                             }
                         }
