@@ -102,6 +102,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         var epoch = -1
         val start = System.currentTimeMillis()
         var oldParams: INDArray = NDArray()
+        val udpEndpoint = community.endpoint.udpEndpoint!!
 
         for (iteration in 0 until trainConfiguration.maxIteration.value) {
             if (epochEnd) {
@@ -156,6 +157,12 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                     random
                 )
                 newOtherModels.putAll(attackVectors)
+
+
+                while (!udpEndpoint.noPendingUTPMessages()) {
+                    logger.debug { "Waiting for all UTP messages to be sent" }
+                    delay(300)
+                }
 
                 // Integrate parameters of other peers
                 val numPeers = newOtherModels.size + 1

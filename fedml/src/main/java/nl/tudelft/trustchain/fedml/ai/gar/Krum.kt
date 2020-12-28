@@ -13,7 +13,7 @@ private val logger = KotlinLogging.logger("Krum")
 
 fun getKrum(models: List<INDArray>, b: Int): Int {
     val distances = Array(models.size) { FloatArray(models.size) }
-    for (i in 0 until models.size - 1) {
+    for (i in 0 until models.size) {
         distances[i][i] = 9999999.0f
         for (j in i + 1 until models.size) {
             val distance = models[i].distance2(models[j]).toFloat()
@@ -21,13 +21,11 @@ fun getKrum(models: List<INDArray>, b: Int): Int {
             distances[j][i] = distance
         }
     }
-    distances[models.size - 1][models.size - 1] = 9999999.0f
     val summedDistances = distances.map {
-        val copy = it.copyOf()
-        copy.sort()
-        copy.take(models.size - b/* - 2*/).sum()
+        val sorted = it.sorted()
+        sorted.take(models.size - b - 2 - 1).sum()  // The additional -1 is because a peer is not a neighbor of itself
     }
-    return summedDistances.indexOf(summedDistances.minOrNull())
+    return summedDistances.indexOf(summedDistances.minOrNull()!!)
 }
 
 class Krum(private val b: Int) : AggregationRule() {
@@ -45,10 +43,11 @@ class Krum(private val b: Int) : AggregationRule() {
         val models = HashMap<Int, INDArray>()
         models.putAll(newOtherModels)
         debug(logging) { "Found ${models.size} models in total" }
-        return if (models.size == 1) {
+        return if (models.size + 1 <= b + 2 + 1) {  // The additional +1 is because we need to add the current peer itself
+            debug(logging) { "Not using KRUM rule because not enough models found..." }
             oldModel.sub(gradient)
         } else {
-            val bestCandidate = getKrum(models.map {it.value}.toList(), b)
+            val bestCandidate = getKrum(models.map { it.value }.toList(), b)
             val newModel = oldModel.sub(gradient).add(models[bestCandidate]).div(2)
             newModel
         }
