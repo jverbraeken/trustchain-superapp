@@ -32,13 +32,6 @@
         <item name="android:layout_height">match_parent</item>
         <item name="android:columnCount">2</item>
     </style>
-    <style name="GridLayout4">
-        <item name="android:paddingHorizontal">@dimen/default_horizontal_spacing</item>
-        <item name="android:paddingVertical">@dimen/default_vertical_spacing</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:columnCount">4</item>
-    </style>
     <style name="outerLinearLayout">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>

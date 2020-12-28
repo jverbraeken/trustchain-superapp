@@ -17,6 +17,7 @@
     <string name="pong">Pong</string>
 
     <string name="run_local">Run locally</string>
+    <string name="run_isolated">Run isolated</string>
     <string name="run_distr_sim0">Sim 0</string>
     <string name="run_distr_sim1">Sim 1</string>
     <string name="run_distr_sim2">Sim 2</string>

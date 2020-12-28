@@ -102,10 +102,8 @@ class CustomCifar10Fetcher {
         deleteIfEmpty(localCache)
         try {
             if (!localCache.exists()) {
-                logger.debug { "Cache didn't exist" }
+                logger.debug { "Creating cache..." }
                 downloadAndExtract()
-            } else {
-                logger.debug { "Cache exists! " }
             }
         } catch (e: Exception) {
             throw RuntimeException("Could not download CIFAR-10", e)
