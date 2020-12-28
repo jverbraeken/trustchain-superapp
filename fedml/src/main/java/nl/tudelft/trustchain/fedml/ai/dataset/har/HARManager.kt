@@ -17,20 +17,22 @@ class HARManager(
     private val labelsArr: IntArray
 
     init {
-        val tmpDataArr = loadData(dataFiles)
-        val tmpLabelsArr = loadLabels(labelsFile)
-        val tmpLabelsArr2 = tmpLabelsArr
-            .copyOf(tmpLabelsArr.size)
+        if (tmpDataArr == null) {
+            tmpDataArr = loadData(dataFiles)
+            tmpLabelsArr = loadLabels(labelsFile)
+        }
+        val tmpLabelsArr2 = tmpLabelsArr!!
+            .copyOf(tmpLabelsArr!!.size)
             .map { it!! }
             .toTypedArray()
         if (behavior === Behaviors.LABEL_FLIP) {
-            tmpLabelsArr.indices.filter { i: Int -> tmpLabelsArr[i] == 1 }
+            tmpLabelsArr!!.indices.filter { i: Int -> tmpLabelsArr!![i] == 1 }
                 .forEach { i: Int -> tmpLabelsArr2[i] = 2 }
-            tmpLabelsArr.indices.filter { i: Int -> tmpLabelsArr[i] == 2 }
+            tmpLabelsArr!!.indices.filter { i: Int -> tmpLabelsArr!![i] == 2 }
                 .forEach { i: Int -> tmpLabelsArr2[i] = 1 }
         }
         val totalExamples = calculateTotalExamples(iteratorDistribution, maxTestSamples, tmpLabelsArr2)
-        val res = sampleData(tmpDataArr, tmpLabelsArr2, totalExamples, iteratorDistribution, maxTestSamples, seed)
+        val res = sampleData(tmpDataArr!!, tmpLabelsArr2, totalExamples, iteratorDistribution, maxTestSamples, seed)
         dataArr = res.first
         labelsArr = res.second
     }
@@ -106,5 +108,10 @@ class HARManager(
             .distinct()
             .map { i: Int -> i.toString() }
             .toList()
+    }
+
+    companion object {
+        private var tmpDataArr: Array<List<String>>? = null
+        private var tmpLabelsArr: Array<Int>? = null
     }
 }

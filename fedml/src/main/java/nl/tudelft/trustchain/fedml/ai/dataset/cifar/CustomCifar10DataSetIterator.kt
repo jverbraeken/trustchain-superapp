@@ -1,12 +1,14 @@
 package nl.tudelft.trustchain.fedml.ai.dataset.cifar
 
+import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.Behaviors
 import nl.tudelft.trustchain.fedml.ai.CustomDataSetType
 import nl.tudelft.trustchain.fedml.ai.DatasetIteratorConfiguration
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
-import nl.tudelft.trustchain.fedml.ai.dataset.mnist.CustomMnistDataFetcher
 import org.nd4j.linalg.dataset.DataSet
 import java.io.File
+
+private val logger = KotlinLogging.logger("CustomCifar10DataSetIterator")
 
 class CustomCifar10DataSetIterator(
     iteratorConfiguration: DatasetIteratorConfiguration,
@@ -38,6 +40,7 @@ class CustomCifar10DataSetIterator(
             baseDirectory: File,
             behavior: Behaviors,
         ): CustomCifar10DataSetIterator {
+            logger.debug { "Creating CustomCifar10DataSetIterator" }
             return CustomCifar10DataSetIterator(iteratorConfiguration, seed, dataSetType, behavior)
         }
     }

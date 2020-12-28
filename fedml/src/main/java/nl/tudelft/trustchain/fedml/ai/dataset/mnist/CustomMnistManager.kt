@@ -21,22 +21,24 @@ class CustomMnistManager(
     private val labelsArr: IntArray
 
     init {
-        val tmpImagesArr = loadImages(imagesFile, numExamples)
-        val tmpLabelsArr = loadLabels(labelsFile, numExamples)
-        val tmpLabelsArr2 = tmpLabelsArr
-            .copyOf(tmpLabelsArr.size)
+        if (tmpImagesArr == null) {
+            tmpImagesArr = loadImages(imagesFile, numExamples)
+            tmpLabelsArr = loadLabels(labelsFile, numExamples)
+        }
+        val tmpLabelsArr2 = tmpLabelsArr!!
+            .copyOf(tmpLabelsArr!!.size)
             .map { it!! }
             .toTypedArray()
         if (behavior === Behaviors.LABEL_FLIP) {
-            tmpLabelsArr.indices
-                .filter { i: Int -> tmpLabelsArr[i] == 1 }
+            tmpLabelsArr!!.indices
+                .filter { i: Int -> tmpLabelsArr!![i] == 1 }
                 .forEach { i: Int -> tmpLabelsArr2[i] = 2 }
-            tmpLabelsArr.indices
-                .filter { i: Int -> tmpLabelsArr[i] == 2 }
+            tmpLabelsArr!!.indices
+                .filter { i: Int -> tmpLabelsArr!![i] == 2 }
                 .forEach { i: Int -> tmpLabelsArr2[i] = 1 }
         }
         val totalExamples = calculateTotalExamples(iteratorDistribution, maxTestSamples, tmpLabelsArr2)
-        val res = sampleData(tmpImagesArr, tmpLabelsArr2, totalExamples, iteratorDistribution, maxTestSamples, seed)
+        val res = sampleData(tmpImagesArr!!, tmpLabelsArr2, totalExamples, iteratorDistribution, maxTestSamples, seed)
         imagesArr = res.first
         labelsArr = res.second
     }
@@ -104,6 +106,8 @@ class CustomMnistManager(
         private val imageMapping = hashMapOf<String, Array<ByteArray>>()
         private val labelMapping = hashMapOf<String, Array<Int>>()
         private val imageEntryLength = hashMapOf<String, Int>()
+        private var tmpImagesArr: Array<ByteArray>? = null
+        private var tmpLabelsArr: Array<Int>? = null
 
         @Synchronized
         private fun loadImages(filename: String, numExamples: Int): Array<ByteArray> {
