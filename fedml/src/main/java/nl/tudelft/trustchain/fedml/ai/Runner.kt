@@ -168,7 +168,7 @@ fun generateDefaultHARConfiguration(
 
 abstract class Runner {
     protected open val printScoreIterations = 5
-    protected val iterationsBeforeEvaluation = 15
+    protected val iterationsBeforeEvaluation = 1
     protected val iterationsBeforeSending = 1
     protected val bigPrime = BigInteger("100012421")
     protected val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())

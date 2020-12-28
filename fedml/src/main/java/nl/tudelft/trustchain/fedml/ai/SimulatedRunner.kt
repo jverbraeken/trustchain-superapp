@@ -22,6 +22,7 @@ import kotlin.random.Random
 private val logger = KotlinLogging.logger("SimulatedRunner")
 
 private const val SIZE_RECENT_OTHER_MODELS = 20
+private const val ONLY_EVALUATE_FIRST_NODE = true
 
 class SimulatedRunner : Runner() {
     override fun run(baseDirectory: File, _unused: Int, _unused2: MLConfiguration) {
@@ -63,6 +64,7 @@ class SimulatedRunner : Runner() {
                     val sraKeyPairs = testConfig.mapIndexed { i, _ -> SRAKeyPair.create(bigPrime, java.util.Random(i.toLong())) }
                     val randoms = testConfig.mapIndexed { i, _ -> Random(i) }
                     val newOtherModelBuffers = testConfig.map { ConcurrentHashMap<Int, INDArray>() }
+                    val newOtherModelBuffersTemp = testConfig.map { ConcurrentHashMap<Int, INDArray>() }
                     val recentOtherModelsBuffers = testConfig.map { ArrayDeque<Pair<Int, INDArray>>() }
                     val datasets = testConfig.map { it.dataset }
                     val datasetIteratorConfigurations = testConfig.map { it.datasetIteratorConfiguration }
@@ -116,6 +118,8 @@ class SimulatedRunner : Runner() {
                                 oldParams[i] = n.params().dup()
                             }
                         }
+                        newOtherModelBuffers.forEachIndexed { i, map -> map.putAll(newOtherModelBuffersTemp[i]) }
+                        newOtherModelBuffersTemp.forEach { it.clear() }
                         logger.debug { "Iteration: $iteration" }
 
                         for (nodeIndex in testConfig.indices) {
@@ -156,13 +160,12 @@ class SimulatedRunner : Runner() {
                             val newParams = network.params().dup()
                             val gradient = oldParam.sub(newParams)
 
-                            if (iteration % iterationsBeforeEvaluation == 0) {
+                            if (iteration % iterationsBeforeEvaluation == 0 && (nodeIndex == 0 || !ONLY_EVALUATE_FIRST_NODE)) {
                                 val elapsedTime = System.currentTimeMillis() - start
                                 val extraElements = mapOf(
                                     Pair("before or after averaging", "before"),
                                     Pair("#peers included in current batch", "")
                                 )
-                                logger.debug { "1" }
                                 evaluationProcessor.evaluate(
                                     iterTestFull,
                                     network,
@@ -172,11 +175,9 @@ class SimulatedRunner : Runner() {
                                     epoch,
                                     nodeIndex,
                                     nodeIndex == 0)
-                                logger.debug { "2" }
                             }
 
                             if (iteration % iterationsBeforeSending == 0) {
-                                logger.debug { "3" }
                                 // Attack
                                 val attack = nodeConfig.modelPoisoningConfiguration.attack
                                 val attackVectors = attack.obj.generateAttack(
@@ -214,23 +215,21 @@ class SimulatedRunner : Runner() {
                                     newOtherModelBuffer.clear()
                                     network.setParameters(averageParams)
                                 }
-                                logger.debug { "4" }
 
                                 // Send to other peers
                                 val message = craftMessage(averageParams.dup(), nodeConfig.trainConfiguration.behavior, random)
                                 when (nodeConfig.trainConfiguration.communicationPattern) {
-                                    CommunicationPatterns.ALL -> newOtherModelBuffers
+                                    CommunicationPatterns.ALL -> newOtherModelBuffersTemp
                                         .filterIndexed { index, _ -> index != nodeIndex && index in countPerPeer.keys }
                                         .forEach { it[nodeIndex] = message }
-                                    CommunicationPatterns.RANDOM -> newOtherModelBuffers
+                                    CommunicationPatterns.RANDOM -> newOtherModelBuffersTemp
                                         .filterIndexed { index, _ -> index != nodeIndex && index in countPerPeer.keys }
                                         .random()[nodeIndex] = message
                                     CommunicationPatterns.RR -> throw IllegalArgumentException("Not implemented yet")
                                     CommunicationPatterns.RING -> throw IllegalArgumentException("Not implemented yet")
                                 }
-                                logger.debug { "5" }
 
-                                if (iteration % iterationsBeforeEvaluation == 0) {
+                                if (iteration % iterationsBeforeEvaluation == 0 && (nodeIndex == 0 || !ONLY_EVALUATE_FIRST_NODE)) {
                                     val elapsedTime2 = System.currentTimeMillis() - start
                                     val extraElements2 = mapOf(
                                         Pair("before or after averaging", "after"),
