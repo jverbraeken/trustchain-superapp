@@ -13,28 +13,29 @@ class HARManager(
     seed: Long,
     behavior: Behaviors,
 ) : DatasetManager() {
-    private val dataArr: Array<Array<String>>
-    private val labelsArr: IntArray
+    private val sampledDataArr: Array<Array<String>>
+    private val sampledLabelsArr: IntArray
 
     init {
-        if (tmpDataArr == null) {
-            tmpDataArr = loadData(dataFiles)
-            tmpLabelsArr = loadLabels(labelsFile)
-        }
-        val tmpLabelsArr2 = tmpLabelsArr!!
-            .copyOf(tmpLabelsArr!!.size)
+        fullDataArr.putIfAbsent(dataFiles[0].name, loadData(dataFiles))
+        fullLabelsArr.putIfAbsent(labelsFile.name, loadLabels(labelsFile))
+        val labelsArr = fullLabelsArr[labelsFile.name]!!
+        val labelsArr2 = labelsArr
+            .copyOf(labelsArr.size)
             .map { it!! }
             .toTypedArray()
         if (behavior === Behaviors.LABEL_FLIP) {
-            tmpLabelsArr!!.indices.filter { i: Int -> tmpLabelsArr!![i] == 1 }
-                .forEach { i: Int -> tmpLabelsArr2[i] = 2 }
-            tmpLabelsArr!!.indices.filter { i: Int -> tmpLabelsArr!![i] == 2 }
-                .forEach { i: Int -> tmpLabelsArr2[i] = 1 }
+            labelsArr.indices
+                .filter { i: Int -> labelsArr[i] == 1 }
+                .forEach { i: Int -> labelsArr2[i] = 2 }
+            labelsArr.indices
+                .filter { i: Int -> labelsArr[i] == 2 }
+                .forEach { i: Int -> labelsArr2[i] = 1 }
         }
-        val totalExamples = calculateTotalExamples(iteratorDistribution, maxTestSamples, tmpLabelsArr2)
-        val res = sampleData(tmpDataArr!!, tmpLabelsArr2, totalExamples, iteratorDistribution, maxTestSamples, seed)
-        dataArr = res.first
-        labelsArr = res.second
+        val totalExamples = calculateTotalExamples(iteratorDistribution, maxTestSamples, labelsArr2)
+        val res = sampleData(fullDataArr[dataFiles[0].name]!!, labelsArr2, totalExamples, iteratorDistribution, maxTestSamples, seed)
+        sampledDataArr = res.first
+        sampledLabelsArr = res.second
     }
 
     @Throws(IOException::class)
@@ -81,37 +82,37 @@ class HARManager(
 
     fun createTestBatches(): Array<Array<Array<String>>> {
         return (0 until HARDataFetcher.NUM_LABELS).map { label ->
-            val correspondingDataIndices = labelsArr.indices
-                .filter { i: Int -> labelsArr[i] == label }
+            val correspondingDataIndices = sampledLabelsArr.indices
+                .filter { i: Int -> sampledLabelsArr[i] == label }
                 .take(50)
                 .toTypedArray()
             correspondingDataIndices
-                .map { i: Int -> dataArr[i] }
+                .map { i: Int -> sampledDataArr[i] }
                 .toTypedArray()
         }.toTypedArray()
     }
 
     fun readEntryUnsafe(i: Int): Array<String> {
-        return dataArr[i]
+        return sampledDataArr[i]
     }
 
     fun readLabel(i: Int): Int {
-        return labelsArr[i]
+        return sampledLabelsArr[i]
     }
 
     fun getNumSamples(): Int {
-        return dataArr.size
+        return sampledDataArr.size
     }
 
     fun getLabels(): List<String> {
-        return labelsArr
+        return sampledLabelsArr
             .distinct()
             .map { i: Int -> i.toString() }
             .toList()
     }
 
     companion object {
-        private var tmpDataArr: Array<List<String>>? = null
-        private var tmpLabelsArr: Array<Int>? = null
+        private var fullDataArr = hashMapOf<String, Array<List<String>>>()
+        private var fullLabelsArr = hashMapOf<String, Array<Int>>()
     }
 }

@@ -17,30 +17,29 @@ class CustomMnistManager(
     seed: Long,
     behavior: Behaviors,
 ) : DatasetManager() {
-    private val imagesArr: Array<ByteArray>
-    private val labelsArr: IntArray
+    private val sampledImagesArr: Array<ByteArray>
+    private val sampledLabelsArr: IntArray
 
     init {
-        if (tmpImagesArr == null) {
-            tmpImagesArr = loadImages(imagesFile, numExamples)
-            tmpLabelsArr = loadLabels(labelsFile, numExamples)
-        }
-        val tmpLabelsArr2 = tmpLabelsArr!!
-            .copyOf(tmpLabelsArr!!.size)
+        fullImagesArr.putIfAbsent(imagesFile, loadImages(imagesFile, numExamples))
+        fullLabelsArr.putIfAbsent(labelsFile, loadLabels(labelsFile, numExamples))
+        val labelsArr = fullLabelsArr[labelsFile]!!
+        val labelsArr2 = labelsArr
+            .copyOf(labelsArr.size)
             .map { it!! }
             .toTypedArray()
         if (behavior === Behaviors.LABEL_FLIP) {
-            tmpLabelsArr!!.indices
-                .filter { i: Int -> tmpLabelsArr!![i] == 1 }
-                .forEach { i: Int -> tmpLabelsArr2[i] = 2 }
-            tmpLabelsArr!!.indices
-                .filter { i: Int -> tmpLabelsArr!![i] == 2 }
-                .forEach { i: Int -> tmpLabelsArr2[i] = 1 }
+            labelsArr.indices
+                .filter { i: Int -> labelsArr[i] == 1 }
+                .forEach { i: Int -> labelsArr2[i] = 2 }
+            labelsArr.indices
+                .filter { i: Int -> labelsArr[i] == 2 }
+                .forEach { i: Int -> labelsArr2[i] = 1 }
         }
-        val totalExamples = calculateTotalExamples(iteratorDistribution, maxTestSamples, tmpLabelsArr2)
-        val res = sampleData(tmpImagesArr!!, tmpLabelsArr2, totalExamples, iteratorDistribution, maxTestSamples, seed)
-        imagesArr = res.first
-        labelsArr = res.second
+        val totalExamples = calculateTotalExamples(iteratorDistribution, maxTestSamples, labelsArr2)
+        val res = sampleData(fullImagesArr[imagesFile]!!, labelsArr2, totalExamples, iteratorDistribution, maxTestSamples, seed)
+        sampledImagesArr = res.first
+        sampledLabelsArr = res.second
     }
 
     private fun sampleData(
@@ -69,30 +68,30 @@ class CustomMnistManager(
 
     fun createTestBatches(): Array<Array<ByteArray>> {
         return (0 until 10).map { label ->
-            val correspondingImageIndices = labelsArr.indices
-                .filter { i: Int -> labelsArr[i] == label }
+            val correspondingImageIndices = sampledLabelsArr.indices
+                .filter { i: Int -> sampledLabelsArr[i] == label }
                 .take(50)
                 .toTypedArray()
             correspondingImageIndices
-                .map { i -> imagesArr[i] }
+                .map { i -> sampledImagesArr[i] }
                 .toTypedArray()
         }.toTypedArray()
     }
 
     fun readImageUnsafe(i: Int): ByteArray {
-        return imagesArr[i]
+        return sampledImagesArr[i]
     }
 
     fun readLabel(i: Int): Int {
-        return labelsArr[i]
+        return sampledLabelsArr[i]
     }
 
     fun getNumSamples(): Int {
-        return imagesArr.size
+        return sampledImagesArr.size
     }
 
     fun getLabels(): List<String> {
-        return labelsArr
+        return sampledLabelsArr
             .distinct()
             .map { i: Int -> i.toString() }
             .toList()
@@ -106,8 +105,8 @@ class CustomMnistManager(
         private val imageMapping = hashMapOf<String, Array<ByteArray>>()
         private val labelMapping = hashMapOf<String, Array<Int>>()
         private val imageEntryLength = hashMapOf<String, Int>()
-        private var tmpImagesArr: Array<ByteArray>? = null
-        private var tmpLabelsArr: Array<Int>? = null
+        private val fullImagesArr = mutableMapOf<String, Array<ByteArray>>()
+        private var fullLabelsArr = mutableMapOf<String, Array<Int>>()
 
         @Synchronized
         private fun loadImages(filename: String, numExamples: Int): Array<ByteArray> {
