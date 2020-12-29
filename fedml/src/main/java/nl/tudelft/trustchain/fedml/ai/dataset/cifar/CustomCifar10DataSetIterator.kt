@@ -40,7 +40,6 @@ class CustomCifar10DataSetIterator(
             baseDirectory: File,
             behavior: Behaviors,
         ): CustomCifar10DataSetIterator {
-            logger.debug { "Creating CustomCifar10DataSetIterator" }
             return CustomCifar10DataSetIterator(iteratorConfiguration, seed, dataSetType, behavior)
         }
     }

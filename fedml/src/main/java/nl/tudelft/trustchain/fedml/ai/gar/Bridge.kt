@@ -34,7 +34,7 @@ class Bridge(private val b: Int) : AggregationRule() {
         return if (models.size < minimumModels) {
             oldModel
         } else {
-            val modelsAsArrays = models.map { it.value.toFloatMatrix()[0] }.toTypedArray()
+            val modelsAsArrays = models.map { it.value.toFloatVector() }.toTypedArray()
             val newMatrix = Array(1) { FloatArray(modelsAsArrays[0].size) }
             for (i in modelsAsArrays[0].indices) {
                 val elements = FloatArray(modelsAsArrays.size)

@@ -24,11 +24,15 @@ class Fang2020Krum(private val b: Int) : ModelPoisoningAttack() {
         logger.debug { formatName("Fang 2020 Trimmed Mean") }
         val models = arrayOf<INDArray>(oldModel.sub(gradient), *(otherModels.values.toTypedArray()))
         logger.debug { "Found ${models.size} models in total" }
-        val modelsAsArrays = models.map { it.toFloatMatrix()[0] }.toTypedArray()
+        if (models.size < 4) {
+            logger.debug { "Too few models => no attack vectors generated" }
+            return mapOf()
+        }
+        val modelsAsArrays = models.map { it.toFloatVector() }.toTypedArray()
 
         // w1
         val s = Array(1) { FloatArray(modelsAsArrays[0].size) }
-        val fm = gradient.toFloatMatrix()[0]
+        val fm = gradient.toFloatVector()
         for (i in fm.indices) {
             s[0][i] = if (fm[i] < 0) -1f else 1f
         }

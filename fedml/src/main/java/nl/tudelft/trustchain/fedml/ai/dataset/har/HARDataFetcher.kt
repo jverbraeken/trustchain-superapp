@@ -97,10 +97,9 @@ class HARDataFetcher(
         var i = 0
         while (i < numExamples) {
             if (!hasMore()) break
-            val entries = man.readEntryUnsafe(order[cursor])
             val label = man.readLabel(order[cursor])
             labels.put(actualExamples, label, 1.0f)
-            featureData[actualExamples] = extractFeatures(entries)
+            featureData[actualExamples] = man.readEntry(order[cursor])
             actualExamples++
             i++
             cursor++
@@ -130,20 +129,11 @@ class HARDataFetcher(
         return result
     }
 
-    private fun extractFeatures(entries: Array<String>): Array<FloatArray> {
-        val features = entries.map {
-            val trimmed = it.trim()
-            val parts = trimmed.split("\\s+".toRegex()).toTypedArray()
-            parts.map { s: String -> s.toFloat() }.toTypedArray()
-        }.toTypedArray()
-        return transposeMatrix(features)
-    }
-
-    private fun createTestBatch(label: Int, batch: Array<Array<String>>): DataSet {
+    private fun createTestBatch(label: Int, batch: Array<Array<FloatArray>>): DataSet {
         val labels = Nd4j.zeros(DataType.FLOAT, batch.size.toLong(), numOutcomes.toLong())
         for ((i, seq) in batch.withIndex()) {
             labels.put(i, label, 1.0f)
-            featureData[i] = extractFeatures(seq)
+            featureData[i] = seq
         }
         val features = Nd4j.create(featureData.copyOf())
         return DataSet(features, labels)
