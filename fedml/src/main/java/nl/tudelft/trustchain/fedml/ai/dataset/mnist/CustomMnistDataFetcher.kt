@@ -17,7 +17,7 @@ import java.io.File
 import java.util.stream.IntStream
 
 class CustomMnistDataFetcher(
-    iteratorDistribution: List<Int>,
+    iteratorDistribution: IntArray,
     seed: Long,
     dataSetType: CustomDataSetType,
     maxTestSamples: Int,

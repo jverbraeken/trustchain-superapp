@@ -43,7 +43,7 @@ class CustomImageRecordReader(
     private var finishedInputStreamSplit = false
     private var iter: Iterator<File>? = null
     private var currentFile: File? = null
-    private var labels = listOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
+    private var labels = arrayListOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
     private var uniqueLabels = mutableSetOf<String>()
     private var appendLabel = true
     private var writeLabel = false

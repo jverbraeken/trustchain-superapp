@@ -138,7 +138,7 @@ data class MsgNewTestCommand(val configuration: Map<String, String>) : Serializa
                 .split(", ")
                 .map { it.toInt() }
         } else {
-            loadIteratorDistribution(iteratorDistribution_)!!.value
+            loadIteratorDistribution(iteratorDistribution_)!!.value.toList()
         }
         parsedConfiguration = MLConfiguration(
             loadDataset(configuration.getValue("dataset"))!!,

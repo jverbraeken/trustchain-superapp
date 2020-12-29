@@ -44,7 +44,7 @@ fun serverRespondsClientRequests(
     encryptedLabels.forEach { filter.put(it) }
 
     val shuffledLabels = toServerMessage.encryptedLabels.shuffled()
-    val reEncryptedLabels = shuffledLabels.map { sraKeyPair.encrypt(it) }.toList()
+    val reEncryptedLabels = shuffledLabels.map { sraKeyPair.encrypt(it) }
 
     return Pair(reEncryptedLabels, filter)
 }

@@ -5,6 +5,7 @@ import nl.tudelft.trustchain.fedml.Behaviors
 import nl.tudelft.trustchain.fedml.ai.dataset.DatasetManager
 import org.deeplearning4j.datasets.mnist.MnistImageFile
 import org.deeplearning4j.datasets.mnist.MnistLabelFile
+import kotlin.random.Random
 
 private val logger = KotlinLogging.logger("CustomMnistManager")
 
@@ -12,7 +13,7 @@ class CustomMnistManager(
     val imagesFile: String,
     labelsFile: String,
     numExamples: Int,
-    iteratorDistribution: List<Int>,
+    iteratorDistribution: IntArray,
     maxTestSamples: Int,
     seed: Long,
     behavior: Behaviors,
@@ -26,8 +27,8 @@ class CustomMnistManager(
         val labelsArr = fullLabelsArr[labelsFile]!!
         val labelsArr2 = labelsArr
             .copyOf(labelsArr.size)
-            .map { it!! }
-            .toTypedArray()
+            .map { it }
+            .toIntArray()
         if (behavior === Behaviors.LABEL_FLIP) {
             labelsArr.indices
                 .filter { i: Int -> labelsArr[i] == 1 }
@@ -44,22 +45,23 @@ class CustomMnistManager(
 
     private fun sampleData(
         tmpImagesArr: Array<ByteArray>,
-        tmpLabelsArr: Array<Int>,
+        tmpLabelsArr: IntArray,
         totalExamples: Int,
-        iteratorDistribution: List<Int>,
+        iteratorDistribution: IntArray,
         maxTestSamples: Int,
         seed: Long,
     ): Pair<Array<ByteArray>, IntArray> {
         val imagesArr = Array(totalExamples) { ByteArray(tmpImagesArr[0].size) }
         val labelsArr = IntArray(totalExamples)
         var count = 0
+        val random = Random(seed)
         for (label in iteratorDistribution.indices) {
             val maxSamplesOfLabel = iteratorDistribution[label]
             val matchingImageIndices = findMatchingImageIndices(label, tmpLabelsArr)
-            val shuffledMatchingImageIndices = shuffle(matchingImageIndices, seed)
-            for (j in 0 until minOf(shuffledMatchingImageIndices.size, maxSamplesOfLabel, maxTestSamples)) {
-                imagesArr[count] = tmpImagesArr[shuffledMatchingImageIndices[j]]
-                labelsArr[count] = tmpLabelsArr[shuffledMatchingImageIndices[j]]
+            matchingImageIndices.shuffle(random)
+            for (j in 0 until minOf(matchingImageIndices.size, maxSamplesOfLabel, maxTestSamples)) {
+                imagesArr[count] = tmpImagesArr[matchingImageIndices[j]]
+                labelsArr[count] = tmpLabelsArr[matchingImageIndices[j]]
                 count++
             }
         }
@@ -94,7 +96,6 @@ class CustomMnistManager(
         return sampledLabelsArr
             .distinct()
             .map { i: Int -> i.toString() }
-            .toList()
     }
 
     fun getInputColumns(): Int {
@@ -103,10 +104,10 @@ class CustomMnistManager(
 
     companion object {
         private val imageMapping = hashMapOf<String, Array<ByteArray>>()
-        private val labelMapping = hashMapOf<String, Array<Int>>()
+        private val labelMapping = hashMapOf<String, IntArray>()
         private val imageEntryLength = hashMapOf<String, Int>()
         private val fullImagesArr = mutableMapOf<String, Array<ByteArray>>()
-        private var fullLabelsArr = mutableMapOf<String, Array<Int>>()
+        private var fullLabelsArr = mutableMapOf<String, IntArray>()
 
         @Synchronized
         private fun loadImages(filename: String, numExamples: Int): Array<ByteArray> {
@@ -118,10 +119,10 @@ class CustomMnistManager(
         }
 
         @Synchronized
-        private fun loadLabels(filename: String, numExamples: Int): Array<Int> {
+        private fun loadLabels(filename: String, numExamples: Int): IntArray {
             return labelMapping.getOrPut(filename) {
                 val file = MnistLabelFile(filename, "r")
-                file.readLabels(numExamples).toTypedArray()
+                file.readLabels(numExamples)
             }
         }
 

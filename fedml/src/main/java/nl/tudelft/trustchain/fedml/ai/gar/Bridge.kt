@@ -1,18 +1,17 @@
 package nl.tudelft.trustchain.fedml.ai.gar
 
 import mu.KotlinLogging
-import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDatasetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.cpu.nativecpu.NDArray
-import org.nd4j.linalg.dataset.DataSet
-import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
-import java.util.concurrent.ConcurrentLinkedDeque
 
 private val logger = KotlinLogging.logger("Bridge")
 
-fun trimmedMean(b: Int, l: List<Float>) = l.sorted().subList(b, l.size - b).average().toFloat()
+fun trimmedMean(b: Int, l: FloatArray): Float {
+    l.sort()
+    return l.copyOfRange(b, l.size - b).average().toFloat()
+}
 
 class Bridge(private val b: Int) : AggregationRule() {
     private val minimumModels = 2 * b + 1
@@ -35,11 +34,11 @@ class Bridge(private val b: Int) : AggregationRule() {
         return if (models.size < minimumModels) {
             oldModel
         } else {
-            val modelsAsArrays = models.map { it.value.toFloatMatrix()[0] }
+            val modelsAsArrays = models.map { it.value.toFloatMatrix()[0] }.toTypedArray()
             val newMatrix = Array(1) { FloatArray(modelsAsArrays[0].size) }
             for (i in modelsAsArrays[0].indices) {
-                val elements = ArrayList<Float>(modelsAsArrays.size)
-                modelsAsArrays.forEach { elements.add(it[i]) }
+                val elements = FloatArray(modelsAsArrays.size)
+                modelsAsArrays.forEachIndexed { j, modelsAsArray -> elements[j] = modelsAsArray[i] }
                 newMatrix[0][i] = trimmedMean(b, elements)
             }
             NDArray(newMatrix)

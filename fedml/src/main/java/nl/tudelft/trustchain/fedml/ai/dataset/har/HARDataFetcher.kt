@@ -25,7 +25,7 @@ fun transposeMatrix(matrix: Array<Array<Float>>): Array<FloatArray> {
 class HARDataFetcher(
     baseDirectory: File,
     seed: Long,
-    iteratorDistribution: List<Int>,
+    iteratorDistribution: IntArray,
     dataSetType: CustomDataSetType,
     maxTestSamples: Int,
     behavior: Behaviors,

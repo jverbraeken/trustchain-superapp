@@ -59,37 +59,37 @@ class SimulatedRunner : Runner() {
                     evaluationProcessor.newSimulation("$figureName - ${testConfig[0].trainConfiguration.gar.id}", testConfig)
 
                     // All these things have to be initialized before any of the runner threads start
-                    val toServerMessageBuffers = testConfig.map { CopyOnWriteArrayList<MsgPsiCaClientToServer>() }
-                    val toClientMessageBuffers = testConfig.map { CopyOnWriteArrayList<MsgPsiCaServerToClient>() }
-                    val sraKeyPairs = testConfig.mapIndexed { i, _ -> SRAKeyPair.create(bigPrime, java.util.Random(i.toLong())) }
-                    val randoms = testConfig.mapIndexed { i, _ -> Random(i) }
-                    val newOtherModelBuffers = testConfig.map { ConcurrentHashMap<Int, INDArray>() }
-                    val newOtherModelBuffersTemp = testConfig.map { ConcurrentHashMap<Int, INDArray>() }
-                    val recentOtherModelsBuffers = testConfig.map { ArrayDeque<Pair<Int, INDArray>>() }
-                    val datasets = testConfig.map { it.dataset }
-                    val datasetIteratorConfigurations = testConfig.map { it.datasetIteratorConfiguration }
-                    val behaviors = testConfig.map { it.trainConfiguration.behavior }
-                    val iterationsBeforeEvaluations = testConfig.map { it.trainConfiguration.iterationsBeforeEvaluation!! }
-                    val iterationsBeforeSendings = testConfig.map { it.trainConfiguration.iterationsBeforeSending!! }
+                    val toServerMessageBuffers = testConfig.map { CopyOnWriteArrayList<MsgPsiCaClientToServer>() }.toTypedArray()
+                    val toClientMessageBuffers = testConfig.map { CopyOnWriteArrayList<MsgPsiCaServerToClient>() }.toTypedArray()
+                    val sraKeyPairs = testConfig.mapIndexed { i, _ -> SRAKeyPair.create(bigPrime, java.util.Random(i.toLong())) }.toTypedArray()
+                    val randoms = testConfig.mapIndexed { i, _ -> Random(i) }.toTypedArray()
+                    val newOtherModelBuffers = testConfig.map { ConcurrentHashMap<Int, INDArray>() }.toTypedArray()
+                    val newOtherModelBuffersTemp = testConfig.map { ConcurrentHashMap<Int, INDArray>() }.toTypedArray()
+                    val recentOtherModelsBuffers = testConfig.map { ArrayDeque<Pair<Int, INDArray>>() }.toTypedArray()
+                    val datasets = testConfig.map { it.dataset }.toTypedArray()
+                    val datasetIteratorConfigurations = testConfig.map { it.datasetIteratorConfiguration }.toTypedArray()
+                    val behaviors = testConfig.map { it.trainConfiguration.behavior }.toTypedArray()
+                    val iterationsBeforeEvaluations = testConfig.map { it.trainConfiguration.iterationsBeforeEvaluation!! }.toTypedArray()
+                    val iterationsBeforeSendings = testConfig.map { it.trainConfiguration.iterationsBeforeSending!! }.toTypedArray()
                     val networks = testConfig.zip(datasets).mapIndexed { i, (nodeConfig, nodeDataset) -> generateNetwork(
                         nodeDataset,
                         nodeConfig.nnConfiguration,
                         i
-                    ) }
-                    val joiningLateRemainingIterations = testConfig.zip(iterationsBeforeSendings).map { it.first.trainConfiguration.joiningLate.rounds * it.second }.toMutableList()
-                    val slowdownRemainingIterations = testConfig.map { 0 }.toMutableList()
-                    val oldParams: MutableList<INDArray> = testConfig.map { NDArray() }.toMutableList()
+                    ) }.toTypedArray()
+                    val joiningLateRemainingIterations = testConfig.zip(iterationsBeforeSendings).map { it.first.trainConfiguration.joiningLate.rounds * it.second }.toTypedArray()
+                    val slowdownRemainingIterations = testConfig.map { 0 }.toTypedArray()
+                    val oldParams: Array<INDArray> = testConfig.map { NDArray() }.toTypedArray()
                     val iters = testConfig.mapIndexed { i, _ -> getDataSetIterators(
                         datasets[i],
                         datasetIteratorConfigurations[i],
                         i.toLong() * 10,
                         baseDirectory,
                         behaviors[i]
-                    )}
-                    val iterTrains = iters.map { it[0] }
-                    val iterTrainFulls = iters.map { it[1] }
-                    val iterTests = iters.map { it[2] }
-                    val iterTestFulls = iters.map { it[3] }
+                    )}.toTypedArray()
+                    val iterTrains = iters.map { it[0] }.toTypedArray()
+                    val iterTrainFulls = iters.map { it[1] }.toTypedArray()
+                    val iterTests = iters.map { it[2] }.toTypedArray()
+                    val iterTestFulls = iters.map { it[3] }.toTypedArray()
 
                     val countPerPeers = ConcurrentHashMap<Int, Map<Int, Int>>()
                     val threads = testConfig.mapIndexed { i, _ ->
@@ -160,7 +160,7 @@ class SimulatedRunner : Runner() {
                             val newParams = network.params().dup()
                             val gradient = oldParam.sub(newParams)
 
-                            if (iteration % iterationsBeforeEvaluations[nodeIndex] == 0 && (nodeIndex == 0 || !ONLY_EVALUATE_FIRST_NODE)) {
+                            if (iteration % /*iterationsBeforeEvaluations[nodeIndex]*/1 == 0 && (nodeIndex == 0 || !ONLY_EVALUATE_FIRST_NODE)) {
                                 val elapsedTime = System.currentTimeMillis() - start
                                 val extraElements = mapOf(
                                     Pair("before or after averaging", "before"),
@@ -229,7 +229,7 @@ class SimulatedRunner : Runner() {
                                     CommunicationPatterns.RING -> throw IllegalArgumentException("Not implemented yet")
                                 }
 
-                                if (iteration % iterationsBeforeEvaluations[nodeIndex] == 0 && (nodeIndex == 0 || !ONLY_EVALUATE_FIRST_NODE)) {
+                                if (iteration % /*iterationsBeforeEvaluations[nodeIndex]*/1 == 0 && (nodeIndex == 0 || !ONLY_EVALUATE_FIRST_NODE)) {
                                     val elapsedTime2 = System.currentTimeMillis() - start
                                     val extraElements2 = mapOf(
                                         Pair("before or after averaging", "after"),
@@ -258,8 +258,8 @@ class SimulatedRunner : Runner() {
     private fun getSimilarPeers(
         trainDataSetIterator: CustomDataSetIterator,
         sraKeyPair: SRAKeyPair,
-        toServerMessageBuffers: List<CopyOnWriteArrayList<MsgPsiCaClientToServer>>,
-        toClientMessageBuffers: List<CopyOnWriteArrayList<MsgPsiCaServerToClient>>,
+        toServerMessageBuffers: Array<CopyOnWriteArrayList<MsgPsiCaClientToServer>>,
+        toClientMessageBuffers: Array<CopyOnWriteArrayList<MsgPsiCaServerToClient>>,
         i: Int,
     ): Map<Int, Int> {
         val encryptedLabels = clientsRequestsServerLabels(

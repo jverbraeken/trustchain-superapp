@@ -20,7 +20,7 @@ class CustomCifar10DataSetIterator(
         null,
         dataSetType,
         null,
-        iteratorConfiguration.distribution,
+        iteratorConfiguration.distribution.toIntArray(),
         if (dataSetType == CustomDataSetType.TEST || dataSetType == CustomDataSetType.FULL_TEST) iteratorConfiguration.maxTestSamples.value else Integer.MAX_VALUE),
     iteratorConfiguration.batchSize.value,
     1,

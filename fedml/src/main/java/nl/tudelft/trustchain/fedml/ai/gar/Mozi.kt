@@ -5,6 +5,7 @@ import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDatasetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.nd4j.linalg.api.ndarray.INDArray
+import org.nd4j.linalg.cpu.nativecpu.NDArray
 import org.nd4j.linalg.dataset.DataSet
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 import kotlin.math.ceil
@@ -44,8 +45,8 @@ class Mozi(private val fracBenign: Double) : AggregationRule() {
         val Rmozi = average(Nperformance, logging)
         logger.debug("average: ${Rmozi.getDouble(0)}")
         val alpha = 0.5
-        val part1 = oldModel.sub(gradient).mul(alpha)
-        val result = part1.add(Rmozi.mul(1 - alpha))
+        val part1 = oldModel.sub(gradient).muli(alpha)
+        val result = part1.add(Rmozi.muli(1 - alpha))
         logger.debug("result: ${result.getDouble(0)}")
         return result
     }
@@ -53,23 +54,22 @@ class Mozi(private val fracBenign: Double) : AggregationRule() {
     private fun calculateLoss(
         model: INDArray,
         network: MultiLayerNetwork,
-        sample: DataSet,
-        logging: Boolean
+        sample: DataSet
     ): Double {
         network.setParameters(model)
         return network.score(sample)
     }
 
     private fun calculateLoss(
-        models: List<INDArray>,
+        models: Array<INDArray>,
         network: MultiLayerNetwork,
         sample: DataSet,
         logging: Boolean
-    ): List<Double> {
-        val scores = mutableListOf<Double>()
-        for (model in models) {
-            network.setParameters(model)
-            scores.add(network.score(sample))
+    ): DoubleArray {
+        val scores = DoubleArray(models.size)
+        for (model in models.withIndex()) {
+            network.setParameters(model.value)
+            scores[model.index] = network.score(sample)
             debug(logging) { "otherLoss = ${scores[scores.size - 1]}" }
         }
         return scores
@@ -79,32 +79,33 @@ class Mozi(private val fracBenign: Double) : AggregationRule() {
         oldModel: INDArray,
         newOtherModels: Map<Int, INDArray>,
         logging: Boolean
-    ): List<INDArray> {
+    ): Array<INDArray> {
         val distances = hashMapOf<Int, Double>()
         for (otherModel in newOtherModels) {
             debug(logging) { "Distance calculated: ${oldModel.distance2(otherModel.value)}" }
             distances[otherModel.key] = oldModel.distance2(otherModel.value)
         }
-        val sortedDistances = distances.toList().sortedBy { (_, value) -> value }.toMap()
+        val sortedDistances = distances.toList().sortedBy { it.second }.toMap()
         val numBenign = ceil(fracBenign * newOtherModels.size).toInt()
         debug(logging) { "#benign: $numBenign" }
         return sortedDistances
             .keys
             .take(numBenign)
-            .map { newOtherModels[it]!! }
+            .map { newOtherModels.getValue(it) }
+            .toTypedArray()
     }
 
     private fun applyPerformanceFilter(
         oldModel: INDArray,
-        newOtherModels: List<INDArray>,
+        newOtherModels: Array<INDArray>,
         network: MultiLayerNetwork,
         testDataSetIterator: DataSetIterator,
         logging: Boolean
-    ): List<INDArray> {
+    ): Array<INDArray> {
         val result = arrayListOf<INDArray>()
         testDataSetIterator.reset()
         val sample = testDataSetIterator.next(TEST_BATCH)
-        val oldLoss = calculateLoss(oldModel, network, sample, logging)
+        val oldLoss = calculateLoss(oldModel, network, sample)
         debug(logging) { "oldLoss: $oldLoss" }
         val otherLosses = calculateLoss(newOtherModels, network, sample, logging)
         for ((index, otherLoss) in otherLosses.withIndex()) {
@@ -116,22 +117,17 @@ class Mozi(private val fracBenign: Double) : AggregationRule() {
                 debug(logging) { "NOT adding model($index): " + newOtherModels[index].getDouble(0) }
             }
         }
-        return result
+        return result.toTypedArray()
     }
 
-    private fun average(list: List<INDArray>,
-                        logging: Boolean): INDArray {
-        var arr: INDArray? = null
-        for ((index, value) in list.iterator().withIndex()) {
-            debug(logging) { "Averaging: " + value.getDouble(0) }
-            if (index == 0) {
-                arr = value
-                continue
-            }
-            arr = arr!!.add(value)
-            debug(logging) { "Arr = " + arr.getDouble(0) }
+    private fun average(list: Array<INDArray>, logging: Boolean): INDArray {
+        val res = NDArray(intArrayOf(1, list.size))
+        for (i in list.indices) {
+            val elements = FloatArray(list.size)
+            list.forEachIndexed { j, list2 -> elements[j] = list2.getFloat(i) }
+            res.put(1, i, elements.average())
         }
-        return arr!!.div(list.size)
+        return res
     }
 
     override fun isDirectIntegration(): Boolean {
