@@ -15,6 +15,8 @@ class LocalRunner : Runner() {
         seed: Int,
         mlConfiguration: MLConfiguration,
     ) {
+        val iterationsBeforeEvaluation = 15
+
         scope.launch {
             val trainDataSetIterator = mlConfiguration.dataset.inst(
                 mlConfiguration.datasetIteratorConfiguration,

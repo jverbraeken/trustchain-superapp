@@ -57,6 +57,8 @@ fun generateConfigs(
     val momentum = loadMomentum(automation.fixedValues.getValue("momentum"))!!
     val l2Regularization = loadL2Regularization(automation.fixedValues.getValue("l2Regularization"))!!
     val communicationPattern = loadCommunicationPattern(automation.fixedValues.getValue("communicationPattern"))!!
+    val iterationsBeforeEvaluation = automation.fixedValues.getValue("iterationsBeforeEvaluation").toInt()
+    val iterationsBeforeSending = automation.fixedValues.getValue("iterationsBeforeSending").toInt()
     val figures = automation.figures
     val myFigures =
         if (automationPart == -1)
@@ -76,6 +78,7 @@ fun generateConfigs(
         val firstNodeSpeed = figure.fixedValues["firstNodeSpeed"]?.toInt() ?: 0
         val firstNodeJoiningLate = figure.fixedValues["firstNodeJoiningLate"]?.equals("true") ?: false
         val overrideIteratorDistribution_ = figure.iteratorDistributions
+        val overrideBatchSize_ = figure.fixedValues["batchSize"]
 
         for (test in figure.tests) {
             val gar = loadGAR(test.gar)!!
@@ -84,8 +87,7 @@ fun generateConfigs(
             configurations.last().add(arrayListOf())
 
             for (node in 0 until numNodes) {
-                val overrideIteratorDistributionForNode =
-                    overrideIteratorDistribution_?.get(node % overrideIteratorDistribution_.size)
+                val overrideIteratorDistributionForNode = overrideIteratorDistribution_?.get(node % overrideIteratorDistribution_.size)
                 val distribution = if (overrideIteratorDistributionForNode != null) {
                     if (overrideIteratorDistributionForNode.startsWith('[')) {
                         overrideIteratorDistributionForNode
@@ -101,7 +103,7 @@ fun generateConfigs(
                 val configuration = MLConfiguration(
                     dataset,
                     DatasetIteratorConfiguration(
-                        batchSize = batchSize,
+                        batchSize = loadBatchSize(overrideBatchSize_) ?: batchSize,
                         maxTestSamples = maxTestSample,
                         distribution = distribution
                     ),
@@ -117,7 +119,9 @@ fun generateConfigs(
                         communicationPattern = communicationPattern,
                         behavior = behavior,
                         slowdown = if ((node == 0 && firstNodeSpeed == -1) || (node != 0 && firstNodeSpeed == 1)) Slowdowns.D2 else Slowdowns.NONE,
-                        joiningLate = if (node == 0 && firstNodeJoiningLate) TransmissionRounds.N2 else TransmissionRounds.N0
+                        joiningLate = if (node == 0 && firstNodeJoiningLate) TransmissionRounds.N2 else TransmissionRounds.N0,
+                        iterationsBeforeEvaluation = iterationsBeforeEvaluation,
+                        iterationsBeforeSending = iterationsBeforeSending
                     ),
                     ModelPoisoningConfiguration(
                         attack = modelPoisoningAttack,

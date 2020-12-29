@@ -69,12 +69,14 @@ class SimulatedRunner : Runner() {
                     val datasets = testConfig.map { it.dataset }
                     val datasetIteratorConfigurations = testConfig.map { it.datasetIteratorConfiguration }
                     val behaviors = testConfig.map { it.trainConfiguration.behavior }
+                    val iterationsBeforeEvaluations = testConfig.map { it.trainConfiguration.iterationsBeforeEvaluation!! }
+                    val iterationsBeforeSendings = testConfig.map { it.trainConfiguration.iterationsBeforeSending!! }
                     val networks = testConfig.zip(datasets).mapIndexed { i, (nodeConfig, nodeDataset) -> generateNetwork(
                         nodeDataset,
                         nodeConfig.nnConfiguration,
                         i
                     ) }
-                    val joiningLateRemainingIterations = testConfig.map { it.trainConfiguration.joiningLate.rounds * iterationsBeforeSending }.toMutableList()
+                    val joiningLateRemainingIterations = testConfig.zip(iterationsBeforeSendings).map { it.first.trainConfiguration.joiningLate.rounds * it.second }.toMutableList()
                     val slowdownRemainingIterations = testConfig.map { 0 }.toMutableList()
                     val oldParams: MutableList<INDArray> = testConfig.map { NDArray() }.toMutableList()
                     val iters = testConfig.mapIndexed { i, _ -> getDataSetIterators(
@@ -151,16 +153,14 @@ class SimulatedRunner : Runner() {
 
                             try {
                                 val ds = iterTrains[nodeIndex].next()
-                                logger.debug { "Fitting with ${ds.labels.size(0)}"}
                                 network.fit(ds)
-                                logger.debug { "Done fitting" }
                             } catch (e: Exception) {
                                 epochEnd = true
                             }
                             val newParams = network.params().dup()
                             val gradient = oldParam.sub(newParams)
 
-                            if (iteration % iterationsBeforeEvaluation == 0 && (nodeIndex == 0 || !ONLY_EVALUATE_FIRST_NODE)) {
+                            if (iteration % iterationsBeforeEvaluations[nodeIndex] == 0 && (nodeIndex == 0 || !ONLY_EVALUATE_FIRST_NODE)) {
                                 val elapsedTime = System.currentTimeMillis() - start
                                 val extraElements = mapOf(
                                     Pair("before or after averaging", "before"),
@@ -177,7 +177,7 @@ class SimulatedRunner : Runner() {
                                     nodeIndex == 0)
                             }
 
-                            if (iteration % iterationsBeforeSending == 0) {
+                            if (iteration % iterationsBeforeSendings[nodeIndex] == 0) {
                                 // Attack
                                 val attack = nodeConfig.modelPoisoningConfiguration.attack
                                 val attackVectors = attack.obj.generateAttack(
@@ -229,7 +229,7 @@ class SimulatedRunner : Runner() {
                                     CommunicationPatterns.RING -> throw IllegalArgumentException("Not implemented yet")
                                 }
 
-                                if (iteration % iterationsBeforeEvaluation == 0 && (nodeIndex == 0 || !ONLY_EVALUATE_FIRST_NODE)) {
+                                if (iteration % iterationsBeforeEvaluations[nodeIndex] == 0 && (nodeIndex == 0 || !ONLY_EVALUATE_FIRST_NODE)) {
                                     val elapsedTime2 = System.currentTimeMillis() - start
                                     val extraElements2 = mapOf(
                                         Pair("before or after averaging", "after"),
@@ -245,7 +245,6 @@ class SimulatedRunner : Runner() {
                                         nodeIndex,
                                         nodeIndex == 0
                                     )
-                                    logger.debug { "6" }
                                 }
                             }
                         }

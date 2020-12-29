@@ -159,7 +159,9 @@ data class MsgNewTestCommand(val configuration: Map<String, String>) : Serializa
                 communicationPattern = loadCommunicationPattern(configuration.getValue("communicationPattern"))!!,
                 behavior = loadBehavior(configuration.getValue("behavior"))!!,
                 slowdown = loadSlowdown(configuration.getValue("slowdown"))!!,
-                joiningLate = loadTransmissionRound(configuration.getValue("joiningLate"))!!
+                joiningLate = loadTransmissionRound(configuration.getValue("joiningLate"))!!,
+                iterationsBeforeEvaluation = configuration.getValue("iterationsBeforeEvaluation").toInt(),
+                iterationsBeforeSending = configuration.getValue("iterationsBeforeSending").toInt()
             ),
             ModelPoisoningConfiguration(
                 attack = loadModelPoisoningAttack(configuration.getValue("modelPoisoningAttack"))!!,
