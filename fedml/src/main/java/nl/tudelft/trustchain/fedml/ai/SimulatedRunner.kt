@@ -9,6 +9,7 @@ import nl.tudelft.trustchain.fedml.*
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
 import nl.tudelft.trustchain.fedml.ipv8.MsgPsiCaClientToServer
 import nl.tudelft.trustchain.fedml.ipv8.MsgPsiCaServerToClient
+import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.cpu.nativecpu.NDArray
@@ -61,7 +62,8 @@ class SimulatedRunner : Runner() {
                     // All these things have to be initialized before any of the runner threads start
                     val toServerMessageBuffers = testConfig.map { CopyOnWriteArrayList<MsgPsiCaClientToServer>() }.toTypedArray()
                     val toClientMessageBuffers = testConfig.map { CopyOnWriteArrayList<MsgPsiCaServerToClient>() }.toTypedArray()
-                    val sraKeyPairs = testConfig.mapIndexed { i, _ -> SRAKeyPair.create(bigPrime, java.util.Random(i.toLong())) }.toTypedArray()
+                    val sraKeyPairs =
+                        testConfig.mapIndexed { i, _ -> SRAKeyPair.create(bigPrime, java.util.Random(i.toLong())) }.toTypedArray()
                     val randoms = testConfig.mapIndexed { i, _ -> Random(i) }.toTypedArray()
                     val newOtherModelBuffers = testConfig.map { ConcurrentHashMap<Int, INDArray>() }.toTypedArray()
                     val newOtherModelBuffersTemp = testConfig.map { ConcurrentHashMap<Int, INDArray>() }.toTypedArray()
@@ -69,23 +71,36 @@ class SimulatedRunner : Runner() {
                     val datasets = testConfig.map { it.dataset }.toTypedArray()
                     val datasetIteratorConfigurations = testConfig.map { it.datasetIteratorConfiguration }.toTypedArray()
                     val behaviors = testConfig.map { it.trainConfiguration.behavior }.toTypedArray()
-                    val iterationsBeforeEvaluations = testConfig.map { it.trainConfiguration.iterationsBeforeEvaluation!! }.toTypedArray()
-                    val iterationsBeforeSendings = testConfig.map { it.trainConfiguration.iterationsBeforeSending!! }.toTypedArray()
-                    val networks = testConfig.zip(datasets).mapIndexed { i, (nodeConfig, nodeDataset) -> generateNetwork(
-                        nodeDataset,
-                        nodeConfig.nnConfiguration,
-                        i
-                    ) }.toTypedArray()
-                    val joiningLateRemainingIterations = testConfig.zip(iterationsBeforeSendings).map { it.first.trainConfiguration.joiningLate.rounds * it.second }.toTypedArray()
+                    val iterationsBeforeEvaluations =
+                        testConfig.map { it.trainConfiguration.iterationsBeforeEvaluation!! }.toTypedArray()
+                    val iterationsBeforeSendings =
+                        testConfig.map { it.trainConfiguration.iterationsBeforeSending!! }.toTypedArray()
+                    val networks = testConfig.zip(datasets).mapIndexed { i, (nodeConfig, nodeDataset) ->
+                        generateNetwork(
+                            nodeDataset,
+                            nodeConfig.nnConfiguration,
+                            i
+                        )
+                    }.toTypedArray()
+                    val joiningLateRemainingIterations =
+                        testConfig.zip(iterationsBeforeSendings)
+                            .map { it.first.trainConfiguration.joiningLate.rounds * it.second }
+                            .toTypedArray()
                     val slowdownRemainingIterations = testConfig.map { 0 }.toTypedArray()
-                    val oldParams: Array<INDArray> = testConfig.map { NDArray() }.toTypedArray()
-                    val iters = testConfig.mapIndexed { i, _ -> getDataSetIterators(
-                        datasets[i],
-                        datasetIteratorConfigurations[i],
-                        i.toLong() * 10,
-                        baseDirectory,
-                        behaviors[i]
-                    )}.toTypedArray()
+                    val oldParams: Array<INDArray> = networks.map { it.params().dup() }.toTypedArray()
+                    val newParams: Array<INDArray> =
+                        testConfig.map { NDArray(networks[0].params().shape().map { it.toInt() }.toIntArray()) }.toTypedArray()
+                    val gradients: Array<INDArray> =
+                        testConfig.map { NDArray(networks[0].params().shape().map { it.toInt() }.toIntArray()) }.toTypedArray()
+                    val iters = testConfig.mapIndexed { i, _ ->
+                        getDataSetIterators(
+                            datasets[i],
+                            datasetIteratorConfigurations[i],
+                            i.toLong() * 10,
+                            baseDirectory,
+                            behaviors[i]
+                        )
+                    }.toTypedArray()
                     val iterTrains = iters.map { it[0] }.toTypedArray()
                     val iterTrainFulls = iters.map { it[1] }.toTypedArray()
                     val iterTests = iters.map { it[2] }.toTypedArray()
@@ -109,6 +124,10 @@ class SimulatedRunner : Runner() {
                     var epochEnd = true
                     var epoch = -1
                     val start = System.currentTimeMillis()
+
+
+
+
                     for (iteration in 0 until testConfig[0].trainConfiguration.maxIteration.value) {
                         if (epochEnd) {
                             epoch++
@@ -116,9 +135,10 @@ class SimulatedRunner : Runner() {
                             epochEnd = false
                             iterTrains.forEach { it.reset() }
                             iterTrainFulls.forEach { it.reset() }
-                            networks.forEachIndexed { i, n ->
-                                oldParams[i] = n.params().dup()
-                            }
+                        }
+                        networks.forEachIndexed { i, n ->
+                            newParams[i] = n.params().dup()
+                            gradients[i] = oldParams[i].sub(newParams[i])
                         }
                         newOtherModelBuffers.forEachIndexed { i, map -> map.putAll(newOtherModelBuffersTemp[i]) }
                         newOtherModelBuffersTemp.forEach { it.clear() }
@@ -130,6 +150,7 @@ class SimulatedRunner : Runner() {
                             val network = networks[nodeIndex]
                             val countPerPeer = countPerPeers[nodeIndex]!!
                             val oldParam = oldParams[nodeIndex]
+                            val gradient = gradients[nodeIndex]
                             val random = randoms[nodeIndex]
                             val newOtherModelBuffer = newOtherModelBuffers[nodeIndex]
                             val recentOtherModelsBuffer = recentOtherModelsBuffers[nodeIndex]
@@ -151,32 +172,6 @@ class SimulatedRunner : Runner() {
                                 }
                             }
 
-                            try {
-                                val ds = iterTrains[nodeIndex].next()
-                                network.fit(ds)
-                            } catch (e: Exception) {
-                                epochEnd = true
-                            }
-                            val newParams = network.params().dup()
-                            val gradient = oldParam.sub(newParams)
-
-                            if (iteration % /*iterationsBeforeEvaluations[nodeIndex]*/1 == 0 && (nodeIndex == 0 || !ONLY_EVALUATE_FIRST_NODE)) {
-                                val elapsedTime = System.currentTimeMillis() - start
-                                val extraElements = mapOf(
-                                    Pair("before or after averaging", "before"),
-                                    Pair("#peers included in current batch", "")
-                                )
-                                evaluationProcessor.evaluate(
-                                    iterTestFull,
-                                    network,
-                                    extraElements,
-                                    elapsedTime,
-                                    iteration,
-                                    epoch,
-                                    nodeIndex,
-                                    nodeIndex == 0)
-                            }
-
                             if (iteration % iterationsBeforeSendings[nodeIndex] == 0) {
                                 // Attack
                                 val attack = nodeConfig.modelPoisoningConfiguration.attack
@@ -194,7 +189,7 @@ class SimulatedRunner : Runner() {
                                 val averageParams: INDArray
                                 if (numPeers == 1) {
                                     if (nodeIndex == 0) logger.debug { "No received params => skipping integration evaluation" }
-                                    averageParams = newParams
+                                    averageParams = newParams[nodeIndex]
                                     network.setParameters(averageParams)
                                 } else {
                                     if (nodeIndex == 0) logger.debug { "Params received => executing aggregation rule" }
@@ -216,23 +211,10 @@ class SimulatedRunner : Runner() {
                                     network.setParameters(averageParams)
                                 }
 
-                                // Send to other peers
-                                val message = craftMessage(averageParams.dup(), nodeConfig.trainConfiguration.behavior, random)
-                                when (nodeConfig.trainConfiguration.communicationPattern) {
-                                    CommunicationPatterns.ALL -> newOtherModelBuffersTemp
-                                        .filterIndexed { index, _ -> index != nodeIndex && index in countPerPeer.keys }
-                                        .forEach { it[nodeIndex] = message }
-                                    CommunicationPatterns.RANDOM -> newOtherModelBuffersTemp
-                                        .filterIndexed { index, _ -> index != nodeIndex && index in countPerPeer.keys }
-                                        .random()[nodeIndex] = message
-                                    CommunicationPatterns.RR -> throw IllegalArgumentException("Not implemented yet")
-                                    CommunicationPatterns.RING -> throw IllegalArgumentException("Not implemented yet")
-                                }
-
-                                if (iteration % /*iterationsBeforeEvaluations[nodeIndex]*/1 == 0 && (nodeIndex == 0 || !ONLY_EVALUATE_FIRST_NODE)) {
+                                if (iteration % iterationsBeforeEvaluations[nodeIndex] == 0 && (nodeIndex == 0 || !ONLY_EVALUATE_FIRST_NODE)) {
                                     val elapsedTime2 = System.currentTimeMillis() - start
                                     val extraElements2 = mapOf(
-                                        Pair("before or after averaging", "after"),
+                                        Pair("before or after averaging", "before"),
                                         Pair("#peers included in current batch", numPeers.toString())
                                     )
                                     evaluationProcessor.evaluate(
@@ -247,12 +229,55 @@ class SimulatedRunner : Runner() {
                                     )
                                 }
                             }
+
+                            oldParams[nodeIndex] = network.params().dup()
+
+                            epochEnd = fitNetwork(network, iterTrains[nodeIndex])
+
+                            if (iteration % iterationsBeforeSendings[nodeIndex] == 0) {
+                                shareModel(
+                                    network.params().dup(),
+                                    nodeConfig.trainConfiguration,
+                                    random,
+                                    nodeIndex,
+                                    newOtherModelBuffersTemp,
+                                    countPerPeer
+                                )
+                            }
+
+                            if (iteration % iterationsBeforeEvaluations[nodeIndex] == 0 && (nodeIndex == 0 || !ONLY_EVALUATE_FIRST_NODE)) {
+                                val elapsedTime = System.currentTimeMillis() - start
+                                val extraElements = mapOf(
+                                    Pair("before or after averaging", "after"),
+                                    Pair("#peers included in current batch", "")
+                                )
+                                evaluationProcessor.evaluate(
+                                    iterTestFull,
+                                    network,
+                                    extraElements,
+                                    elapsedTime,
+                                    iteration,
+                                    epoch,
+                                    nodeIndex,
+                                    nodeIndex == 0
+                                )
+                            }
                         }
                     }
                     logger.warn { "Test finished" }
                 }
             }
         }
+    }
+
+    private fun fitNetwork(network: MultiLayerNetwork, dataSetIterator: CustomDataSetIterator): Boolean {
+        try {
+            val ds = dataSetIterator.next()
+            network.fit(ds)
+        } catch (e: Exception) {
+            return true
+        }
+        return false
     }
 
     private fun getSimilarPeers(
@@ -293,5 +318,27 @@ class SimulatedRunner : Runner() {
             toClientMessageBuffers[i],
             sraKeyPair
         )
+    }
+
+    private fun shareModel(
+        params: INDArray,
+        trainConfiguration: TrainConfiguration,
+        random: Random,
+        nodeIndex: Int,
+        newOtherModelBuffersTemp: Array<ConcurrentHashMap<Int, INDArray>>,
+        countPerPeer: Map<Int, Int>
+    ) {
+        // Send to other peers
+        val message = craftMessage(params, trainConfiguration.behavior, random)
+        when (trainConfiguration.communicationPattern) {
+            CommunicationPatterns.ALL -> newOtherModelBuffersTemp
+                .filterIndexed { index, _ -> index != nodeIndex && index in countPerPeer.keys }
+                .forEach { it[nodeIndex] = message }
+            CommunicationPatterns.RANDOM -> newOtherModelBuffersTemp
+                .filterIndexed { index, _ -> index != nodeIndex && index in countPerPeer.keys }
+                .random()[nodeIndex] = message
+            CommunicationPatterns.RR -> throw IllegalArgumentException("Not implemented yet")
+            CommunicationPatterns.RING -> throw IllegalArgumentException("Not implemented yet")
+        }
     }
 }
