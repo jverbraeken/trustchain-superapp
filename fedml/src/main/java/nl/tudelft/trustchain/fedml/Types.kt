@@ -182,6 +182,7 @@ fun loadL2Regularization(l2: String?) = L2Regularizations.values().firstOrNull {
 enum class MaxIterations(val id: String, val text: String, val value: Int) {
     ITER_25("iter_25", "25", 25),
     ITER_50("iter_50", "50", 50),
+    ITER_200("iter_200", "200", 200),
     ITER_250("iter_250", "250", 250),
     ITER_500("iter_500", "500", 500),
 }

@@ -19,6 +19,7 @@ class CustomMnistManager(
     behavior: Behaviors,
 ) : DatasetManager() {
     private val sampledImagesArr: Array<ByteArray>
+    private val featureData: Array<FloatArray>
     private val sampledLabelsArr: IntArray
 
     init {
@@ -41,6 +42,12 @@ class CustomMnistManager(
         val res = sampleData(fullImagesArr[imagesFile]!!, labelsArr2, totalExamples, iteratorDistribution, maxTestSamples, seed)
         sampledImagesArr = res.first
         sampledLabelsArr = res.second
+
+        featureData = sampledImagesArr.map {
+            it.map { byte ->
+                (byte.toInt() and 0xFF).toFloat()
+            }.toFloatArray()
+        }.toTypedArray()
     }
 
     private fun sampleData(
@@ -80,8 +87,8 @@ class CustomMnistManager(
         }.toTypedArray()
     }
 
-    fun readImageUnsafe(i: Int): ByteArray {
-        return sampledImagesArr[i]
+    fun readImage(i: Int): FloatArray {
+        return featureData[i]
     }
 
     fun readLabel(i: Int): Int {

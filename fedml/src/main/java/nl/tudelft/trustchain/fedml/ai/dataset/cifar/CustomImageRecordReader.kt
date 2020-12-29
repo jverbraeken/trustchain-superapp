@@ -12,7 +12,6 @@ import org.datavec.api.util.files.FileFromPathIterator
 import org.datavec.api.util.files.URIUtil
 import org.datavec.api.util.ndarray.RecordConverter
 import org.datavec.api.writable.IntWritable
-import org.datavec.api.writable.NDArrayWritable
 import org.datavec.api.writable.Writable
 import org.datavec.api.writable.batch.NDArrayRecordBatch
 import org.datavec.image.loader.BaseImageLoader
@@ -89,40 +88,23 @@ class CustomImageRecordReader(
     }
 
     override fun next(): List<Writable> {
-        if (inputSplit is InputStreamInputSplit) {
-            val inputStreamInputSplit = inputSplit as InputStreamInputSplit
-            try {
-                val ndArrayWritable = NDArrayWritable(imageLoader!!.asMatrix(inputStreamInputSplit.getIs()))
-                finishedInputStreamSplit = true
-                return listOf<Writable>(ndArrayWritable)
-            } catch (e: IOException) {
-                e.printStackTrace()
+        val ret: MutableList<Writable>
+        val image = iter!!.next()
+        currentFile = image
+        if (image.isDirectory) return next()
+        try {
+            invokeListeners(image)
+            val row = imageLoader!!.asMatrix(image)
+            Nd4j.getAffinityManager().ensureLocation(row, AffinityManager.Location.DEVICE)
+            ret = RecordConverter.toRecord(row)
+            if (appendLabel || writeLabel) {
+                ret.add(IntWritable(labels.indexOf(getLabel(image.path))))
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            throw RuntimeException(e)
         }
-        if (iter != null) {
-            val ret: MutableList<Writable>
-            val image = iter!!.next()
-            currentFile = image
-            if (image.isDirectory) return next()
-            try {
-                invokeListeners(image)
-                val row = imageLoader!!.asMatrix(image)
-                Nd4j.getAffinityManager().ensureLocation(row, AffinityManager.Location.DEVICE)
-                ret = RecordConverter.toRecord(row)
-                if (appendLabel || writeLabel) {
-                    ret.add(IntWritable(labels.indexOf(getLabel(image.path))))
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                throw RuntimeException(e)
-            }
-            return ret
-        } else if (record != null) {
-            hitImage = true
-            invokeListeners(record)
-            return record!!
-        }
-        throw IllegalStateException("No more elements")
+        return ret
     }
 
     override fun hasNext(): Boolean {
@@ -173,8 +155,10 @@ class CustomImageRecordReader(
         Nd4j.getAffinityManager().tagLocation(features, AffinityManager.Location.HOST)
         for (i in 0 until cnt) {
             try {
-                (imageLoader as NativeImageLoader).asMatrixView(currBatch[i],
-                    features.tensorAlongDimension(i.toLong(), 1, 2, 3))
+                (imageLoader as NativeImageLoader).asMatrixView(
+                    currBatch[i],
+                    features.tensorAlongDimension(i.toLong(), 1, 2, 3)
+                )
             } catch (e: Exception) {
                 println("Image file failed during load: " + currBatch[i].absolutePath)
                 throw RuntimeException(e)

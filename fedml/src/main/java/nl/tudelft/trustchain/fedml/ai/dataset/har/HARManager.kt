@@ -15,6 +15,7 @@ class HARManager(
     behavior: Behaviors,
 ) : DatasetManager() {
     private val sampledDataArr: Array<Array<String>>
+    private val featureData: Array<Array<FloatArray>>
     private val sampledLabelsArr: IntArray
 
     init {
@@ -23,7 +24,7 @@ class HARManager(
         val labelsArr = fullLabelsArr[labelsFile.name]!!
         val labelsArr2 = labelsArr
             .copyOf(labelsArr.size)
-            .map { it!! }
+            .map { it }
             .toIntArray()
         if (behavior === Behaviors.LABEL_FLIP) {
             labelsArr.indices
@@ -37,20 +38,32 @@ class HARManager(
         val res = sampleData(fullDataArr[dataFiles[0].name]!!, labelsArr2, totalExamples, iteratorDistribution, maxTestSamples, seed)
         sampledDataArr = res.first
         sampledLabelsArr = res.second
+
+        featureData = sampledDataArr.map { extractFeatures(it) }.toTypedArray()
+    }
+
+    private fun extractFeatures(entries: Array<String>): Array<FloatArray> {
+        val features = entries.map {
+            val trimmed = it.trim()
+            val parts = trimmed.split("\\s+".toRegex()).toTypedArray()
+            parts.map { s: String -> s.toFloat() }.toTypedArray()
+        }.toTypedArray()
+        return transposeMatrix(features)
     }
 
     @Throws(IOException::class)
     private fun loadData(dataFiles: Array<File>): Array<Array<String>> {
         return dataFiles.map {
-            it.readLines().toTypedArray()
+            it.bufferedReader().readLines().toTypedArray()
         }.toTypedArray()
     }
 
     @Throws(IOException::class)
     private fun loadLabels(labelsFile: File): IntArray {
         return labelsFile
+            .bufferedReader()
             .readLines()
-            .map { i: String -> i.toInt() - 1 } // labels start at 1 instead of 0
+            .map { s -> s.toInt() - 1 }  // labels start at 1 instead of 0
             .toIntArray()
     }
 
@@ -81,20 +94,20 @@ class HARManager(
         return Pair(dataArr.map { it.toTypedArray() }.toTypedArray(), labelsArr)
     }
 
-    fun createTestBatches(): Array<Array<Array<String>>> {
+    fun createTestBatches(): Array<Array<Array<FloatArray>>> {
         return (0 until HARDataFetcher.NUM_LABELS).map { label ->
             val correspondingDataIndices = sampledLabelsArr.indices
                 .filter { i: Int -> sampledLabelsArr[i] == label }
                 .take(50)
                 .toTypedArray()
             correspondingDataIndices
-                .map { i: Int -> sampledDataArr[i] }
+                .map { i: Int -> featureData[i] }
                 .toTypedArray()
         }.toTypedArray()
     }
 
-    fun readEntryUnsafe(i: Int): Array<String> {
-        return sampledDataArr[i]
+    fun readEntry(i: Int): Array<FloatArray> {
+        return featureData[i]
     }
 
     fun readLabel(i: Int): Int {
