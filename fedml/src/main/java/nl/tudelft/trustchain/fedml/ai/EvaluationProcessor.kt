@@ -41,6 +41,8 @@ class EvaluationProcessor(
         "numEpochs",
         "slowdown",
         "joiningLate",
+        "iterationsBeforeEvaluation",
+        "iterationsBeforeSending",
 
         "local model poisoning attack",
         "#attackers"
@@ -146,6 +148,8 @@ class EvaluationProcessor(
             trainConfiguration.maxIteration.text,
             trainConfiguration.slowdown.text,
             trainConfiguration.joiningLate.text,
+            trainConfiguration.iterationsBeforeEvaluation ?: "<null>",
+            trainConfiguration.iterationsBeforeSending ?: "<null>",
 
             modelPoisoningConfiguration.attack.text,
             modelPoisoningConfiguration.numAttackers.text,

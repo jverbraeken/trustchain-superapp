@@ -126,7 +126,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
             val newParams = network.params().dup()
             val gradient = oldParams.sub(newParams)
 
-            if (iteration % iterationsBeforeEvaluation == 0) {
+            if (iteration % trainConfiguration.iterationsBeforeEvaluation!! == 0) {
                 // Test
                 logger.debug { "Evaluating network " }
                 val elapsedTime = System.currentTimeMillis() - start
@@ -146,7 +146,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 ))
             }
 
-            if (iteration % iterationsBeforeSending == 0) {
+            if (iteration % trainConfiguration.iterationsBeforeSending!! == 0) {
                 // Attack
                 val attack = modelPoisoningConfiguration.attack
                 val attackVectors = attack.obj.generateAttack(
@@ -194,7 +194,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 val message = craftMessage(averageParams.dup(), trainConfiguration.behavior, random)
                 sendModelToPeers(message, trainConfiguration.communicationPattern, countPerPeer)
 
-                if (iteration % iterationsBeforeEvaluation == 0) {
+                if (iteration % trainConfiguration.iterationsBeforeEvaluation == 0) {
                     val elapsedTime2 = System.currentTimeMillis() - start
                     val extraElements2 = mapOf(
                         Pair("before or after averaging", "after"),

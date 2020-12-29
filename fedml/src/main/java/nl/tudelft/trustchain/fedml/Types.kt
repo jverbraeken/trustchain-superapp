@@ -240,9 +240,9 @@ fun loadTransmissionRound(transmissionRound: String?) = TransmissionRounds.value
 
 enum class ModelPoisoningAttacks(val id: String, val text: String, val obj: ModelPoisoningAttack) {
     NONE("none", "<none>", NoAttack()),
-    FANG_2020_TRIMMED_MEAN("fang_2020_trimmed_mean", "Fang 2020, trimmed mean", Fang2020TrimmedMean(2)),
-    FANG_2020_MEDIAN("fang_2020_median", "Fang 2020, median", Fang2020TrimmedMean(2)), // Attack is the same as for mean
-    FANG_2020_KRUM("fang_2020_krum", "Fang 2020, krum", Fang2020Krum(2))
+    FANG_2020_TRIMMED_MEAN("fang_2020_trimmed_mean", "Fang 2020 (trimmed mean)", Fang2020TrimmedMean(2)),
+    FANG_2020_MEDIAN("fang_2020_median", "Fang 2020 (median)", Fang2020TrimmedMean(2)), // Attack is the same as for mean
+    FANG_2020_KRUM("fang_2020_krum", "Fang 2020 (krum)", Fang2020Krum(2))
 }
 
 fun loadModelPoisoningAttack(modelPoisoningAttack: String?) =

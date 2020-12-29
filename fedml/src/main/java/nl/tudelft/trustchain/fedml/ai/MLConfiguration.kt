@@ -29,7 +29,9 @@ data class TrainConfiguration(
     val communicationPattern: CommunicationPatterns,
     val behavior: Behaviors,
     val slowdown: Slowdowns,
-    val joiningLate: TransmissionRounds
+    val joiningLate: TransmissionRounds,
+    val iterationsBeforeEvaluation: Int? = null,
+    val iterationsBeforeSending: Int? = null
 )
 
 data class ModelPoisoningConfiguration(
