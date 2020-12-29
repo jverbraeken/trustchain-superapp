@@ -265,14 +265,6 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
 //        }
     }
 
-    private fun onBtnRunDistributedClicked() {
-        /*distributedRunner.run(
-            baseDirectory,
-            getSeed(),
-            createMLConfiguration()
-        )*/
-    }
-
     private fun getSeed(): Int {
         return community.myEstimatedWan.port
     }
@@ -283,7 +275,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
             DatasetIteratorConfiguration(
                 batchSize = batchSize,
                 maxTestSamples = maxTestSample,
-                distribution = iteratorDistribution.value
+                distribution = iteratorDistribution.value.toList()
             ),
             NNConfiguration(
                 optimizer = optimizer,

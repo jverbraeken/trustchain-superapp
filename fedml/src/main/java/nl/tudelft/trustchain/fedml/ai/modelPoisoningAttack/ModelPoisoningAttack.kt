@@ -2,7 +2,6 @@ package nl.tudelft.trustchain.fedml.ai.modelPoisoningAttack
 
 import nl.tudelft.trustchain.fedml.NumAttackers
 import org.nd4j.linalg.api.ndarray.INDArray
-import java.util.ArrayList
 import kotlin.random.Random
 
 abstract class ModelPoisoningAttack {
@@ -18,7 +17,7 @@ abstract class ModelPoisoningAttack {
         return "<====      $name      ====>"
     }
 
-    protected fun transformToResult(newModels: ArrayList<INDArray>): Map<Int, INDArray> {
+    protected fun transformToResult(newModels: Array<INDArray>): Map<Int, INDArray> {
         var attackNum = -1
         return newModels.map {
             attackNum--

@@ -201,16 +201,16 @@ class Bristle : AggregationRule() {
     ): INDArray {
         var arr: INDArray? = null
         modelsToWeight.onEachIndexed { indexAsNum, (indexAsPeer, weight) ->
-            arr = if (indexAsNum == 0) {
-                otherModels.getValue(indexAsPeer).mul(weight)
+            if (indexAsNum == 0) {
+                arr = otherModels.getValue(indexAsPeer).mul(weight)
             } else {
-                arr!!.add(otherModels.getValue(indexAsPeer).mul(weight))
+                arr!!.addi(otherModels.getValue(indexAsPeer).mul(weight))
             }
         }
-        arr = arr!!.add(newModel)
+        arr!!.addi(newModel)
         val totalWeight = modelsToWeight.values.sum() + 1  // + 1 for the new model
         debug(logging) { "totalWeight: $totalWeight" }
         debug(logging) { "weightedAverage: ${arr!!.div(totalWeight)}" }
-        return arr!!.div(totalWeight)
+        return arr!!.divi(totalWeight)
     }
 }

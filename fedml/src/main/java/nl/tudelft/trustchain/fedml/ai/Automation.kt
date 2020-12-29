@@ -28,7 +28,7 @@ fun loadAutomation(baseDirectory: File): Automation {
 }
 
 private const val ISOLATED_FIGURE_NAME = "Figure 0.1"
-private const val ISOLATED_FIGURE_GAR = "median"
+private const val ISOLATED_FIGURE_GAR = "bridge"
 
 /**
  * @return 1. the configuration per node, per test, per figure ; 2. the names of the figures
@@ -48,6 +48,7 @@ fun generateConfigs(
             .substring(1, iteratorDistribution_.length - 1)
             .split(", ")
             .map { it.toInt() }
+            .toIntArray()
     } else {
         loadIteratorDistribution(iteratorDistribution_)!!.value
     }
@@ -94,6 +95,7 @@ fun generateConfigs(
                             .substring(1, overrideIteratorDistributionForNode.length - 1)
                             .split(", ")
                             .map { it.toInt() }
+                            .toIntArray()
                     } else {
                         loadIteratorDistribution(overrideIteratorDistributionForNode)!!.value
                     }
@@ -105,7 +107,7 @@ fun generateConfigs(
                     DatasetIteratorConfiguration(
                         batchSize = loadBatchSize(overrideBatchSize_) ?: batchSize,
                         maxTestSamples = maxTestSample,
-                        distribution = distribution
+                        distribution = distribution.toList()
                     ),
                     NNConfiguration(
                         optimizer = optimizer,

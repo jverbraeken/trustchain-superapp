@@ -89,7 +89,7 @@ class CustomCifar10Fetcher {
         imgDim: IntArray?,
         set: CustomDataSetType,
         imageTransform: ImageTransform?,
-        iteratorDistribution: List<Int>,
+        iteratorDistribution: IntArray,
         maxSamples: Int,
     ): RecordReader {
         Preconditions.checkState(

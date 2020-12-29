@@ -1,17 +1,13 @@
 package nl.tudelft.trustchain.fedml.ai.gar
 
 import mu.KotlinLogging
-import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDatasetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.nd4j.linalg.api.ndarray.INDArray
-import org.nd4j.linalg.dataset.DataSet
-import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
-import java.util.concurrent.ConcurrentLinkedDeque
 
 private val logger = KotlinLogging.logger("Krum")
 
-fun getKrum(models: List<INDArray>, b: Int): Int {
+fun getKrum(models: Array<INDArray>, b: Int): Int {
     val distances = Array(models.size) { FloatArray(models.size) }
     for (i in 0 until models.size) {
         distances[i][i] = 9999999.0f
@@ -24,7 +20,7 @@ fun getKrum(models: List<INDArray>, b: Int): Int {
     val summedDistances = distances.map {
         val sorted = it.sorted()
         sorted.take(models.size - b - 2 - 1).sum()  // The additional -1 is because a peer is not a neighbor of itself
-    }
+    }.toTypedArray()
     return summedDistances.indexOf(summedDistances.minOrNull()!!)
 }
 
@@ -43,14 +39,14 @@ class Krum(private val b: Int) : AggregationRule() {
         val modelMap = HashMap<Int, INDArray>()
         modelMap[-1] = oldModel.sub(gradient)
         modelMap.putAll(newOtherModels)
-        val models = modelMap.map { it.value }.toList()
+        val models = modelMap.values.toTypedArray()
         debug(logging) { "Found ${models.size} models in total" }
         return if (models.size <= b + 2 + 1) {  // The additional +1 is because we need to add the current peer itself
             debug(logging) { "Not using KRUM rule because not enough models found..." }
             oldModel.sub(gradient)
         } else {
             val bestCandidate = getKrum(models, b)
-            val newModel = oldModel.sub(gradient).add(models[bestCandidate]).div(2)
+            val newModel = oldModel.sub(gradient).addi(models[bestCandidate]).divi(2)
             newModel
         }
     }

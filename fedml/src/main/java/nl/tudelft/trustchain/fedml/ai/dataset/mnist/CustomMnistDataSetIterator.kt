@@ -18,7 +18,7 @@ class CustomMnistDataSetIterator(
     iteratorConfiguration.batchSize.value,
     -1,
     CustomMnistDataFetcher(
-        iteratorConfiguration.distribution,
+        iteratorConfiguration.distribution.toIntArray(),
         seed,
         dataSetType,
         if (dataSetType == CustomDataSetType.TRAIN) Integer.MAX_VALUE else iteratorConfiguration.maxTestSamples.value,

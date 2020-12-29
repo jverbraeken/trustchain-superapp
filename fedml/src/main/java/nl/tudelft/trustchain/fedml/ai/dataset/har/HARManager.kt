@@ -4,11 +4,12 @@ import nl.tudelft.trustchain.fedml.Behaviors
 import nl.tudelft.trustchain.fedml.ai.dataset.DatasetManager
 import java.io.File
 import java.io.IOException
+import kotlin.random.Random
 
 class HARManager(
     dataFiles: Array<File>,
     labelsFile: File,
-    iteratorDistribution: List<Int>,
+    iteratorDistribution: IntArray,
     maxTestSamples: Int,
     seed: Long,
     behavior: Behaviors,
@@ -23,7 +24,7 @@ class HARManager(
         val labelsArr2 = labelsArr
             .copyOf(labelsArr.size)
             .map { it!! }
-            .toTypedArray()
+            .toIntArray()
         if (behavior === Behaviors.LABEL_FLIP) {
             labelsArr.indices
                 .filter { i: Int -> labelsArr[i] == 1 }
@@ -39,41 +40,41 @@ class HARManager(
     }
 
     @Throws(IOException::class)
-    private fun loadData(dataFiles: Array<File>): Array<List<String>> {
+    private fun loadData(dataFiles: Array<File>): Array<Array<String>> {
         return dataFiles.map {
-            it.readLines()
+            it.readLines().toTypedArray()
         }.toTypedArray()
     }
 
     @Throws(IOException::class)
-    private fun loadLabels(labelsFile: File): Array<Int> {
+    private fun loadLabels(labelsFile: File): IntArray {
         return labelsFile
             .readLines()
             .map { i: String -> i.toInt() - 1 } // labels start at 1 instead of 0
-            .toTypedArray()
+            .toIntArray()
     }
 
     private fun sampleData(
-        tmpDataArr: Array<List<String>>,
-        tmpLabelsArr: Array<Int>,
+        tmpDataArr: Array<Array<String>>,
+        tmpLabelsArr: IntArray,
         totalExamples: Int,
-        iteratorDistribution: List<Int>,
+        iteratorDistribution: IntArray,
         maxTestSamples: Int,
         seed: Long,
     ): Pair<Array<Array<String>>, IntArray> {
         val dataArr = Array(totalExamples) { arrayListOf<String>() }
         val labelsArr = IntArray(totalExamples)
         var count = 0
+        val random = Random(seed)
         for (label in iteratorDistribution.indices) {
             val maxSamplesOfLabel = iteratorDistribution[label]
             val matchingImageIndices = findMatchingImageIndices(label, tmpLabelsArr)
-            val shuffledMatchingImageIndices = shuffle(matchingImageIndices, seed)
-            for (j in 0 until minOf(shuffledMatchingImageIndices.size, maxSamplesOfLabel, maxTestSamples)) {
+            matchingImageIndices.shuffle(random)
+            for (j in 0 until minOf(matchingImageIndices.size, maxSamplesOfLabel, maxTestSamples)) {
                 dataArr[count].addAll(tmpDataArr
-                    .map { dataFile -> dataFile[shuffledMatchingImageIndices[j]] }
-                    .toList()
+                    .map { dataFile -> dataFile[matchingImageIndices[j]] }
                 )
-                labelsArr[count] = tmpLabelsArr[shuffledMatchingImageIndices[j]]
+                labelsArr[count] = tmpLabelsArr[matchingImageIndices[j]]
                 count++
             }
         }
@@ -108,11 +109,10 @@ class HARManager(
         return sampledLabelsArr
             .distinct()
             .map { i: Int -> i.toString() }
-            .toList()
     }
 
     companion object {
-        private var fullDataArr = hashMapOf<String, Array<List<String>>>()
-        private var fullLabelsArr = hashMapOf<String, Array<Int>>()
+        private var fullDataArr = hashMapOf<String, Array<Array<String>>>()
+        private var fullLabelsArr = hashMapOf<String, IntArray>()
     }
 }

@@ -1,19 +1,11 @@
 package nl.tudelft.trustchain.fedml.ai.dataset
 
-import java.util.*
-
 abstract class DatasetManager {
-    protected fun findMatchingImageIndices(label: Int, tmpLabelsArr: Array<Int>): Array<Int> {
-        return (tmpLabelsArr.indices).filter { j: Int -> label == tmpLabelsArr[j] }.toTypedArray()
+    protected fun findMatchingImageIndices(label: Int, tmpLabelsArr: IntArray): IntArray {
+        return (tmpLabelsArr.indices).filter { j: Int -> label == tmpLabelsArr[j] }.toIntArray()
     }
 
-    protected fun shuffle(matchingImageIndices: Array<Int>, seed: Long): Array<Int> {
-        val tmp = matchingImageIndices.clone().toMutableList()
-        tmp.shuffle(Random(seed))
-        return tmp.toTypedArray()
-    }
-
-    fun calculateTotalExamples(iteratorDistribution: List<Int>, maxTestSamples: Int, labelsArray: Array<Int>): Int {
+    fun calculateTotalExamples(iteratorDistribution: IntArray, maxTestSamples: Int, labelsArray: IntArray): Int {
         return iteratorDistribution.indices.map { i: Int ->
             minOf(
                 iteratorDistribution[i],

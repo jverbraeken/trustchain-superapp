@@ -22,10 +22,9 @@ class Fang2020Krum(private val b: Int) : ModelPoisoningAttack() {
         random: Random
     ): Map<Int, INDArray> {
         logger.debug { formatName("Fang 2020 Trimmed Mean") }
-        val models = arrayListOf<INDArray>(oldModel.sub(gradient))
-        models.addAll(otherModels.values)
+        val models = arrayOf<INDArray>(oldModel.sub(gradient), *(otherModels.values.toTypedArray()))
         logger.debug { "Found ${models.size} models in total" }
-        val modelsAsArrays = models.map { it.toFloatMatrix()[0] }
+        val modelsAsArrays = models.map { it.toFloatMatrix()[0] }.toTypedArray()
 
         // w1
         val s = Array(1) { FloatArray(modelsAsArrays[0].size) }
@@ -40,32 +39,25 @@ class Fang2020Krum(private val b: Int) : ModelPoisoningAttack() {
         val c = numAttackers.num
         var lambda = (1.0 / ((m - 2 * c - 1) * sqrt(d))) *
             otherModels.values
-                .map { a -> otherModels.values.map { it.distance2(a) }.sum() }
+                .map { a -> otherModels.values.map { it.distance2(a) }.sum() }.toTypedArray()
                 .minOrNull()!!
                 .toFloat() + (1.0 / sqrt(d)) *
             otherModels.values
-                .map { it.distance2(oldModel) }
+                .map { it.distance2(oldModel) }.toTypedArray()
                 .maxOrNull()!!
 
         while (lambda >= 1e-5) {
             val w1 = oldModel.sub(ns.mul(lambda))
-            val newModels = arrayListOf<INDArray>()
             // TODO add noise eta
-            for (i in 0 until c) {
-                newModels.add(w1)
-            }
-            val combinedModels = ArrayList(models)
-            combinedModels.addAll(newModels)
+            val newModels = Array<INDArray>(c) { w1 }
+            val combinedModels = arrayOf(*models, *newModels)
             if (getKrum(combinedModels, b) >= models.size) {
                 return transformToResult(newModels)
             }
             lambda /= 2
         }
         val w1 = oldModel.sub(ns.mul(lambda))
-        val newModels = arrayListOf<INDArray>()
-        for (i in 0 until c) {
-            newModels.add(w1)
-        }
+        val newModels = Array<INDArray>(c) { w1 }
         return transformToResult(newModels)
     }
 
@@ -77,8 +69,8 @@ class Fang2020Krum(private val b: Int) : ModelPoisoningAttack() {
     ): INDArray {
         val newMatrix = Array(1) { FloatArray(modelsAsArrays[0].size) }
         for (i in modelsAsArrays[0].indices) {
-            val elements = ArrayList<Float>(modelsAsArrays.size)
-            modelsAsArrays.forEach { elements.add(it[i]) }
+            val elements = FloatArray(modelsAsArrays.size)
+            modelsAsArrays.forEachIndexed { j, modelsAsArray -> elements[j] = modelsAsArray[i] }
             newMatrix[0][i] = if (gradient.getDouble(i) < 0) {
                 val max = elements.maxOrNull()!!.toDouble()
                 if (max > 0) random.nextDouble(max, b * max).toFloat()
