@@ -208,14 +208,12 @@ class EvaluationProcessor(
         }
     }
 
-    suspend fun evaluate(testDataSetIterator: DataSetIterator, network: MultiLayerNetwork, extraElements: Map<String, String>, elapsedTime: Long, iterations: Int, epoch: Int, simulationIndex: Int, logging: Boolean): String {
+    fun evaluate(testDataSetIterator: DataSetIterator, network: MultiLayerNetwork, extraElements: Map<String, String>, elapsedTime: Long, iterations: Int, epoch: Int, simulationIndex: Int, logging: Boolean): String {
         testDataSetIterator.reset()
         val evaluations = arrayOf(Evaluation())
 
         if (logging) logger.debug { "Starting evaluation, #iterations = $iterations, ${extraElements.getOrDefault("before or after averaging", "")}" }
-        withTimeoutOrNull(8000L) {
-            network.doEvaluation(testDataSetIterator, *evaluations)
-        }
+        network.doEvaluation(testDataSetIterator, *evaluations)
 
         for (evaluation in evaluations) {
             if (logging) logger.debug { "${evaluation.javaClass.simpleName}:\n${evaluation.stats()}" }

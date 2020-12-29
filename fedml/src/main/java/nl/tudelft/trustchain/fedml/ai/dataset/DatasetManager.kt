@@ -6,12 +6,12 @@ abstract class DatasetManager {
     }
 
     fun calculateTotalExamples(iteratorDistribution: IntArray, maxTestSamples: Int, labelsArray: IntArray): Int {
-        return iteratorDistribution.indices.map { i: Int ->
+        return iteratorDistribution.indices.map { i ->
             minOf(
                 iteratorDistribution[i],
                 maxTestSamples,
                 labelsArray
-                    .filter { j: Int -> j == i }
+                    .filter { j -> j == i }
                     .size
             )
         }.sum()
