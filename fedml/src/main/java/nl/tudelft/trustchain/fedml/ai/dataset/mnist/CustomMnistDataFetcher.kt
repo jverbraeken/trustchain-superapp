@@ -37,7 +37,7 @@ class CustomMnistDataFetcher(
         val images: String
         val labels: String
         val maxExamples: Int
-        if (dataSetType == CustomDataSetType.TRAIN) {
+        if (dataSetType == CustomDataSetType.TRAIN || dataSetType == CustomDataSetType.FULL_TRAIN) {
             images = FilenameUtils.concat(mnistRoot, MnistFetcher.TRAINING_FILES_FILENAME_UNZIPPED)
             labels = FilenameUtils.concat(mnistRoot, MnistFetcher.TRAINING_FILE_LABELS_FILENAME_UNZIPPED)
             maxExamples = MnistDataFetcher.NUM_EXAMPLES
@@ -68,7 +68,7 @@ class CustomMnistDataFetcher(
                 labels,
                 maxExamples,
                 iteratorDistribution,
-                if (dataSetType == CustomDataSetType.TRAIN) Int.MAX_VALUE else maxTestSamples,
+                if (dataSetType == CustomDataSetType.TRAIN || dataSetType == CustomDataSetType.FULL_TRAIN) Int.MAX_VALUE else maxTestSamples,
                 seed,
                 behavior
             )

@@ -121,6 +121,9 @@ class Mozi(private val fracBenign: Double) : AggregationRule() {
     }
 
     private fun average(list: Array<INDArray>, logging: Boolean): INDArray {
+        /**
+         * Can be rewritten more efficiently, see Bristle implementation
+         */
         val listsAsArrays = list.map { it.toFloatVector() }.toTypedArray()
         val res = Array(1) { FloatArray(listsAsArrays.size) }
         for (i in listsAsArrays.indices) {

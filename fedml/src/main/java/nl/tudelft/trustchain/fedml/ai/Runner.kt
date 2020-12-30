@@ -209,7 +209,7 @@ abstract class Runner {
                 listOf(5, 5, 5, 5, 5, 5, 5, 5, 5, 5),
                 MaxTestSamples.NUM_20),
             seed + 1,
-            CustomDataSetType.TRAIN,
+            CustomDataSetType.FULL_TRAIN,
             baseDirectory,
             behavior
         )
