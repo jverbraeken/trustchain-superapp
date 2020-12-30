@@ -121,13 +121,14 @@ class Mozi(private val fracBenign: Double) : AggregationRule() {
     }
 
     private fun average(list: Array<INDArray>, logging: Boolean): INDArray {
-        val res = NDArray(intArrayOf(1, list.size))
-        for (i in list.indices) {
-            val elements = FloatArray(list.size)
-            list.forEachIndexed { j, list2 -> elements[j] = list2.getFloat(i) }
-            res.put(1, i, elements.average())
+        val listsAsArrays = list.map { it.toFloatVector() }.toTypedArray()
+        val res = Array(1) { FloatArray(listsAsArrays.size) }
+        for (i in listsAsArrays.indices) {
+            val elements = FloatArray(listsAsArrays.size)
+            listsAsArrays.forEachIndexed { j, listsAsArray -> elements[j] = listsAsArray[i] }
+            res[0][i] = elements.average().toFloat()
         }
-        return res
+        return NDArray(res)
     }
 
     override fun isDirectIntegration(): Boolean {

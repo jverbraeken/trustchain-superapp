@@ -51,7 +51,7 @@ enum class Datasets(
         LearningRates.RATE_1EM3,
         Momentums.NONE,
         L2Regularizations.L2_5EM3,
-        BatchSizes.BATCH_96,
+        BatchSizes.BATCH_32,
         IteratorDistributions.DISTRIBUTION_CIFAR_50,
         ::generateDefaultCIFARConfiguration,
         CustomCifar10DataSetIterator::create
@@ -184,6 +184,7 @@ enum class MaxIterations(val id: String, val text: String, val value: Int) {
     ITER_50("iter_50", "50", 50),
     ITER_200("iter_200", "200", 200),
     ITER_250("iter_250", "250", 250),
+    ITER_400("iter_400", "400", 400),
     ITER_500("iter_500", "500", 500),
 }
 
