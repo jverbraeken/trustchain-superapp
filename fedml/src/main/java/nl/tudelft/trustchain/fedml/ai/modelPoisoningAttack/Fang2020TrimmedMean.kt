@@ -63,7 +63,11 @@ class Fang2020TrimmedMean(private val b: Int) : ModelPoisoningAttack() {
                     val e = elements[j]
                     min = minOf(min, e)
                 }
-                val mind = min.toDouble()
+                var mind = min.toDouble()
+                if (mind.isNaN()) {
+                    mind = 0.0
+                    logger.error { "Found NaN!!!!!!!!!!" }
+                }
                 if (mind > 0) newMatrices.forEach { it[0][i] = random.nextDouble(mind / b, mind).toFloat() }
                 else newMatrices.forEach { it[0][i] = random.nextDouble(b * mind, mind).toFloat() }
             }

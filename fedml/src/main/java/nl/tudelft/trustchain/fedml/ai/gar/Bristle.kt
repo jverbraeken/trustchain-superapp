@@ -96,8 +96,9 @@ class Bristle : AggregationRule() {
     ): Map<Int, Double> {
         val distances = hashMapOf<Int, Double>()
         for ((index, otherModel) in otherModels) {
-            debug(logging) { "Distance calculated: ${min(otherModel.distance2(oldModel), otherModel.distance2(newModel))}" }
-            distances[index] = min(otherModel.distance2(oldModel), otherModel.distance2(newModel))
+            val min = min(otherModel.distance2(oldModel), otherModel.distance2(newModel))
+            debug(logging) { "Distance calculated: $min" }
+            distances[index] = min
         }
         for (i in 0 until min(20 - distances.size, allOtherModelsBuffer.size)) {
             val otherModel = allOtherModelsBuffer.elementAt(allOtherModelsBuffer.size - 1 - i)
@@ -210,7 +211,8 @@ class Bristle : AggregationRule() {
         arr!!.addi(newModel)
         val totalWeight = modelsToWeight.values.sum() + 1  // + 1 for the new model
         debug(logging) { "totalWeight: $totalWeight" }
-        debug(logging) { "weightedAverage: ${arr!!.div(totalWeight)}" }
-        return arr!!.divi(totalWeight)
+        val result = arr!!.div(totalWeight)
+        debug(logging) { "weightedAverage: $result" }
+        return result
     }
 }
