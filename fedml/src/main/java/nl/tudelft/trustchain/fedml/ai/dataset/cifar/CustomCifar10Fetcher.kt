@@ -112,9 +112,10 @@ class CustomCifar10Fetcher {
         val datasetPath: File
         datasetPath = when (set) {
             CustomDataSetType.TRAIN -> File(localCache, "/train/")
+            CustomDataSetType.FULL_TRAIN -> File(localCache, "/train/")
             CustomDataSetType.TEST -> File(localCache, "/test/")
+            CustomDataSetType.FULL_TEST -> File(localCache, "/test/")
             CustomDataSetType.VALIDATION -> throw IllegalArgumentException("You will need to manually create and iterate a validation directory, CIFAR-10 does not provide labels")
-            else -> File(localCache, "/train/")
         }
 
         // set up file paths
