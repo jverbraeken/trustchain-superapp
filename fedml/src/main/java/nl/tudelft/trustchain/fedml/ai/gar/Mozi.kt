@@ -42,7 +42,7 @@ class Mozi(private val fracBenign: Double) : AggregationRule() {
             return oldModel.sub(gradient)
         }
 
-        val Rmozi = average(Nperformance, logging)
+        val Rmozi = average(Nperformance)
         logger.debug("average: ${Rmozi.getDouble(0)}")
         val alpha = 0.5
         val part1 = oldModel.sub(gradient).muli(alpha)
@@ -70,7 +70,7 @@ class Mozi(private val fracBenign: Double) : AggregationRule() {
         for (model in models.withIndex()) {
             network.setParameters(model.value)
             scores[model.index] = network.score(sample)
-            debug(logging) { "otherLoss = ${scores[scores.size - 1]}" }
+            debug(logging) { "otherLoss = ${scores[model.index]}" }
         }
         return scores
     }
@@ -82,8 +82,9 @@ class Mozi(private val fracBenign: Double) : AggregationRule() {
     ): Array<INDArray> {
         val distances = hashMapOf<Int, Double>()
         for (otherModel in newOtherModels) {
-            debug(logging) { "Distance calculated: ${oldModel.distance2(otherModel.value)}" }
-            distances[otherModel.key] = oldModel.distance2(otherModel.value)
+            val distance = oldModel.distance2(otherModel.value)
+            debug(logging) { "Distance calculated: $distance" }
+            distances[otherModel.key] = distance
         }
         val sortedDistances = distances.toList().sortedBy { it.second }.toMap()
         val numBenign = ceil(fracBenign * newOtherModels.size).toInt()
@@ -120,18 +121,16 @@ class Mozi(private val fracBenign: Double) : AggregationRule() {
         return result.toTypedArray()
     }
 
-    private fun average(list: Array<INDArray>, logging: Boolean): INDArray {
-        /**
-         * Can be rewritten more efficiently, see Bristle implementation
-         */
-        val listsAsArrays = list.map { it.toFloatVector() }.toTypedArray()
-        val res = Array(1) { FloatArray(listsAsArrays.size) }
-        for (i in listsAsArrays.indices) {
-            val elements = FloatArray(listsAsArrays.size)
-            listsAsArrays.forEachIndexed { j, listsAsArray -> elements[j] = listsAsArray[i] }
-            res[0][i] = elements.average().toFloat()
+    private fun average(list: Array<INDArray>) : INDArray {
+        var arr: INDArray? = null
+        list.forEachIndexed { i, model ->
+            if (i == 0) {
+                arr = model.dup()
+            } else {
+                arr!!.addi(model)
+            }
         }
-        return NDArray(res)
+        return arr!!.divi(list.size)
     }
 
     override fun isDirectIntegration(): Boolean {

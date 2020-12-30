@@ -170,7 +170,7 @@ class SimulatedRunner : Runner() {
                                     }
                                 }
 
-                                /*if (iteration % iterationsBeforeSendings[nodeIndex] == 0) {
+                                if (iteration % iterationsBeforeSendings[nodeIndex] == 0) {
                                     // Attack
                                     val attack = nodeConfig.modelPoisoningConfiguration.attack
                                     val attackVectors = attack.obj.generateAttack(
@@ -226,13 +226,13 @@ class SimulatedRunner : Runner() {
                                             nodeIndex == 0
                                         )
                                     }
-                                }*/
+                                }
 
                                 oldParams[nodeIndex] = network.params().dup()
 
                                 epochEnd = fitNetwork(network, iterTrains[nodeIndex])
 
-                                /*if (iteration % iterationsBeforeSendings[nodeIndex] == 0) {
+                                if (iteration % iterationsBeforeSendings[nodeIndex] == 0) {
                                     shareModel(
                                         network.params().dup(),
                                         nodeConfig.trainConfiguration,
@@ -241,7 +241,7 @@ class SimulatedRunner : Runner() {
                                         newOtherModelBuffersTemp,
                                         countPerPeer
                                     )
-                                }*/
+                                }
 
                                 if (iteration % iterationsBeforeEvaluations[nodeIndex] == 0 && (nodeIndex == 0 || !ONLY_EVALUATE_FIRST_NODE)) {
                                     val elapsedTime = System.currentTimeMillis() - start
