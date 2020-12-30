@@ -123,27 +123,31 @@ class CustomCifar10Fetcher {
             filesInDir = FileSplit(datasetPath, BaseImageLoader.ALLOWED_FORMATS)
             filesInDirSplit = filesInDir!!.sample(pathFilter, 1.0)
         }
-        val uris = HashMap<Int, MutableList<URI>>()
+        val uris = HashMap<Int, Array<URI>>()
+        var totalCount = 0
+        val countPerLabel = IntArray(10)
+        val maxTotalElements = iteratorDistribution.sum()
+        val maxElementsPerLabel = iteratorDistribution.map { min(maxSamples, it) }
+        val placeholderUri = URI("")
         for (label in iteratorDistribution.indices) {
-            uris[label] = mutableListOf()
+            uris[label] = Array(maxElementsPerLabel[label]) { placeholderUri }
         }
-        var count = 0
-        val maxElements = iteratorDistribution.sum()
         val locations = filesInDirSplit!![0].locations()
-        locations.shuffle(kotlin.random.Random(rngSeed))
+        val random = kotlin.random.Random(rngSeed)
         for (uri in locations) {
             val split = uri.toString().split('/')
             val label = split[split.size - 2].toInt()
-            val uriSet = uris[label]!!
-            if (uriSet.size < min(maxSamples, iteratorDistribution[label])) {
-                uriSet.add(uri)
-                count++
-                if (count >= maxElements) {
+            if (countPerLabel[label] < maxElementsPerLabel[label]) {
+                uris[label]!![countPerLabel[label]] = uri
+                countPerLabel[label]++
+                totalCount++
+                if (totalCount >= maxTotalElements) {
                     break
                 }
             }
         }
-        val newFilesInDirSplit = CollectionInputSplit(uris.values.toList().flatten())
+        val newFilesInDirSplit = CollectionInputSplit(uris.values.toList().flatMap { it.asIterable() }.shuffled(random))
+
         val h = imgDim?.get(0) ?: INPUT_HEIGHT
         val w = imgDim?.get(1) ?: INPUT_WIDTH
         val rr = CustomImageRecordReader(
