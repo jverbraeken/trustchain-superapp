@@ -1,6 +1,5 @@
 package nl.tudelft.trustchain.fedml.ai
 
-import kotlinx.coroutines.withTimeoutOrNull
 import mu.KotlinLogging
 import org.deeplearning4j.nn.api.Model
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
@@ -89,15 +88,9 @@ class EvaluationProcessor(
         }
         evaluationLines[0] = newEvaluationHeader
 
-        fixedRateTimer(period = 2500) {
-            PrintWriter(fileResults).use { pw ->
-                synchronized(evaluationLines) {
-                    evaluationLines
-                        .map(::convertToCSV)
-                        .forEach(pw::println)
-                }
-            }
-        }
+//        fixedRateTimer(period = 2500) {
+//
+//        }
     }
 
     private fun convertToCSV(data: Array<String>): String {
@@ -186,14 +179,29 @@ class EvaluationProcessor(
             mcc.toString(),
             score.toString()
         )
-        synchronized(evaluationLines) {
-            evaluationLines.add(Array(dataLineElements.size + extraElements.size) { "" })
-            System.arraycopy(dataLineElements, 0, evaluationLines.last(), 0, dataLineElements.size)
-            for ((name, value) in extraElements) {
-                evaluationLines.last()[dataLineElements.size + extraElementNames.indexOf(name)] = value
-            }
+        evaluationLines.add(Array(dataLineElements.size + extraElements.size) { "" })
+        System.arraycopy(dataLineElements, 0, evaluationLines.last(), 0, dataLineElements.size)
+        for ((name, value) in extraElements) {
+            evaluationLines.last()[dataLineElements.size + extraElementNames.indexOf(name)] = value
+        }
+        PrintWriter(fileResults).use { pw ->
+            evaluationLines
+                .map(::convertToCSV)
+                .forEach(pw::println)
         }
         return convertToCSV(evaluationLines.last())
+    }
+
+    fun error(e: Exception) {
+        synchronized(evaluationLines) {
+            evaluationLines.add(arrayOf(e.stackTraceToString()))
+
+            PrintWriter(fileResults).use { pw ->
+                evaluationLines
+                    .map(::convertToCSV)
+                    .forEach(pw::println)
+            }
+        }
     }
 
     fun done() {
@@ -208,11 +216,27 @@ class EvaluationProcessor(
         }
     }
 
-    fun evaluate(testDataSetIterator: DataSetIterator, network: MultiLayerNetwork, extraElements: Map<String, String>, elapsedTime: Long, iterations: Int, epoch: Int, simulationIndex: Int, logging: Boolean): String {
+    fun evaluate(
+        testDataSetIterator: DataSetIterator,
+        network: MultiLayerNetwork,
+        extraElements: Map<String, String>,
+        elapsedTime: Long,
+        iterations: Int,
+        epoch: Int,
+        simulationIndex: Int,
+        logging: Boolean
+    ): String {
         testDataSetIterator.reset()
         val evaluations = arrayOf(Evaluation())
 
-        if (logging) logger.debug { "Starting evaluation, #iterations = $iterations, ${extraElements.getOrDefault("before or after averaging", "")}" }
+        if (logging) logger.debug {
+            "Starting evaluation, #iterations = $iterations, ${
+                extraElements.getOrDefault(
+                    "before or after averaging",
+                    ""
+                )
+            }"
+        }
         network.doEvaluation(testDataSetIterator, *evaluations)
 
         for (evaluation in evaluations) {

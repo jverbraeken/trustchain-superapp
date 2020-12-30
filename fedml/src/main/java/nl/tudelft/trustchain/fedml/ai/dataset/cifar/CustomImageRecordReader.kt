@@ -61,7 +61,7 @@ class CustomImageRecordReader(
             imageLoader = NativeImageLoader(height, width, channels, imageTransform)
         }
         inputSplit = split
-        iter = FileFromPathIterator(inputSplit.locationsPathIterator()) //This handles randomization internally if necessary
+        iter = FileFromPathIterator(inputSplit.locationsPathIterator())
         val locations = split.locations()
         for (location in locations) {
             val a = location.toString().split('/')
