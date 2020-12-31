@@ -108,8 +108,8 @@ class CustomCifar10Fetcher {
         val random = kotlin.random.Random(rngSeed)
         val maxElementsPerLabel = iteratorDistribution.map { min(maxSamples, it) }
         val numSamplesPerLabel = if (train) NUM_TRAINING_SAMPLES_PER_LABEL else NUM_TESTING_SAMPLES_PER_LABEL
-        val uris = CustomFileSplit(datasetPath, random, numSamplesPerLabel).uris
-        val uriSelection = uris
+        val files = CustomFileSplit(datasetPath, random, numSamplesPerLabel).files
+        val fileSelection = files
             .mapIndexed { i, list -> list.copyOfRange(0, maxElementsPerLabel[i]) }
             .flatMap { it.asIterable() }
             .shuffled(random)
@@ -121,7 +121,7 @@ class CustomCifar10Fetcher {
                 h.toLong(),
                 w.toLong(),
                 imageTransform,
-                uris
+                files
             )
         } else null
 
@@ -130,8 +130,8 @@ class CustomCifar10Fetcher {
             w.toLong(),
             INPUT_CHANNELS.toLong(),
             imageTransform,
-            uriSelection,
-            true,
+            fileSelection,
+            false,
             testBatches,
         )
     }
@@ -140,10 +140,10 @@ class CustomCifar10Fetcher {
         h: Long,
         w: Long,
         imageTransform: ImageTransform?,
-        uris: Array<out Array<URI>>
+        files: Array<out Array<File>>
     ): Array<DataSet?> {
-        return uris.map {
-            if (uris.isEmpty()) null
+        return files.map {
+            if (files.isEmpty()) null
             else {
                 CustomRecordReaderDataSetIterator(
                     CustomImageRecordReader(

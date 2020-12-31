@@ -34,22 +34,23 @@ class CustomImageRecordReader(
     private val width: Long,
     private val channels: Long,
     private val imageTransform: ImageTransform?,
-    private val uris: Array<URI>,
+    private val files: Array<File>,
     private val alwaysReturningSameResult: Boolean = false,
     val testBatches: Array<DataSet?>?
 ) : BaseRecordReader() {
-    private var iter: Iterator<URI>
+    private var iter: Iterator<File>
     private var currentFile: File? = null
     private var labels = listOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
     private var imageLoader: NativeImageLoader? = null
     private lateinit var conf: Configuration
     private var sameResultToReturn: List<List<Writable?>?>? = null
+    private var alwaysReturningSameResultDone = false
 
     init {
         if (imageLoader == null) {
             imageLoader = NativeImageLoader(height, width, channels, imageTransform)
         }
-        iter = uris.iterator()
+        iter = files.iterator()
     }
 
 
@@ -65,7 +66,7 @@ class CustomImageRecordReader(
 
     override fun next(): List<Writable> {
         val ret: MutableList<Writable>
-        val image = File(iter.next())
+        val image = iter.next()
         currentFile = image
         if (image.isDirectory) return next()
         try {
@@ -81,14 +82,20 @@ class CustomImageRecordReader(
         return ret
     }
 
-    override fun hasNext() = iter.hasNext()
+    override fun hasNext(): Boolean {
+        return if (alwaysReturningSameResultDone) false
+        else iter.hasNext()
+    }
 
     override fun getLabels() = labels
 
     override fun batchesSupported() = imageLoader is NativeImageLoader
 
     override fun next(num: Int): List<List<Writable?>?> {
-        if (alwaysReturningSameResult && sameResultToReturn != null) return sameResultToReturn!!
+        if (alwaysReturningSameResult && sameResultToReturn != null) {
+            alwaysReturningSameResultDone = true
+            return sameResultToReturn!!
+        }
         Preconditions.checkArgument(num > 0, "Number of examples must be > 0: got $num")
         if (imageLoader == null) {
             imageLoader = NativeImageLoader(height, width, channels, imageTransform)
@@ -98,7 +105,7 @@ class CustomImageRecordReader(
         val numCategories = labels.size
         var currLabels: MutableList<Int?>? = null
         while (cnt < num && iter.hasNext()) {
-            currentFile = File(iter.next())
+            currentFile = iter.next()
             currBatch.add(currentFile!!)
             invokeListeners(currentFile)
             //Collect the label Writables from the label generators
@@ -160,7 +167,8 @@ class CustomImageRecordReader(
     }
 
     override fun reset() {
-        iter = uris.iterator()
+        iter = files.iterator()
+        alwaysReturningSameResultDone = false
     }
 
     override fun resetSupported() = true

@@ -19,7 +19,7 @@ import java.util.*
 open class CustomRecordReaderDataSetIterator : DataSetIterator {
     protected var recordReader: CustomImageRecordReader
     private var converter: WritableConverter?
-    private var batchSize = 10
+    private val batchSize: Int
     private var maxNumBatches = -1
     private var batchNum = 0
     private var labelIndex = -1

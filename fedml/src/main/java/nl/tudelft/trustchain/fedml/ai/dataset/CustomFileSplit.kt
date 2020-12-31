@@ -2,23 +2,22 @@ package nl.tudelft.trustchain.fedml.ai.dataset
 
 import nl.tudelft.trustchain.fedml.ai.dataset.cifar.CustomCifar10Fetcher
 import java.io.File
-import java.net.URI
 import java.util.*
 import kotlin.random.Random
 
 class CustomFileSplit(datasetPath: File, random: Random, numSamplesPerLabel: Int) {
-    val uris: Array<out Array<URI>>
+    val files: Array<out Array<File>>
 
     init {
-        uris = uriMap.getOrPut(datasetPath.absolutePath) {
+        files = uriMap.getOrPut(datasetPath.absolutePath) {
             listFiles(datasetPath, numSamplesPerLabel).onEach { it.shuffle(random) }
         }
     }
 
-    private fun listFiles(dir: File, numSamplesPerLabel: Int): Array<Array<URI>> {
+    private fun listFiles(dir: File, numSamplesPerLabel: Int): Array<Array<File>> {
         val queue = LinkedList<File>()
         queue.add(dir)
-        val placeholder = URI("")
+        val placeholder = File("")
         val out = Array(CustomCifar10Fetcher.NUM_LABELS) { Array(numSamplesPerLabel) { placeholder } }
         val count = IntArray(CustomCifar10Fetcher.NUM_LABELS)
         while (!queue.isEmpty()) {
@@ -30,7 +29,7 @@ class CustomFileSplit(datasetPath: File, random: Random, numSamplesPerLabel: Int
                     if (f.isDirectory) {
                         queue.add(f)
                     } else {
-                        out[label][count[label]++] = f.toURI()
+                        out[label][count[label]++] = f
                     }
                 }
             }
@@ -39,6 +38,6 @@ class CustomFileSplit(datasetPath: File, random: Random, numSamplesPerLabel: Int
     }
 
     companion object {
-        val uriMap = mutableMapOf<String, Array<out Array<URI>>>()
+        val uriMap = mutableMapOf<String, Array<out Array<File>>>()
     }
 }
