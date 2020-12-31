@@ -36,7 +36,7 @@ class SimulatedRunner : Runner() {
     ) {
         val job = SupervisorJob()
         val scope = CoroutineScope(Dispatchers.Default + job)
-        scope.launch {
+//        scope.launch {
             val evaluationProcessor = EvaluationProcessor(
                 baseDirectory,
                 "simulated",
@@ -267,8 +267,9 @@ class SimulatedRunner : Runner() {
                 }
             } catch (e: Exception) {
                 evaluationProcessor.error(e)
+                e.printStackTrace()
             }
-        }
+//        }
     }
 
     private fun fitNetwork(network: MultiLayerNetwork, dataSetIterator: CustomDataSetIterator): Boolean {

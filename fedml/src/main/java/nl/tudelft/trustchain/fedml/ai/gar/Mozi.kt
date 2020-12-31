@@ -13,7 +13,7 @@ import kotlin.math.ceil
 private val logger = KotlinLogging.logger("Mozi")
 
 class Mozi(private val fracBenign: Double) : AggregationRule() {
-    private val TEST_BATCH = 50
+    private val TEST_BATCH = 200
 
     override fun integrateParameters(
         network: MultiLayerNetwork,

@@ -206,7 +206,7 @@ abstract class Runner {
         logger.debug { "Loaded trainDataSetIterator" }
         val fullTrainDataSetIterator = dataset.inst(
             DatasetIteratorConfiguration(BatchSizes.BATCH_5,
-                listOf(5, 5, 5, 5, 5, 5, 5, 5, 5, 5),
+                datasetIteratorConfiguration.distribution.map { it / 10},
                 MaxTestSamples.NUM_20),
             seed + 1,
             CustomDataSetType.FULL_TRAIN,

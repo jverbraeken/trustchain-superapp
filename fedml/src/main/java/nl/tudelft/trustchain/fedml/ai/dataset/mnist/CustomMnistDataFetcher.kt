@@ -102,9 +102,9 @@ class CustomMnistDataFetcher(
         var actualExamples = 0
         for (i in 0 until numExamples) {
             if (!hasMore()) break
+            featureData[actualExamples] = man.readImage(order[cursor])
             val label = man.readLabel(order[cursor])
             labels.put(actualExamples, label, 1.0f)
-            featureData[actualExamples] = man.readImage(order[cursor])
             actualExamples++
             cursor++
         }
