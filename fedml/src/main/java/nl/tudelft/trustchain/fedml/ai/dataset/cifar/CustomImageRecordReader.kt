@@ -7,15 +7,12 @@ import org.datavec.api.records.metadata.RecordMetaData
 import org.datavec.api.records.metadata.RecordMetaDataURI
 import org.datavec.api.records.reader.BaseRecordReader
 import org.datavec.api.split.InputSplit
-import org.datavec.api.split.InputStreamInputSplit
-import org.datavec.api.util.files.FileFromPathIterator
 import org.datavec.api.util.files.URIUtil
 import org.datavec.api.util.ndarray.RecordConverter
 import org.datavec.api.writable.IntWritable
 import org.datavec.api.writable.Writable
 import org.datavec.api.writable.batch.NDArrayRecordBatch
 import org.datavec.image.loader.BaseImageLoader
-import org.datavec.image.loader.ImageLoader
 import org.datavec.image.loader.NativeImageLoader
 import org.datavec.image.recordreader.BaseImageRecordReader
 import org.datavec.image.transform.ImageTransform
@@ -33,63 +30,40 @@ private val logger = KotlinLogging.logger("CustomImageRecordReader")
  * Specific for CIFAR-10
  */
 class CustomImageRecordReader(
-    private var height: Long,
-    private var width: Long,
-    private var channels: Long,
-    private var imageTransform: ImageTransform?,
+    private val height: Long,
+    private val width: Long,
+    private val channels: Long,
+    private val imageTransform: ImageTransform?,
+    private val uris: Array<URI>
 ) : BaseRecordReader() {
-    private lateinit var conf: Configuration
-    private var finishedInputStreamSplit = false
-    private var iter: Iterator<File>? = null
+    private var iter: Iterator<URI>
     private var currentFile: File? = null
-    private var labels = arrayListOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
-    private var uniqueLabels = mutableSetOf<String>()
-    private var appendLabel = true
-    private var writeLabel = false
-    private var record: List<Writable>? = null
-    private var hitImage = false
-    private var cropImage = false
+    private var labels = listOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
     private var imageLoader: BaseImageLoader? = null
-    private val HEIGHT = "$NAME_SPACE.height"
-    private val WIDTH = "$NAME_SPACE.width"
-    private val CHANNELS = "$NAME_SPACE.channels"
-    private val CROP_IMAGE = "$NAME_SPACE.cropimage"
-    private val IMAGE_LOADER = "$NAME_SPACE.imageloader"
+    private lateinit var conf: Configuration
 
-    override fun initialize(split: InputSplit) {
+    init {
         if (imageLoader == null) {
             imageLoader = NativeImageLoader(height, width, channels, imageTransform)
         }
-        inputSplit = split
-        iter = FileFromPathIterator(inputSplit.locationsPathIterator())
-        val locations = split.locations()
-        for (location in locations) {
-            val a = location.toString().split('/')
-            val label = a[a.size - 2]
-            uniqueLabels.add(label)
-        }
+
+        iter = uris.iterator()
+    }
+
+
+    override fun initialize(split: InputSplit) {
+        throw NotImplementedError("Don't use this function")
     }
 
 
     override fun initialize(conf: Configuration, split: InputSplit) {
-        this.appendLabel = conf.getBoolean(APPEND_LABEL, appendLabel)
-        this.labels = ArrayList(conf.getStringCollection(LABELS))
-        this.height = conf.getLong(HEIGHT, height)
-        width = conf.getLong(WIDTH, width)
-        channels = conf.getLong(CHANNELS, channels)
-        this.cropImage = conf.getBoolean(CROP_IMAGE, cropImage)
-        if ("imageio" == conf[IMAGE_LOADER]) {
-            this.imageLoader = ImageLoader(height, width, channels, cropImage)
-        } else {
-            this.imageLoader = NativeImageLoader(height, width, channels, imageTransform)
-        }
-        this.conf = conf
-        initialize(split)
+        throw NotImplementedError("Don't use this function")
     }
+
 
     override fun next(): List<Writable> {
         val ret: MutableList<Writable>
-        val image = iter!!.next()
+        val image = File(iter.next())
         currentFile = image
         if (image.isDirectory) return next()
         try {
@@ -97,9 +71,7 @@ class CustomImageRecordReader(
             val row = imageLoader!!.asMatrix(image)
             Nd4j.getAffinityManager().ensureLocation(row, AffinityManager.Location.DEVICE)
             ret = RecordConverter.toRecord(row)
-            if (appendLabel || writeLabel) {
-                ret.add(IntWritable(labels.indexOf(getLabel(image.path))))
-            }
+            ret.add(IntWritable(labels.indexOf(getLabel(image.path))))
         } catch (e: Exception) {
             e.printStackTrace()
             throw RuntimeException(e)
@@ -107,29 +79,11 @@ class CustomImageRecordReader(
         return ret
     }
 
-    override fun hasNext(): Boolean {
-        if (inputSplit is InputStreamInputSplit) {
-            return finishedInputStreamSplit
-        }
-        if (iter != null) {
-            return iter!!.hasNext()
-        } else if (record != null) {
-            return !hitImage
-        }
-        throw IllegalStateException("Indeterminant state: record must not be null, or a file iterator must exist")
-    }
+    override fun hasNext() = iter.hasNext()
 
-    override fun getLabels(): List<String> {
-        return labels
-    }
+    override fun getLabels() = labels
 
-    fun getUniqueLabels(): Set<String> {
-        return uniqueLabels
-    }
-
-    override fun batchesSupported(): Boolean {
-        return imageLoader is NativeImageLoader
-    }
+    override fun batchesSupported() = imageLoader is NativeImageLoader
 
     override fun next(num: Int): List<List<Writable?>?> {
         Preconditions.checkArgument(num > 0, "Number of examples must be > 0: got $num")
@@ -138,17 +92,15 @@ class CustomImageRecordReader(
         }
         val currBatch: MutableList<File> = ArrayList()
         var cnt = 0
-        val numCategories = if (appendLabel || writeLabel) labels.size else 0
+        val numCategories = labels.size
         var currLabels: MutableList<Int?>? = null
-        while (cnt < num && iter!!.hasNext()) {
-            currentFile = iter!!.next()
+        while (cnt < num && iter.hasNext()) {
+            currentFile = File(iter.next())
             currBatch.add(currentFile!!)
             invokeListeners(currentFile)
-            if (appendLabel || writeLabel) {
-                //Collect the label Writables from the label generators
-                if (currLabels == null) currLabels = ArrayList()
-                currLabels.add(labels.indexOf(getLabel(currentFile!!.path)))
-            }
+            //Collect the label Writables from the label generators
+            if (currLabels == null) currLabels = ArrayList()
+            currLabels.add(labels.indexOf(getLabel(currentFile!!.path)))
             cnt++
         }
         val features = Nd4j.createUninitialized(longArrayOf(cnt.toLong(), channels, height, width), 'c')
@@ -167,16 +119,14 @@ class CustomImageRecordReader(
         Nd4j.getAffinityManager().ensureLocation(features, AffinityManager.Location.DEVICE)
         val ret: MutableList<INDArray> = ArrayList()
         ret.add(features)
-        if (appendLabel || writeLabel) {
-            //And convert the previously collected label Writables from the label generators
-            //Standard classification use case (i.e., handle String -> integer conversion)
-            val labels = Nd4j.create(cnt.toLong(), numCategories.toLong(), 'c')
-            Nd4j.getAffinityManager().tagLocation(labels, AffinityManager.Location.HOST)
-            for (i in currLabels!!.indices) {
-                labels.putScalar(i.toLong(), currLabels[i]!!.toLong(), 1.0)
-            }
-            ret.add(labels)
+        //And convert the previously collected label Writables from the label generators
+        //Standard classification use case (i.e., handle String -> integer conversion)
+        val labels = Nd4j.create(cnt.toLong(), numCategories.toLong(), 'c')
+        Nd4j.getAffinityManager().tagLocation(labels, AffinityManager.Location.HOST)
+        for (i in currLabels!!.indices) {
+            labels.putScalar(i.toLong(), currLabels[i]!!.toLong(), 1.0)
         }
+        ret.add(labels)
         return NDArrayRecordBatch(ret)
     }
 
@@ -205,20 +155,10 @@ class CustomImageRecordReader(
     }
 
     override fun reset() {
-        if (inputSplit == null) throw UnsupportedOperationException("Cannot reset without first initializing")
-        inputSplit.reset()
-        if (iter != null) {
-            iter = FileFromPathIterator(inputSplit.locationsPathIterator())
-        } else if (record != null) {
-            hitImage = false
-        }
+        iter = uris.iterator()
     }
 
-    override fun resetSupported(): Boolean {
-        return if (inputSplit == null) {
-            false
-        } else inputSplit.resetSupported()
-    }
+    override fun resetSupported() = true
 
     override fun record(uri: URI, dataInputStream: DataInputStream?): List<Writable>? {
         invokeListeners(uri)
@@ -227,7 +167,7 @@ class CustomImageRecordReader(
         }
         val row = imageLoader!!.asMatrix(dataInputStream)
         val ret = RecordConverter.toRecord(row)
-        if (appendLabel) ret.add(IntWritable(labels.indexOf(getLabel(uri.path))))
+        ret.add(IntWritable(labels.indexOf(getLabel(uri.path))))
         return ret
     }
 

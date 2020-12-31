@@ -16,7 +16,8 @@ class CustomCifar10DataSetIterator(
     dataSetType: CustomDataSetType,
     behavior: Behaviors,
 ) : CustomRecordReaderDataSetIterator(
-    CustomCifar10Fetcher().getRecordReader(seed,
+    CustomCifar10Fetcher().getRecordReader(
+        seed,
         null,
         dataSetType,
         null,
@@ -29,7 +30,7 @@ class CustomCifar10DataSetIterator(
     override val testBatches by lazy { listOf<DataSet?>() }
 
     override fun getLabels(): List<String> {
-        return (recordReader as CustomImageRecordReader).getUniqueLabels().toList()
+        return recordReader.labels.toList()
     }
 
     companion object {
