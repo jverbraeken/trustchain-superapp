@@ -79,7 +79,7 @@ class CustomMnistManager(
         return (0 until 10).map { label ->
             val correspondingImageIndices = sampledLabelsArr.indices
                 .filter { i: Int -> sampledLabelsArr[i] == label }
-                .take(50)
+                .take(20)
                 .toTypedArray()
             correspondingImageIndices
                 .map { i -> sampledImagesArr[i] }

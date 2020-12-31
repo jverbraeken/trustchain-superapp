@@ -12,12 +12,12 @@ import org.datavec.api.util.ndarray.RecordConverter
 import org.datavec.api.writable.IntWritable
 import org.datavec.api.writable.Writable
 import org.datavec.api.writable.batch.NDArrayRecordBatch
-import org.datavec.image.loader.BaseImageLoader
 import org.datavec.image.loader.NativeImageLoader
 import org.datavec.image.recordreader.BaseImageRecordReader
 import org.datavec.image.transform.ImageTransform
 import org.nd4j.linalg.api.concurrency.AffinityManager
 import org.nd4j.linalg.api.ndarray.INDArray
+import org.nd4j.linalg.dataset.DataSet
 import org.nd4j.linalg.factory.Nd4j
 import org.nd4j.shade.guava.base.Preconditions
 import java.io.*
@@ -34,19 +34,21 @@ class CustomImageRecordReader(
     private val width: Long,
     private val channels: Long,
     private val imageTransform: ImageTransform?,
-    private val uris: Array<URI>
+    private val uris: Array<URI>,
+    private val alwaysReturningSameResult: Boolean = false,
+    val testBatches: Array<DataSet?>?
 ) : BaseRecordReader() {
     private var iter: Iterator<URI>
     private var currentFile: File? = null
     private var labels = listOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
-    private var imageLoader: BaseImageLoader? = null
+    private var imageLoader: NativeImageLoader? = null
     private lateinit var conf: Configuration
+    private var sameResultToReturn: List<List<Writable?>?>? = null
 
     init {
         if (imageLoader == null) {
             imageLoader = NativeImageLoader(height, width, channels, imageTransform)
         }
-
         iter = uris.iterator()
     }
 
@@ -86,6 +88,7 @@ class CustomImageRecordReader(
     override fun batchesSupported() = imageLoader is NativeImageLoader
 
     override fun next(num: Int): List<List<Writable?>?> {
+        if (alwaysReturningSameResult && sameResultToReturn != null) return sameResultToReturn!!
         Preconditions.checkArgument(num > 0, "Number of examples must be > 0: got $num")
         if (imageLoader == null) {
             imageLoader = NativeImageLoader(height, width, channels, imageTransform)
@@ -107,7 +110,7 @@ class CustomImageRecordReader(
         Nd4j.getAffinityManager().tagLocation(features, AffinityManager.Location.HOST)
         for (i in 0 until cnt) {
             try {
-                (imageLoader as NativeImageLoader).asMatrixView(
+                imageLoader!!.asMatrixView(
                     currBatch[i],
                     features.tensorAlongDimension(i.toLong(), 1, 2, 3)
                 )
@@ -127,7 +130,9 @@ class CustomImageRecordReader(
             labels.putScalar(i.toLong(), currLabels[i]!!.toLong(), 1.0)
         }
         ret.add(labels)
-        return NDArrayRecordBatch(ret)
+        val res = NDArrayRecordBatch(ret)
+        if (alwaysReturningSameResult) sameResultToReturn = res
+        return res
     }
 
     @Throws(IOException::class)

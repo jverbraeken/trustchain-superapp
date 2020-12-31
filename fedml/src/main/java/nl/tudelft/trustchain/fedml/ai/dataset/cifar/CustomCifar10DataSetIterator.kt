@@ -22,12 +22,13 @@ class CustomCifar10DataSetIterator(
         dataSetType,
         null,
         iteratorConfiguration.distribution.toIntArray(),
-        if (dataSetType == CustomDataSetType.TEST || dataSetType == CustomDataSetType.FULL_TEST) iteratorConfiguration.maxTestSamples.value else Integer.MAX_VALUE),
+        if (dataSetType == CustomDataSetType.TEST || dataSetType == CustomDataSetType.FULL_TEST) iteratorConfiguration.maxTestSamples.value else Integer.MAX_VALUE,
+    ),
     iteratorConfiguration.batchSize.value,
     1,
     CustomCifar10Fetcher.NUM_LABELS
 ), CustomDataSetIterator {
-    override val testBatches by lazy { listOf<DataSet?>() }
+    override val testBatches by lazy { recordReader.testBatches!! }
 
     override fun getLabels(): List<String> {
         return recordReader.labels.toList()

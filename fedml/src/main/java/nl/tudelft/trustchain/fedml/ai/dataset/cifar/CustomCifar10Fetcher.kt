@@ -9,8 +9,10 @@ import org.deeplearning4j.common.resources.DL4JResources
 import org.deeplearning4j.common.resources.ResourceType
 import org.nd4j.common.base.Preconditions
 import org.nd4j.common.util.ArchiveUtils
+import org.nd4j.linalg.dataset.DataSet
 import java.io.File
 import java.io.IOException
+import java.net.URI
 import java.net.URL
 import java.util.zip.Adler32
 import java.util.zip.Checksum
@@ -106,22 +108,59 @@ class CustomCifar10Fetcher {
         val random = kotlin.random.Random(rngSeed)
         val maxElementsPerLabel = iteratorDistribution.map { min(maxSamples, it) }
         val numSamplesPerLabel = if (train) NUM_TRAINING_SAMPLES_PER_LABEL else NUM_TESTING_SAMPLES_PER_LABEL
-        val uriSelection = CustomFileSplit(datasetPath, random, numSamplesPerLabel)
-            .uris
+        val uris = CustomFileSplit(datasetPath, random, numSamplesPerLabel).uris
+        val uriSelection = uris
             .mapIndexed { i, list -> list.copyOfRange(0, maxElementsPerLabel[i]) }
             .flatMap { it.asIterable() }
             .shuffled(random)
             .toTypedArray()
-
         val h = imgDim?.get(0) ?: INPUT_HEIGHT
         val w = imgDim?.get(1) ?: INPUT_WIDTH
+        val testBatches = if (set == CustomDataSetType.FULL_TEST) {
+            createTestBatches(
+                h.toLong(),
+                w.toLong(),
+                imageTransform,
+                uris
+            )
+        } else null
+
         return CustomImageRecordReader(
             h.toLong(),
             w.toLong(),
             INPUT_CHANNELS.toLong(),
             imageTransform,
-            uriSelection
+            uriSelection,
+            true,
+            testBatches,
         )
+    }
+
+    private fun createTestBatches(
+        h: Long,
+        w: Long,
+        imageTransform: ImageTransform?,
+        uris: Array<out Array<URI>>
+    ): Array<DataSet?> {
+        return uris.map {
+            if (uris.isEmpty()) null
+            else {
+                CustomRecordReaderDataSetIterator(
+                    CustomImageRecordReader(
+                        h,
+                        w,
+                        INPUT_CHANNELS.toLong(),
+                        imageTransform,
+                        it,
+                        true,
+                        null
+                    ),
+                    20,
+                    1,
+                    NUM_LABELS
+                ).next(20)
+            }
+        }.toTypedArray()
     }
 
     companion object {

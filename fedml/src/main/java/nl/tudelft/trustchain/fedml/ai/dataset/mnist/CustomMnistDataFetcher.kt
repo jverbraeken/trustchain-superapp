@@ -119,7 +119,7 @@ class CustomMnistDataFetcher(
         curr = DataSet(features, labels)
     }
 
-    private fun createTestBatches(): List<DataSet?> {
+    private fun createTestBatches(): Array<DataSet?> {
         val testBatches = man.createTestBatches()
         if (featureData.size < testBatches[0].size) {
             featureData = Array(testBatches[0].size) { FloatArray(28 * 28) }
@@ -131,7 +131,7 @@ class CustomMnistDataFetcher(
                 else createTestBatch(label, batch)
             )
         }
-        return result
+        return result.toTypedArray()
     }
 
     private fun createTestBatch(label: Int, batch: Array<ByteArray>): DataSet {
