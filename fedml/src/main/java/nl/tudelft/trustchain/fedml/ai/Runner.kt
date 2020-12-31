@@ -223,7 +223,7 @@ abstract class Runner {
         )
         logger.debug { "Loaded testDataSetIterator" }
         val fullTestDataSetIterator = dataset.inst(
-            DatasetIteratorConfiguration(BatchSizes.BATCH_5,
+            DatasetIteratorConfiguration(BatchSizes.BATCH_200,
                 List(datasetIteratorConfiguration.distribution.size) { datasetIteratorConfiguration.maxTestSamples.value },
                 datasetIteratorConfiguration.maxTestSamples),
             seed + 3,

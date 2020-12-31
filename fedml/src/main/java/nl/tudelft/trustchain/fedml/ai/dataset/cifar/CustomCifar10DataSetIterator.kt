@@ -16,20 +16,22 @@ class CustomCifar10DataSetIterator(
     dataSetType: CustomDataSetType,
     behavior: Behaviors,
 ) : CustomRecordReaderDataSetIterator(
-    CustomCifar10Fetcher().getRecordReader(seed,
+    CustomCifar10Fetcher().getRecordReader(
+        seed,
         null,
         dataSetType,
         null,
         iteratorConfiguration.distribution.toIntArray(),
-        if (dataSetType == CustomDataSetType.TEST || dataSetType == CustomDataSetType.FULL_TEST) iteratorConfiguration.maxTestSamples.value else Integer.MAX_VALUE),
+        if (dataSetType == CustomDataSetType.TEST || dataSetType == CustomDataSetType.FULL_TEST) iteratorConfiguration.maxTestSamples.value else Integer.MAX_VALUE,
+    ),
     iteratorConfiguration.batchSize.value,
     1,
     CustomCifar10Fetcher.NUM_LABELS
 ), CustomDataSetIterator {
-    override val testBatches by lazy { listOf<DataSet?>() }
+    override val testBatches by lazy { recordReader.testBatches!! }
 
     override fun getLabels(): List<String> {
-        return (recordReader as CustomImageRecordReader).getUniqueLabels().toList()
+        return recordReader.labels.toList()
     }
 
     companion object {

@@ -27,8 +27,8 @@ fun loadAutomation(baseDirectory: File): Automation {
     return Json.decodeFromString(string)
 }
 
-private const val ISOLATED_FIGURE_NAME = "Figure 3.3"
-private const val ISOLATED_FIGURE_GAR = "average"
+private const val ISOLATED_FIGURE_NAME = "Figure 1.2"
+private const val ISOLATED_FIGURE_GAR = "bristle"
 
 /**
  * @return 1. the configuration per node, per test, per figure ; 2. the names of the figures

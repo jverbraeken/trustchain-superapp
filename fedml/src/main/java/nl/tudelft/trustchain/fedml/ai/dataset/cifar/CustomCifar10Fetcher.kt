@@ -2,26 +2,20 @@ package nl.tudelft.trustchain.fedml.ai.dataset.cifar
 
 import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.ai.CustomDataSetType
+import nl.tudelft.trustchain.fedml.ai.dataset.CustomFileSplit
 import org.apache.commons.io.FileUtils
-import org.datavec.api.io.filters.RandomPathFilter
-import org.datavec.api.records.reader.RecordReader
-import org.datavec.api.split.CollectionInputSplit
-import org.datavec.api.split.FileSplit
-import org.datavec.api.split.InputSplit
-import org.datavec.image.loader.BaseImageLoader
 import org.datavec.image.transform.ImageTransform
 import org.deeplearning4j.common.resources.DL4JResources
 import org.deeplearning4j.common.resources.ResourceType
 import org.nd4j.common.base.Preconditions
 import org.nd4j.common.util.ArchiveUtils
+import org.nd4j.linalg.dataset.DataSet
 import java.io.File
 import java.io.IOException
 import java.net.URI
 import java.net.URL
-import java.util.*
 import java.util.zip.Adler32
 import java.util.zip.Checksum
-import kotlin.collections.HashMap
 import kotlin.math.min
 
 private val logger = KotlinLogging.logger("CustomCifar10Fetcher")
@@ -91,7 +85,7 @@ class CustomCifar10Fetcher {
         imageTransform: ImageTransform?,
         iteratorDistribution: IntArray,
         maxSamples: Int,
-    ): RecordReader {
+    ): CustomImageRecordReader {
         Preconditions.checkState(
             imgDim == null || imgDim.size == 2,
             "Invalid image dimensions: must be null or length 2. Got: %s",
@@ -108,61 +102,65 @@ class CustomCifar10Fetcher {
         } catch (e: Exception) {
             throw RuntimeException("Could not download CIFAR-10", e)
         }
-        val rng = Random(rngSeed)
-        val datasetPath: File
-        datasetPath = when (set) {
-            CustomDataSetType.TRAIN -> File(localCache, "/train/")
-            CustomDataSetType.FULL_TRAIN -> File(localCache, "/train/")
-            CustomDataSetType.TEST -> File(localCache, "/test/")
-            CustomDataSetType.FULL_TEST -> File(localCache, "/test/")
-            CustomDataSetType.VALIDATION -> throw IllegalArgumentException("You will need to manually create and iterate a validation directory, CIFAR-10 does not provide labels")
-        }
 
-        // set up file paths
-        if (pathFilter == null) {
-            pathFilter = RandomPathFilter(rng, *BaseImageLoader.ALLOWED_FORMATS)
-            filesInDir = FileSplit(datasetPath, BaseImageLoader.ALLOWED_FORMATS)
-            filesInDirSplit = filesInDir!!.sample(pathFilter, 1.0)
-        }
-        val uris = HashMap<Int, Array<URI>>()
-        var totalCount = 0
-        val countPerLabel = IntArray(10)
-        val maxTotalElements = iteratorDistribution.sum()
-        val maxElementsPerLabel = iteratorDistribution.map { min(maxSamples, it) }
-        val placeholderUri = URI("")
-        for (label in iteratorDistribution.indices) {
-            uris[label] = Array(maxElementsPerLabel[label]) { placeholderUri }
-        }
-        val locations = filesInDirSplit!![0].locations()
+        val train = (set == CustomDataSetType.TRAIN || set == CustomDataSetType.FULL_TRAIN)
+        val datasetPath = if (train) File(localCache, "/train/") else File(localCache, "/test/")
         val random = kotlin.random.Random(rngSeed)
-        for (uri in locations) {
-            val split = uri.toString().split('/')
-            val label = split[split.size - 2].toInt()
-            if (countPerLabel[label] < maxElementsPerLabel[label]) {
-                uris[label]!![countPerLabel[label]] = uri
-                countPerLabel[label]++
-                totalCount++
-                if (totalCount >= maxTotalElements) {
-                    break
-                }
-            }
-        }
-        val newFilesInDirSplit = CollectionInputSplit(uris.values.toList().flatMap { it.asIterable() }.shuffled(random))
-
+        val maxElementsPerLabel = iteratorDistribution.map { min(maxSamples, it) }
+        val numSamplesPerLabel = if (train) NUM_TRAINING_SAMPLES_PER_LABEL else NUM_TESTING_SAMPLES_PER_LABEL
+        val files = CustomFileSplit(datasetPath, random, numSamplesPerLabel).files
+        val fileSelection = files
+            .mapIndexed { i, list -> list.copyOfRange(0, maxElementsPerLabel[i]) }
+            .flatMap { it.asIterable() }
+            .shuffled(random)
+            .toTypedArray()
         val h = imgDim?.get(0) ?: INPUT_HEIGHT
         val w = imgDim?.get(1) ?: INPUT_WIDTH
-        val rr = CustomImageRecordReader(
+        val testBatches = if (set == CustomDataSetType.FULL_TEST) {
+            createTestBatches(
+                h.toLong(),
+                w.toLong(),
+                imageTransform,
+                files
+            )
+        } else null
+
+        return CustomImageRecordReader(
             h.toLong(),
             w.toLong(),
             INPUT_CHANNELS.toLong(),
-            imageTransform
+            imageTransform,
+            fileSelection,
+            false,
+            testBatches,
         )
-        try {
-            rr.initialize(newFilesInDirSplit)
-        } catch (e: Exception) {
-            throw RuntimeException(e)
-        }
-        return rr
+    }
+
+    private fun createTestBatches(
+        h: Long,
+        w: Long,
+        imageTransform: ImageTransform?,
+        files: Array<out Array<File>>
+    ): Array<DataSet?> {
+        return files.map {
+            if (files.isEmpty()) null
+            else {
+                CustomRecordReaderDataSetIterator(
+                    CustomImageRecordReader(
+                        h,
+                        w,
+                        INPUT_CHANNELS.toLong(),
+                        imageTransform,
+                        it,
+                        true,
+                        null
+                    ),
+                    20,
+                    1,
+                    NUM_LABELS
+                ).next(20)
+            }
+        }.toTypedArray()
     }
 
     companion object {
@@ -173,9 +171,7 @@ class CustomCifar10Fetcher {
         const val INPUT_HEIGHT = 32
         const val INPUT_CHANNELS = 3
         const val NUM_LABELS = 10
-
-        private var pathFilter: RandomPathFilter? = null
-        private var filesInDir: FileSplit? = null
-        private var filesInDirSplit: Array<out InputSplit>? = null
+        const val NUM_TRAINING_SAMPLES_PER_LABEL = 5000
+        const val NUM_TESTING_SAMPLES_PER_LABEL = 1000
     }
 }

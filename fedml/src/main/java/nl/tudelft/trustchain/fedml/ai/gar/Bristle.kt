@@ -32,10 +32,10 @@ class Bristle : AggregationRule() {
     ): INDArray {
         debug(logging) { formatName("BRISTLE") }
         debug(logging) { "Found ${newOtherModels.size} other models" }
-        debug(logging) { "oldModel: ${oldModel.getDouble(0)}" }
+        debug(logging) { "oldModel: ${oldModel.getFloat(0)}" }
         val newModel = oldModel.sub(gradient)
-        debug(logging) { "newModel: ${newModel.getDouble(0)}" }
-        debug(logging) { "otherModels: ${newOtherModels.map { it.value.getDouble(0) }.toCollection(ArrayList())}" }
+        debug(logging) { "newModel: ${newModel.getFloat(0)}" }
+        debug(logging) { "otherModels: ${newOtherModels.map { it.value.getFloat(0) }.toCollection(ArrayList())}" }
 
         val distances = getDistances(oldModel, newModel, newOtherModels, recentOtherModels, logging)
         debug(logging) { "distances: $distances" }
@@ -45,7 +45,7 @@ class Bristle : AggregationRule() {
             .filter { it < 1000000 }
             .map { Pair(it, newOtherModels.getValue(it)) }
             .toMap()
-        debug(logging) { "closeModels: ${exploitationModels.map { it.value.getDouble(0) }.toCollection(ArrayList())}" }
+        debug(logging) { "closeModels: ${exploitationModels.map { it.value.getFloat(0) }.toCollection(ArrayList())}" }
 
         val explorationModels = distances
             .keys
@@ -55,24 +55,24 @@ class Bristle : AggregationRule() {
             .shuffled()
             .take(NUM_MODELS_EXPLORATION)
             .toMap()
-        debug(logging) { "notCloseModels: ${explorationModels.map { it.value.getDouble(0) }.toCollection(ArrayList())}" }
+        debug(logging) { "notCloseModels: ${explorationModels.map { it.value.getFloat(0) }.toCollection(ArrayList())}" }
 
         val combinedModels = HashMap<Int, INDArray>()
         combinedModels.putAll(exploitationModels)
         combinedModels.putAll(explorationModels)
-        debug(logging) { "combinedModels: ${combinedModels.map { it.value.getDouble(0) }.toCollection(ArrayList())}" }
+        debug(logging) { "combinedModels: ${combinedModels.map { it.value.getFloat(0) }.toCollection(ArrayList())}" }
         testDataSetIterator.reset()
-        val sample = testDataSetIterator.next(TEST_BATCH)
-        val oldLoss = calculateLoss(oldModel, network, sample)
-        debug(logging) { "oldLoss: $oldLoss" }
+//        val sample = testDataSetIterator.next(TEST_BATCH)
+//        val oldLoss = calculateLoss(oldModel, network, sample)
+//        debug(logging) { "oldLoss: $oldLoss" }
         val oldLossPerClass = calculateLossPerClass(oldModel, network, testDataSetIterator.testBatches)
         debug(logging) { "oldLossPerClass: ${oldLossPerClass.toList()}" }
-        val losses = calculateLosses(combinedModels, network, sample)
-        debug(logging) { "losses: $losses" }
+//        val losses = calculateLosses(combinedModels, network, sample)
+//        debug(logging) { "losses: $losses" }
         val lossesPerClass = calculateLossesPerClass(combinedModels, network, testDataSetIterator.testBatches)
         debug(logging) { "lossesPerClass: ${lossesPerClass.map { Pair(it.key, it.value.toList()) }}" }
-        val modelsToWeight = mapLossesToWeight(losses, oldLoss)
-        debug(logging) { "modelsToWeight: $modelsToWeight" }
+//        val modelsToWeight = mapLossesToWeight(losses, oldLoss)
+//        debug(logging) { "modelsToWeight: $modelsToWeight" }
         val modelsPerClassToWeight = mapLossesPerClassToWeight(lossesPerClass, oldLossPerClass, countPerPeer, logging)
         debug(logging) { "modelsPerClassToWeight: $modelsPerClassToWeight" }
 
@@ -120,7 +120,7 @@ class Bristle : AggregationRule() {
     private fun calculateLossPerClass(
         model: INDArray,
         network: MultiLayerNetwork,
-        testBatches: List<DataSet?>,
+        testBatches: Array<DataSet?>,
     ): Array<Double?> {
         network.setParameters(model)
         return testBatches
@@ -142,7 +142,7 @@ class Bristle : AggregationRule() {
     private fun calculateLossesPerClass(
         models: Map<Int, INDArray>,
         network: MultiLayerNetwork,
-        testBatches: List<DataSet?>,
+        testBatches: Array<DataSet?>,
     ): Map<Int, Array<Double?>> {
         return models.map { (index, model) ->
             Pair(

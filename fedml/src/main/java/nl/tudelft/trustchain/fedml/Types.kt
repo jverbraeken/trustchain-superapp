@@ -91,7 +91,8 @@ enum class BatchSizes(val id: String, val text: String, val value: Int) {
     BATCH_5("batch_5", "5", 5),
     BATCH_32("batch_32", "32", 32),
     BATCH_64("batch_64", "64", 64),
-    BATCH_96("batch_96", "96", 96)
+    BATCH_96("batch_96", "96", 96),
+    BATCH_200("batch_200", "200", 200)
 }
 
 fun loadBatchSize(batchSize: String?) = BatchSizes.values().firstOrNull { it.id == batchSize }

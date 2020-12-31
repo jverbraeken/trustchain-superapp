@@ -98,7 +98,7 @@ class HARManager(
         return (0 until HARDataFetcher.NUM_LABELS).map { label ->
             val correspondingDataIndices = sampledLabelsArr.indices
                 .filter { i: Int -> sampledLabelsArr[i] == label }
-                .take(50)
+                .take(20)
                 .toTypedArray()
             correspondingDataIndices
                 .map { i: Int -> featureData[i] }

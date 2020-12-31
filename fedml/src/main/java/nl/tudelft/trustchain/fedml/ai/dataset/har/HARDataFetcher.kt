@@ -114,7 +114,7 @@ class HARDataFetcher(
         curr = DataSet(features, labels)
     }
 
-    private fun createTestBatches(): List<DataSet?> {
+    private fun createTestBatches(): Array<DataSet?> {
         val testBatches = man.createTestBatches()
         if (featureData.size < testBatches[0].size) {
             featureData = Array(testBatches[0].size) { Array(NUM_TIMESTEPS) { FloatArray(NUM_DIMENSIONS) } }
@@ -126,7 +126,7 @@ class HARDataFetcher(
                 else createTestBatch(label, batch)
             )
         }
-        return result
+        return result.toTypedArray()
     }
 
     private fun createTestBatch(label: Int, batch: Array<Array<FloatArray>>): DataSet {
