@@ -1,5 +1,6 @@
 package nl.tudelft.trustchain.fedml.ai.dataset.har
 
+import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.Behaviors
 import nl.tudelft.trustchain.fedml.ai.CustomDataSetType
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDataFetcher
@@ -9,6 +10,8 @@ import org.nd4j.linalg.factory.Nd4j
 import org.nd4j.linalg.indexing.NDArrayIndex
 import java.io.File
 import java.nio.file.Paths
+
+private val logger = KotlinLogging.logger("HARDataFetcher")
 
 fun transposeMatrix(matrix: Array<Array<Float>>): Array<FloatArray> {
     val m = matrix.size

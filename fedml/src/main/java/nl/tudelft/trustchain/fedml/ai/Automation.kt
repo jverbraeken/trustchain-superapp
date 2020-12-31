@@ -27,8 +27,8 @@ fun loadAutomation(baseDirectory: File): Automation {
     return Json.decodeFromString(string)
 }
 
-private const val ISOLATED_FIGURE_NAME = "Figure 1.2"
-private const val ISOLATED_FIGURE_GAR = "bristle"
+private const val ISOLATED_FIGURE_NAME = "Figure 1.3"
+private const val ISOLATED_FIGURE_GAR = "average"
 
 /**
  * @return 1. the configuration per node, per test, per figure ; 2. the names of the figures
@@ -42,16 +42,7 @@ fun generateConfigs(
 
     // global fixed values
     val batchSize = loadBatchSize(automation.fixedValues.getValue("batchSize"))!!
-    val iteratorDistribution_ = automation.fixedValues.getValue("iteratorDistribution")
-    val iteratorDistribution = if (iteratorDistribution_.startsWith('[')) {
-        iteratorDistribution_
-            .substring(1, iteratorDistribution_.length - 1)
-            .split(", ")
-            .map { it.toInt() }
-            .toIntArray()
-    } else {
-        loadIteratorDistribution(iteratorDistribution_)!!.value
-    }
+    val iteratorDistribution = automation.fixedValues.getValue("iteratorDistribution")
     val maxTestSample = loadMaxTestSample(automation.fixedValues.getValue("maxTestSample"))!!
     val optimizer = loadOptimizer(automation.fixedValues.getValue("optimizer"))!!
     val learningRate = loadLearningRate(automation.fixedValues.getValue("learningRate"))!!
@@ -78,8 +69,9 @@ fun generateConfigs(
         val numAttackers = loadNumAttackers(figure.fixedValues.getValue("numAttackers"))!!
         val firstNodeSpeed = figure.fixedValues["firstNodeSpeed"]?.toInt() ?: 0
         val firstNodeJoiningLate = figure.fixedValues["firstNodeJoiningLate"]?.equals("true") ?: false
-        val overrideIteratorDistribution_ = figure.iteratorDistributions
-        val overrideBatchSize_ = figure.fixedValues["batchSize"]
+        val overrideIteratorDistribution = figure.iteratorDistributions
+        val overrideBatchSize = figure.fixedValues["batchSize"]
+        val overrideIteratorDistributionSoft = figure.fixedValues["iteratorDistribution"]
 
         for (test in figure.tests) {
             val gar = loadGAR(test.gar)!!
@@ -88,7 +80,8 @@ fun generateConfigs(
             configurations.last().add(arrayListOf())
 
             for (node in 0 until numNodes) {
-                val overrideIteratorDistributionForNode = overrideIteratorDistribution_?.get(node % overrideIteratorDistribution_.size)
+                val overrideIteratorDistributionForNode =
+                    overrideIteratorDistribution?.get(node % overrideIteratorDistribution.size)
                 val distribution = if (overrideIteratorDistributionForNode != null) {
                     if (overrideIteratorDistributionForNode.startsWith('[')) {
                         overrideIteratorDistributionForNode
@@ -100,12 +93,20 @@ fun generateConfigs(
                         loadIteratorDistribution(overrideIteratorDistributionForNode)!!.value
                     }
                 } else {
-                    iteratorDistribution
+                    val d = overrideIteratorDistributionSoft ?: iteratorDistribution
+                    if (d.startsWith('[')) {
+                        d.substring(1, d.length - 1)
+                            .split(", ")
+                            .map { it.toInt() }
+                            .toIntArray()
+                    } else {
+                        loadIteratorDistribution(d)!!.value
+                    }
                 }
                 val configuration = MLConfiguration(
                     dataset,
                     DatasetIteratorConfiguration(
-                        batchSize = loadBatchSize(overrideBatchSize_) ?: batchSize,
+                        batchSize = loadBatchSize(overrideBatchSize) ?: batchSize,
                         maxTestSamples = maxTestSample,
                         distribution = distribution.toList()
                     ),

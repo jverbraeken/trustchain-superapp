@@ -1,19 +1,9 @@
 package nl.tudelft.trustchain.fedml.ai.dataset
 
 abstract class DatasetManager {
-    protected fun findMatchingImageIndices(label: Int, tmpLabelsArr: IntArray): IntArray {
-        return (tmpLabelsArr.indices).filter { j: Int -> label == tmpLabelsArr[j] }.toIntArray()
-    }
-
-    fun calculateTotalExamples(iteratorDistribution: IntArray, maxTestSamples: Int, labelsArray: IntArray): Int {
+    fun calculateTotalExamples(labelIndexMapping: Array<IntArray>, iteratorDistribution: IntArray, maxTestSamples: Int): Int {
         return iteratorDistribution.indices.map { i ->
-            minOf(
-                iteratorDistribution[i],
-                maxTestSamples,
-                labelsArray
-                    .filter { j -> j == i }
-                    .size
-            )
+            minOf(labelIndexMapping[i].size, iteratorDistribution[i], maxTestSamples)
         }.sum()
     }
 }
