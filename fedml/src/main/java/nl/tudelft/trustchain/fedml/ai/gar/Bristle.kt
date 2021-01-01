@@ -101,7 +101,7 @@ class Bristle : AggregationRule() {
         }
         for (i in 0 until min(20 - distances.size, allOtherModelsBuffer.size)) {
             val otherModel = allOtherModelsBuffer.elementAt(allOtherModelsBuffer.size - 1 - i)
-            distances[1000000 + otherModel.first] =
+            distances[1100000 + otherModel.first] =
                 min(otherModel.second.distance2(oldModel), otherModel.second.distance2(newModel))
         }
         return distances.toList().sortedBy { (_, value) -> value }.toMap()
