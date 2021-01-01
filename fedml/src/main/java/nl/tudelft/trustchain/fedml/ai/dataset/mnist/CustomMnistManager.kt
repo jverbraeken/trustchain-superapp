@@ -18,9 +18,8 @@ class CustomMnistManager(
     seed: Long,
     behavior: Behaviors,
 ) : DatasetManager() {
-    private val sampledImagesArr: Array<ByteArray>
-    private val featureData: Array<FloatArray>
-    private val sampledLabelsArr: IntArray
+    private val sampledImages: Array<FloatArray>
+    private val sampledLabels: IntArray
 
     init {
         fullImagesArr.putIfAbsent(imagesFile, loadImages(imagesFile, numExamples))
@@ -30,40 +29,34 @@ class CustomMnistManager(
         val labelsArr = fullLabelsArr[labelsFile]!!
         val labelIndexMapping = labelIndexMappings[labelsFile]!!
 
-        val labelsArr2 = labelsArr
-            .copyOf(labelsArr.size)
-            .map { it }
-            .toIntArray()
-        if (behavior === Behaviors.LABEL_FLIP) {
+        val labelsArr2 = if (behavior === Behaviors.LABEL_FLIP) {
+            val labelsArr2 = labelsArr.copyOf()
             labelsArr.indices
                 .filter { i: Int -> labelsArr[i] == 1 }
                 .forEach { i: Int -> labelsArr2[i] = 2 }
             labelsArr.indices
                 .filter { i: Int -> labelsArr[i] == 2 }
                 .forEach { i: Int -> labelsArr2[i] = 1 }
+            labelsArr2
+        } else {
+            labelsArr
         }
         val totalExamples = calculateTotalExamples(labelIndexMapping, iteratorDistribution, maxTestSamples)
         val res = sampleData(imagesArr, labelsArr2, totalExamples, iteratorDistribution, maxTestSamples, seed, labelIndexMapping)
-        sampledImagesArr = res.first
-        sampledLabelsArr = res.second
-
-        featureData = sampledImagesArr.map {
-            it.map { byte ->
-                (byte.toInt() and 0xFF).toFloat()
-            }.toFloatArray()
-        }.toTypedArray()
+        sampledImages = res.first
+        sampledLabels = res.second
     }
 
     private fun sampleData(
-        tmpImagesArr: Array<ByteArray>,
+        tmpImagesArr: Array<FloatArray>,
         tmpLabelsArr: IntArray,
         totalExamples: Int,
         iteratorDistribution: IntArray,
         maxTestSamples: Int,
         seed: Long,
         labelIndexMapping: Array<IntArray>,
-    ): Pair<Array<ByteArray>, IntArray> {
-        val placeholder = Pair(byteArrayOf(), -1)
+    ): Pair<Array<FloatArray>, IntArray> {
+        val placeholder = Pair(floatArrayOf(), -1)
         val results = Array(totalExamples) { placeholder }
         var count = 0
         val random = Random(seed)
@@ -76,7 +69,7 @@ class CustomMnistManager(
             }
         }
         results.shuffle(random)
-        val imagesArr = Array(totalExamples) { ByteArray(tmpImagesArr[0].size) }
+        val imagesArr = Array(totalExamples) { FloatArray(tmpImagesArr[0].size) }
         val labelsArr = IntArray(totalExamples)
         results.forEachIndexed { i, pair ->
             imagesArr[i] = pair.first
@@ -85,32 +78,28 @@ class CustomMnistManager(
         return Pair(imagesArr, labelsArr)
     }
 
-    fun createTestBatches(): Array<Array<ByteArray>> {
+    fun createTestBatches(): Array<Array<FloatArray>> {
         return (0 until 10).map { label ->
-            val correspondingImageIndices = sampledLabelsArr.indices
-                .filter { i: Int -> sampledLabelsArr[i] == label }
-                .take(20)
+            val correspondingImageIndices = sampledLabels.indices
+                .filter { i: Int -> sampledLabels[i] == label }
+                .take(CustomMnistDataFetcher.TEST_BATCH_SIZE)
                 .toTypedArray()
             correspondingImageIndices
-                .map { i -> sampledImagesArr[i] }
+                .map { i -> sampledImages[i] }
                 .toTypedArray()
         }.toTypedArray()
     }
 
-    fun readImage(i: Int): FloatArray {
-        return featureData[i]
-    }
-
-    fun readLabel(i: Int): Int {
-        return sampledLabelsArr[i]
+    fun readEntry(i: Int): Pair<FloatArray, Int> {
+        return Pair(sampledImages[i], sampledLabels[i])
     }
 
     fun getNumSamples(): Int {
-        return sampledImagesArr.size
+        return sampledImages.size
     }
 
     fun getLabels(): List<String> {
-        return sampledLabelsArr
+        return sampledLabels
             .distinct()
             .map { i: Int -> i.toString() }
     }
@@ -120,28 +109,27 @@ class CustomMnistManager(
     }
 
     companion object {
-        private val imageMapping = hashMapOf<String, Array<ByteArray>>()
-        private val labelMapping = hashMapOf<String, IntArray>()
         private val imageEntryLength = hashMapOf<String, Int>()
-        private val fullImagesArr = mutableMapOf<String, Array<ByteArray>>()
+        private val fullImagesArr = mutableMapOf<String, Array<FloatArray>>()
         private var fullLabelsArr = mutableMapOf<String, IntArray>()
         private var labelIndexMappings = mutableMapOf<String, Array<IntArray>>()
 
         @Synchronized
-        private fun loadImages(filename: String, numExamples: Int): Array<ByteArray> {
-            return imageMapping.getOrPut(filename) {
-                val file = MnistImageFile(filename, "r")
-                imageEntryLength[filename] = file.entryLength
-                file.readImagesUnsafe(numExamples)
-            }
+        private fun loadImages(filename: String, numExamples: Int): Array<FloatArray> {
+            val file = MnistImageFile(filename, "r")
+            imageEntryLength[filename] = file.entryLength
+            val images = file.readImagesUnsafe(numExamples)
+            return images.map {
+                it.map { byte ->
+                    (byte.toInt() and 0xFF).toFloat()
+                }.toFloatArray()
+            }.toTypedArray()
         }
 
         @Synchronized
         private fun loadLabels(filename: String, numExamples: Int): IntArray {
-            return labelMapping.getOrPut(filename) {
-                val file = MnistLabelFile(filename, "r")
-                file.readLabels(numExamples)
-            }
+            val file = MnistLabelFile(filename, "r")
+            return file.readLabels(numExamples)
         }
 
         @Synchronized

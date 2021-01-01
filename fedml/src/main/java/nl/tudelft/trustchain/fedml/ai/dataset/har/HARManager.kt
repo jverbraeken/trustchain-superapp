@@ -28,17 +28,17 @@ class HARManager(
         val labelsArr = fullLabelsArr[labelsFile.name]!!
         val labelIndexMapping = labelIndexMappings[labelsFile.name]!!
 
-        val labelsArr2 = labelsArr
-            .copyOf(labelsArr.size)
-            .map { it }
-            .toIntArray()
-        if (behavior === Behaviors.LABEL_FLIP) {
+        val labelsArr2 = if (behavior === Behaviors.LABEL_FLIP) {
+            val labelsArr2 = labelsArr.copyOf()
             labelsArr.indices
                 .filter { i: Int -> labelsArr[i] == 1 }
                 .forEach { i: Int -> labelsArr2[i] = 2 }
             labelsArr.indices
                 .filter { i: Int -> labelsArr[i] == 2 }
                 .forEach { i: Int -> labelsArr2[i] = 1 }
+            labelsArr2
+        } else {
+            labelsArr
         }
         val totalExamples = calculateTotalExamples(labelIndexMapping, iteratorDistribution, maxTestSamples)
         val res = sampleData(dataArr, labelsArr2, totalExamples, iteratorDistribution, maxTestSamples, seed, labelIndexMapping)
@@ -93,8 +93,8 @@ class HARManager(
     fun createTestBatches(): Array<Array<Array<FloatArray>>> {
         return (0 until HARDataFetcher.NUM_LABELS).map { label ->
             val correspondingDataIndices = sampledLabelsArr.indices
-                .filter { i: Int -> sampledLabelsArr[i] == label }
-                .take(20)
+                .filter { i -> sampledLabelsArr[i] == label }
+                .take(HARDataFetcher.TEST_BATCH_SIZE)
                 .toTypedArray()
             correspondingDataIndices
                 .map { i: Int -> featureData[i] }
