@@ -36,13 +36,13 @@ class Bridge(private val b: Int) : AggregationRule() {
             oldModel
         } else {
             val modelsAsArrays = models.map { toFloatArray(it.value) }.toTypedArray()
-            val newMatrix = Array(1) { FloatArray(modelsAsArrays[0].size) }
+            val newVector = FloatArray(modelsAsArrays[0].size)
             for (i in modelsAsArrays[0].indices) {
                 val elements = FloatArray(modelsAsArrays.size)
                 modelsAsArrays.forEachIndexed { j, modelsAsArray -> elements[j] = modelsAsArray[i] }
-                newMatrix[0][i] = trimmedMean(b, elements)
+                newVector[i] = trimmedMean(b, elements)
             }
-            NDArray(newMatrix)
+            NDArray(Array(1) { newVector})
         }
     }
 

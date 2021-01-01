@@ -32,12 +32,12 @@ class Fang2020Krum(private val b: Int) : ModelPoisoningAttack() {
         val modelsAsArrays = models.map { toFloatArray(it) }.toTypedArray()
 
         // w1
-        val s = Array(1) { FloatArray(modelsAsArrays[0].size) }
+        val s = FloatArray(modelsAsArrays[0].size)
         val fm = toFloatArray(gradient)
         for (i in fm.indices) {
-            s[0][i] = if (fm[i] < 0) -1f else 1f
+            s[i] = if (fm[i] < 0) -1f else 1f
         }
-        val ns = NDArray(s)
+        val ns = NDArray(Array(1) { s})
 
         val d = modelsAsArrays[0].size.toFloat()
         val m = otherModels.size + numAttackers.num
