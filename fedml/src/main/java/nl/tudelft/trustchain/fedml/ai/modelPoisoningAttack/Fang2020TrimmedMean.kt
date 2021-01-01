@@ -8,6 +8,7 @@ import org.nd4j.linalg.cpu.nativecpu.NDArray
 import kotlin.random.Random
 
 private val logger = KotlinLogging.logger("Fang2020TrimmedMean")
+private const val EPSILON = 1e-5
 
 /**
  * IMPORTANT: b refers in this code and the original paper NOT to the amount of attackers, but to the attacker's range
@@ -55,8 +56,8 @@ class Fang2020TrimmedMean(private val b: Int) : ModelPoisoningAttack() {
                     max = maxOf(max, elements[j])
                 }
                 val maxd = max.toDouble()
-                if (maxd > 0) newMatrices.forEach { it[0][i] = random.nextDouble(maxd, b * maxd).toFloat() }
-                else newMatrices.forEach { it[0][i] = random.nextDouble(maxd, maxd / b).toFloat() }
+                if (maxd > 0) newMatrices.forEach { it[0][i] = random.nextDouble(maxd, b * maxd + EPSILON).toFloat() }
+                else newMatrices.forEach { it[0][i] = random.nextDouble(maxd - EPSILON, maxd / b).toFloat() }
             } else {
                 var min = elements[0]
                 for (j in 1..elements.lastIndex) {
@@ -68,8 +69,8 @@ class Fang2020TrimmedMean(private val b: Int) : ModelPoisoningAttack() {
                     mind = 0.0
                     logger.error { "Found NaN!!!!!!!!!!" }
                 }
-                if (mind > 0) newMatrices.forEach { it[0][i] = random.nextDouble(mind / b, mind).toFloat() }
-                else newMatrices.forEach { it[0][i] = random.nextDouble(b * mind, mind).toFloat() }
+                if (mind > 0) newMatrices.forEach { it[0][i] = random.nextDouble(mind / b, mind + EPSILON).toFloat() }
+                else newMatrices.forEach { it[0][i] = random.nextDouble(b * mind - EPSILON, mind).toFloat() }
             }
         }
         return newMatrices.map { NDArray(it) }.toTypedArray()
