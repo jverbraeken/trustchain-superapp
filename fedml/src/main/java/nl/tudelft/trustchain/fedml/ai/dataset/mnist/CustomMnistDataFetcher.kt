@@ -96,14 +96,14 @@ class CustomMnistDataFetcher(
     override fun fetch(numExamples: Int) {
         check(hasMore()) { "Unable to get more; there are no more images" }
         var labels = Nd4j.zeros(DataType.FLOAT, numExamples.toLong(), numOutcomes.toLong())
-        if (featureData.size < numExamples) {
+        if (featureData.size != numExamples) {
             featureData = Array(numExamples) { FloatArray(28 * 28) }
         }
         var actualExamples = 0
         for (i in 0 until numExamples) {
             if (!hasMore()) break
-            featureData[actualExamples] = man.readImage(order[cursor])
-            val label = man.readLabel(order[cursor])
+            val (image, label) = man.readEntry(order[cursor])
+            featureData[actualExamples] = image
             labels.put(actualExamples, label, 1.0f)
             actualExamples++
             cursor++
@@ -121,8 +121,8 @@ class CustomMnistDataFetcher(
 
     private fun createTestBatches(): Array<DataSet?> {
         val testBatches = man.createTestBatches()
-        if (featureData.size < testBatches[0].size) {
-            featureData = Array(testBatches[0].size) { FloatArray(28 * 28) }
+        if (featureData.size != TEST_BATCH_SIZE) {
+            featureData = Array(TEST_BATCH_SIZE) { FloatArray(28 * 28) }
         }
         val result = arrayListOf<DataSet?>()
         for ((label, batch) in testBatches.withIndex()) {
@@ -134,19 +134,14 @@ class CustomMnistDataFetcher(
         return result.toTypedArray()
     }
 
-    private fun createTestBatch(label: Int, batch: Array<ByteArray>): DataSet {
+    private fun createTestBatch(label: Int, batch: Array<FloatArray>): DataSet {
         val numSamplesInBatch = batch.size
         val labels = Nd4j.zeros(DataType.FLOAT, numSamplesInBatch.toLong(), numOutcomes.toLong())
         for ((i, img) in batch.withIndex()) {
             labels.put(i, label, 1.0f)
-            for (j in img.indices) {
-                featureData[i][j] = (img[j].toInt() and 0xFF).toFloat()
-            }
+            featureData[i] = img
         }
-        val features = Nd4j.create(
-            if (featureData.size == numSamplesInBatch) featureData
-            else featureData.copyOfRange(0, numSamplesInBatch)
-        )
+        val features = Nd4j.create(featureData)
         features.divi(255.0)
         return DataSet(features, labels)
     }
@@ -156,5 +151,6 @@ class CustomMnistDataFetcher(
 
     companion object {
         const val NUM_LABELS = 10
+        const val TEST_BATCH_SIZE = 20
     }
 }

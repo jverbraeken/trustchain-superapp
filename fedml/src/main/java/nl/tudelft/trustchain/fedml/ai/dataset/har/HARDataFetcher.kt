@@ -93,7 +93,7 @@ class HARDataFetcher(
     override fun fetch(numExamples: Int) {
         check(hasMore()) { "Unable to get more" }
         var labels = Nd4j.zeros(DataType.FLOAT, numExamples.toLong(), numOutcomes.toLong())
-        if (featureData.size < numExamples) {
+        if (featureData.size != numExamples) {
             featureData = Array(numExamples) { Array(NUM_TIMESTEPS) { FloatArray(NUM_DIMENSIONS) } }
         }
         var actualExamples = 0
@@ -119,8 +119,8 @@ class HARDataFetcher(
 
     private fun createTestBatches(): Array<DataSet?> {
         val testBatches = man.createTestBatches()
-        if (featureData.size < testBatches[0].size) {
-            featureData = Array(testBatches[0].size) { Array(NUM_TIMESTEPS) { FloatArray(NUM_DIMENSIONS) } }
+        if (featureData.size != TEST_BATCH_SIZE) {
+            featureData = Array(TEST_BATCH_SIZE) { Array(NUM_TIMESTEPS) { FloatArray(NUM_DIMENSIONS) } }
         }
         val result = arrayListOf<DataSet?>()
         for ((label, batch) in testBatches.withIndex()) {
@@ -138,7 +138,7 @@ class HARDataFetcher(
             labels.put(i, label, 1.0f)
             featureData[i] = seq
         }
-        val features = Nd4j.create(featureData.copyOf())
+        val features = Nd4j.create(featureData)
         return DataSet(features, labels)
     }
 
@@ -147,5 +147,6 @@ class HARDataFetcher(
         const val NUM_DIMENSIONS = 9
         const val NUM_TIMESTEPS = 128
         const val NUM_LABELS = 6
+        const val TEST_BATCH_SIZE = 20
     }
 }
