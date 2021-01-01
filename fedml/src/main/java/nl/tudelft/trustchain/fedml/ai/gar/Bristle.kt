@@ -15,7 +15,6 @@ import kotlin.math.min
  * byzantine-resilient decentralized stochastic gradient descent federated learning, non i.i.d., history-sensitive (= more robust), practical
  */
 class Bristle : AggregationRule() {
-    private val TEST_BATCH = 500
     private val NUM_MODELS_EXPLOITATION = 9
     private val NUM_MODELS_EXPLORATION = 1
 
@@ -108,15 +107,6 @@ class Bristle : AggregationRule() {
         return distances.toList().sortedBy { (_, value) -> value }.toMap()
     }
 
-    private fun calculateLoss(
-        model: INDArray,
-        network: MultiLayerNetwork,
-        sample: DataSet,
-    ): Double {
-        network.setParameters(model)
-        return network.score(sample)
-    }
-
     private fun calculateLossPerClass(
         model: INDArray,
         network: MultiLayerNetwork,
@@ -126,17 +116,6 @@ class Bristle : AggregationRule() {
         return testBatches
             .map { if (it == null) null else network.score(it) }
             .toTypedArray()
-    }
-
-    private fun calculateLosses(
-        models: Map<Int, INDArray>,
-        network: MultiLayerNetwork,
-        sample: DataSet,
-    ): Map<Int, Double> {
-        return models.map { (index, model) ->
-            network.setParameters(model)
-            Pair(index, network.score(sample))
-        }.toMap()
     }
 
     private fun calculateLossesPerClass(
@@ -158,19 +137,6 @@ class Bristle : AggregationRule() {
         }.toMap()
     }
 
-    private fun mapLossesToWeight(otherLosses: Map<Int, Double>, oldLoss: Double): Map<Int, Double> {
-        val minWeight = 1
-        val maxWeight = 5
-        return otherLosses
-            .filter { it.value < oldLoss }
-            .map { (index, loss) ->
-                val weightDistance = maxWeight - minWeight
-                val performance = (1 - (loss / oldLoss))
-                Pair(index, minWeight + weightDistance * performance)
-            }
-            .toMap()
-    }
-
     private fun mapLossesPerClassToWeight(
         otherLossesPerClass: Map<Int, Array<Double?>>,
         oldLossPerClass: Array<Double?>,
@@ -182,7 +148,7 @@ class Bristle : AggregationRule() {
                 Pair(peer, lossPerClass
                     .mapIndexed { label, loss -> Pair(label, loss ?: Double.MAX_VALUE) }
                     .sortedBy { it.second }
-                    .take(countPerPeer.getValue(peer))
+                    .take(countPerPeer.getOrDefault(peer, lossPerClass.size))  // Attackers have a negative index => assume that they have the same classes as the current peer to maximize attack strength
                     .toMap())
             }.toMap()
         debug(logging) { "smallestLossPerPeer: $smallestLossPerPeer" }
@@ -190,7 +156,7 @@ class Bristle : AggregationRule() {
         return smallestLossPerPeer.map { (peer, lossPerLabel) ->
             val smallestOtherLoss = lossPerLabel.map { (_, smallestLosses) -> smallestLosses }.sum()
             val smallestOwnLoss = lossPerLabel.map { (label, _) -> oldLossPerClass[label]!! }.sum()
-            Pair(peer, max(0.0, 1.0 + (0 - 0 * (smallestOtherLoss / smallestOwnLoss))))
+            Pair(peer, max(0.0, 1.0 + (5 - 5 * (smallestOtherLoss / smallestOwnLoss))))
         }.toMap()
     }
 
