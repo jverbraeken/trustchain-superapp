@@ -64,27 +64,4 @@ class Fang2020Krum(private val b: Int) : ModelPoisoningAttack() {
         val newModels = Array<INDArray>(c) { w1 }
         return transformToResult(newModels)
     }
-
-    private fun generateAttackVector(
-        modelsAsArrays: List<FloatArray>,
-        gradient: INDArray,
-        random: Random,
-        b: Int
-    ): INDArray {
-        val newMatrix = Array(1) { FloatArray(modelsAsArrays[0].size) }
-        for (i in modelsAsArrays[0].indices) {
-            val elements = FloatArray(modelsAsArrays.size)
-            modelsAsArrays.forEachIndexed { j, modelsAsArray -> elements[j] = modelsAsArray[i] }
-            newMatrix[0][i] = if (gradient.getDouble(i) < 0) {
-                val max = elements.maxOrNull()!!.toDouble()
-                if (max > 0) random.nextDouble(max, b * max).toFloat()
-                else random.nextDouble(max, max / b).toFloat()
-            } else {
-                val min = elements.minOrNull()!!.toDouble()
-                if (min > 0) random.nextDouble(min / b, min).toFloat()
-                else random.nextDouble(b * min, min).toFloat()
-            }
-        }
-        return NDArray(newMatrix)
-    }
 }
