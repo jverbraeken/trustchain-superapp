@@ -3,6 +3,7 @@ package nl.tudelft.trustchain.fedml.ai.modelPoisoningAttack
 import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.NumAttackers
 import nl.tudelft.trustchain.fedml.ai.gar.getKrum
+import org.bytedeco.javacpp.indexer.FloatIndexer
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.cpu.nativecpu.NDArray
 import kotlin.math.sqrt
@@ -28,15 +29,15 @@ class Fang2020Krum(private val b: Int) : ModelPoisoningAttack() {
             logger.debug { "Too few models => no attack vectors generated" }
             return mapOf()
         }
-        val modelsAsArrays = models.map { it.toFloatVector() }.toTypedArray()
+        val modelsAsArrays = models.map { toFloatArray(it) }.toTypedArray()
 
         // w1
-        val s = Array(1) { FloatArray(modelsAsArrays[0].size) }
-        val fm = gradient.toFloatVector()
+        val s = FloatArray(modelsAsArrays[0].size)
+        val fm = toFloatArray(gradient)
         for (i in fm.indices) {
-            s[0][i] = if (fm[i] < 0) -1f else 1f
+            s[i] = if (fm[i] < 0) -1f else 1f
         }
-        val ns = NDArray(s)
+        val ns = NDArray(Array(1) { s})
 
         val d = modelsAsArrays[0].size.toFloat()
         val m = otherModels.size + numAttackers.num
@@ -63,5 +64,14 @@ class Fang2020Krum(private val b: Int) : ModelPoisoningAttack() {
         val w1 = oldModel.sub(ns.mul(lambda))
         val newModels = Array<INDArray>(c) { w1 }
         return transformToResult(newModels)
+    }
+
+    private fun toFloatArray(first: INDArray): FloatArray {
+        val data = first.data()
+        val length = data.length().toInt()
+        val indexer = data.indexer() as FloatIndexer
+        val array = FloatArray(length)
+        indexer[0, array]
+        return array
     }
 }

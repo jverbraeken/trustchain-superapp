@@ -2,8 +2,8 @@ package nl.tudelft.trustchain.fedml.ai.modelPoisoningAttack
 
 import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.NumAttackers
+import org.bytedeco.javacpp.indexer.FloatIndexer
 import org.nd4j.linalg.api.ndarray.INDArray
-import org.nd4j.linalg.api.shape.Shape
 import org.nd4j.linalg.cpu.nativecpu.NDArray
 import kotlin.random.Random
 
@@ -28,9 +28,18 @@ class Fang2020TrimmedMean(private val b: Int) : ModelPoisoningAttack() {
             logger.debug { "Too few models => no attack vectors generated" }
             return mapOf()
         }
-        val modelsAsArrays = models.map { it.toFloatVector() }.toTypedArray()
+        val modelsAsArrays = models.map { toFloatArray(it) }.toTypedArray()
         val result = generateAttackVector(numAttackers.num, modelsAsArrays, gradient, random, b)
         return transformToResult(result)
+    }
+
+    private fun toFloatArray(first: INDArray): FloatArray {
+        val data = first.data()
+        val length = data.length().toInt()
+        val indexer = data.indexer() as FloatIndexer
+        val array = FloatArray(length)
+        indexer[0, array]
+        return array
     }
 
     private fun generateAttackVector(
@@ -44,8 +53,7 @@ class Fang2020TrimmedMean(private val b: Int) : ModelPoisoningAttack() {
         for (i in modelsAsArrays[0].indices) {
             val elements = FloatArray(modelsAsArrays.size)
             modelsAsArrays.forEachIndexed { j, modelsAsArray -> elements[j] = modelsAsArray[i] }
-            val offset: Long = Shape.getOffset(gradient.shapeInfoJava(), 0, i)
-            val v = gradient.data().getDouble(offset)
+            val v = gradient.data().getFloat(i.toLong())
             if (v < 0) {
                 /**
                  * Writing minOrNull and maxOrNull functions out completely as micro-optimization

@@ -27,8 +27,8 @@ fun loadAutomation(baseDirectory: File): Automation {
     return Json.decodeFromString(string)
 }
 
-private const val ISOLATED_FIGURE_NAME = "Figure 1.3"
-private const val ISOLATED_FIGURE_GAR = "average"
+private const val ISOLATED_FIGURE_NAME = "Figure 1.2"
+private const val ISOLATED_FIGURE_GAR = "bristle"
 
 /**
  * @return 1. the configuration per node, per test, per figure ; 2. the names of the figures
@@ -122,7 +122,7 @@ fun generateConfigs(
                         communicationPattern = communicationPattern,
                         behavior = behavior,
                         slowdown = if ((node == 0 && firstNodeSpeed == -1) || (node != 0 && firstNodeSpeed == 1)) Slowdowns.D2 else Slowdowns.NONE,
-                        joiningLate = if (node == 0 && firstNodeJoiningLate) TransmissionRounds.N2 else TransmissionRounds.N0,
+                        joiningLate = if (node == 0 && firstNodeJoiningLate) TransmissionRounds.N100 else TransmissionRounds.N0,
                         iterationsBeforeEvaluation = iterationsBeforeEvaluation,
                         iterationsBeforeSending = iterationsBeforeSending
                     ),

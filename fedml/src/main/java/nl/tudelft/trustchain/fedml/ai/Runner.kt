@@ -10,6 +10,7 @@ import nl.tudelft.trustchain.fedml.Datasets
 import nl.tudelft.trustchain.fedml.MaxTestSamples
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.har.HARDataFetcher
+import org.bytedeco.javacpp.indexer.FloatIndexer
 import org.datavec.image.loader.CifarLoader
 import org.deeplearning4j.nn.api.OptimizationAlgorithm
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration
@@ -244,11 +245,20 @@ abstract class Runner {
     }
 
     private fun craftNoiseMessage(first: INDArray, random: Random): INDArray {
-        val oldMatrix = first.toFloatVector()
-        val newMatrix = Array(1) { FloatArray(oldMatrix.size) }
+        val oldMatrix = toFloatArray(first)
+        val newVector = FloatArray(oldMatrix.size)
         for (i in oldMatrix.indices) {
-            newMatrix[0][i] = random.nextFloat() * 2 - 1
+            newVector[i] = random.nextFloat() * 2 - 1
         }
-        return NDArray(newMatrix)
+        return NDArray(Array(1) { newVector})
+    }
+
+    private fun toFloatArray(first: INDArray): FloatArray {
+        val data = first.data()
+        val length = data.length().toInt()
+        val indexer = data.indexer() as FloatIndexer
+        val array = FloatArray(length)
+        indexer[0, array]
+        return array
     }
 }

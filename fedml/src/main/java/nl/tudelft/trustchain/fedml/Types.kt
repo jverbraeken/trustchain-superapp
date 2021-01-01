@@ -237,7 +237,7 @@ fun loadSlowdown(slowdown: String?) = Slowdowns.values().firstOrNull { it.id == 
 
 enum class TransmissionRounds(val id: String, val text: String, val rounds: Int) {
     N0("n0", "0", 0),
-    N2("n2", "2", 2)
+    N100("n100", "100", 100)
 }
 
 fun loadTransmissionRound(transmissionRound: String?) = TransmissionRounds.values().firstOrNull { it.id == transmissionRound }

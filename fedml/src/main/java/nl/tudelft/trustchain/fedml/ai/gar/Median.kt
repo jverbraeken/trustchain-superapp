@@ -1,14 +1,11 @@
 package nl.tudelft.trustchain.fedml.ai.gar
 
 import mu.KotlinLogging
-import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDatasetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
+import org.bytedeco.javacpp.indexer.FloatIndexer
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.cpu.nativecpu.NDArray
-import org.nd4j.linalg.dataset.DataSet
-import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
-import java.util.concurrent.ConcurrentLinkedDeque
 
 private val logger = KotlinLogging.logger("Median")
 
@@ -51,13 +48,22 @@ class Median : AggregationRule() {
         models.onEachIndexed { i, u -> result.putRow(i.toLong(), u.value) }
         return result.median(0).reshape(intArrayOf(1, models.values.first().shape()[1].toInt()))*/
 
-        val modelsAsArrays = models.map { it.value.toFloatVector() }.toTypedArray()
-        val newMatrix = Array(1) { FloatArray(modelsAsArrays[0].size) }
+        val modelsAsArrays = models.map { toFloatArray(it.value) }.toTypedArray()
+        val newVector = FloatArray(modelsAsArrays[0].size)
         for (i in modelsAsArrays[0].indices) {
             val elements = FloatArray(modelsAsArrays.size)
             modelsAsArrays.forEachIndexed { j, modelsAsArray -> elements[j] = modelsAsArray[i] }
-            newMatrix[0][i] = medianHelper(elements)
+            newVector[i] = medianHelper(elements)
         }
-        return NDArray(newMatrix)
+        return NDArray(Array(1) { newVector})
+    }
+
+    private fun toFloatArray(first: INDArray): FloatArray {
+        val data = first.data()
+        val length = data.length().toInt()
+        val indexer = data.indexer() as FloatIndexer
+        val array = FloatArray(length)
+        indexer[0, array]
+        return array
     }
 }
