@@ -9,7 +9,7 @@ class CustomFileSplit(datasetPath: File, random: Random, numSamplesPerLabel: Int
     val files: Array<out Array<File>>
 
     init {
-        files = uriMap.getOrPut(datasetPath.absolutePath) {
+        files = uriMap.computeIfAbsent(datasetPath.absolutePath) {
             listFiles(datasetPath, numSamplesPerLabel).onEach { it.shuffle(random) }
         }
     }
