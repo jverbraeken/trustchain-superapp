@@ -11,7 +11,7 @@ private val logger = KotlinLogging.logger("CustomMnistManager")
 
 class CustomMnistManager(
     val imagesFile: String,
-    labelsFile: String,
+    val labelsFile: String,
     numExamples: Int,
     iteratorDistribution: IntArray,
     maxTestSamples: Int,
@@ -22,9 +22,9 @@ class CustomMnistManager(
     private val sampledLabels: IntArray
 
     init {
-        fullImagesArr.putIfAbsent(imagesFile, loadImages(imagesFile, numExamples))
-        fullLabelsArr.putIfAbsent(labelsFile, loadLabels(labelsFile, numExamples))
-        labelIndexMappings.putIfAbsent(labelsFile, generateLabelIndexMapping(fullLabelsArr[labelsFile]!!))
+        fullImagesArr.computeIfAbsent(imagesFile) { loadImages(imagesFile, numExamples) }
+        fullLabelsArr.computeIfAbsent(labelsFile) { loadLabels(labelsFile, numExamples) }
+        labelIndexMappings.computeIfAbsent(labelsFile) { generateLabelIndexMapping(fullLabelsArr[labelsFile]!!) }
         val imagesArr = fullImagesArr[imagesFile]!!
         val labelsArr = fullLabelsArr[labelsFile]!!
         val labelIndexMapping = labelIndexMappings[labelsFile]!!
@@ -48,7 +48,7 @@ class CustomMnistManager(
     }
 
     private fun sampleData(
-        tmpImagesArr: Array<FloatArray>,
+        tmpImagesArr: Array<ByteArray>,
         tmpLabelsArr: IntArray,
         totalExamples: Int,
         iteratorDistribution: IntArray,
@@ -56,7 +56,7 @@ class CustomMnistManager(
         seed: Long,
         labelIndexMapping: Array<IntArray>,
     ): Pair<Array<FloatArray>, IntArray> {
-        val placeholder = Pair(floatArrayOf(), -1)
+        val placeholder = Pair(byteArrayOf(), -1)
         val results = Array(totalExamples) { placeholder }
         var count = 0
         val random = Random(seed)
@@ -69,13 +69,18 @@ class CustomMnistManager(
             }
         }
         results.shuffle(random)
-        val imagesArr = Array(totalExamples) { FloatArray(tmpImagesArr[0].size) }
+        val imagesArr = Array(totalExamples) { byteArrayOf() }
         val labelsArr = IntArray(totalExamples)
         results.forEachIndexed { i, pair ->
             imagesArr[i] = pair.first
             labelsArr[i] = pair.second
         }
-        return Pair(imagesArr, labelsArr)
+        val imagesArr2 = imagesArr.map {
+            it.map { byte ->
+                (byte.toInt() and 0xFF).toFloat()
+            }.toFloatArray()
+        }.toTypedArray()
+        return Pair(imagesArr2, labelsArr)
     }
 
     fun createTestBatches(): Array<Array<FloatArray>> {
@@ -110,20 +115,15 @@ class CustomMnistManager(
 
     companion object {
         private val imageEntryLength = hashMapOf<String, Int>()
-        private val fullImagesArr = mutableMapOf<String, Array<FloatArray>>()
+        private val fullImagesArr = mutableMapOf<String, Array<ByteArray>>()
         private var fullLabelsArr = mutableMapOf<String, IntArray>()
         private var labelIndexMappings = mutableMapOf<String, Array<IntArray>>()
 
         @Synchronized
-        private fun loadImages(filename: String, numExamples: Int): Array<FloatArray> {
+        private fun loadImages(filename: String, numExamples: Int): Array<ByteArray> {
             val file = MnistImageFile(filename, "r")
             imageEntryLength[filename] = file.entryLength
-            val images = file.readImagesUnsafe(numExamples)
-            return images.map {
-                it.map { byte ->
-                    (byte.toInt() and 0xFF).toFloat()
-                }.toFloatArray()
-            }.toTypedArray()
+            return file.readImagesUnsafe(numExamples)
         }
 
         @Synchronized

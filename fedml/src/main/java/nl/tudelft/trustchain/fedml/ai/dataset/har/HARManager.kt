@@ -21,9 +21,9 @@ class HARManager(
     private val sampledLabelsArr: IntArray
 
     init {
-        fullDataArr.putIfAbsent(dataFiles[0].name, loadData(dataFiles))
-        fullLabelsArr.putIfAbsent(labelsFile.name, loadLabels(labelsFile))
-        labelIndexMappings.putIfAbsent(labelsFile.name, generateLabelIndexMapping(fullLabelsArr[labelsFile.name]!!))
+        fullDataArr.computeIfAbsent(dataFiles[0].name) { loadData(dataFiles) }
+        fullLabelsArr.computeIfAbsent(labelsFile.name) { loadLabels(labelsFile) }
+        labelIndexMappings.computeIfAbsent(labelsFile.name) { generateLabelIndexMapping(fullLabelsArr[labelsFile.name]!!) }
         val dataArr = fullDataArr[dataFiles[0].name]!!
         val labelsArr = fullLabelsArr[labelsFile.name]!!
         val labelIndexMapping = labelIndexMappings[labelsFile.name]!!
@@ -50,7 +50,7 @@ class HARManager(
     private fun extractFeatures(entries: Array<String>): Array<FloatArray> {
         val features = entries.map {
             val trimmed = it.trim()
-            val parts = trimmed.split("\\s+".toRegex()).toTypedArray()
+            val parts = trimmed.split(REGEX_SPLIT).toTypedArray()
             parts.map { s: String -> s.toFloat() }.toTypedArray()
         }.toTypedArray()
         return transposeMatrix(features)
@@ -124,6 +124,7 @@ class HARManager(
         private var fullDataArr = hashMapOf<String, Array<Array<String>>>()
         private var fullLabelsArr = hashMapOf<String, IntArray>()
         private var labelIndexMappings = mutableMapOf<String, Array<IntArray>>()
+        private val REGEX_SPLIT = "\\s+".toRegex()
 
         @Synchronized
         private fun loadData(dataFiles: Array<File>): Array<Array<String>> {
