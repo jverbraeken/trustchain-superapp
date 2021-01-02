@@ -161,7 +161,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
 
                 while (!udpEndpoint.noPendingUTPMessages()) {
                     logger.debug { "Waiting for all UTP messages to be sent" }
-                    delay(300)
+                    delay(500)
                 }
 
                 // Integrate parameters of other peers
@@ -269,7 +269,9 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 val seed = community.myEstimatedWan.port
                 random = Random(seed)
                 sraKeyPair = SRAKeyPair.create(bigPrime, java.util.Random(seed.toLong()))
-                val mlConfiguration = (payload as MsgNewTestCommand).parsedConfiguration
+                val message = (payload as MsgNewTestCommand)
+                val mlConfiguration = message.parsedConfiguration
+                val figureName = message.figureName
                 val dataset = mlConfiguration.dataset
                 val datasetIteratorConfiguration = mlConfiguration.datasetIteratorConfiguration
                 val behavior = mlConfiguration.trainConfiguration.behavior
@@ -288,7 +290,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                         "#peers included in current batch"
                     )
                 )
-                evaluationProcessor.newSimulation("distributed simulation", listOf(mlConfiguration))
+                evaluationProcessor.newSimulation("$figureName - ${mlConfiguration.trainConfiguration.gar.id}", listOf(mlConfiguration))
                 val network = generateNetwork(
                     mlConfiguration.dataset,
                     mlConfiguration.nnConfiguration,
