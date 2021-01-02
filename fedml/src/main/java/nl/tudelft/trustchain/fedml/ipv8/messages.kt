@@ -127,7 +127,7 @@ data class MsgNotifyHeartbeat(val unused: Boolean) : Serializable {
     }
 }
 
-data class MsgNewTestCommand(val configuration: Map<String, String>) : Serializable {
+data class MsgNewTestCommand(val configuration: Map<String, String>, val figureName: String) : Serializable {
     val parsedConfiguration: MLConfiguration
 
     init {
@@ -180,7 +180,7 @@ data class MsgNewTestCommand(val configuration: Map<String, String>) : Serializa
             val croppedBuffer = buffer.copyOfRange(offset, buffer.size)
             ByteArrayInputStream(croppedBuffer).use { bis ->
                 ObjectInputStream(bis).use { ois ->
-                    return Pair(MsgNewTestCommand(ois.readObject() as Map<String, String>), buffer.size)
+                    return Pair(MsgNewTestCommand(ois.readObject() as Map<String, String>, ois.readObject() as String), buffer.size)
                 }
             }
         }
