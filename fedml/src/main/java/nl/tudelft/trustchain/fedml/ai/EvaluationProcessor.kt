@@ -87,10 +87,6 @@ class EvaluationProcessor(
             newEvaluationHeader[evaluationHeader.size + index] = name
         }
         evaluationLines[0] = newEvaluationHeader
-
-//        fixedRateTimer(period = 2500) {
-//
-//        }
     }
 
     private fun convertToCSV(data: Array<String>): String {
