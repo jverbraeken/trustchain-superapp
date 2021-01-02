@@ -109,6 +109,12 @@ fun generateDefaultCIFARConfiguration(
         )
         .layer(BatchNormalization())
         .layer(SubsamplingLayer
+            .Builder(intArrayOf(3, 3), intArrayOf(1, 1), intArrayOf(1, 1))
+            .poolingType(SubsamplingLayer.PoolingType.MAX)
+            .build()
+        )
+        .layer(BatchNormalization())
+        .layer(SubsamplingLayer
             .Builder(intArrayOf(2, 2), intArrayOf(2, 2))
             .poolingType(SubsamplingLayer.PoolingType.MAX)
             .build()
