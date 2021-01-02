@@ -35,6 +35,9 @@ class HARManager(
                 .forEach { i: Int -> labelsArr2[i] = 2 }
             labelsArr.indices
                 .filter { i: Int -> labelsArr[i] == 2 }
+                .forEach { i: Int -> labelsArr2[i] = 3 }
+            labelsArr.indices
+                .filter { i: Int -> labelsArr[i] == 3 }
                 .forEach { i: Int -> labelsArr2[i] = 1 }
             labelsArr2
         } else {
