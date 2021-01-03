@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
+import nl.tudelft.ipv8.IPv4Address
 import nl.tudelft.ipv8.Peer
 import nl.tudelft.trustchain.fedml.*
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
@@ -15,8 +16,13 @@ import org.deeplearning4j.optimize.listeners.ScoreIterationListener
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.cpu.nativecpu.NDArray
 import java.io.File
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.NoSuchElementException
+import kotlin.collections.ArrayDeque
+import kotlin.collections.HashSet
+import kotlin.concurrent.thread
 import kotlin.random.Random
 
 private val logger = KotlinLogging.logger("DistributedRunner")
@@ -31,6 +37,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
     private lateinit var labels: List<String>
     private lateinit var sraKeyPair: SRAKeyPair
     private var deferred = CompletableDeferred<Unit>()
+    private val psiRequests = Collections.synchronizedSet(java.util.HashSet<IPv4Address>())
 
     init {
         FedMLCommunity.registerMessageListener(MessageId.MSG_PARAM_UPDATE, this)
@@ -248,7 +255,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
     }
 
     override fun onMessageReceived(messageId: MessageId, peer: Peer, payload: Any) {
-        logger.debug { "onMessageReceived" }
+        logger.debug { "onMessageReceived: ${peer.address}" }
         when (messageId) {
             MessageId.MSG_PARAM_UPDATE -> {
                 logger.debug { "MSG_PARAM_UPDATE" }
@@ -266,12 +273,13 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 val port = community.myEstimatedWan.port
                 val message = MsgPsiCaServerToClient(reEncryptedLabels, filter, port)
                 community.sendToPeer(peer, MessageId.MSG_PSI_CA_SERVER_TO_CLIENT, message)
+                psiRequests.add(peer.address)
             }
             MessageId.MSG_PSI_CA_SERVER_TO_CLIENT -> {
                 logger.debug { "MSG_PSI_CA_SERVER_TO_CLIENT" }
                 psiCaMessagesFromServers.add(payload as MsgPsiCaServerToClient)
             }
-            MessageId.MSG_NEW_TEST_COMMAND -> scope.launch {
+            MessageId.MSG_NEW_TEST_COMMAND -> scope.launch(Dispatchers.IO) {
                 logger.debug { "MSG_NEW_TEST_COMMAND" }
                 val seed = community.myEstimatedWan.port
                 random = Random(seed)
@@ -309,6 +317,12 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 val numPeers = community.getPeers().size
                 labels = iterTrain.labels
                 val countPerPeer = getSimilarPeers(port, labels, sraKeyPair, numPeers, psiCaMessagesFromServers)
+
+                while (psiRequests.size < 4 - 1) {
+                    logger.debug { "Waiting for other peers to finish PSI_CA: found ${psiRequests.size}" }
+                    delay(500)
+                }
+                logger.debug { "All peers finished PSI_CA!" }
 
                 trainTestSendNetwork(
                     network,
