@@ -19,7 +19,7 @@
     <logger name="RandomChurn" level="WARN" />
     <logger name="UTPReadingRunnable" level="WARN" />
     <logger name="UTPSocketChannelImpl" level="WARN" />
-    <logger name="UTPSocketBinder" level="WARN" />
+<!--    <logger name="UTPSocketBinder" level="WARN" />-->
     <logger name="UTPWritingRunnable" level="WARN" />
     <logger name="UTPAlgorithm" level="WARN" />
     <logger name="UTPSocketChannelImpl" level="WARN" />
