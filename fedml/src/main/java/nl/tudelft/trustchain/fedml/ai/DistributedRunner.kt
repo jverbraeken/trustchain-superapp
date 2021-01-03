@@ -165,7 +165,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 newOtherModels.putAll(attackVectors)
 
 
-                while (!udpEndpoint.noPendingUTPMessages()) {
+                while (!udpEndpoint.noPendingTFTPMessages()) {
                     logger.debug { "Waiting for all UTP messages to be sent" }
                     delay(500)
                 }
@@ -216,6 +216,13 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                         0,
                         true
                     ))
+                }
+
+                var updatedNumPeers = newOtherModels.size + 1
+                while (updatedNumPeers < 4) {
+                    delay(500)
+                    logger.debug { "Found $numPeers out of 4 expected messages" }
+                    updatedNumPeers = newOtherModels.size + 1
                 }
             }
         }
