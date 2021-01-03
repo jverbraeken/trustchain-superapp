@@ -70,7 +70,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
             delay(200)
             count += 200
             logger.debug { "PSI_CA found ${psiCaMessagesFromServers.size} out of $numPeers" }
-            if (count > 3000) {
+            if (count > 8000) {
                 throw IllegalArgumentException("Didn't succeed in finding similar peers")
             }
         }
