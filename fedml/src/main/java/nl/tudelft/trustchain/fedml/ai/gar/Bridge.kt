@@ -3,6 +3,7 @@ package nl.tudelft.trustchain.fedml.ai.gar
 import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
 import org.bytedeco.javacpp.indexer.FloatIndexer
+import org.bytedeco.javacpp.indexer.FloatRawIndexer
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.cpu.nativecpu.NDArray
@@ -49,9 +50,11 @@ class Bridge(private val b: Int) : AggregationRule() {
     private fun toFloatArray(first: INDArray): FloatArray {
         val data = first.data()
         val length = data.length().toInt()
-        val indexer = data.indexer() as FloatIndexer
+        val indexer = data.indexer() as FloatRawIndexer
         val array = FloatArray(length)
-        indexer[0, array]
+        for (i in 0 until length) {
+            array[i] = indexer.getRaw(i.toLong())
+        }
         return array
     }
 

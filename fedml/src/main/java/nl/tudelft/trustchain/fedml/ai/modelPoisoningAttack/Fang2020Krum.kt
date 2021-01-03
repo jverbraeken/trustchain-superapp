@@ -3,7 +3,7 @@ package nl.tudelft.trustchain.fedml.ai.modelPoisoningAttack
 import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.NumAttackers
 import nl.tudelft.trustchain.fedml.ai.gar.getKrum
-import org.bytedeco.javacpp.indexer.FloatIndexer
+import org.bytedeco.javacpp.indexer.FloatRawIndexer
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.cpu.nativecpu.NDArray
 import kotlin.math.sqrt
@@ -37,7 +37,7 @@ class Fang2020Krum(private val b: Int) : ModelPoisoningAttack() {
         for (i in fm.indices) {
             s[i] = if (fm[i] < 0) -1f else 1f
         }
-        val ns = NDArray(Array(1) { s})
+        val ns = NDArray(Array(1) { s })
 
         val d = modelsAsArrays[0].size.toFloat()
         val m = otherModels.size + numAttackers.num
@@ -69,9 +69,11 @@ class Fang2020Krum(private val b: Int) : ModelPoisoningAttack() {
     private fun toFloatArray(first: INDArray): FloatArray {
         val data = first.data()
         val length = data.length().toInt()
-        val indexer = data.indexer() as FloatIndexer
+        val indexer = data.indexer() as FloatRawIndexer
         val array = FloatArray(length)
-        indexer[0, array]
+        for (i in 0 until length) {
+            array[i] = indexer.getRaw(i.toLong())
+        }
         return array
     }
 }

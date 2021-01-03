@@ -3,6 +3,7 @@ package nl.tudelft.trustchain.fedml.ai.modelPoisoningAttack
 import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.NumAttackers
 import org.bytedeco.javacpp.indexer.FloatIndexer
+import org.bytedeco.javacpp.indexer.FloatRawIndexer
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.cpu.nativecpu.NDArray
 import kotlin.random.Random
@@ -36,9 +37,11 @@ class Fang2020TrimmedMean(private val b: Int) : ModelPoisoningAttack() {
     private fun toFloatArray(first: INDArray): FloatArray {
         val data = first.data()
         val length = data.length().toInt()
-        val indexer = data.indexer() as FloatIndexer
+        val indexer = data.indexer() as FloatRawIndexer
         val array = FloatArray(length)
-        indexer[0, array]
+        for (i in 0 until length) {
+            array[i] = indexer.getRaw(i.toLong())
+        }
         return array
     }
 

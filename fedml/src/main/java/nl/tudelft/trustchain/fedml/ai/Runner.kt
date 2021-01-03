@@ -11,6 +11,7 @@ import nl.tudelft.trustchain.fedml.MaxTestSamples
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.har.HARDataFetcher
 import org.bytedeco.javacpp.indexer.FloatIndexer
+import org.bytedeco.javacpp.indexer.FloatRawIndexer
 import org.datavec.image.loader.CifarLoader
 import org.deeplearning4j.nn.api.OptimizationAlgorithm
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration
@@ -262,9 +263,11 @@ abstract class Runner {
     private fun toFloatArray(first: INDArray): FloatArray {
         val data = first.data()
         val length = data.length().toInt()
-        val indexer = data.indexer() as FloatIndexer
+        val indexer = data.indexer() as FloatRawIndexer
         val array = FloatArray(length)
-        indexer[0, array]
+        for (i in 0 until length) {
+            array[i] = indexer.getRaw(i.toLong())
+        }
         return array
     }
 }
