@@ -27,6 +27,7 @@ import kotlin.random.Random
 
 private val logger = KotlinLogging.logger("DistributedRunner")
 private const val SIZE_RECENT_OTHER_MODELS = 20
+private val psiRequests = ConcurrentHashMap.newKeySet<Int>()
 
 class DistributedRunner(private val community: FedMLCommunity) : Runner(), MessageListener {
     internal lateinit var baseDirectory: File
@@ -37,7 +38,6 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
     private lateinit var labels: List<String>
     private lateinit var sraKeyPair: SRAKeyPair
     private var deferred = CompletableDeferred<Unit>()
-    private val psiRequests = Collections.synchronizedSet(java.util.HashSet<IPv4Address>())
 
     init {
         FedMLCommunity.registerMessageListener(MessageId.MSG_PARAM_UPDATE, this)
@@ -77,9 +77,9 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
             delay(200)
             count += 200
             logger.debug { "PSI_CA found ${psiCaMessagesFromServers.size} out of $numPeers" }
-            if (count > 8000) {
-                throw IllegalArgumentException("Didn't succeed in finding similar peers")
-            }
+//            if (count > 8000) {
+//                throw IllegalArgumentException("Didn't succeed in finding similar peers")
+//            }
         }
 
         return clientReceivesServerResponses(
@@ -226,9 +226,9 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 }
 
                 var updatedNumPeers = newOtherModels.size + 1
-                while (updatedNumPeers < 4) {
+                while (updatedNumPeers < 3) {
                     delay(500)
-                    logger.debug { "Found $numPeers out of 4 expected messages" }
+                    logger.debug { "Found $numPeers out of 3 expected messages" }
                     updatedNumPeers = newOtherModels.size + 1
                 }
             }
@@ -271,15 +271,22 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
             MessageId.MSG_PSI_CA_CLIENT_TO_SERVER -> scope.launch(Dispatchers.IO) {
                 logger.debug { "MSG_PSI_CA_CLIENT_TO_SERVER" }
                 deferred.await()
+                logger.debug { "MSG_PSI_CA_CLIENT_TO_SERVER after await" }
+                logger.debug { "1" }
                 val (reEncryptedLabels, filter) = serverRespondsClientRequests(
                     labels,
                     payload as MsgPsiCaClientToServer,
                     sraKeyPair
                 )
+                logger.debug { "2" }
                 val port = community.myEstimatedWan.port
                 val message = MsgPsiCaServerToClient(reEncryptedLabels, filter, port)
+                logger.debug { "Sending MSG_PSI_CA_SERVER_TO_CLIENT to ${peer.address}"}
                 community.sendToPeer(peer, MessageId.MSG_PSI_CA_SERVER_TO_CLIENT, message)
-                psiRequests.add(peer.address)
+                logger.debug { "3" }
+                psiRequests.add(peer.address.port)
+                logger.debug { Arrays.toString(psiRequests.toArray()) }
+                logger.debug { psiRequests.size }
             }
             MessageId.MSG_PSI_CA_SERVER_TO_CLIENT -> {
                 logger.debug { "MSG_PSI_CA_SERVER_TO_CLIENT" }
@@ -324,7 +331,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 labels = iterTrain.labels
                 val countPerPeer = getSimilarPeers(port, labels, sraKeyPair, numPeers, psiCaMessagesFromServers)
 
-                while (psiRequests.size < 4 - 1) {
+                while (psiRequests.size < 3 - 1) {
                     logger.debug { "Waiting for other peers to finish PSI_CA: found ${psiRequests.size}" }
                     delay(500)
                 }

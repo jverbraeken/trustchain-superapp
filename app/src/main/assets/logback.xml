@@ -13,15 +13,15 @@
         <appender-ref ref="logcat" />
     </root>
 
-    <logger name="Community" level="WARN" />
-    <logger name="DiscoveryCommunity" level="WARN" />
-    <logger name="TrustChainCommunity" level="WARN" />
-    <logger name="RandomChurn" level="WARN" />
-    <logger name="UTPReadingRunnable" level="WARN" />
-    <logger name="UTPSocketChannelImpl" level="WARN" />
+<!--    <logger name="Community" level="WARN" />-->
+<!--    <logger name="DiscoveryCommunity" level="WARN" />-->
+<!--    <logger name="TrustChainCommunity" level="WARN" />-->
+<!--    <logger name="RandomChurn" level="WARN" />-->
+<!--    <logger name="UTPReadingRunnable" level="WARN" />-->
+<!--    <logger name="UTPSocketChannelImpl" level="WARN" />-->
 <!--    <logger name="UTPSocketBinder" level="WARN" />-->
-    <logger name="UTPWritingRunnable" level="WARN" />
-    <logger name="UTPAlgorithm" level="WARN" />
-    <logger name="UTPSocketChannelImpl" level="WARN" />
-    <logger name="UtpPacket" level="WARN" />
+<!--    <logger name="UTPWritingRunnable" level="WARN" />-->
+<!--    <logger name="UTPAlgorithm" level="WARN" />-->
+<!--    <logger name="UTPSocketChannelImpl" level="WARN" />-->
+<!--    <logger name="UtpPacket" level="WARN" />-->
 </configuration>

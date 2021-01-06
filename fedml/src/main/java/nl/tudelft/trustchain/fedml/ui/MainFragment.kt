@@ -140,11 +140,15 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
 
     private fun updateView() {
         val ipv8 = getIpv8()
-        networkBinding.txtWanAddress.text = community.network.wanLog.estimateWan()!!.toString()
-        networkBinding.txtPeers.text = resources.getString(R.string.peers).format(
-            ipv8.overlays.values.first { it.javaClass.simpleName == "FedMLCommunity" }.getPeers().size,
-            ipv8.overlays.values.first { it.javaClass.simpleName == "UTPCommunity" }.getPeers().size
-        )
+        try {
+            networkBinding.txtWanAddress.text = community.network.wanLog.estimateWan()!!.toString()
+            networkBinding.txtPeers.text = resources.getString(R.string.peers).format(
+                ipv8.overlays.values.first { it.javaClass.simpleName == "FedMLCommunity" }.getPeers().size,
+                ipv8.overlays.values.first { it.javaClass.simpleName == "UTPCommunity" }.getPeers().size
+            )
+        } catch (e: NullPointerException) {
+            logger.error { "Catched NullPointerException.." }
+        }
     }
 
     private fun processIntentExtras() {
