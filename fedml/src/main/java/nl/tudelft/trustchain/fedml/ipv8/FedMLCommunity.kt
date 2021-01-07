@@ -21,6 +21,7 @@ import org.apache.commons.net.tftp.TFTPAckPacket
 import org.nd4j.linalg.api.ndarray.INDArray
 import java.io.*
 import java.math.BigInteger
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.concurrent.thread
 
 private val logger = KotlinLogging.logger("FedMLCommunity")
@@ -114,6 +115,8 @@ class FedMLCommunity(
 
     companion object {
         val messageListeners = MessageId.values().associate { it to mutableListOf<MessageListener>() }.toMutableMap()
+        @Volatile var newOtherModels = ConcurrentHashMap<Int, INDArray>()
+
         fun registerMessageListener(messageId: MessageId, listener: MessageListener) {
             messageListeners[messageId]!!.add(listener)
         }

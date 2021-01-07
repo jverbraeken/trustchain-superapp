@@ -10,6 +10,7 @@ import nl.tudelft.ipv8.Peer
 import nl.tudelft.trustchain.fedml.*
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
 import nl.tudelft.trustchain.fedml.ipv8.*
+import nl.tudelft.trustchain.fedml.ipv8.FedMLCommunity.Companion.newOtherModels
 import nl.tudelft.trustchain.fedml.ipv8.FedMLCommunity.MessageId
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener
@@ -31,7 +32,6 @@ private val psiRequests = ConcurrentHashMap.newKeySet<Int>()
 
 class DistributedRunner(private val community: FedMLCommunity) : Runner(), MessageListener {
     internal lateinit var baseDirectory: File
-    private val newOtherModels = ConcurrentHashMap<Int, INDArray>()
     private val recentOtherModels = ArrayDeque<Pair<Int, INDArray>>()
     private val psiCaMessagesFromServers = CopyOnWriteArrayList<MsgPsiCaServerToClient>()
     private lateinit var random: Random
@@ -171,12 +171,6 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 )
                 newOtherModels.putAll(attackVectors)
 
-
-                while (!udpEndpoint.noPendingTFTPMessages()) {
-                    logger.debug { "Waiting for all UTP messages to be sent" }
-                    delay(500)
-                }
-
                 // Integrate parameters of other peers
                 val numPeers = newOtherModels.size + 1
                 val averageParams: INDArray
@@ -205,6 +199,12 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 }
                 // Send new parameters to other peers
                 val message = craftMessage(averageParams.dup(), trainConfiguration.behavior, random)
+
+                while (!udpEndpoint.noPendingTFTPMessages()) {
+                    logger.debug { "Waiting for all TFTP messages to be sent" }
+                    delay(500)
+                }
+
                 sendModelToPeers(message, trainConfiguration.communicationPattern, countPerPeer)
 
                 if (iteration % trainConfiguration.iterationsBeforeEvaluation == 0) {
@@ -225,12 +225,14 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                     ))
                 }
 
-                var updatedNumPeers = newOtherModels.size + 1
+                /*var updatedNumPeers = newOtherModels.size + 1
                 while (updatedNumPeers < 3) {
                     delay(500)
                     logger.debug { "Found $numPeers out of 3 expected messages" }
-                    updatedNumPeers = newOtherModels.size + 1
-                }
+                    synchronized(newOtherModels) {
+                        updatedNumPeers = newOtherModels.size
+                    }
+                }*/
             }
         }
         logger.debug { "Done training the network" }
@@ -264,9 +266,12 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         logger.debug { "onMessageReceived: ${peer.address}" }
         when (messageId) {
             MessageId.MSG_PARAM_UPDATE -> {
-                logger.debug { "MSG_PARAM_UPDATE" }
+                logger.debug { "MSG_PARAM_UPDATE ${peer.address.port} ${newOtherModels.size}" }
                 val paramUpdate = payload as MsgParamUpdate
-                newOtherModels[peer.address.port] = paramUpdate.array
+                synchronized(newOtherModels) {
+                    newOtherModels[peer.address.port] = paramUpdate.array
+                }
+                logger.debug { "MSG_PARAM_U ${newOtherModels.size}" }
             }
             MessageId.MSG_PSI_CA_CLIENT_TO_SERVER -> scope.launch(Dispatchers.IO) {
                 logger.debug { "MSG_PSI_CA_CLIENT_TO_SERVER" }
