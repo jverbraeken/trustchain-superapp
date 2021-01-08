@@ -121,10 +121,10 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 delay(500)
             }
         }
-        val iterationTimeStart = System.currentTimeMillis()
+        var iterationTimeStart: Long? = null
         var iterationTimeEnd: Long? = null
 
-        for (iteration in 0 until trainConfiguration.maxIteration.value) {
+        for (iteration in 0 until (trainConfiguration.maxIteration.value * trainConfiguration.slowdown.multiplier).toInt()) {
             if (epochEnd) {
                 epoch++
                 logger.debug { "Epoch: $epoch" }
@@ -211,7 +211,22 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                     delay(500)
                 }
 
+                if (iterationTimeStart != null) {
+                    if (iterationTimeEnd == null) {
+                        iterationTimeEnd = System.currentTimeMillis()
+                        logger.debug { "iterationTimeEnd: $iterationTimeEnd" }
+                    }
+                    val delay = (iterationTimeEnd - iterationTimeStart) * slowdown
+                    logger.debug { "Slowdown delay: $delay" }
+                    delay(delay)
+                }
+
                 sendModelToPeers(message, iteration, trainConfiguration.communicationPattern, countPerPeer)
+
+                if (iterationTimeStart == null) {
+                    iterationTimeStart = System.currentTimeMillis()
+                    logger.debug { "iterationTimeStart: $iterationTimeStart" }
+                }
 
                 if (iteration % trainConfiguration.iterationsBeforeEvaluation == 0) {
                     val elapsedTime2 = System.currentTimeMillis() - start
@@ -233,10 +248,6 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                     )
                 }
             }
-            if (iterationTimeEnd == null) {
-                iterationTimeEnd = System.currentTimeMillis()
-            }
-            delay((iterationTimeEnd - iterationTimeStart) * slowdown)
         }
         logger.debug { "Done training the network" }
         evaluationProcessor.done()
