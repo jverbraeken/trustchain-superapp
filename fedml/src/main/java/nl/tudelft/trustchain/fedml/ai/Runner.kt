@@ -9,8 +9,8 @@ import nl.tudelft.trustchain.fedml.Behaviors
 import nl.tudelft.trustchain.fedml.Datasets
 import nl.tudelft.trustchain.fedml.MaxTestSamples
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
+import nl.tudelft.trustchain.fedml.ai.dataset.covid.COVIDDataFetcher
 import nl.tudelft.trustchain.fedml.ai.dataset.har.HARDataFetcher
-import org.bytedeco.javacpp.indexer.FloatIndexer
 import org.bytedeco.javacpp.indexer.FloatRawIndexer
 import org.datavec.image.loader.CifarLoader
 import org.deeplearning4j.nn.api.OptimizationAlgorithm
@@ -171,6 +171,46 @@ fun generateDefaultHARConfiguration(
             .build()
         )
         .setInputType(InputType.recurrent(9, 128))
+        .build()
+}
+
+fun generateDefaultCOVIDConfiguration(
+    nnConfiguration: NNConfiguration,
+    seed: Int,
+): MultiLayerConfiguration {
+    return NeuralNetConfiguration.Builder()
+        .seed(seed.toLong())
+        .l2(nnConfiguration.l2.value)
+        .activation(Activation.LEAKYRELU)
+        .weightInit(WeightInit.RELU)
+        .updater(nnConfiguration.optimizer.inst(nnConfiguration.learningRate))
+        .list()
+        .layer(Convolution1DLayer
+            .Builder(3)
+            .nOut(32)
+            .build()
+        )
+        .layer(Subsampling1DLayer
+            .Builder(SubsamplingLayer.PoolingType.MAX, 2, 2)
+            .build()
+        )
+        .layer(Convolution1DLayer
+            .Builder(3)
+            .nOut(64)
+            .build()
+        )
+        .layer(GlobalPoolingLayer
+            .Builder(PoolingType.MAX)
+            .build()
+        )
+        .layer(OutputLayer
+            .Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
+            .nOut(COVIDDataFetcher.NUM_LABELS)
+            .activation(Activation.SOFTMAX)
+            .weightInit(WeightInit.XAVIER)
+            .build()
+        )
+        .setInputType(InputType.recurrent(1, COVIDDataFetcher.shortestSize.toLong()))
         .build()
 }
 

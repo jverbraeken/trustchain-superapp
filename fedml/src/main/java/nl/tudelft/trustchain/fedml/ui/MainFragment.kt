@@ -206,6 +206,25 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
                 }
             }
         }
+        for (path in arrayOf("covid", "covid/covid", "covid/healthy")) {
+            val files = assetManager.list(path)!!
+            val dir = File(baseDirectory, path)
+            if (!dir.exists()) {
+                dir.mkdirs()
+            }
+            for (filename in files) {
+                try {
+                    copyAsset(assetManager, "$path/$filename")
+                    /*assetManager.open("$path/$filename").use { input ->
+                        FileOutputStream(File(dir, filename)).use { output ->
+                            copyFile(input, output)
+                        }
+                    }*/
+                } catch (e: IOException) {
+                    // Probably a directory
+                }
+            }
+        }
     }
 
     private fun copyAsset(assetManager: AssetManager, asset: String) {

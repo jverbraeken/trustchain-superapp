@@ -3,6 +3,7 @@ package nl.tudelft.trustchain.fedml
 import nl.tudelft.trustchain.fedml.ai.*
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.cifar.CustomCifar10DataSetIterator
+import nl.tudelft.trustchain.fedml.ai.dataset.covid.COVIDDataSetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.har.HARDataSetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.mnist.CustomMnistDataSetIterator
 import nl.tudelft.trustchain.fedml.ai.gar.*
@@ -81,6 +82,18 @@ enum class Datasets(
         ::generateDefaultHARConfiguration,
         HARDataSetIterator::create
     ),
+    COVID(
+        "covid",
+        "COVID",
+        Optimizers.ADAM,
+        LearningRates.RATE_1EM3,
+        Momentums.NONE,
+        L2Regularizations.L2_1EM4,
+        BatchSizes.BATCH_5,
+        IteratorDistributions.DISTRIBUTION_COVID_50,
+        ::generateDefaultCOVIDConfiguration,
+        COVIDDataSetIterator::create
+    ),
 }
 
 fun loadDataset(dataset: String?) = Datasets.values().firstOrNull { it.id == dataset }
@@ -113,6 +126,7 @@ enum class IteratorDistributions(val id: String, val text: String, val value: In
     DISTRIBUTION_MNIST_5("mnist_7_to_4_with_100", "MNIST 0 to 7 with 100", intArrayOf(100, 100, 100, 0, 0, 0, 0, 100, 100, 100)),
     DISTRIBUTION_CIFAR_50("cifar_50", "CIFAR 50", intArrayOf(50, 50, 50, 50, 50, 50, 50, 50, 50, 50)),
     DISTRIBUTION_HAR_100("har_100", "HAR 100", intArrayOf(100, 100, 100, 100, 100, 100)),
+    DISTRIBUTION_COVID_50("covid_50", "COVID 50", intArrayOf(50, 50)),
 }
 
 fun loadIteratorDistribution(iteratorDistribution: String?) =
