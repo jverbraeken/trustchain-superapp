@@ -30,7 +30,7 @@ private const val SIZE_RECENT_OTHER_MODELS = 20
 
 class DistributedRunner(private val community: FedMLCommunity) : Runner(), MessageListener {
     internal lateinit var baseDirectory: File
-    private val newOtherModels = ConcurrentHashMap<Int, INDArray>()
+    private val newOtherModels = ConcurrentHashMap<Int, MsgParamUpdate>()
     private val recentOtherModels = ArrayDeque<Pair<Int, INDArray>>()
     private val psiCaMessagesFromServers = CopyOnWriteArrayList<MsgPsiCaServerToClient>()
     private lateinit var random: Random
@@ -110,6 +110,14 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         val start = System.currentTimeMillis()
         var oldParams: INDArray = NDArray()
         val udpEndpoint = community.endpoint.udpEndpoint!!
+        val joiningLateRounds = trainConfiguration.joiningLate.rounds
+
+        if (joiningLateRounds > 0) {
+            while (newOtherModels.none { it.value.iteration >= joiningLateRounds }) {
+                logger.debug { "Joining late: ${newOtherModels.map { it.value.iteration}.maxOrNull()};$joiningLateRounds" }
+                delay(500)
+            }
+        }
 
         for (iteration in 0 until trainConfiguration.maxIteration.value) {
             if (epochEnd) {
@@ -120,10 +128,6 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 oldParams = network.params().dup()
             }
             logger.debug { "Iteration: $iteration" }
-
-            /**
-             * Slowdown logic
-             */
 
             try {
                 network.fit(trainDataSetIterator.next())
@@ -154,15 +158,16 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
             }
 
             if (iteration % trainConfiguration.iterationsBeforeSending!! == 0) {
+                val newOtherModelsWI = newOtherModels.map { Pair(it.key, it.value.array) }.toMap()
                 // Attack
                 val attack = modelPoisoningConfiguration.attack
                 val attackVectors = attack.obj.generateAttack(
                     modelPoisoningConfiguration.numAttackers,
                     oldParams,
                     gradient,
-                    newOtherModels,
+                    newOtherModelsWI,
                     random
-                )
+                ).map { Pair(it.key, MsgParamUpdate(it.value, -1)) }
                 newOtherModels.putAll(attackVectors)
 
 
@@ -184,13 +189,13 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                         network,
                         oldParams,
                         gradient,
-                        newOtherModels,
+                        newOtherModelsWI,
                         recentOtherModels,
                         testDataSetIterator,
                         countPerPeer,
                         true
                     )
-                    recentOtherModels.addAll(newOtherModels.toList())
+                    recentOtherModels.addAll(newOtherModelsWI.toList())
                     while (recentOtherModels.size > SIZE_RECENT_OTHER_MODELS) {
                         recentOtherModels.removeFirst()
                     }
@@ -199,7 +204,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 }
                 // Send new parameters to other peers
                 val message = craftMessage(averageParams.dup(), trainConfiguration.behavior, random)
-                sendModelToPeers(message, trainConfiguration.communicationPattern, countPerPeer)
+                sendModelToPeers(message, iteration, trainConfiguration.communicationPattern, countPerPeer)
 
                 if (iteration % trainConfiguration.iterationsBeforeEvaluation == 0) {
                     val elapsedTime2 = System.currentTimeMillis() - start
@@ -242,6 +247,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
 
     private fun sendModelToPeers(
         message: INDArray,
+        iteration: Int,
         communicationPattern: CommunicationPatterns,
         countPerPeer: Map<Int, Int>,
     ) {
@@ -251,7 +257,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
             CommunicationPatterns.RR -> community::sendToNextPeerRR
             CommunicationPatterns.RING -> community::sendToNextPeerRing
         }
-        sendMessage(MessageId.MSG_PARAM_UPDATE, MsgParamUpdate(message), countPerPeer.keys, false)
+        sendMessage(MessageId.MSG_PARAM_UPDATE, MsgParamUpdate(message, iteration), countPerPeer.keys, false)
     }
 
     override fun onMessageReceived(messageId: MessageId, peer: Peer, payload: Any) {
@@ -260,7 +266,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
             MessageId.MSG_PARAM_UPDATE -> {
                 logger.debug { "MSG_PARAM_UPDATE" }
                 val paramUpdate = payload as MsgParamUpdate
-                newOtherModels[peer.address.port] = paramUpdate.array
+                newOtherModels[peer.address.port] = paramUpdate
             }
             MessageId.MSG_PSI_CA_CLIENT_TO_SERVER -> scope.launch(Dispatchers.IO) {
                 logger.debug { "MSG_PSI_CA_CLIENT_TO_SERVER" }

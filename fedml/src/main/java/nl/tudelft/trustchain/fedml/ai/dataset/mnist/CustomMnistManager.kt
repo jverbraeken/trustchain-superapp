@@ -26,33 +26,25 @@ class CustomMnistManager(
         fullLabelsArr.computeIfAbsent(labelsFile) { loadLabels(labelsFile, numExamples) }
         labelIndexMappings.computeIfAbsent(labelsFile) { generateLabelIndexMapping(fullLabelsArr[labelsFile]!!) }
         val imagesArr = fullImagesArr[imagesFile]!!
-        val labelsArr = fullLabelsArr[labelsFile]!!
         val labelIndexMapping = labelIndexMappings[labelsFile]!!
 
-        val labelsArr2 = if (behavior === Behaviors.LABEL_FLIP) {
-            val labelsArr2 = labelsArr.copyOf()
-            labelsArr.indices
-                .filter { i: Int -> labelsArr[i] == 1 }
-                .forEach { i: Int -> labelsArr2[i] = 2 }
-            labelsArr.indices
-                .filter { i: Int -> labelsArr[i] == 2 }
-                .forEach { i: Int -> labelsArr2[i] = 3 }
-            labelsArr.indices
-                .filter { i: Int -> labelsArr[i] == 3 }
-                .forEach { i: Int -> labelsArr2[i] = 1 }
-            labelsArr2
+        val labelIndexMapping2 = if (behavior === Behaviors.LABEL_FLIP) {
+            val labelIndexMapping2 = labelIndexMapping.map { it.copyOf() }.toTypedArray()
+            labelIndexMapping2[1] = labelIndexMapping[2]
+            labelIndexMapping2[2] = labelIndexMapping[3]
+            labelIndexMapping2[3] = labelIndexMapping[1]
+            labelIndexMapping2
         } else {
-            labelsArr
+            labelIndexMapping
         }
-        val totalExamples = calculateTotalExamples(labelIndexMapping, iteratorDistribution, maxTestSamples)
-        val res = sampleData(imagesArr, labelsArr2, totalExamples, iteratorDistribution, maxTestSamples, seed, labelIndexMapping)
+        val totalExamples = calculateTotalExamples(labelIndexMapping2, iteratorDistribution, maxTestSamples)
+        val res = sampleData(imagesArr, totalExamples, iteratorDistribution, maxTestSamples, seed, labelIndexMapping2)
         sampledImages = res.first
         sampledLabels = res.second
     }
 
     private fun sampleData(
         tmpImagesArr: Array<ByteArray>,
-        tmpLabelsArr: IntArray,
         totalExamples: Int,
         iteratorDistribution: IntArray,
         maxTestSamples: Int,
@@ -67,7 +59,7 @@ class CustomMnistManager(
             val maxSamplesOfLabel = iteratorDistribution[label]
             labelIndexMapping[label].shuffle(random)
             for (j in 0 until minOf(labelIndexMapping[label].size, maxSamplesOfLabel, maxTestSamples)) {
-                results[count] = Pair(tmpImagesArr[labelIndexMapping[label][j]], tmpLabelsArr[labelIndexMapping[label][j]])
+                results[count] = Pair(tmpImagesArr[labelIndexMapping[label][j]], label)
                 count++
             }
         }

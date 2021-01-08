@@ -15,7 +15,7 @@ class LocalRunner : Runner() {
         seed: Int,
         mlConfiguration: MLConfiguration,
     ) {
-        val iterationsBeforeEvaluation = 15
+        val iterationsBeforeEvaluation = 5
 
         scope.launch {
             val trainDataSetIterator = mlConfiguration.dataset.inst(
@@ -65,6 +65,7 @@ class LocalRunner : Runner() {
                     }
                     iterations += 1
                     iterationsToEvaluation += 1
+                    logger.debug { "Iteration: $iterations" }
 
                     if (iterationsToEvaluation >= iterationsBeforeEvaluation) {
                         iterationsToEvaluation = 0
