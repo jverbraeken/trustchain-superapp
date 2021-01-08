@@ -153,6 +153,7 @@ class SimulatedRunner : Runner() {
                                 val newOtherModelBuffer = newOtherModelBuffers[nodeIndex]
                                 val recentOtherModelsBuffer = recentOtherModelsBuffers[nodeIndex]
                                 val iterTestFull = iterTestFulls[nodeIndex]
+                                val behavior = behaviors[nodeIndex]
 
                                 if (joiningLateRemainingIterations[nodeIndex] > 0) {
                                     joiningLateRemainingIterations[nodeIndex]--
@@ -170,62 +171,65 @@ class SimulatedRunner : Runner() {
                                     }
                                 }
 
-                                if (iteration % iterationsBeforeSendings[nodeIndex] == 0) {
-                                    // Attack
-                                    val attack = nodeConfig.modelPoisoningConfiguration.attack
-                                    val attackVectors = attack.obj.generateAttack(
-                                        nodeConfig.modelPoisoningConfiguration.numAttackers,
-                                        oldParam,
-                                        gradient,
-                                        newOtherModelBuffer,
-                                        random
-                                    )
-                                    newOtherModelBuffer.putAll(attackVectors)
 
-                                    // Integrate parameters of other peers
-                                    val numPeers = newOtherModelBuffer.size + 1
-                                    val averageParams: INDArray
-                                    if (numPeers == 1) {
-                                        if (nodeIndex == 0) logger.debug { "No received params => skipping integration evaluation" }
-                                        averageParams = newParams[nodeIndex]
-                                        network.setParameters(averageParams)
-                                    } else {
-                                        if (nodeIndex == 0) logger.debug { "Params received => executing aggregation rule" }
-                                        averageParams = nodeConfig.trainConfiguration.gar.obj.integrateParameters(
-                                            network,
+                                if (iteration % iterationsBeforeSendings[nodeIndex] == 0) {
+                                    if (behavior == Behaviors.BENIGN) {
+                                        // Attack
+                                        val attack = nodeConfig.modelPoisoningConfiguration.attack
+                                        val attackVectors = attack.obj.generateAttack(
+                                            nodeConfig.modelPoisoningConfiguration.numAttackers,
                                             oldParam,
                                             gradient,
                                             newOtherModelBuffer,
-                                            recentOtherModelsBuffer,
-                                            iterTestFull,
-                                            countPerPeer,
-                                            nodeIndex == 0
+                                            random
                                         )
-                                        recentOtherModelsBuffer.addAll(newOtherModelBuffer.toList())
-                                        while (recentOtherModelsBuffer.size > SIZE_RECENT_OTHER_MODELS) {
-                                            recentOtherModelsBuffer.removeFirst()
-                                        }
-                                        newOtherModelBuffer.clear()
-                                        network.setParameters(averageParams)
-                                    }
+                                        newOtherModelBuffer.putAll(attackVectors)
 
-                                    if (iteration % iterationsBeforeEvaluations[nodeIndex] == 0 && (nodeIndex == 0 || !ONLY_EVALUATE_FIRST_NODE)) {
-                                        val elapsedTime2 = System.currentTimeMillis() - start
-                                        val extraElements2 = mapOf(
-                                            Pair("before or after averaging", "before"),
-                                            Pair("#peers included in current batch", numPeers.toString())
-                                        )
-                                        evaluationProcessor.evaluate(
-                                            iterTestFull,
-                                            network,
-                                            extraElements2,
-                                            elapsedTime2,
-                                            iteration,
-                                            epoch,
-                                            nodeIndex,
-                                            nodeIndex == 0
-                                        )
+                                        // Integrate parameters of other peers
+                                        val numPeers = newOtherModelBuffer.size + 1
+                                        val averageParams: INDArray
+                                        if (numPeers == 1) {
+                                            if (nodeIndex == 0) logger.debug { "No received params => skipping integration evaluation" }
+                                            averageParams = newParams[nodeIndex]
+                                            network.setParameters(averageParams)
+                                        } else {
+                                            if (nodeIndex == 0) logger.debug { "Params received => executing aggregation rule" }
+                                            averageParams = nodeConfig.trainConfiguration.gar.obj.integrateParameters(
+                                                network,
+                                                oldParam,
+                                                gradient,
+                                                newOtherModelBuffer,
+                                                recentOtherModelsBuffer,
+                                                iterTestFull,
+                                                countPerPeer,
+                                                nodeIndex == 0
+                                            )
+                                            recentOtherModelsBuffer.addAll(newOtherModelBuffer.toList())
+                                            while (recentOtherModelsBuffer.size > SIZE_RECENT_OTHER_MODELS) {
+                                                recentOtherModelsBuffer.removeFirst()
+                                            }
+                                            network.setParameters(averageParams)
+                                        }
+
+                                        if (iteration % iterationsBeforeEvaluations[nodeIndex] == 0 && (nodeIndex == 0 || !ONLY_EVALUATE_FIRST_NODE)) {
+                                            val elapsedTime2 = System.currentTimeMillis() - start
+                                            val extraElements2 = mapOf(
+                                                Pair("before or after averaging", "before"),
+                                                Pair("#peers included in current batch", numPeers.toString())
+                                            )
+                                            evaluationProcessor.evaluate(
+                                                iterTestFull,
+                                                network,
+                                                extraElements2,
+                                                elapsedTime2,
+                                                iteration,
+                                                epoch,
+                                                nodeIndex,
+                                                nodeIndex == 0
+                                            )
+                                        }
                                     }
+                                    newOtherModelBuffer.clear()
                                 }
 
                                 oldParams[nodeIndex] = network.params().dup()

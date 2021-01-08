@@ -38,9 +38,16 @@ data class MsgPong(val message: String) : Serializable {
     }
 }
 
-data class MsgParamUpdate(val array: INDArray) : Serializable {
+data class MsgParamUpdate(val array: INDArray, val iteration: Int) : Serializable {
     override fun serialize(): ByteArray {
-        return ByteArrayOutputStream().use { ObjectOutputStream(it).writeObject(array); it }.toByteArray()
+        return ByteArrayOutputStream().use { bos ->
+            ObjectOutputStream(bos).use { oos ->
+                oos.writeObject(array);
+                oos.writeInt(iteration)
+                oos.flush()
+            }
+            bos
+        }.toByteArray()
     }
 
     companion object Deserializer : Deserializable<MsgParamUpdate> {
@@ -48,7 +55,7 @@ data class MsgParamUpdate(val array: INDArray) : Serializable {
             val croppedBuffer = buffer.copyOfRange(offset, buffer.size)
             ByteArrayInputStream(croppedBuffer).use { bis ->
                 ObjectInputStream(bis).use { ois ->
-                    return Pair(MsgParamUpdate(ois.readObject() as INDArray), buffer.size)
+                    return Pair(MsgParamUpdate(ois.readObject() as INDArray, ois.readInt()), buffer.size)
                 }
             }
         }

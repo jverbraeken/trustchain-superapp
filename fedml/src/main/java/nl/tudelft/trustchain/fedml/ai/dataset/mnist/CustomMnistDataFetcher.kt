@@ -8,6 +8,7 @@ import org.apache.commons.io.FilenameUtils
 import org.deeplearning4j.datasets.base.MnistFetcher
 import org.deeplearning4j.common.resources.DL4JResources
 import org.deeplearning4j.common.resources.ResourceType
+import org.deeplearning4j.datasets.fetchers.DataSetType
 import org.deeplearning4j.datasets.fetchers.MnistDataFetcher
 import org.nd4j.linalg.api.buffer.DataType
 import org.nd4j.linalg.dataset.DataSet
@@ -54,7 +55,7 @@ class CustomMnistDataFetcher(
                 iteratorDistribution,
                 maxTestSamples,
                 seed,
-                behavior
+                if (dataSetType == CustomDataSetType.FULL_TEST) Behaviors.BENIGN else behavior
             )
         } catch (e: Exception) {
             try {
