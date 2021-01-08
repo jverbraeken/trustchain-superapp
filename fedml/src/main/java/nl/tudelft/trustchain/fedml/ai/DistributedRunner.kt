@@ -336,7 +336,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 labels = iterTrain.labels
                 val countPerPeer = getSimilarPeers(port, labels, sraKeyPair, numPeers, psiCaMessagesFromServers)
 
-                while (psiRequests.size < 3 - 1) {
+                while (psiRequests.size < 4 - 1) {
                     logger.debug { "Waiting for other peers to finish PSI_CA: found ${psiRequests.size}" }
                     delay(500)
                 }
