@@ -269,6 +269,7 @@ class SimulatedRunner : Runner() {
                         logger.warn { "Test finished" }
                     }
                 }
+                logger.error { "All tests finished" }
             } catch (e: Exception) {
                 evaluationProcessor.error(e)
                 e.printStackTrace()

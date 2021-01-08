@@ -17,9 +17,11 @@ import nl.tudelft.ipv8.messaging.tftp.TFTPCommunity
 import nl.tudelft.ipv8.messaging.utp.UTPCommunity
 import nl.tudelft.trustchain.fedml.*
 import nl.tudelft.trustchain.fedml.ai.*
+import org.apache.commons.net.tftp.TFTPAckPacket
 import org.nd4j.linalg.api.ndarray.INDArray
 import java.io.*
 import java.math.BigInteger
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.concurrent.thread
 
 private val logger = KotlinLogging.logger("FedMLCommunity")
@@ -113,6 +115,8 @@ class FedMLCommunity(
 
     companion object {
         val messageListeners = MessageId.values().associate { it to mutableListOf<MessageListener>() }.toMutableMap()
+        @Volatile var newOtherModels = ConcurrentHashMap<Int, INDArray>()
+
         fun registerMessageListener(messageId: MessageId, listener: MessageListener) {
             messageListeners[messageId]!!.add(listener)
         }
@@ -156,7 +160,7 @@ class FedMLCommunity(
         logging: Boolean = false,
         reliable: Boolean = false,
     ) {
-        logger.debug { "sendToPeer, messageId: ${messageID.id}" }
+        logger.debug { "sendToPeer: ${peer.address.port}, messageId: ${messageID.id}" }
         val packet = serializePacket(messageID.id, message, true, logging = logging)
         peer.supportsUTP = true
         send(peer, packet, reliable)
@@ -170,7 +174,7 @@ class FedMLCommunity(
     ) {
         logger.debug { "sendToAll" }
         for (peer in getAllowedPeers(priorityPeers)) {
-            logger.debug { "Peer: ${peer.address}" }
+            logger.debug { "SendToAll peer: ${peer.address.port}, ${messageID.id}" }
             sendToPeer(peer, messageID, message, reliable = reliable)
         }
     }
