@@ -165,7 +165,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
             }
 
             if (iteration % trainConfiguration.iterationsBeforeSending!! == 0) {
-                val newOtherModelsWI = newOtherModels.map { Pair(it.key, it.value.array) }.toMap()
+                var newOtherModelsWI = newOtherModels.map { Pair(it.key, it.value.array) }.toMap()
                 // Attack
                 val attack = modelPoisoningConfiguration.attack
                 val attackVectors = attack.obj.generateAttack(
@@ -176,6 +176,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                     random
                 ).map { Pair(it.key, MsgParamUpdate(it.value, -1)) }
                 newOtherModels.putAll(attackVectors)
+                newOtherModelsWI = newOtherModels.map { Pair(it.key, it.value.array) }.toMap()
 
                 // Integrate parameters of other peers
                 val numPeers = newOtherModels.size + 1
@@ -246,6 +247,11 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                             true
                         )
                     )
+                }
+
+                while (community.getPeers().map { newOtherModels.get(it.address.port) }.any { it == null }) {
+                    delay(100)
+                    logger.debug { "peers: ${community.getPeers().map { it.address.port }} => newOtherModels: $newOtherModels" }
                 }
             }
         }
