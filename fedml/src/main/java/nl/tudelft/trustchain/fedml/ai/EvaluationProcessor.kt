@@ -81,6 +81,11 @@ class EvaluationProcessor(
         fileResults.createNewFile()
         fileMeta.createNewFile()
 
+        if (fileLog == null) {
+            fileLog = File(fileDirectory, "evaluation-${DATE_FORMAT.format(Date())}.csv")
+            fileLog!!.createNewFile()
+        }
+
         val newEvaluationHeader = Array(evaluationHeader.size + extraElementNames.size) { "" }
         evaluationHeader.copyInto(newEvaluationHeader)
         for ((index, name) in extraElementNames.withIndex()) {
@@ -239,5 +244,22 @@ class EvaluationProcessor(
             if (logging) logger.debug { "${evaluation.javaClass.simpleName}:\n${evaluation.stats()}" }
         }
         return call(network, evaluations, simulationIndex, network.score(), extraElements, elapsedTime, iterations, epoch)
+    }
+
+    companion object {
+        var fileLog : File? = null
+        private val logLines = arrayListOf<String>()
+
+        fun log(message: String) {
+            synchronized(logLines) {
+                logLines.add(message)
+                if (fileLog != null) {
+                    PrintWriter(fileLog!!).use { pw ->
+                        logLines
+                            .forEach(pw::println)
+                    }
+                }
+            }
+        }
     }
 }

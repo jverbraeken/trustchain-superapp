@@ -1,6 +1,7 @@
 package nl.tudelft.trustchain.fedml.ai.gar
 
 import mu.KotlinLogging
+import nl.tudelft.trustchain.fedml.ai.EvaluationProcessor
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.nd4j.linalg.api.ndarray.INDArray
@@ -21,8 +22,11 @@ abstract class AggregationRule {
 
     abstract fun isDirectIntegration(): Boolean
 
-    protected fun debug(logging: Boolean, msg: () -> Any?) {
-        if (logging) mpl.debug(msg)
+    protected fun debug(logging: Boolean, msg: () -> String) {
+        if (logging) {
+            mpl.debug(msg)
+            EvaluationProcessor.log(msg.invoke())
+        }
     }
 
     protected fun formatName(name: String): String {

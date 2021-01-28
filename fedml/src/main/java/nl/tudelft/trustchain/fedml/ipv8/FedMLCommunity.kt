@@ -148,7 +148,7 @@ class FedMLCommunity(
     }
 
     internal fun sendToMaster(messageID: MessageId, message: Serializable, logging: Boolean = false, reliable: Boolean = false) {
-//        logger.debug { "sendToMaster, messageId: ${messageID.id}" }
+        logger.debug { "sendToMaster, messageId: ${messageID.id}" }
         val packet = serializePacket(messageID.id, message, true, logging = logging)
         send(master, packet, reliable)
     }
@@ -206,10 +206,6 @@ class FedMLCommunity(
         reliable: Boolean = false,
     ) {
         logger.debug { "sendToNextPeerRR" }
-        if (!nl.tudelft.ipv8.messaging.utp.canSend()) {
-            logger.debug { "Skipped because busy sending" }
-            return
-        }
         val peer = getAndSetNextPeerRR(priorityPeers)
         if (peer != null) {
             logger.debug { "Peer: ${peer.address}" }
@@ -236,10 +232,6 @@ class FedMLCommunity(
         reliable: Boolean = false,
     ) {
         logger.debug { "sendToNextPeerRing" }
-        if (!nl.tudelft.ipv8.messaging.utp.canSend()) {
-            logger.debug { "Skipped because busy sending" }
-            return
-        }
         val peer = getAndSetNextPeerRing(priorityPeers)
         if (peer != null) {
             logger.debug { "Peer: ${peer.address}" }

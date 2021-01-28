@@ -8,11 +8,11 @@ import org.nd4j.linalg.api.ndarray.INDArray
 private val logger = KotlinLogging.logger("Krum")
 
 fun getKrum(models: Array<INDArray>, b: Int): Int {
-    val distances = Array(models.size) { FloatArray(models.size) }
+    val distances = Array(models.size) { DoubleArray(models.size) }
     for (i in 0 until models.size) {
-        distances[i][i] = 9999999.0f
+        distances[i][i] = 9999999.0
         for (j in i + 1 until models.size) {
-            val distance = models[i].distance2(models[j]).toFloat()
+            val distance = models[i].distance2(models[j])
             distances[i][j] = distance
             distances[j][i] = distance
         }
@@ -37,17 +37,17 @@ class Krum(private val b: Int) : AggregationRule() {
     ): INDArray {
         debug(logging) { formatName("Krum") }
         val modelMap = HashMap<Int, INDArray>()
-        modelMap[-1] = oldModel.sub(gradient)
+        val newModel = oldModel.sub(gradient)
+        modelMap[-1] = newModel
         modelMap.putAll(newOtherModels)
         val models = modelMap.values.toTypedArray()
         debug(logging) { "Found ${models.size} models in total" }
         return if (models.size <= b + 2 + 1) {  // The additional +1 is because we need to add the current peer itself
             debug(logging) { "Not using KRUM rule because not enough models found..." }
-            oldModel.sub(gradient)
+            newModel
         } else {
             val bestCandidate = getKrum(models, b)
-            val newModel = oldModel.sub(gradient).addi(models[bestCandidate]).divi(2)
-            newModel
+            newModel.addi(models[bestCandidate]).divi(2)
         }
     }
 

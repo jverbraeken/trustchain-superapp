@@ -28,28 +28,88 @@
 
         <GridLayout
             style="@style/GridLayout"
-            android:columnCount="4"
+            android:columnCount="8"
             android:paddingVertical="0dp">
 
             <Button
                 android:id="@+id/btnRunDistrSim0"
                 style="@style/button"
-                android:text="@string/run_distr_sim0" />
+                android:text="0" />
 
             <Button
                 android:id="@+id/btnRunDistrSim1"
                 style="@style/button"
-                android:text="@string/run_distr_sim1" />
+                android:text="1" />
 
             <Button
                 android:id="@+id/btnRunDistrSim2"
                 style="@style/button"
-                android:text="@string/run_distr_sim2" />
+                android:text="2" />
 
             <Button
                 android:id="@+id/btnRunDistrSim3"
                 style="@style/button"
-                android:text="@string/run_distr_sim3" />
+                android:text="3" />
+
+            <Button
+                android:id="@+id/btnRunDistrSim4"
+                style="@style/button"
+                android:text="4" />
+
+            <Button
+                android:id="@+id/btnRunDistrSim5"
+                style="@style/button"
+                android:text="5" />
+
+            <Button
+                android:id="@+id/btnRunDistrSim6"
+                style="@style/button"
+                android:text="6" />
+
+            <Button
+                android:id="@+id/btnRunDistrSim7"
+                style="@style/button"
+                android:text="7" />
+
+            <Button
+                android:id="@+id/btnRunDistrSim8"
+                style="@style/button"
+                android:text="8" />
+
+            <Button
+                android:id="@+id/btnRunDistrSim9"
+                style="@style/button"
+                android:text="9" />
+
+            <Button
+                android:id="@+id/btnRunDistrSim10"
+                style="@style/button"
+                android:text="10" />
+
+            <Button
+                android:id="@+id/btnRunDistrSim11"
+                style="@style/button"
+                android:text="11" />
+
+            <Button
+                android:id="@+id/btnRunDistrSim12"
+                style="@style/button"
+                android:text="12" />
+
+            <Button
+                android:id="@+id/btnRunDistrSim13"
+                style="@style/button"
+                android:text="13" />
+
+            <Button
+                android:id="@+id/btnRunDistrSim14"
+                style="@style/button"
+                android:text="14" />
+
+            <Button
+                android:id="@+id/btnRunDistrSim15"
+                style="@style/button"
+                android:text="15" />
         </GridLayout>
     </LinearLayout>
 </merge>
