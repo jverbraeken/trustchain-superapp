@@ -8,11 +8,11 @@ import org.nd4j.linalg.api.ndarray.INDArray
 private val logger = KotlinLogging.logger("Krum")
 
 fun getKrum(models: Array<INDArray>, b: Int): Int {
-    val distances = Array(models.size) { FloatArray(models.size) }
+    val distances = Array(models.size) { DoubleArray(models.size) }
     for (i in 0 until models.size) {
-        distances[i][i] = 9999999.0f
+        distances[i][i] = 9999999.0
         for (j in i + 1 until models.size) {
-            val distance = models[i].distance2(models[j]).toFloat()
+            val distance = models[i].distance2(models[j])
             distances[i][j] = distance
             distances[j][i] = distance
         }

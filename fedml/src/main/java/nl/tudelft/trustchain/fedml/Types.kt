@@ -199,7 +199,6 @@ enum class GARs(
     val obj: AggregationRule,
     val defaultModelPoisoningAttack: ModelPoisoningAttacks,
 ) {
-    /*WERK AAN EEN LOWER BOUND (NO AVERAGING: 1 NODE BEPERKTE TRAINING DATA) EN UPPER BOUND (1 NODE HEEL VEEL TRAINING DATA)*/
     NONE("none", "None", NoAveraging(), ModelPoisoningAttacks.NONE),
     AVERAGE("average", "Simple average", Average(), ModelPoisoningAttacks.NONE),
     MEDIAN("median", "Median", Median(), ModelPoisoningAttacks.FANG_2020_MEDIAN),
