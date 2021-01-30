@@ -30,6 +30,8 @@ import kotlin.random.Random
 
 private val logger = KotlinLogging.logger("Runner")
 
+private const val TEST_SET_SIZE = 10
+
 fun generateDefaultMNISTConfiguration(
     nnConfiguration: NNConfiguration,
     seed: Int,
@@ -223,7 +225,9 @@ abstract class Runner {
         )
         logger.debug { "Loaded fullTrainDataSetIterator" }
         val testDataSetIterator = dataset.inst(
-            datasetIteratorConfiguration,
+            DatasetIteratorConfiguration(BatchSizes.BATCH_200,
+                List(datasetIteratorConfiguration.distribution.size) { TEST_SET_SIZE },
+                datasetIteratorConfiguration.maxTestSamples),
             seed + 2,
             CustomDataSetType.TEST,
             baseDirectory,

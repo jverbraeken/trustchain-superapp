@@ -30,8 +30,8 @@ fun loadAutomation(baseDirectory: File): Automation {
     return Json.decodeFromString(string)
 }
 
-private const val ISOLATED_FIGURE_NAME = "Figure 1.1"
-private const val ISOLATED_FIGURE_GAR = "krum"
+private const val ISOLATED_FIGURE_NAME = "Figure 0.1"
+private val ISOLATED_FIGURE_GAR = arrayOf("bristle")
 
 /**
  * @return 1. the configuration per node, per test, per figure ; 2. the names of the figures
@@ -55,12 +55,12 @@ fun generateConfigs(
     val iterationsBeforeEvaluation = automation.fixedValues.getValue("iterationsBeforeEvaluation").toInt()
     val iterationsBeforeSending = automation.fixedValues.getValue("iterationsBeforeSending").toInt()
     val figures = automation.figures
-    logger.debug { "Testing figure: ${automationPart * (figures.size / 16)}" }
+    logger.debug { "Testing figure: ${automationPart * (figures.size / 13)}" }
     val myFigures =
         if (automationPart == -1)
             figures.filter { it.name == ISOLATED_FIGURE_NAME }
         else
-            figures.subList(automationPart * (figures.size / 16), (automationPart + 1) * (figures.size / 16))
+            figures.subList(automationPart * (figures.size / 13), (automationPart + 1) * (figures.size / 13))
 
     for (figure in myFigures) {
         configurations.add(arrayListOf())
@@ -79,7 +79,7 @@ fun generateConfigs(
 
         for (test in figure.tests) {
             val gar = loadGAR(test.gar)!!
-            if (automationPart == -1 && gar.id != ISOLATED_FIGURE_GAR) continue
+            if (automationPart == -1 && gar.id !in ISOLATED_FIGURE_GAR) continue
 
             configurations.last().add(arrayListOf())
 

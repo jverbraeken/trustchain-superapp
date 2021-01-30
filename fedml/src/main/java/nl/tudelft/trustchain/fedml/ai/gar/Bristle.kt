@@ -103,34 +103,35 @@ class Bristle : AggregationRule() {
         model: INDArray,
         network: MultiLayerNetwork,
         testDataSetIterator: CustomDataSetIterator,
-    ): IntArray {
+    ): DoubleArray {
         network.setParameters(model)
         val evaluations = arrayOf(Evaluation())
         network.doEvaluation(testDataSetIterator, *evaluations)
         return testDataSetIterator.labels.map {
-            val recall = evaluations[0].recall(it.toInt()) * 10
-            recall.toInt()
-        }.toIntArray()
+            evaluations[0].recall(it.toInt())
+        }.toDoubleArray()
     }
 
     private fun calculateRecallPerClass(
         models: Map<Int, INDArray>,
         network: MultiLayerNetwork,
         testDataSetIterator: CustomDataSetIterator,
-    ): Map<Int, IntArray> {
+    ): Map<Int, DoubleArray> {
         return models.map { (index, model) ->
             Pair(index, calculateRecallPerClass(model, network, testDataSetIterator))
         }.toMap()
     }
 
     private fun mapRecallPerClassToWeight(
-        myRecallPerClass: IntArray,
-        peerRecallPerClass: Map<Int, IntArray>,
+        myRecallPerClass: DoubleArray,
+        peerRecallPerClass: Map<Int, DoubleArray>,
         countPerPeer: Map<Int, Int>,
         logging: Boolean,
     ): Map<Int, Double> {
-        val seqAttackPenalty = myRecallPerClass.map { 0 }.toMutableList()
-        peerRecallPerClass.map { (peer, recallPerClass) ->
+        val seqAttackPenalty = myRecallPerClass.map { 0.0 }.toMutableList()
+        val myRecallAverage = myRecallPerClass.average()
+
+        val weightsPerPeer = peerRecallPerClass.map { (peer, recallPerClass) ->
             val selectionSize = countPerPeer.getOrDefault(peer, myRecallPerClass.size)
 
             val selectedClassesAndRecall = if (selectionSize == recallPerClass.size)
@@ -148,25 +149,37 @@ class Bristle : AggregationRule() {
 
             val weightPerClass = selectedClassesAndRecall.map { (clazz, peerRecall) ->
                 val myRecall = myRecallPerClass[clazz]
-                val weightedDiff = abs(myRecall - peerRecall) * 10
+                val untrainedModelAmbiguity = if (myRecall >= peerRecall) myRecallAverage else 1.0
+                val weightedDiff = abs(myRecall - peerRecall) * 10 * untrainedModelAmbiguity
                 val w = if (peerRecall >= myRecall) {
-                    weightedDiff.toDouble().pow(2 + myRecall * 2)
+                    weightedDiff.pow(2 + myRecall * 1.5)
                 } else {
-                    -weightedDiff.toDouble().pow(3 + myRecall * 2) * (1 + max(0, seqAttackPenalty[clazz]))
+                    -weightedDiff.pow(3 + myRecall * 1.5) * (1 + max(0.0, seqAttackPenalty[clazz]))
                 }
+                debug(logging) { "peer: $peer, class: $clazz, myRecall: $myRecall, peerRecall: $peerRecall, weightedDiff: $weightedDiff, untrainedModelAmbiguity: $untrainedModelAmbiguity, w: $w, seqAttackPenalty: ${seqAttackPenalty[clazz]}" }
                 seqAttackPenalty[clazz] += 2 * (myRecall - peerRecall)
                 w
             }
             Pair(peer, weightPerClass)
         }
-        debug(logging) { "peerRecallPerClass: $peerRecallPerClass" }
 
-        return peerRecallPerClass.map { (peer, weightPerClass) ->
-            val weightSum = weightPerClass.sum().toDouble()
-            var sigmoid = 1/(1+ exp(weightSum / 100))  // sigmoid function
-            sigmoid *= 10  // sigmoid from 0 -> 1 to 0 -> 10
-            sigmoid -= 4  // sigmoid from 0 -> 10 to -4 -> 6
-            Pair(peer, max(0.0, sigmoid))  // no negative weights
+        return weightsPerPeer.map { (peer, weightPerClass) ->
+            debug(logging) { "weightPerClass: ${weightPerClass.toList()}"}
+            val weightSum = weightPerClass.sum()
+            debug(logging) { "weightSum: $weightSum"}
+            if (weightSum < -1000) {
+                Pair(peer, 0.0)
+            } else {
+                var sigmoid = 1 / (1 + exp(-weightSum / 100))  // sigmoid function
+                debug(logging) { "sigmoid: $sigmoid"}
+                sigmoid *= 10  // sigmoid from 0 -> 1 to 0 -> 10
+                debug(logging) { "sigmoid: $sigmoid"}
+                sigmoid -= 4  // sigmoid from 0 -> 10 to -4 -> 6
+                debug(logging) { "sigmoid: $sigmoid"}
+                sigmoid = max(0.0, sigmoid)  // no negative weights
+                debug(logging) { "sigmoid: $sigmoid"}
+                Pair(peer, sigmoid)
+            }
         }.toMap()
     }
 

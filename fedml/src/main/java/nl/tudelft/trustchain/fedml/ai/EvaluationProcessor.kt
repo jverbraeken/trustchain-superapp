@@ -82,7 +82,7 @@ class EvaluationProcessor(
         fileMeta.createNewFile()
 
         if (fileLog == null) {
-            fileLog = File(fileDirectory, "evaluation-${DATE_FORMAT.format(Date())}.csv")
+            fileLog = File(fileDirectory, "evaluation-${DATE_FORMAT.format(Date())}.txt")
             fileLog!!.createNewFile()
         }
 
