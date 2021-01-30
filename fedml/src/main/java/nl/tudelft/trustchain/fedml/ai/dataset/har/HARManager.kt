@@ -25,26 +25,19 @@ class HARManager(
         fullLabelsArr.computeIfAbsent(labelsFile.name) { loadLabels(labelsFile) }
         labelIndexMappings.computeIfAbsent(labelsFile.name) { generateLabelIndexMapping(fullLabelsArr[labelsFile.name]!!) }
         val dataArr = fullDataArr[dataFiles[0].name]!!
-        val labelsArr = fullLabelsArr[labelsFile.name]!!
         val labelIndexMapping = labelIndexMappings[labelsFile.name]!!
 
-        val labelsArr2 = if (behavior === Behaviors.LABEL_FLIP) {
-            val labelsArr2 = labelsArr.copyOf()
-            labelsArr.indices
-                .filter { i: Int -> labelsArr[i] == 1 }
-                .forEach { i: Int -> labelsArr2[i] = 2 }
-            labelsArr.indices
-                .filter { i: Int -> labelsArr[i] == 2 }
-                .forEach { i: Int -> labelsArr2[i] = 3 }
-            labelsArr.indices
-                .filter { i: Int -> labelsArr[i] == 3 }
-                .forEach { i: Int -> labelsArr2[i] = 1 }
-            labelsArr2
+        val labelIndexMapping2 = if (behavior === Behaviors.LABEL_FLIP) {
+            val labelIndexMapping2 = labelIndexMapping.map { it.copyOf() }.toTypedArray()
+            labelIndexMapping2[1] = labelIndexMapping[2]
+            labelIndexMapping2[2] = labelIndexMapping[3]
+            labelIndexMapping2[3] = labelIndexMapping[1]
+            labelIndexMapping2
         } else {
-            labelsArr
+            labelIndexMapping
         }
         val totalExamples = calculateTotalExamples(labelIndexMapping, iteratorDistribution, maxTestSamples)
-        val res = sampleData(dataArr, labelsArr2, totalExamples, iteratorDistribution, maxTestSamples, seed, labelIndexMapping)
+        val res = sampleData(dataArr, totalExamples, iteratorDistribution, maxTestSamples, seed, labelIndexMapping2)
         sampledDataArr = res.first
         sampledLabelsArr = res.second
         featureData = sampledDataArr.map { extractFeatures(it) }.toTypedArray()
@@ -61,7 +54,6 @@ class HARManager(
 
     private fun sampleData(
         tmpDataArr: Array<Array<String>>,
-        tmpLabelsArr: IntArray,
         totalExamples: Int,
         iteratorDistribution: IntArray,
         maxTestSamples: Int,
@@ -78,7 +70,7 @@ class HARManager(
             for (j in 0 until minOf(labelIndexMapping[label].size, maxSamplesOfLabel, maxTestSamples)) {
                 results[count] = Pair(
                     tmpDataArr.map { dataFile -> dataFile[labelIndexMapping[label][j]] },
-                    tmpLabelsArr[labelIndexMapping[label][j]]
+                    label
                 )
                 count++
             }

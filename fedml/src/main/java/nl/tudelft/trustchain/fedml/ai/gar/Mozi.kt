@@ -13,7 +13,7 @@ import kotlin.math.ceil
 private val logger = KotlinLogging.logger("Mozi")
 
 class Mozi(private val fracBenign: Double) : AggregationRule() {
-    private val TEST_BATCH = 200
+    private val TEST_BATCH = 100
 
     override fun integrateParameters(
         network: MultiLayerNetwork,
@@ -46,7 +46,7 @@ class Mozi(private val fracBenign: Double) : AggregationRule() {
         logger.debug("average: ${Rmozi.getDouble(0)}")
         val alpha = 0.5
         val part1 = oldModel.sub(gradient).muli(alpha)
-        val result = part1.add(Rmozi.muli(1 - alpha))
+        val result = part1.addi(Rmozi.muli(1 - alpha))
         logger.debug("result: ${result.getDouble(0)}")
         return result
     }

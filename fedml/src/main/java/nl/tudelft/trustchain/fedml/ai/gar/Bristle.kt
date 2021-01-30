@@ -2,11 +2,14 @@ package nl.tudelft.trustchain.fedml.ai.gar
 
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
+import org.nd4j.evaluation.classification.Evaluation
 import org.nd4j.linalg.api.ndarray.INDArray
-import org.nd4j.linalg.dataset.DataSet
-import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
-import kotlin.math.max
-import kotlin.math.min
+import kotlin.math.*
+
+private const val NUM_MODELS_EXPLOITATION = 50
+private const val NUM_MODELS_EXPLORATION = 5
+private const val MIN_NUMBER_MODELS_FOR_DISTANCE_SCREENING = 20
+private const val TEST_BATCH = 100
 
 /**
  * (practical yet robust) byzantine-resilient decentralized stochastic federated learning
@@ -15,9 +18,6 @@ import kotlin.math.min
  * byzantine-resilient decentralized stochastic gradient descent federated learning, non i.i.d., history-sensitive (= more robust), practical
  */
 class Bristle : AggregationRule() {
-    private val NUM_MODELS_EXPLOITATION = 9
-    private val NUM_MODELS_EXPLORATION = 1
-
     @ExperimentalStdlibApi
     override fun integrateParameters(
         network: MultiLayerNetwork,
@@ -61,18 +61,11 @@ class Bristle : AggregationRule() {
         combinedModels.putAll(explorationModels)
         debug(logging) { "combinedModels: ${combinedModels.map { it.value.getFloat(0) }.toCollection(ArrayList())}" }
         testDataSetIterator.reset()
-//        val sample = testDataSetIterator.next(TEST_BATCH)
-//        val oldLoss = calculateLoss(oldModel, network, sample)
-//        debug(logging) { "oldLoss: $oldLoss" }
-        val oldLossPerClass = calculateLossPerClass(oldModel, network, testDataSetIterator.testBatches)
-        debug(logging) { "oldLossPerClass: ${oldLossPerClass.toList()}" }
-//        val losses = calculateLosses(combinedModels, network, sample)
-//        debug(logging) { "losses: $losses" }
-        val lossesPerClass = calculateLossesPerClass(combinedModels, network, testDataSetIterator.testBatches)
-        debug(logging) { "lossesPerClass: ${lossesPerClass.map { Pair(it.key, it.value.toList()) }}" }
-//        val modelsToWeight = mapLossesToWeight(losses, oldLoss)
-//        debug(logging) { "modelsToWeight: $modelsToWeight" }
-        val modelsPerClassToWeight = mapLossesPerClassToWeight(lossesPerClass, oldLossPerClass, countPerPeer, logging)
+        val myRecallPerClass = calculateRecallPerClass(newModel, network, testDataSetIterator)
+        debug(logging) { "myRecallPerClass: ${myRecallPerClass.toList()}" }
+        val peerRecallPerClass = calculateRecallPerClass(combinedModels, network, testDataSetIterator)
+        debug(logging) { "peerRecallPerClass: ${peerRecallPerClass.map { Pair(it.key, it.value.toList()) }}" }
+        val modelsPerClassToWeight = mapRecallPerClassToWeight(myRecallPerClass, peerRecallPerClass, countPerPeer, logging)
         debug(logging) { "modelsPerClassToWeight: $modelsPerClassToWeight" }
 
         return if (modelsPerClassToWeight.isEmpty()) {
@@ -90,73 +83,103 @@ class Bristle : AggregationRule() {
         oldModel: INDArray,
         newModel: INDArray,
         otherModels: Map<Int, INDArray>,
-        allOtherModelsBuffer: ArrayDeque<Pair<Int, INDArray>>,
+        recentOtherModels: ArrayDeque<Pair<Int, INDArray>>,
         logging: Boolean,
     ): Map<Int, Double> {
         val distances = hashMapOf<Int, Double>()
         for ((index, otherModel) in otherModels) {
-            val min = min(otherModel.distance2(oldModel), otherModel.distance2(newModel))
+            val min = otherModel.distance2(newModel)
             debug(logging) { "Distance calculated: $min" }
             distances[index] = min
         }
-        for (i in 0 until min(20 - distances.size, allOtherModelsBuffer.size)) {
-            val otherModel = allOtherModelsBuffer.elementAt(allOtherModelsBuffer.size - 1 - i)
-            distances[1100000 + otherModel.first] =
-                min(otherModel.second.distance2(oldModel), otherModel.second.distance2(newModel))
+        for (i in 0 until min(MIN_NUMBER_MODELS_FOR_DISTANCE_SCREENING - distances.size, recentOtherModels.size)) {
+            val otherModel = recentOtherModels.elementAt(recentOtherModels.size - 1 - i)
+            distances[1100000 + otherModel.first] = otherModel.second.distance2(newModel)
         }
         return distances.toList().sortedBy { (_, value) -> value }.toMap()
     }
 
-    private fun calculateLossPerClass(
+    private fun calculateRecallPerClass(
         model: INDArray,
         network: MultiLayerNetwork,
-        testBatches: Array<DataSet?>,
-    ): Array<Double?> {
+        testDataSetIterator: CustomDataSetIterator,
+    ): DoubleArray {
         network.setParameters(model)
-        return testBatches
-            .map { if (it == null) null else network.score(it) }
-            .toTypedArray()
+        val evaluations = arrayOf(Evaluation())
+        network.doEvaluation(testDataSetIterator, *evaluations)
+        return testDataSetIterator.labels.map {
+            evaluations[0].recall(it.toInt())
+        }.toDoubleArray()
     }
 
-    private fun calculateLossesPerClass(
+    private fun calculateRecallPerClass(
         models: Map<Int, INDArray>,
         network: MultiLayerNetwork,
-        testBatches: Array<DataSet?>,
-    ): Map<Int, Array<Double?>> {
+        testDataSetIterator: CustomDataSetIterator,
+    ): Map<Int, DoubleArray> {
         return models.map { (index, model) ->
-            Pair(
-                index, testBatches.map { testBatch ->
-                    if (testBatch == null) {
-                        null
-                    } else {
-                        network.setParameters(model)
-                        network.score(testBatch)
-                    }
-                }.toTypedArray()
-            )
+            Pair(index, calculateRecallPerClass(model, network, testDataSetIterator))
         }.toMap()
     }
 
-    private fun mapLossesPerClassToWeight(
-        otherLossesPerClass: Map<Int, Array<Double?>>,
-        oldLossPerClass: Array<Double?>,
+    private fun mapRecallPerClassToWeight(
+        myRecallPerClass: DoubleArray,
+        peerRecallPerClass: Map<Int, DoubleArray>,
         countPerPeer: Map<Int, Int>,
         logging: Boolean,
     ): Map<Int, Double> {
-        val smallestLossPerPeer = otherLossesPerClass
-            .map { (peer, lossPerClass) ->
-                Pair(peer, lossPerClass
-                    .mapIndexed { label, loss -> Pair(label, loss ?: Double.MAX_VALUE) }
-                    .sortedBy { it.second }
-                    .take(countPerPeer.getOrDefault(peer, lossPerClass.size))  // Attackers have a negative index => assume that they have the same classes as the current peer to maximize attack strength
-                    .toMap())
-            }.toMap()
-        debug(logging) { "smallestLossPerPeer: $smallestLossPerPeer" }
+        val seqAttackPenalty = myRecallPerClass.map { 0.0 }.toMutableList()
+        val myRecallAverage = myRecallPerClass.average()
 
-        return smallestLossPerPeer.map { (peer, lossPerLabel) ->
-            val smallestOtherLoss = lossPerLabel.map { (_, smallestLosses) -> smallestLosses }.sum()
-            val smallestOwnLoss = lossPerLabel.map { (label, _) -> oldLossPerClass[label]!! }.sum()
-            Pair(peer, max(0.0, 1.0 + (5 - 5 * (smallestOtherLoss / smallestOwnLoss))))
+        val weightsPerPeer = peerRecallPerClass.map { (peer, recallPerClass) ->
+            val selectionSize = countPerPeer.getOrDefault(peer, myRecallPerClass.size)
+
+            val selectedClassesAndRecall = if (selectionSize == recallPerClass.size)
+                recallPerClass
+                    .mapIndexed { label, recall -> Pair(label, recall) }
+                    .toMap()
+            else
+                recallPerClass
+                    .mapIndexed { label, recall -> Pair(label, recall) }
+                    .sortedByDescending { it.second }
+                    .take(selectionSize)  // Attackers have a negative index => assume that they have the same classes as the current peer to maximize attack strength
+                    .toMap()
+
+            debug(logging) { "selectedClassesAndRecall: $selectedClassesAndRecall" }
+
+            val weightPerClass = selectedClassesAndRecall.map { (clazz, peerRecall) ->
+                val myRecall = myRecallPerClass[clazz]
+                val untrainedModelAmbiguity = if (myRecall >= peerRecall) myRecallAverage else 1.0
+                val weightedDiff = abs(myRecall - peerRecall) * 10 * untrainedModelAmbiguity
+                val w = if (peerRecall >= myRecall) {
+                    weightedDiff.pow(2 + myRecall * 1.5)
+                } else {
+                    -weightedDiff.pow(3 + myRecall * 1.5) * (1 + max(0.0, seqAttackPenalty[clazz]))
+                }
+                debug(logging) { "peer: $peer, class: $clazz, myRecall: $myRecall, peerRecall: $peerRecall, weightedDiff: $weightedDiff, untrainedModelAmbiguity: $untrainedModelAmbiguity, w: $w, seqAttackPenalty: ${seqAttackPenalty[clazz]}" }
+                seqAttackPenalty[clazz] += 2 * (myRecall - peerRecall)
+                w
+            }
+            Pair(peer, weightPerClass)
+        }
+
+        return weightsPerPeer.map { (peer, weightPerClass) ->
+            debug(logging) { "weightPerClass: ${weightPerClass.toList()}"}
+            val weightSum = weightPerClass.sum()
+            debug(logging) { "weightSum: $weightSum"}
+            if (weightSum < -1000) {
+                Pair(peer, 0.0)
+            } else {
+                var sigmoid = 1 / (1 + exp(-weightSum / 100))  // sigmoid function
+                debug(logging) { "sigmoid: $sigmoid"}
+                sigmoid *= 10  // sigmoid from 0 -> 1 to 0 -> 10
+                debug(logging) { "sigmoid: $sigmoid"}
+                sigmoid -= 4  // sigmoid from 0 -> 10 to -4 -> 6
+                debug(logging) { "sigmoid: $sigmoid"}
+                sigmoid = max(0.0, sigmoid)  // no negative weights
+                debug(logging) { "sigmoid: $sigmoid"}
+                Pair(peer, sigmoid)
+            }
         }.toMap()
     }
 
@@ -177,7 +200,7 @@ class Bristle : AggregationRule() {
         arr!!.addi(newModel)
         val totalWeight = modelsToWeight.values.sum() + 1  // + 1 for the new model
         debug(logging) { "totalWeight: $totalWeight" }
-        val result = arr!!.div(totalWeight)
+        val result = arr!!.divi(totalWeight)
         debug(logging) { "weightedAverage: $result" }
         return result
     }

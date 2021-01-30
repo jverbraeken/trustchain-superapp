@@ -152,6 +152,6 @@ class CustomMnistDataFetcher(
 
     companion object {
         const val NUM_LABELS = 10
-        const val TEST_BATCH_SIZE = 20
+        const val TEST_BATCH_SIZE = 10
     }
 }

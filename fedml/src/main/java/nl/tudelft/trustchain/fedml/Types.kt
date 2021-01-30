@@ -119,6 +119,7 @@ fun loadIteratorDistribution(iteratorDistribution: String?) =
     IteratorDistributions.values().firstOrNull { it.id == iteratorDistribution }
 
 enum class MaxTestSamples(val id: String, val text: String, val value: Int) {
+    NUM_10("num_10", "10", 10),
     NUM_20("num_20", "20", 20),
     NUM_40("num_40", "40", 40),
     NUM_100("num_100", "100", 100),
@@ -183,6 +184,7 @@ fun loadL2Regularization(l2: String?) = L2Regularizations.values().firstOrNull {
 enum class MaxIterations(val id: String, val text: String, val value: Int) {
     ITER_25("iter_25", "25", 25),
     ITER_50("iter_50", "50", 50),
+    ITER_100("iter_100", "100", 100),
     ITER_150("iter_150", "150", 150),
     ITER_200("iter_200", "200", 200),
     ITER_250("iter_250", "250", 250),
@@ -231,13 +233,14 @@ fun loadBehavior(behavior: String?) = Behaviors.values().firstOrNull { it.id == 
 enum class Slowdowns(val id: String, val text: String, val multiplier: Double) {
     NONE("none", "-", 1.0),
     D2("d2", "x 0.5", 0.5),
+    D5("d5", "x 0.2", 0.2),
 }
 
 fun loadSlowdown(slowdown: String?) = Slowdowns.values().firstOrNull { it.id == slowdown }
 
 enum class TransmissionRounds(val id: String, val text: String, val rounds: Int) {
     N0("n0", "0", 0),
-    N100("n100", "100", 100)
+    N150("n150", "150", 150)
 }
 
 fun loadTransmissionRound(transmissionRound: String?) = TransmissionRounds.values().firstOrNull { it.id == transmissionRound }
@@ -259,6 +262,8 @@ enum class NumAttackers(val id: String, val text: String, val num: Int) {
     NUM_3("num_3", "3", 3),
     NUM_4("num_4", "4", 4),
     NUM_10("num_10", "10", 10),
+    NUM_20("num_20", "20", 20),
+    NUM_35("num_35", "35", 35),
     NUM_75("num_75", "75", 75),
     NUM_175("num_175", "175", 175)
 }

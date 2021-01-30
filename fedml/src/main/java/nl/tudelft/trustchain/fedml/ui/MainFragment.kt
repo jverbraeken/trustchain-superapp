@@ -87,6 +87,18 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
         buttonsBinding.btnRunDistrSim1.setOnClickListener { onBtnSimulateDistributedLocallyClicked(1) }
         buttonsBinding.btnRunDistrSim2.setOnClickListener { onBtnSimulateDistributedLocallyClicked(2) }
         buttonsBinding.btnRunDistrSim3.setOnClickListener { onBtnSimulateDistributedLocallyClicked(3) }
+        buttonsBinding.btnRunDistrSim4.setOnClickListener { onBtnSimulateDistributedLocallyClicked(4) }
+        buttonsBinding.btnRunDistrSim5.setOnClickListener { onBtnSimulateDistributedLocallyClicked(5) }
+        buttonsBinding.btnRunDistrSim6.setOnClickListener { onBtnSimulateDistributedLocallyClicked(6) }
+        buttonsBinding.btnRunDistrSim7.setOnClickListener { onBtnSimulateDistributedLocallyClicked(7) }
+        buttonsBinding.btnRunDistrSim8.setOnClickListener { onBtnSimulateDistributedLocallyClicked(8) }
+        buttonsBinding.btnRunDistrSim9.setOnClickListener { onBtnSimulateDistributedLocallyClicked(9) }
+        buttonsBinding.btnRunDistrSim10.setOnClickListener { onBtnSimulateDistributedLocallyClicked(10) }
+        buttonsBinding.btnRunDistrSim11.setOnClickListener { onBtnSimulateDistributedLocallyClicked(11) }
+        buttonsBinding.btnRunDistrSim12.setOnClickListener { onBtnSimulateDistributedLocallyClicked(12) }
+        buttonsBinding.btnRunDistrSim13.setOnClickListener { onBtnSimulateDistributedLocallyClicked(13) }
+        buttonsBinding.btnRunDistrSim14.setOnClickListener { onBtnSimulateDistributedLocallyClicked(14) }
+        buttonsBinding.btnRunDistrSim15.setOnClickListener { onBtnSimulateDistributedLocallyClicked(15) }
 
         bindSpinner(view, datasetBinding.spnDataset, datasets)
         bindSpinner(view, iteratorBinding.spnBatchSize, batchSizes)

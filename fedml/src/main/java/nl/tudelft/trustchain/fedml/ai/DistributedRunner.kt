@@ -18,8 +18,8 @@ import java.io.File
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
-import kotlin.collections.ArrayDeque
 import kotlin.random.Random
+import kotlin.collections.ArrayDeque
 
 private val logger = KotlinLogging.logger("DistributedRunner")
 private const val SIZE_RECENT_OTHER_MODELS = 20
@@ -121,10 +121,10 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 delay(500)
             }
         }
-        val iterationTimeStart = System.currentTimeMillis()
+        var iterationTimeStart: Long? = null
         var iterationTimeEnd: Long? = null
 
-        for (iteration in 0 until trainConfiguration.maxIteration.value) {
+        for (iteration in 0 until (trainConfiguration.maxIteration.value * trainConfiguration.slowdown.multiplier).toInt()) {
             if (epochEnd) {
                 epoch++
                 logger.debug { "Epoch: $epoch" }
@@ -165,7 +165,33 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
             }
 
             if (iteration % trainConfiguration.iterationsBeforeSending!! == 0) {
-                val newOtherModelsWI = newOtherModels.map { Pair(it.key, it.value.array) }.toMap()
+                if (iterationTimeStart != null) {
+                    if (iterationTimeEnd == null) {
+                        iterationTimeEnd = System.currentTimeMillis()
+                        logger.debug { "iterationTimeEnd: $iterationTimeEnd" }
+                    }
+                    val delay = (iterationTimeEnd - iterationTimeStart) * slowdown
+                    logger.debug { "Slowdown delay: $delay" }
+                    delay(delay)
+                }
+                // Send new parameters to other peers
+                val message = craftMessage(newParams.dup(), trainConfiguration.behavior, random)
+                sendModelToPeers(message, iteration, trainConfiguration.communicationPattern, countPerPeer)
+
+
+
+                // Wait for parameters of other peers to be received
+//                while (community.getPeers().map { newOtherModels.get(it.address.port) }.any { it == null }) {
+//                    delay(100)
+//                    logger.debug { "peers: ${community.getPeers().map { it.address.port }} => newOtherModels: ${newOtherModels.keys}" }
+//                }
+
+
+
+
+
+
+                var newOtherModelsWI = newOtherModels.map { Pair(it.key, it.value.array) }.toMap()
                 // Attack
                 val attack = modelPoisoningConfiguration.attack
                 val attackVectors = attack.obj.generateAttack(
@@ -176,6 +202,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                     random
                 ).map { Pair(it.key, MsgParamUpdate(it.value, -1)) }
                 newOtherModels.putAll(attackVectors)
+                newOtherModelsWI = newOtherModels.map { Pair(it.key, it.value.array) }.toMap()
 
                 // Integrate parameters of other peers
                 val numPeers = newOtherModels.size + 1
@@ -203,15 +230,6 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                     newOtherModels.clear()
                     network.setParameters(averageParams)
                 }
-                // Send new parameters to other peers
-                val message = craftMessage(averageParams.dup(), trainConfiguration.behavior, random)
-
-                while (!udpEndpoint.noPendingTFTPMessages()) {
-                    logger.debug { "Waiting for all TFTP messages to be sent" }
-                    delay(500)
-                }
-
-                sendModelToPeers(message, iteration, trainConfiguration.communicationPattern, countPerPeer)
 
                 if (iteration % trainConfiguration.iterationsBeforeEvaluation == 0) {
                     val elapsedTime2 = System.currentTimeMillis() - start
@@ -232,11 +250,18 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                         )
                     )
                 }
+
+                while (!udpEndpoint.noPendingTFTPMessages()) {
+                    logger.debug { "Waiting for all TFTP messages to be sent" }
+                    delay(200)
+                }
+
+
+                if (iterationTimeStart == null) {
+                    iterationTimeStart = System.currentTimeMillis()
+                    logger.debug { "iterationTimeStart: $iterationTimeStart" }
+                }
             }
-            if (iterationTimeEnd == null) {
-                iterationTimeEnd = System.currentTimeMillis()
-            }
-            delay((iterationTimeEnd - iterationTimeStart) * slowdown)
         }
         logger.debug { "Done training the network" }
         evaluationProcessor.done()
@@ -342,7 +367,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 labels = iterTrain.labels
                 val countPerPeer = getSimilarPeers(port, labels, sraKeyPair, numPeers, psiCaMessagesFromServers)
 
-                while (psiRequests.size < 3 - 1) {
+                while (psiRequests.size < numPeers) {
                     logger.debug { "Waiting for other peers to finish PSI_CA: found ${psiRequests.size}" }
                     delay(500)
                 }

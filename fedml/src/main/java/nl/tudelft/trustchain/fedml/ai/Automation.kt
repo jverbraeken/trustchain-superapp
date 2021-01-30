@@ -3,9 +3,12 @@ package nl.tudelft.trustchain.fedml.ai
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.*
 import java.io.File
 import java.nio.file.Paths
+
+private val logger = KotlinLogging.logger("Automation")
 
 @Serializable
 data class Automation(val fixedValues: Map<String, String>, val figures: List<Figure>)
@@ -27,8 +30,8 @@ fun loadAutomation(baseDirectory: File): Automation {
     return Json.decodeFromString(string)
 }
 
-private const val ISOLATED_FIGURE_NAME = "Figure 3.2"
-private const val ISOLATED_FIGURE_GAR = "average"
+private const val ISOLATED_FIGURE_NAME = "Figure 0.1"
+private val ISOLATED_FIGURE_GAR = arrayOf("bristle")
 
 /**
  * @return 1. the configuration per node, per test, per figure ; 2. the names of the figures
@@ -52,11 +55,12 @@ fun generateConfigs(
     val iterationsBeforeEvaluation = automation.fixedValues.getValue("iterationsBeforeEvaluation").toInt()
     val iterationsBeforeSending = automation.fixedValues.getValue("iterationsBeforeSending").toInt()
     val figures = automation.figures
+    logger.debug { "Testing figure: ${automationPart * (figures.size / 13)}" }
     val myFigures =
         if (automationPart == -1)
             figures.filter { it.name == ISOLATED_FIGURE_NAME }
         else
-            figures.subList(automationPart * (figures.size / 4), (automationPart + 1) * (figures.size / 4))
+            figures.subList(automationPart * (figures.size / 13), (automationPart + 1) * (figures.size / 13))
 
     for (figure in myFigures) {
         configurations.add(arrayListOf())
@@ -75,7 +79,7 @@ fun generateConfigs(
 
         for (test in figure.tests) {
             val gar = loadGAR(test.gar)!!
-            if (automationPart == -1 && gar.id != ISOLATED_FIGURE_GAR) continue
+            if (automationPart == -1 && gar.id !in ISOLATED_FIGURE_GAR) continue
 
             configurations.last().add(arrayListOf())
 
@@ -103,6 +107,10 @@ fun generateConfigs(
                         loadIteratorDistribution(d)!!.value
                     }
                 }
+                val slowdown =
+                    if ((node == 0 && firstNodeSpeed == -2) || (node != 0 && firstNodeSpeed == 2)) Slowdowns.D2
+                    else if ((node == 0 && firstNodeSpeed == -5) || (node != 0 && firstNodeSpeed == 5)) Slowdowns.D5
+                    else Slowdowns.NONE
                 val configuration = MLConfiguration(
                     dataset,
                     DatasetIteratorConfiguration(
@@ -121,8 +129,8 @@ fun generateConfigs(
                         gar = gar,
                         communicationPattern = communicationPattern,
                         behavior = if (node >= numAttackers.num) Behaviors.BENIGN else behavior,
-                        slowdown = if ((node == 0 && firstNodeSpeed == -1) || (node != 0 && firstNodeSpeed == 1)) Slowdowns.D2 else Slowdowns.NONE,
-                        joiningLate = if (node == 0 && firstNodeJoiningLate) TransmissionRounds.N100 else TransmissionRounds.N0,
+                        slowdown = slowdown,
+                        joiningLate = if (node == 0 && firstNodeJoiningLate) TransmissionRounds.N150 else TransmissionRounds.N0,
                         iterationsBeforeEvaluation = iterationsBeforeEvaluation,
                         iterationsBeforeSending = iterationsBeforeSending
                     ),

@@ -18,10 +18,14 @@
 
     <string name="run_local">Run locally</string>
     <string name="run_isolated">Run isolated</string>
-    <string name="run_distr_sim0">Sim 0</string>
-    <string name="run_distr_sim1">Sim 1</string>
-    <string name="run_distr_sim2">Sim 2</string>
-    <string name="run_distr_sim3">Sim 3</string>
+    <string name="run_distr_sim0">S 0</string>
+    <string name="run_distr_sim1">S 1</string>
+    <string name="run_distr_sim2">S 2</string>
+    <string name="run_distr_sim3">S 3</string>
+    <string name="run_distr_sim4">S 4</string>
+    <string name="run_distr_sim5">S 5</string>
+    <string name="run_distr_sim6">S 6</string>
+    <string name="run_distr_sim7">S 7</string>
     <string name="dataset">Dataset</string>
     <string name="training">Training</string>
     <string name="neuralnetwork">Neural Network</string>
