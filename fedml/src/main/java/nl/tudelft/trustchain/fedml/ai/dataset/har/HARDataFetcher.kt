@@ -46,7 +46,7 @@ class HARDataFetcher(
     init {
         val data = arrayListOf<File>()
         val labels: File
-        if (dataSetType == CustomDataSetType.TRAIN || dataSetType == CustomDataSetType.FULL_TRAIN) {
+        if (dataSetType == CustomDataSetType.TRAIN) {
             val basePath = Paths.get(baseDirectory.path, "train", "Inertial Signals")
             data.add(basePath.resolve("body_acc_x_train.txt").toFile())
             data.add(basePath.resolve("body_acc_y_train.txt").toFile())
@@ -75,7 +75,7 @@ class HARDataFetcher(
             data.toTypedArray(),
             labels,
             iteratorDistribution,
-            if (dataSetType == CustomDataSetType.TRAIN || dataSetType == CustomDataSetType.FULL_TRAIN) Int.MAX_VALUE else maxTestSamples,
+            if (dataSetType == CustomDataSetType.TRAIN) Int.MAX_VALUE else maxTestSamples,
             seed,
             behavior
         )

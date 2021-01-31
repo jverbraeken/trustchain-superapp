@@ -103,7 +103,7 @@ class CustomCifar10Fetcher {
             throw RuntimeException("Could not download CIFAR-10", e)
         }
 
-        val train = (set == CustomDataSetType.TRAIN || set == CustomDataSetType.FULL_TRAIN)
+        val train = (set == CustomDataSetType.TRAIN)
         val datasetPath = if (train) File(localCache, "/train/") else File(localCache, "/test/")
         val random = kotlin.random.Random(rngSeed)
         val maxElementsPerLabel = iteratorDistribution.map { min(maxSamples, it) }

@@ -214,16 +214,6 @@ abstract class Runner {
             behavior
         )
         logger.debug { "Loaded trainDataSetIterator" }
-        val fullTrainDataSetIterator = dataset.inst(
-            DatasetIteratorConfiguration(BatchSizes.BATCH_5,
-                datasetIteratorConfiguration.distribution.map { it / 10},
-                MaxTestSamples.NUM_20),
-            seed + 1,
-            CustomDataSetType.FULL_TRAIN,
-            baseDirectory,
-            behavior
-        )
-        logger.debug { "Loaded fullTrainDataSetIterator" }
         val testDataSetIterator = dataset.inst(
             DatasetIteratorConfiguration(BatchSizes.BATCH_200,
                 List(datasetIteratorConfiguration.distribution.size) { TEST_SET_SIZE },
@@ -244,7 +234,7 @@ abstract class Runner {
             behavior
         )
         logger.debug { "Loaded fullTestDataSetIterator" }
-        return listOf(trainDataSetIterator, fullTrainDataSetIterator, testDataSetIterator, fullTestDataSetIterator)
+        return listOf(trainDataSetIterator, testDataSetIterator, fullTestDataSetIterator)
     }
 
     protected fun craftMessage(first: INDArray, behavior: Behaviors, random: Random): INDArray {

@@ -47,6 +47,7 @@ fun generateConfigs(
     val batchSize = loadBatchSize(automation.fixedValues.getValue("batchSize"))!!
     val iteratorDistribution = automation.fixedValues.getValue("iteratorDistribution")
     val maxTestSample = loadMaxTestSample(automation.fixedValues.getValue("maxTestSample"))!!
+    val maxIterations = loadMaxIteration(automation.fixedValues.getValue("maxIterations"))!!
     val optimizer = loadOptimizer(automation.fixedValues.getValue("optimizer"))!!
     val learningRate = loadLearningRate(automation.fixedValues.getValue("learningRate"))!!
     val momentum = loadMomentum(automation.fixedValues.getValue("momentum"))!!
@@ -66,7 +67,7 @@ fun generateConfigs(
         configurations.add(arrayListOf())
         figureNames.add(figure.name)
         val dataset = loadDataset(figure.fixedValues.getValue("dataset"))!!
-        val maxIterations = loadMaxIteration(figure.fixedValues.getValue("maxIterations"))!!
+        val overrideMaxIterations = figure.fixedValues["maxIterations"]
         val behavior = loadBehavior(figure.fixedValues.getValue("behavior"))!!
         val modelPoisoningAttack = loadModelPoisoningAttack(figure.fixedValues.getValue("modelPoisoningAttack"))!!
         val numNodes = figure.fixedValues.getValue("numNodes").toInt()
@@ -125,7 +126,7 @@ fun generateConfigs(
                         l2 = l2Regularization
                     ),
                     TrainConfiguration(
-                        maxIteration = maxIterations,
+                        maxIteration = loadMaxIteration(overrideMaxIterations) ?: maxIterations,
                         gar = gar,
                         communicationPattern = communicationPattern,
                         behavior = if (node >= numAttackers.num) Behaviors.BENIGN else behavior,

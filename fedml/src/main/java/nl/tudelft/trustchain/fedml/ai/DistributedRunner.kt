@@ -336,7 +336,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 val dataset = mlConfiguration.dataset
                 val datasetIteratorConfiguration = mlConfiguration.datasetIteratorConfiguration
                 val behavior = mlConfiguration.trainConfiguration.behavior
-                val (iterTrain, iterTrainFull, iterTest, iterTestFull) = getDataSetIterators(
+                val (iterTrain, iterTest, iterTestFull) = getDataSetIterators(
                     dataset,
                     datasetIteratorConfiguration,
                     seed.toLong(),
