@@ -172,7 +172,7 @@ class Bristle : AggregationRule() {
             } else {
                 val avg = peerRecallPerClass.getValue(peer).average()
                 debug(logging) { "avg: $avg"}
-                val std = peerRecallPerClass.getValue(peer).fold(0.0) { a, b -> a + (b - avg).pow(2) }
+                val std = peerRecallPerClass.getValue(peer).std()
                 debug(logging) { "std: $std"}
                 val certainty = max(0.0, avg - std * 2)
                 debug(logging) { "certainty: $certainty"}
@@ -212,4 +212,10 @@ class Bristle : AggregationRule() {
         debug(logging) { "weightedAverage: $result" }
         return result
     }
+}
+
+private fun DoubleArray.std(): Double {
+    val avg = this.average()
+    val std = this.fold(0.0) { a, b -> a + (b - avg).pow(2) }
+    return sqrt(std / this.size)
 }
