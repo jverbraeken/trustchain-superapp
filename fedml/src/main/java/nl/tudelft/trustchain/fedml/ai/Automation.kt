@@ -30,7 +30,7 @@ fun loadAutomation(baseDirectory: File): Automation {
     return Json.decodeFromString(string)
 }
 
-private val ISOLATED_FIGURE_NAME = arrayOf("Figure 3.1", "Figure 3.2", "Figure 3.3")
+private val ISOLATED_FIGURE_NAME = arrayOf("Figure MinBound", "Figure 0.4", "Figure 1.1")
 private val ISOLATED_FIGURE_GAR = arrayOf("average", "bristle")
 
 /**

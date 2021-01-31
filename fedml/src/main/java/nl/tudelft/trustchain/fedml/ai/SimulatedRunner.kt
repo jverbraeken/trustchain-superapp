@@ -157,12 +157,14 @@ class SimulatedRunner : Runner() {
                                 if (joiningLateRemainingIterations[nodeIndex] > 0) {
                                     joiningLateRemainingIterations[nodeIndex]--
                                     if (nodeIndex == 0) logger.debug { "JL => continue" }
+                                    newOtherModelBuffer.clear()
                                     continue
                                 }
                                 if (nodeConfig.trainConfiguration.slowdown != Slowdowns.NONE) {
                                     if (slowdownRemainingIterations[nodeIndex] > 0) {
                                         slowdownRemainingIterations[nodeIndex]--
                                         if (nodeIndex == 0) logger.debug { "SD => continue" }
+                                        newOtherModelBuffer.clear()
                                         continue
                                     } else {
                                         slowdownRemainingIterations[nodeIndex] =

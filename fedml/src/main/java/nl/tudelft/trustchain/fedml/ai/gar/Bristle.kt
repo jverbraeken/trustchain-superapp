@@ -131,7 +131,7 @@ class Bristle : AggregationRule() {
         val seqAttackPenalty = myRecallPerClass.map { 0.0 }.toMutableList()
         val myRecallAverage = myRecallPerClass.average()
 
-        val weightsPerPeer = peerRecallPerClass.map { (peer, recallPerClass) ->
+        val selectedClassesAndRecallPerPeer = peerRecallPerClass.map { (peer, recallPerClass) ->
             val selectionSize = countPerPeer.getOrDefault(peer, myRecallPerClass.size)
 
             val selectedClassesAndRecall = if (selectionSize == recallPerClass.size)
@@ -145,9 +145,13 @@ class Bristle : AggregationRule() {
                     .take(selectionSize)  // Attackers have a negative index => assume that they have the same classes as the current peer to maximize attack strength
                     .toMap()
 
-            debug(logging) { "selectedClassesAndRecall: $selectedClassesAndRecall" }
+            debug(logging) { "selectedClassesAndRecall ($peer): $selectedClassesAndRecall" }
 
-            val weightPerClass = selectedClassesAndRecall.map { (clazz, peerRecall) ->
+            Pair(peer, selectedClassesAndRecall)
+        }.toMap()
+
+        val weightsPerPeer = selectedClassesAndRecallPerPeer.map { (peer, recallPerClass) ->
+            val weightPerClass = recallPerClass.map { (clazz, peerRecall) ->
                 val myRecall = myRecallPerClass[clazz]
                 val untrainedModelAmbiguity = if (myRecall >= peerRecall) myRecallAverage else 1.0
                 val weightedDiff = abs(myRecall - peerRecall) * 10 * untrainedModelAmbiguity
@@ -170,9 +174,10 @@ class Bristle : AggregationRule() {
             if (weightSum < -1000) {
                 Pair(peer, 0.0)
             } else {
-                val avg = peerRecallPerClass.getValue(peer).average()
+                val selectedRecalls = selectedClassesAndRecallPerPeer.getValue(peer).values
+                val avg = selectedRecalls.average()
                 debug(logging) { "avg: $avg"}
-                val std = peerRecallPerClass.getValue(peer).std()
+                val std = selectedRecalls.std()
                 debug(logging) { "std: $std"}
                 val certainty = max(0.0, avg - std * 2)
                 debug(logging) { "certainty: $certainty"}
@@ -214,8 +219,8 @@ class Bristle : AggregationRule() {
     }
 }
 
-private fun DoubleArray.std(): Double {
-    val avg = this.average()
-    val std = this.fold(0.0) { a, b -> a + (b - avg).pow(2) }
+private fun <E> Collection<E>.std(): Double {
+    val avg = (this as Collection<Double>).average()
+    val std = (this as Collection<Double>).fold(0.0) { a, b -> a + (b - avg).pow(2) }
     return sqrt(std / this.size)
 }
