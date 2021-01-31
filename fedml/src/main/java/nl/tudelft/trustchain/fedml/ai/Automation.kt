@@ -67,7 +67,7 @@ fun generateConfigs(
         configurations.add(arrayListOf())
         figureNames.add(figure.name)
         val dataset = loadDataset(figure.fixedValues.getValue("dataset"))!!
-        val overrideMaxIterations = figure.fixedValues.getValue("maxIterations")
+        val overrideMaxIterations = figure.fixedValues["maxIterations"]
         val behavior = loadBehavior(figure.fixedValues.getValue("behavior"))!!
         val modelPoisoningAttack = loadModelPoisoningAttack(figure.fixedValues.getValue("modelPoisoningAttack"))!!
         val numNodes = figure.fixedValues.getValue("numNodes").toInt()

@@ -21,7 +21,7 @@ class CustomMnistDataSetIterator(
         iteratorConfiguration.distribution.toIntArray(),
         seed,
         dataSetType,
-        if (dataSetType == CustomDataSetType.TRAIN || dataSetType == CustomDataSetType.FULL_TRAIN) Integer.MAX_VALUE else iteratorConfiguration.maxTestSamples.value,
+        if (dataSetType == CustomDataSetType.TRAIN) Integer.MAX_VALUE else iteratorConfiguration.maxTestSamples.value,
         behavior
     )
 ), CustomDataSetIterator {

@@ -100,9 +100,8 @@ class SimulatedRunner : Runner() {
                             )
                         }.toTypedArray()
                         val iterTrains = iters.map { it[0] }.toTypedArray()
-                        val iterTrainFulls = iters.map { it[1] }.toTypedArray()
-                        val iterTests = iters.map { it[2] }.toTypedArray()
-                        val iterTestFulls = iters.map { it[3] }.toTypedArray()
+                        val iterTests = iters.map { it[1] }.toTypedArray()
+                        val iterTestFulls = iters.map { it[2] }.toTypedArray()
 
                         val countPerPeers = ConcurrentHashMap<Int, Map<Int, Int>>()
                         val threads = testConfig.mapIndexed { i, _ ->
@@ -132,7 +131,6 @@ class SimulatedRunner : Runner() {
                                 logger.debug { "Epoch: $epoch" }
                                 epochEnd = false
                                 iterTrains.forEach { it.reset() }
-                                iterTrainFulls.forEach { it.reset() }
                             }
                             networks.forEachIndexed { i, n ->
                                 newParams[i] = n.params().dup()
@@ -152,6 +150,7 @@ class SimulatedRunner : Runner() {
                                 val random = randoms[nodeIndex]
                                 val newOtherModelBuffer = newOtherModelBuffers[nodeIndex]
                                 val recentOtherModelsBuffer = recentOtherModelsBuffers[nodeIndex]
+                                val iterTest = iterT[nodeIndex]
                                 val iterTestFull = iterTestFulls[nodeIndex]
                                 val behavior = behaviors[nodeIndex]
 
@@ -200,7 +199,7 @@ class SimulatedRunner : Runner() {
                                                 gradient,
                                                 newOtherModelBuffer,
                                                 recentOtherModelsBuffer,
-                                                iterTestFull,
+                                                iterTest,
                                                 countPerPeer,
                                                 nodeIndex == 0
                                             )
