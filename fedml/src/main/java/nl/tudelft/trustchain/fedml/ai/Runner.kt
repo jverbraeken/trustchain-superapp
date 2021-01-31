@@ -256,22 +256,7 @@ abstract class Runner {
     }
 
     private fun craftNoiseMessage(first: INDArray, random: Random): INDArray {
-        val oldMatrix = toFloatArray(first)
-        val newVector = FloatArray(oldMatrix.size)
-        for (i in oldMatrix.indices) {
-            newVector[i] = random.nextFloat() * 2 - 1
-        }
+        val newVector = FloatArray(first.length().toInt()) { random.nextFloat() }
         return NDArray(Array(1) { newVector})
-    }
-
-    private fun toFloatArray(first: INDArray): FloatArray {
-        val data = first.data()
-        val length = data.length().toInt()
-        val indexer = data.indexer() as FloatRawIndexer
-        val array = FloatArray(length)
-        for (i in 0 until length) {
-            array[i] = indexer.getRaw(i.toLong())
-        }
-        return array
     }
 }
