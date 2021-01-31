@@ -28,11 +28,23 @@ class CustomMnistManager(
         val imagesArr = fullImagesArr[imagesFile]!!
         val labelIndexMapping = labelIndexMappings[labelsFile]!!
 
-        val labelIndexMapping2 = if (behavior === Behaviors.LABEL_FLIP) {
+        val labelIndexMapping2 = if (behavior == Behaviors.LABEL_FLIP_2) {
             val labelIndexMapping2 = labelIndexMapping.map { it.copyOf() }.toTypedArray()
+            labelIndexMapping2[0] = labelIndexMapping[1]
+            labelIndexMapping2[1] = labelIndexMapping[0]
+            labelIndexMapping2
+        } else if (behavior == Behaviors.LABEL_FLIP_ALL) {
+            val labelIndexMapping2 = labelIndexMapping.map { it.copyOf() }.toTypedArray()
+            labelIndexMapping2[0] = labelIndexMapping[1]
             labelIndexMapping2[1] = labelIndexMapping[2]
             labelIndexMapping2[2] = labelIndexMapping[3]
-            labelIndexMapping2[3] = labelIndexMapping[1]
+            labelIndexMapping2[3] = labelIndexMapping[4]
+            labelIndexMapping2[4] = labelIndexMapping[5]
+            labelIndexMapping2[5] = labelIndexMapping[6]
+            labelIndexMapping2[6] = labelIndexMapping[7]
+            labelIndexMapping2[7] = labelIndexMapping[8]
+            labelIndexMapping2[8] = labelIndexMapping[9]
+            labelIndexMapping2[9] = labelIndexMapping[0]
             labelIndexMapping2
         } else {
             labelIndexMapping

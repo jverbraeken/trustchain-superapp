@@ -30,7 +30,7 @@ fun loadAutomation(baseDirectory: File): Automation {
     return Json.decodeFromString(string)
 }
 
-private const val ISOLATED_FIGURE_NAME = "Figure 3.1"
+private val ISOLATED_FIGURE_NAME = arrayOf("Figure 3.1", "Figure 3.2", "Figure 3.3")
 private val ISOLATED_FIGURE_GAR = arrayOf("average", "bristle")
 
 /**
@@ -59,7 +59,7 @@ fun generateConfigs(
     logger.debug { "Testing figure: ${automationPart * (figures.size / 13)}" }
     val myFigures =
         if (automationPart == -1)
-            figures.filter { it.name == ISOLATED_FIGURE_NAME }
+            figures.filter { it.name in ISOLATED_FIGURE_NAME }
         else
             figures.subList(automationPart * (figures.size / 13), (automationPart + 1) * (figures.size / 13))
 
@@ -129,7 +129,7 @@ fun generateConfigs(
                         maxIteration = loadMaxIteration(overrideMaxIterations) ?: maxIterations,
                         gar = gar,
                         communicationPattern = communicationPattern,
-                        behavior = if (node >= numAttackers.num) Behaviors.BENIGN else behavior,
+                        behavior = if (node < numNodes - numAttackers.num) Behaviors.BENIGN else behavior,
                         slowdown = slowdown,
                         joiningLate = if (node == 0 && firstNodeJoiningLate) TransmissionRounds.N150 else TransmissionRounds.N0,
                         iterationsBeforeEvaluation = iterationsBeforeEvaluation,

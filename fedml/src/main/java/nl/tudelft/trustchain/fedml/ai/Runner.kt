@@ -241,12 +241,13 @@ abstract class Runner {
         return when (behavior) {
             Behaviors.BENIGN -> first
             Behaviors.NOISE -> craftNoiseMessage(first, random)
-            Behaviors.LABEL_FLIP -> first
+            Behaviors.LABEL_FLIP_2 -> first
+            Behaviors.LABEL_FLIP_ALL -> first
         }
     }
 
     private fun craftNoiseMessage(first: INDArray, random: Random): INDArray {
-        val newVector = FloatArray(first.length().toInt()) { random.nextFloat() }
+        val newVector = FloatArray(first.length().toInt()) { random.nextFloat() - 0.4f }
         return NDArray(Array(1) { newVector})
     }
 }

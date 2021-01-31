@@ -36,7 +36,7 @@ class SimulatedRunner : Runner() {
     ) {
         val job = SupervisorJob()
         val scope = CoroutineScope(Dispatchers.Default + job)
-        scope.launch {
+//        scope.launch {
             val evaluationProcessor = EvaluationProcessor(
                 baseDirectory,
                 "simulated",
@@ -150,7 +150,7 @@ class SimulatedRunner : Runner() {
                                 val random = randoms[nodeIndex]
                                 val newOtherModelBuffer = newOtherModelBuffers[nodeIndex]
                                 val recentOtherModelsBuffer = recentOtherModelsBuffers[nodeIndex]
-                                val iterTest = iterT[nodeIndex]
+                                val iterTest = iterTests[nodeIndex]
                                 val iterTestFull = iterTestFulls[nodeIndex]
                                 val behavior = behaviors[nodeIndex]
 
@@ -201,7 +201,7 @@ class SimulatedRunner : Runner() {
                                                 recentOtherModelsBuffer,
                                                 iterTest,
                                                 countPerPeer,
-                                                nodeIndex == 0
+                                                iteration % iterationsBeforeEvaluations[nodeIndex] == 0 && (nodeIndex == 0 || !ONLY_EVALUATE_FIRST_NODE)
                                             )
                                             recentOtherModelsBuffer.addAll(newOtherModelBuffer.toList())
                                             while (recentOtherModelsBuffer.size > SIZE_RECENT_OTHER_MODELS) {
@@ -273,7 +273,7 @@ class SimulatedRunner : Runner() {
                 evaluationProcessor.error(e)
                 e.printStackTrace()
             }
-        }
+//        }
     }
 
     private fun fitNetwork(network: MultiLayerNetwork, dataSetIterator: CustomDataSetIterator): Boolean {

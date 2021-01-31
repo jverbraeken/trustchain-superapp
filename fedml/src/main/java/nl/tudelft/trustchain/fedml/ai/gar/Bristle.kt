@@ -170,6 +170,13 @@ class Bristle : AggregationRule() {
             if (weightSum < -1000) {
                 Pair(peer, 0.0)
             } else {
+                val avg = peerRecallPerClass.getValue(peer).average()
+                debug(logging) { "avg: $avg"}
+                val std = peerRecallPerClass.getValue(peer).fold(0.0) { a, b -> a + (b - avg).pow(2) }
+                debug(logging) { "std: $std"}
+                val certainty = max(0.0, avg - std * 2)
+                debug(logging) { "certainty: $certainty"}
+
                 var sigmoid = 1 / (1 + exp(-weightSum / 100))  // sigmoid function
                 debug(logging) { "sigmoid: $sigmoid"}
                 sigmoid *= 10  // sigmoid from 0 -> 1 to 0 -> 10
@@ -177,6 +184,7 @@ class Bristle : AggregationRule() {
                 sigmoid -= 4  // sigmoid from 0 -> 10 to -4 -> 6
                 debug(logging) { "sigmoid: $sigmoid"}
                 sigmoid = max(0.0, sigmoid)  // no negative weights
+                sigmoid *= certainty
                 debug(logging) { "sigmoid: $sigmoid"}
                 Pair(peer, sigmoid)
             }
