@@ -54,6 +54,7 @@ fun generateDefaultMNISTConfiguration(
             .nOut(10)
             .activation(Activation.SOFTMAX)
             .weightInit(WeightInit.XAVIER)
+            .hasBias(false)
             .build()
         )
         .setInputType(InputType.convolutionalFlat(28, 28, 1))

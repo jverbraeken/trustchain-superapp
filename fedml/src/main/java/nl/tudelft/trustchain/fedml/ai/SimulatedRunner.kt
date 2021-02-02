@@ -84,12 +84,16 @@ class SimulatedRunner : Runner() {
             intArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 5000, 0),
             intArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 5000),
 
+            intArrayOf(5000, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+            intArrayOf(0, 5000, 0, 0, 0, 0, 0, 0, 0, 0),
+            intArrayOf(0, 0, 5000, 0, 0, 0, 0, 0, 0, 0),
+            intArrayOf(0, 0, 0, 5000, 0, 0, 0, 0, 0, 0),
             intArrayOf(0, 0, 0, 0, 5000, 0, 0, 0, 0, 0),
             intArrayOf(0, 0, 0, 0, 0, 5000, 0, 0, 0, 0),
             intArrayOf(0, 0, 0, 0, 0, 0, 5000, 0, 0, 0),
             intArrayOf(0, 0, 0, 0, 0, 0, 0, 5000, 0, 0),
             intArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 5000, 0),
-            intArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 5000)
+            intArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 5000),
         )
         val trainDataSetIterators = tasks.map {
             configs[0].dataset.inst(
@@ -121,22 +125,22 @@ class SimulatedRunner : Runner() {
         var tw = globalNetworks[0].paramTable()
         var cw = copyParamTable(globalNetworks[0].paramTable())
         cw.getValue("4_W").muli(0)
-        cw.getValue("4_b").muli(0)
+//        cw.getValue("4_b").muli(0)
         trainDataSetIterators.zip(tasks).forEachIndexed { i, (iterator, task) ->
             logger.debug { "Task: $i" }
             val usedClassIndices = task.mapIndexed { ind, v -> if (v > 0) ind else null }.filterNotNull()
 
             tw["4_W"]!!.muli(0)
-            tw["4_b"]!!.muli(0)
+//            tw["4_b"]!!.muli(0)
             for (j in usedClassIndices) {
                 tw.getValue("4_W").putColumn(j, cw.getValue("4_W").getColumn(j.toLong()))
-                tw.getValue("4_b").putColumn(j, cw.getValue("4_b").getColumn(j.toLong()))
+//                tw.getValue("4_b").putColumn(j, cw.getValue("4_b").getColumn(j.toLong()))
             }
             globalNetworks[0].setParamTable(tw)
 
             val cur = DoubleArray(task.size)
-            val times = if (i == 0) 500 else 300
-            repeat(times) { it ->
+            val times = if (i == 0) 200 else 100
+            repeat(times) {
                 if (it % 100 == 0) {
                     logger.debug { "Iteration: $it" }
                 }
@@ -163,12 +167,13 @@ class SimulatedRunner : Runner() {
 
                 cw = copyParamTable(tw)
                 cw.getValue("4_W").muli(0)
-                cw.getValue("4_b").muli(0)
+//                cw.getValue("4_b").muli(0)
             }
 
-            val avgW = tw.getValue("4_W").getColumns(*usedClassIndices.toIntArray()).meanNumber()
+            val avgW = tw.getValue("4_W").meanNumber()
             for (j in usedClassIndices) {
                 val prevWeight = sqrt(numPastInstances[j] / cur[j])
+
                 val twW = tw.getValue("4_W").getColumn(j.toLong())
                 val prev = cw.getValue("4_W").getColumn(j.toLong())
                 val aW = prev.mul(prevWeight)
@@ -176,7 +181,7 @@ class SimulatedRunner : Runner() {
                 val cW = aW.add(bW)
                 val dW = cW.div(prevWeight + 1)
                 cw.getValue("4_W").putColumn(j, dW)
-                cw.getValue("4_b").putColumn(j, tw.getValue("4_b").getColumn(j.toLong()))
+//                cw.getValue("4_b").putColumn(j, tw.getValue("4_b").getColumn(j.toLong()))
                 numPastInstances[j] = numPastInstances[j] + cur[j]
             }
 
@@ -253,6 +258,7 @@ class SimulatedRunner : Runner() {
                     .nOut(10)
                     .activation(Activation.SOFTMAX)
                     .weightInit(WeightInit.XAVIER)
+                    .hasBias(false)
                     .build()
             )
             .setInputType(InputType.convolutionalFlat(28, 28, 1))
