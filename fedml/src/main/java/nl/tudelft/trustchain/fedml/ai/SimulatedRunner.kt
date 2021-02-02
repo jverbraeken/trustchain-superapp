@@ -1,5 +1,6 @@
 package nl.tudelft.trustchain.fedml.ai
 
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.*
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDatasetIterator
@@ -9,7 +10,6 @@ import org.deeplearning4j.nn.conf.MultiLayerConfiguration
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration
 import org.deeplearning4j.nn.conf.inputs.InputType
 import org.deeplearning4j.nn.conf.layers.ConvolutionLayer
-import org.deeplearning4j.nn.conf.layers.DenseLayer
 import org.deeplearning4j.nn.conf.layers.OutputLayer
 import org.deeplearning4j.nn.conf.layers.SubsamplingLayer
 import org.deeplearning4j.nn.conf.layers.misc.FrozenLayer
@@ -27,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.collections.ArrayDeque
 import kotlin.collections.ArrayList
+import kotlin.math.sqrt
 import kotlin.random.Random
 
 private val logger = KotlinLogging.logger("SimulatedRunner")
@@ -75,22 +76,27 @@ class SimulatedRunner : Runner() {
                 0
             )
         }.toMutableList()
-        val trainDataSetIterators = (0 until 6).map {
+        val tasks = arrayOf(
+            intArrayOf(5000, 5000, 5000, 5000, 0, 0, 0, 0, 0, 0),
+            intArrayOf(0, 0, 0, 0, 5000, 0, 0, 0, 0, 0),
+            intArrayOf(0, 0, 0, 0, 0, 5000, 0, 0, 0, 0),
+            intArrayOf(0, 0, 0, 0, 0, 0, 5000, 0, 0, 0),
+            intArrayOf(0, 0, 0, 0, 0, 0, 0, 5000, 0, 0),
+            intArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 5000, 0),
+            intArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 5000),
+
+            intArrayOf(0, 0, 0, 0, 5000, 0, 0, 0, 0, 0),
+            intArrayOf(0, 0, 0, 0, 0, 5000, 0, 0, 0, 0),
+            intArrayOf(0, 0, 0, 0, 0, 0, 5000, 0, 0, 0),
+            intArrayOf(0, 0, 0, 0, 0, 0, 0, 5000, 0, 0),
+            intArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 5000, 0),
+            intArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 5000)
+        )
+        val trainDataSetIterators = tasks.map {
             configs[0].dataset.inst(
                 DatasetIteratorConfiguration(
                     BatchSizes.BATCH_5,
-                    listOf(
-                        if (it == 0) 5000 else 0,
-                        if (it == 0) 5000 else 0,
-                        if (it == 0) 5000 else 0,
-                        if (it == 0) 5000 else 0,
-                        if (it == 1) 5000 else 0,
-                        if (it == 2) 5000 else 0,
-                        if (it == 3) 5000 else 0,
-                        if (it == 4) 5000 else 0,
-                        if (it == 5) 5000 else 0,
-                        if (it == 6) 5000 else 0
-                    ),
+                    it.toList(),
                     MaxTestSamples.NUM_100
                 ),
                 0L,
@@ -111,54 +117,80 @@ class SimulatedRunner : Runner() {
             baseDirectory,
             Behaviors.BENIGN
         )
+        val numPastInstances = (tasks.first().indices).map { 0.0 }.toMutableList()
 
-        globalNetworks[0].paramTable()["4_W"]!!.muli(0)
-        globalNetworks[0].paramTable()["4_b"]!!.muli(0)
-        var cw : Map<String, INDArray>? = null
-        val originalModel = globalNetworks[0].paramTable().map { Pair(it.key, it.value.dup()) }.toMap()
-        repeat(5) { task ->
-            logger.debug { "Task: $task" }
-            val times = if (task == 0) 1000 else 100
-            repeat(times) {
+        var tw = globalNetworks[0].paramTable()
+        var cw = copyParamTable(globalNetworks[0].paramTable())
+        cw.getValue("4_W").muli(0)
+        cw.getValue("4_b").muli(0)
+        trainDataSetIterators.zip(tasks).forEachIndexed { i, (iterator, task) ->
+            logger.debug { "Task: $i" }
+            val usedClassIndices = task.mapIndexed { ind, v -> if (v > 0) ind else null }.filterNotNull()
+
+            tw["4_W"]!!.muli(0)
+            tw["4_b"]!!.muli(0)
+            for (j in usedClassIndices) {
+                tw.getValue("4_W").putColumn(j, cw.getValue("4_W").getColumn(j.toLong()))
+                tw.getValue("4_b").putColumn(j, cw.getValue("4_b").getColumn(j.toLong()))
+            }
+            globalNetworks[0].setParamTable(tw)
+
+            val cur = DoubleArray(task.size)
+            val times = if (i == 0) 200 else 100
+            repeat(times) { it ->
                 if (it % 100 == 0) {
                     logger.debug { "Iteration: $it" }
                 }
                 val elem = try {
-                    trainDataSetIterators[task].next()  //
+                    iterator.next()
                 } catch (e: NoSuchElementException) {
-                    trainDataSetIterators[task].reset()  //
-                    trainDataSetIterators[task].next()  //
+                    iterator.reset()
+                    iterator.next()
+                }
+                val sum = elem.labels.sum(0)
+                cur.indices.forEach { i ->
+                    cur[i] = cur[i] + sum.getFloat(i).toDouble()
                 }
                 globalNetworks[0].fit(elem)
             }
+            tw = globalNetworks[0].paramTable()
 
-            if (task == 0) {
-                val oldParams = globalNetworks[0].paramTable().map { Pair(it.key, it.value.dup()) }.toMap()
-                globalNetworks[0] = MultiLayerNetwork(generateFrozen(configs[0].nnConfiguration,0))
+            if (i == 0) {
+                val oldTw = copyParamTable(tw)
+                globalNetworks[0] = MultiLayerNetwork(generateFrozen(configs[0].nnConfiguration, 0))
                 globalNetworks[0].init()
-                globalNetworks[0].setParamTable(oldParams)
-                cw = globalNetworks[0].paramTable().map { Pair(it.key, it.value.dup()) }.toMap()
-                cw!!.getValue("4_W").muli(0)
-                cw!!.getValue("4_b").muli(0)
-                for (i in 0 until 6) {
-                    val twColumnW = oldParams.getValue("4_W").getColumn(i.toLong())
-                    cw!!.getValue("4_W").putColumn(i, /*cwColumnW.mul(0).add(*/twColumnW.sub(twColumnW.meanNumber())/*).div(0 + 1)*/)
-                    val twColumnB = oldParams.getValue("4_b").getColumn(i.toLong())
-                    cw!!.getValue("4_b").putColumn(i, /*cwColumnB.mul(0).add(*/twColumnB.sub(twColumnB.meanNumber())/*).div(0 + 1)*/)
-                }
-            } else {
-                val tw = globalNetworks[0].paramTable().map { Pair(it.key, it.value.dup()) }.toMap()
-//                val cwColumnW = cw!!.getValue("4_W").getColumn((task+5).toLong())
-                val twColumnW = tw.getValue("4_W").getColumn((task+5).toLong())
-                cw!!.getValue("4_W").putColumn(task+5, /*cwColumnW.mul(0).add(*/twColumnW.sub(twColumnW.meanNumber())/*).div(0 + 1)*/)
+                globalNetworks[0].setParamTable(oldTw)
+                tw = globalNetworks[0].paramTable()
 
-//                val cwColumnB = cw!!.getValue("4_b").getColumn((task+5).toLong())
-                val twColumnB = tw.getValue("4_b").getColumn((task+5).toLong())
-                cw!!.getValue("4_b").putColumn(task+5, /*cwColumnB.mul(0).add(*/twColumnB.sub(twColumnB.meanNumber())/*).div(0 + 1)*/)
-                print(1)
+                cw = copyParamTable(tw)
+                cw.getValue("4_W").muli(0)
+                cw.getValue("4_b").muli(0)
             }
 
-            globalNetworks[0].setParamTable(cw!!.map { Pair(it.key, it.value.dup()) }.toMap())
+            for (j in usedClassIndices) {
+                val wpast = sqrt(numPastInstances[j] / cur[j])
+
+                val twW = tw.getValue("4_W").getColumn(j.toLong())
+                val cwW = cw.getValue("4_W").getColumn(j.toLong())
+                val aW = cwW.mul(wpast)
+                val bW = twW.sub(tw.getValue("4_W").meanNumber())
+                val cW = aW.add(bW)
+                val dW = cW.div(wpast + 1)
+                cw.getValue("4_W").putColumn(j, dW)
+
+                val twB = tw.getValue("4_b").getColumn(j.toLong())
+                val cwB = cw.getValue("4_b").getColumn(j.toLong())
+                val aB = cwB.mul(wpast)
+                val bB = twB.sub(tw.getValue("4_b").meanNumber())
+                val cB = aB.add(bB)
+                val dB = cB.div(wpast + 1)
+                cw.getValue("4_b").putColumn(j, dB)
+
+                numPastInstances[j] = numPastInstances[j] + cur[j]
+            }
+
+            val oldTw = copyParamTable(tw)
+            globalNetworks[0].setParamTable(cw)
             evaluationProcessor.iteration = 0
             execEvaluationProcessor(
                 evaluationProcessor,
@@ -170,8 +202,12 @@ class SimulatedRunner : Runner() {
                 0,
                 true
             )
-            globalNetworks[0].setParamTable(originalModel.map { Pair(it.key, it.value.dup()) }.toMap())
+            globalNetworks[0].setParamTable(oldTw)
         }
+    }
+
+    private fun copyParamTable(paramTable: Map<String, INDArray>): Map<String, INDArray> {
+        return paramTable.map { Pair(it.key, it.value.dup()) }.toMap()
     }
 
 
