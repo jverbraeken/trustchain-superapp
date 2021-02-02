@@ -1,6 +1,5 @@
 package nl.tudelft.trustchain.fedml.ai
 
-import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.*
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDatasetIterator
@@ -136,7 +135,7 @@ class SimulatedRunner : Runner() {
             globalNetworks[0].setParamTable(tw)
 
             val cur = DoubleArray(task.size)
-            val times = if (i == 0) 200 else 100
+            val times = if (i == 0) 500 else 300
             repeat(times) { it ->
                 if (it % 100 == 0) {
                     logger.debug { "Iteration: $it" }
@@ -167,25 +166,17 @@ class SimulatedRunner : Runner() {
                 cw.getValue("4_b").muli(0)
             }
 
+            val avgW = tw.getValue("4_W").getColumns(*usedClassIndices.toIntArray()).meanNumber()
             for (j in usedClassIndices) {
-                val wpast = sqrt(numPastInstances[j] / cur[j])
-
+                val prevWeight = sqrt(numPastInstances[j] / cur[j])
                 val twW = tw.getValue("4_W").getColumn(j.toLong())
-                val cwW = cw.getValue("4_W").getColumn(j.toLong())
-                val aW = cwW.mul(wpast)
-                val bW = twW.sub(twW/*.getValue("4_W")*/.meanNumber())
+                val prev = cw.getValue("4_W").getColumn(j.toLong())
+                val aW = prev.mul(prevWeight)
+                val bW = twW.sub(avgW)
                 val cW = aW.add(bW)
-                val dW = cW.div(wpast + 1)
+                val dW = cW.div(prevWeight + 1)
                 cw.getValue("4_W").putColumn(j, dW)
-
-                val twB = tw.getValue("4_b").getColumn(j.toLong())
-                val cwB = cw.getValue("4_b").getColumn(j.toLong())
-                val aB = cwB.mul(wpast)
-                val bB = twB.sub(twB/*.getValue("4_b")*/.meanNumber())
-                val cB = aB.add(bB)
-                val dB = cB.div(wpast + 1)
-                cw.getValue("4_b").putColumn(j, dB)
-
+                cw.getValue("4_b").putColumn(j, tw.getValue("4_b").getColumn(j.toLong()))
                 numPastInstances[j] = numPastInstances[j] + cur[j]
             }
 
