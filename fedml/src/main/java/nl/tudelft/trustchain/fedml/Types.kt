@@ -134,7 +134,6 @@ enum class Optimizers(
     SGD("sgd", "SGD", { learningRate -> Sgd(learningRate.schedule) }),
     RMSPROP("rmsprop", "RMSprop", { learningRate -> RmsProp(learningRate.schedule) }),
     AMSGRAD("amsgrad", "AMSGRAD", { learningRate -> AMSGrad(learningRate.schedule) }),
-    EWCADAM("ewcadam", "EWC-Adam", { learningRate -> EWCAdam(learningRateSchedule = learningRate.schedule) })
 }
 
 fun loadOptimizer(optimizer: String) = Optimizers.values().first { it.id == optimizer }

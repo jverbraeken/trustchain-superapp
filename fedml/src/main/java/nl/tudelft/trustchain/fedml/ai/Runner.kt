@@ -26,48 +26,35 @@ fun generateDefaultMNISTConfiguration(
 ): MultiLayerConfiguration {
     return NeuralNetConfiguration.Builder()
         .seed(seed.toLong())
+        .activation(Activation.LEAKYRELU)
+        .weightInit(WeightInit.RELU)
         .l2(nnConfiguration.l2.value)
-        .weightInit(WeightInit.XAVIER)
         .updater(nnConfiguration.optimizer.inst(nnConfiguration.learningRate))
         .list()
-        .layer(
-            ConvolutionLayer.Builder(5, 5)
-//                .nIn(1)
-                .stride(1, 1)
-                .nOut(10)
-                .activation(Activation.IDENTITY)
-                .build()
+        .layer(ConvolutionLayer
+            .Builder(intArrayOf(5, 5), intArrayOf(1, 1))
+            .nOut(10)
+            .build()
         )
-        .layer(
-            SubsamplingLayer.Builder(SubsamplingLayer.PoolingType.MAX)
-                .kernelSize(2, 2)
-                .stride(2, 2)
-                .build()
+        .layer(SubsamplingLayer
+            .Builder(SubsamplingLayer.PoolingType.MAX, intArrayOf(2, 2), intArrayOf(2, 2))
+            .build()
         )
-        .layer(
-            ConvolutionLayer.Builder(5, 5)
-                .stride(1, 1)
-                .nOut(50)
-                .activation(Activation.IDENTITY)
-                .build()
+        .layer(ConvolutionLayer
+            .Builder(intArrayOf(5, 5), intArrayOf(1, 1))
+            .nOut(50)
+            .build()
         )
-        .layer(
-            SubsamplingLayer.Builder(SubsamplingLayer.PoolingType.MAX)
-                .kernelSize(2, 2)
-                .stride(2, 2)
-                .build()
+        .layer(SubsamplingLayer
+            .Builder(SubsamplingLayer.PoolingType.MAX, intArrayOf(2, 2), intArrayOf(2, 2))
+            .build()
         )
-        .layer(
-            DenseLayer.Builder()
-                .activation(Activation.RELU)
-                .nOut(512)
-                .build()
-        )
-        .layer(
-            OutputLayer.Builder(LossEWC())
-                .nOut(10)
-                .activation(Activation.SOFTMAX)
-                .build()
+        .layer(OutputLayer
+            .Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
+            .nOut(10)
+            .activation(Activation.SOFTMAX)
+            .weightInit(WeightInit.XAVIER)
+            .build()
         )
         .setInputType(InputType.convolutionalFlat(28, 28, 1))
         .build()
@@ -363,8 +350,8 @@ abstract class Runner {
         dataset: Datasets,
         nnConfiguration: NNConfiguration,
         seed: Int
-    ): CustomMultiLayerNetwork {
-        val network = CustomMultiLayerNetwork(dataset.architecture(nnConfiguration, seed))
+    ): MultiLayerNetwork {
+        val network = MultiLayerNetwork(dataset.architecture(nnConfiguration, seed))
         network.init()
         return network
     }

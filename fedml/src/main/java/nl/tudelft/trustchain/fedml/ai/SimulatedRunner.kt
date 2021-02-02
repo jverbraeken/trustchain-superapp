@@ -5,15 +5,27 @@ import nl.tudelft.trustchain.fedml.*
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDatasetIterator
 import nl.tudelft.trustchain.fedml.ipv8.MsgPsiCaClientToServer
 import nl.tudelft.trustchain.fedml.ipv8.MsgPsiCaServerToClient
+import org.deeplearning4j.nn.conf.MultiLayerConfiguration
+import org.deeplearning4j.nn.conf.NeuralNetConfiguration
+import org.deeplearning4j.nn.conf.inputs.InputType
+import org.deeplearning4j.nn.conf.layers.ConvolutionLayer
+import org.deeplearning4j.nn.conf.layers.DenseLayer
+import org.deeplearning4j.nn.conf.layers.OutputLayer
+import org.deeplearning4j.nn.conf.layers.SubsamplingLayer
+import org.deeplearning4j.nn.conf.layers.misc.FrozenLayer
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
+import org.deeplearning4j.nn.weights.WeightInit
+import org.nd4j.linalg.activations.Activation
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.cpu.nativecpu.NDArray
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
+import org.nd4j.linalg.lossfunctions.LossFunctions
 import java.io.File
 import java.nio.file.Paths
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.collections.ArrayDeque
 import kotlin.collections.ArrayList
 import kotlin.random.Random
 
@@ -32,10 +44,7 @@ class SimulatedRunner : Runner() {
         seed: Int,
         @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE") _unused: MLConfiguration,
     ) {
-        CnnMnist.main(baseDirectory)
-
-
-        /*var configs = loadConfig(baseDirectory)
+        var configs = loadConfig(baseDirectory)
         // All these things have to be initialized before any of the runner threads start
         val toServerMessageBuffers = ArrayList<CopyOnWriteArrayList<MsgPsiCaClientToServer>>()
         val toClientMessageBuffers = ArrayList<CopyOnWriteArrayList<MsgPsiCaServerToClient>>()
@@ -59,47 +68,31 @@ class SimulatedRunner : Runner() {
                 "#peers included in current batch"
             )
         )
-        val globalNetworks = (0 until 11).map {
+        val globalNetworks = (0 until 10).map {
             generateNetwork(
                 configs[0].dataset,
                 configs[0].nnConfiguration,
                 0
             )
-        }
-        val trainDataSetIterators = (0 until 10).map {
+        }.toMutableList()
+        val trainDataSetIterators = (0 until 6).map {
             configs[0].dataset.inst(
-                DatasetIteratorConfiguration(BatchSizes.BATCH_5,
-                    listOf(if (it == 0) 800 else 0,
-                        if (it == 1) 800 else 0,
-                        if (it == 2) 800 else 0,
-                        if (it == 3) 800 else 0,
-                        if (it == 4) 800 else 0,
-                        if (it == 5) 800 else 0,
-                        if (it == 6) 800 else 0,
-                        if (it == 7) 800 else 0,
-                        if (it == 8) 800 else 0,
-                        if (it == 9) 800 else 0),
-                    MaxTestSamples.NUM_200),
-                0L,
-                CustomDataSetType.TRAIN,
-                baseDirectory,
-                Behaviors.BENIGN
-            )
-        }
-        val ewcTrainDataSetIterators = (0 until 10).map {
-            configs[0].dataset.inst(
-                DatasetIteratorConfiguration(BatchSizes.BATCH_300,
-                    listOf(if (it == 0) 800 else 0,
-                        if (it == 1) 800 else 0,
-                        if (it == 2) 800 else 0,
-                        if (it == 3) 800 else 0,
-                        if (it == 4) 800 else 0,
-                        if (it == 5) 800 else 0,
-                        if (it == 6) 800 else 0,
-                        if (it == 7) 800 else 0,
-                        if (it == 8) 800 else 0,
-                        if (it == 9) 800 else 0),
-                    MaxTestSamples.NUM_200),
+                DatasetIteratorConfiguration(
+                    BatchSizes.BATCH_5,
+                    listOf(
+                        if (it == 0) 5000 else 0,
+                        if (it == 0) 5000 else 0,
+                        if (it == 0) 5000 else 0,
+                        if (it == 0) 5000 else 0,
+                        if (it == 1) 5000 else 0,
+                        if (it == 2) 5000 else 0,
+                        if (it == 3) 5000 else 0,
+                        if (it == 4) 5000 else 0,
+                        if (it == 5) 5000 else 0,
+                        if (it == 6) 5000 else 0
+                    ),
+                    MaxTestSamples.NUM_100
+                ),
                 0L,
                 CustomDataSetType.TRAIN,
                 baseDirectory,
@@ -107,140 +100,65 @@ class SimulatedRunner : Runner() {
             )
         }
         val testDataSetIterator = configs[0].dataset.inst(
-            DatasetIteratorConfiguration(BatchSizes.BATCH_5,
+            DatasetIteratorConfiguration(
+                BatchSizes.BATCH_5,
 //                listOf(200, 200, 200, 200, 200, 200, 200, 200, 200, 200),
-                listOf(100, 100, 100, 100, 100, 100, 100, 100, 100, 100),
-                MaxTestSamples.NUM_100),
+                listOf(10, 10, 10, 10, 10, 10, 10, 10, 10, 10),
+                MaxTestSamples.NUM_100
+            ),
             0L,
             CustomDataSetType.FULL_TEST,
             baseDirectory,
             Behaviors.BENIGN
         )
 
-
-
-
-
-
-        val old_var_list = mutableListOf<INDArray>()
-//        LossEWC.old_var_list = old_var_list
-        LossEWC.model = globalNetworks[10]
-        EWCAdamUpdater.old_var_list = old_var_list
-        EWCAdamUpdater.model = globalNetworks[10]
-
-        repeat(50) {
-            repeat(10) { task ->
-                val newfisher = mutableListOf<INDArray>()
-                repeat (task+1) { task2 ->
-                    val fisher2 = {
-                        val gradient =
-                            NDArray(globalNetworks[10].params().shape().map { dimension -> dimension.toInt() }.toIntArray())
-
-                        ewcTrainDataSetIterators[task2].reset()
-                        val batch = ewcTrainDataSetIterators[task2].next()
-                        val tmpnet = generateNetwork(
-                            configs[0].dataset,
-                            configs[0].nnConfiguration,
-                            0
-                        )
-                        for (i in 0 until 30L) {
-                            val gradientAndAsdf = globalNetworks[10].calculateGradients(
-                                batch.features.slice(i).reshape(1, 28 * 28),
-                                batch.labels.slice(i).reshape(1, 10),
-                                null,
-                                null
-                            )
-                            gradient.addi(gradientAndAsdf.first.gradient().mul(gradientAndAsdf.first.gradient()))
-                        }
-                        gradient.divi(batch.features.size(0))
-                        gradient
-                    }.invoke()
-                    newfisher.add(fisher2)
+        globalNetworks[0].paramTable()["4_W"]!!.muli(0)
+        globalNetworks[0].paramTable()["4_b"]!!.muli(0)
+        var cw : Map<String, INDArray>? = null
+        val originalModel = globalNetworks[0].paramTable().map { Pair(it.key, it.value.dup()) }.toMap()
+        repeat(5) { task ->
+            logger.debug { "Task: $task" }
+            val times = if (task == 0) 1000 else 100
+            repeat(times) {
+                if (it % 100 == 0) {
+                    logger.debug { "Iteration: $it" }
                 }
-                repeat(30) {
-                    val elem = try {
-                        trainDataSetIterators[task].next()  //
-                    } catch (e: NoSuchElementException) {
-                        trainDataSetIterators[task].reset()  //
-                        trainDataSetIterators[task].next()  //
-                    }
-                    globalNetworks[10].fit(elem)
+                val elem = try {
+                    trainDataSetIterators[task].next()  //
+                } catch (e: NoSuchElementException) {
+                    trainDataSetIterators[task].reset()  //
+                    trainDataSetIterators[task].next()  //
                 }
-                logger.error { "Finished index: $task" }
-                EWCAdamUpdater.fisher = newfisher
-                old_var_list.add(globalNetworks[10].params().dup())
-                evaluationProcessor.iteration = 0
-                execEvaluationProcessor(
-                    evaluationProcessor,
-                    testDataSetIterator,
-                    globalNetworks[10],
-                    EvaluationProcessor.EvaluationData(
-                        "before", "", 0, globalNetworks[10].iterationCount, 0
-                    ),
-                    0,
-                    true
-                )
+                globalNetworks[0].fit(elem)
             }
-        }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        repeat(50) {
-            repeat(20) {
-                globalNetworks.zip(trainDataSetIterators).forEach {
-                    val elem = try {
-                        it.second.next()
-                    } catch (e: IllegalStateException) {
-                        it.second.reset()
-                        it.second.next()
-                    }
-                    it.first.fit(elem)
-
-                    val precision_matrices = it.first
-                        .paramTable()
-                        .map { (key, value) ->
-                            Pair(
-                                key,
-                                NDArray(value.shape().map { dimension -> dimension.toInt() }.toIntArray()))
-                        }
-                        .toMap()
-                    for (i in 0 until elem.features.size(0)) {
-                        val asdf = elem.features.shape().map { it.toInt() }.toIntArray()
-                        NDArray(asdf)
-                        it.first.input = elem.features.slice(i).reshape(1, 784)
-                        it.first.labels = elem.labels.slice(i).reshape(1, 10)
-                        it.first.computeGradientAndScore()
-                        val gradient = it.first.gradient()
-                        val gradientForVariable = gradient.gradientForVariable()
-                        precision_matrices.forEach { matrix ->
-                            matrix.value.addi(gradientForVariable[matrix.key]!!.mul(gradientForVariable[matrix.key]))
-                        }
-                    }
-                    precision_matrices.forEach { matrix -> matrix.value.divi(elem.features.size(0)) }
+            if (task == 0) {
+                val oldParams = globalNetworks[0].paramTable().map { Pair(it.key, it.value.dup()) }.toMap()
+                globalNetworks[0] = MultiLayerNetwork(generateFrozen(configs[0].nnConfiguration,0))
+                globalNetworks[0].init()
+                globalNetworks[0].setParamTable(oldParams)
+                cw = globalNetworks[0].paramTable().map { Pair(it.key, it.value.dup()) }.toMap()
+                cw!!.getValue("4_W").muli(0)
+                cw!!.getValue("4_b").muli(0)
+                for (i in 0 until 6) {
+                    val twColumnW = oldParams.getValue("4_W").getColumn(i.toLong())
+                    cw!!.getValue("4_W").putColumn(i, /*cwColumnW.mul(0).add(*/twColumnW.sub(twColumnW.meanNumber())/*).div(0 + 1)*/)
+                    val twColumnB = oldParams.getValue("4_b").getColumn(i.toLong())
+                    cw!!.getValue("4_b").putColumn(i, /*cwColumnB.mul(0).add(*/twColumnB.sub(twColumnB.meanNumber())/*).div(0 + 1)*/)
                 }
+            } else {
+                val tw = globalNetworks[0].paramTable().map { Pair(it.key, it.value.dup()) }.toMap()
+//                val cwColumnW = cw!!.getValue("4_W").getColumn((task+5).toLong())
+                val twColumnW = tw.getValue("4_W").getColumn((task+5).toLong())
+                cw!!.getValue("4_W").putColumn(task+5, /*cwColumnW.mul(0).add(*/twColumnW.sub(twColumnW.meanNumber())/*).div(0 + 1)*/)
+
+//                val cwColumnB = cw!!.getValue("4_b").getColumn((task+5).toLong())
+                val twColumnB = tw.getValue("4_b").getColumn((task+5).toLong())
+                cw!!.getValue("4_b").putColumn(task+5, /*cwColumnB.mul(0).add(*/twColumnB.sub(twColumnB.meanNumber())/*).div(0 + 1)*/)
+                print(1)
             }
-            var newParams = globalNetworks[0].params().dup()
-            (1 until 10).forEach {
-                newParams = newParams.add(globalNetworks[it].params().dup())
-            }
-            newParams = newParams.div(10)
-            globalNetworks.forEach { it.setParams(newParams.dup()) }
+
+            globalNetworks[0].setParamTable(cw!!.map { Pair(it.key, it.value.dup()) }.toMap())
             evaluationProcessor.iteration = 0
             execEvaluationProcessor(
                 evaluationProcessor,
@@ -252,84 +170,66 @@ class SimulatedRunner : Runner() {
                 0,
                 true
             )
+            globalNetworks[0].setParamTable(originalModel.map { Pair(it.key, it.value.dup()) }.toMap())
         }
+    }
 
 
-
-
-
-
-
-        for (simulationIndex in configs.indices) {
-            thread {
-                val config = configs[simulationIndex]
-                val dataset = config.dataset
-                val datasetIteratorConfiguration = config.datasetIteratorConfiguration
-                val behavior = config.trainConfiguration.behavior
-                val trainDataSetIterator = dataset.inst(
-                    datasetIteratorConfiguration,
-                    simulationIndex.toLong(),
-                    CustomDataSetType.TRAIN,
-                    baseDirectory,
-                    behavior
-                )
-                val testDataSetIterator = dataset.inst(
-                    datasetIteratorConfiguration,
-                    simulationIndex.toLong(),
-                    CustomDataSetType.TEST,
-                    baseDirectory,
-                    behavior
-                )
-                val fullTestDataSetIterator = dataset.inst(
-                    datasetIteratorConfiguration,
-                    simulationIndex.toLong(),
-                    CustomDataSetType.FULL_TEST,
-                    baseDirectory,
-                    behavior
-                )
-                *//*val network = generateNetwork(
-                    dataset,
-                    config.nnConfiguration,
-                    simulationIndex
-                )
-                network.setParams(globalNetwork.params().dup())
-                evaluationProcessor.iteration = 0
-                execEvaluationProcessor(
-                    evaluationProcessor,
-                    fullTestDataSetIterator,
-                    network,
-                    EvaluationProcessor.EvaluationData(
-                        "before", "", 0, globalNetwork.iterationCount, 0
-                    ),
-                    0,
-                    true
-                )*//*
-
-                val countPerPeer = getSimilarPeers(
-                    trainDataSetIterator,
-                    sraKeyPairs[simulationIndex],
-                    toServerMessageBuffers,
-                    toClientMessageBuffers,
-                    simulationIndex
-                )
-
-                *//*trainTestSendNetwork(
-                    simulationIndex,
-                    network,
-                    simulationIndex == 0,
-
-                    evaluationProcessor,
-                    fullTestDataSetIterator,
-
-                    trainDataSetIterator,
-                    configs[simulationIndex].trainConfiguration,
-                    configs[simulationIndex].modelPoisoningConfiguration,
-
-                    testDataSetIterator,
-                    countPerPeer,
-                )*//*
-            }
-        }*/
+    fun generateFrozen(
+        nnConfiguration: NNConfiguration,
+        seed: Int
+    ): MultiLayerConfiguration {
+        return NeuralNetConfiguration.Builder()
+            .seed(seed.toLong())
+            .activation(Activation.LEAKYRELU)
+            .weightInit(WeightInit.RELU)
+            .l2(nnConfiguration.l2.value)
+            .updater(nnConfiguration.optimizer.inst(nnConfiguration.learningRate))
+            .list()
+            .layer(
+                FrozenLayer.Builder().layer(
+                    ConvolutionLayer.Builder(5, 5)
+//                .nIn(1)
+                        .stride(1, 1)
+                        .nOut(10)
+                        .activation(Activation.IDENTITY)
+                        .build()
+                ).build()
+            )
+            .layer(
+                FrozenLayer.Builder().layer(
+                    SubsamplingLayer.Builder(SubsamplingLayer.PoolingType.MAX)
+                        .kernelSize(2, 2)
+                        .stride(2, 2)
+                        .build()
+                ).build()
+            )
+            .layer(
+                FrozenLayer.Builder().layer(
+                    ConvolutionLayer.Builder(5, 5)
+                        .stride(1, 1)
+                        .nOut(50)
+                        .activation(Activation.IDENTITY)
+                        .build()
+                ).build()
+            )
+            .layer(
+                FrozenLayer.Builder().layer(
+                    SubsamplingLayer.Builder(SubsamplingLayer.PoolingType.MAX)
+                        .kernelSize(2, 2)
+                        .stride(2, 2)
+                        .build()
+                ).build()
+            )
+            .layer(
+                OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
+                    .nOut(10)
+                    .activation(Activation.SOFTMAX)
+                    .weightInit(WeightInit.XAVIER)
+                    .build()
+            )
+            .setInputType(InputType.convolutionalFlat(28, 28, 1))
+            .build()
     }
 
     private fun loadConfig(baseDirectory: File): List<MLConfiguration> {
