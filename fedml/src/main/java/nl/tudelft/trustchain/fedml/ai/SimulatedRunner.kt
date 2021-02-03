@@ -3,7 +3,6 @@ package nl.tudelft.trustchain.fedml.ai
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.*
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
@@ -17,7 +16,6 @@ import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.concurrent.thread
-import kotlin.math.round
 import kotlin.random.Random
 
 private val logger = KotlinLogging.logger("SimulatedRunner")
@@ -75,9 +73,9 @@ class SimulatedRunner : Runner() {
                             testConfig.map { it.trainConfiguration.iterationsBeforeEvaluation!! }.toTypedArray()
                         val iterationsBeforeSendings =
                             testConfig.map { it.trainConfiguration.iterationsBeforeSending!! }.toTypedArray()
-                        val networks = testConfig.zip(datasets).mapIndexed { i, (nodeConfig, nodeDataset) ->
+                        var networks = testConfig.zip(datasets).mapIndexed { i, (nodeConfig, nodeDataset) ->
                             generateNetwork(
-                                nodeDataset,
+                                nodeDataset.architecture,
                                 nodeConfig.nnConfiguration,
                                 i
                             )
@@ -92,7 +90,7 @@ class SimulatedRunner : Runner() {
                         val gradients: Array<INDArray> = testConfig.map { NDArray(networks[0].params().shape().map { it.toInt() }.toIntArray()) } .toTypedArray()
                         val iters = testConfig.mapIndexed { i, _ ->
                             getDataSetIterators(
-                                datasets[i],
+                                datasets[i].inst,
                                 datasetIteratorConfigurations[i],
                                 i.toLong() * 10,
                                 baseDirectory,
@@ -118,9 +116,37 @@ class SimulatedRunner : Runner() {
                         threads.forEach { it.join() }
                         networks[0].setListeners(ScoreIterationListener(printScoreIterations))
 
+                        var cws = networks.map { copyParamTable(it.paramTable()) }.toMutableList()
+
                         var epochEnd = true
                         var epoch = -1
                         val start = System.currentTimeMillis()
+
+                        if (testConfig[0].dataset == Datasets.MNIST) {
+                            repeat(200) {
+                                val elem = try {
+                                    iterTrains[0].next()
+                                } catch (e: NoSuchElementException) {
+                                    iterTrains[0].reset()
+                                    iterTrains[0].next()
+                                }
+                                networks[0].fit(elem)
+                            }
+                            val initParams = copyParamTable(networks[0].paramTable())
+
+                            networks = testConfig.mapIndexed { i, nodeConfig ->
+                                generateNetwork(
+                                    ::generateDefaultMNISTConfigurationFrozen,
+                                    nodeConfig.nnConfiguration,
+                                    i
+                                )
+                            }.toTypedArray()
+
+                            networks.forEach { it.setParamTable(copyParamTable(initParams)) }
+                            cws = networks.map { copyParamTable(it.paramTable()) }.toMutableList()
+                            cws.forEach { it.getValue("4_W").muli(0) }
+                        }
+
 
 
 
@@ -153,8 +179,10 @@ class SimulatedRunner : Runner() {
                                 val iterTest = iterTests[nodeIndex]
                                 val iterTestFull = iterTestFulls[nodeIndex]
                                 val behavior = behaviors[nodeIndex]
+                                val cw = cws[nodeIndex]
+                                val usedClassIndices = nodeConfig.datasetIteratorConfiguration.distribution.mapIndexed { ind, v -> if (v > 0) ind else null }.filterNotNull()
 
-                                if (joiningLateRemainingIterations[nodeIndex] > 0) {
+                                /*if (joiningLateRemainingIterations[nodeIndex] > 0) {
                                     joiningLateRemainingIterations[nodeIndex]--
                                     if (nodeIndex == 0) logger.debug { "JL => continue" }
                                     newOtherModelBuffer.clear()
@@ -170,12 +198,12 @@ class SimulatedRunner : Runner() {
                                         slowdownRemainingIterations[nodeIndex] =
                                             round(1 / nodeConfig.trainConfiguration.slowdown.multiplier).toInt() - 1
                                     }
-                                }
+                                }*/
 
 
                                 if (iteration % iterationsBeforeSendings[nodeIndex] == 0) {
                                     if (behavior == Behaviors.BENIGN) {
-                                        // Attack
+                                        /*// Attack
                                         val attack = nodeConfig.modelPoisoningConfiguration.attack
                                         val attackVectors = attack.obj.generateAttack(
                                             nodeConfig.modelPoisoningConfiguration.numAttackers,
@@ -184,15 +212,15 @@ class SimulatedRunner : Runner() {
                                             newOtherModelBuffer,
                                             random
                                         )
-                                        newOtherModelBuffer.putAll(attackVectors)
+                                        newOtherModelBuffer.putAll(attackVectors)*/
 
                                         // Integrate parameters of other peers
                                         val numPeers = newOtherModelBuffer.size + 1
                                         val averageParams: INDArray
                                         if (numPeers == 1) {
                                             if (nodeIndex == 0) logger.debug { "No received params => skipping integration evaluation" }
-                                            averageParams = newParams[nodeIndex]
-                                            network.setParameters(averageParams)
+//                                            averageParams = newParams[nodeIndex]
+//                                            network.setParameters(averageParams)
                                         } else {
                                             if (nodeIndex == 0) logger.debug { "Params received => executing aggregation rule" }
                                             averageParams = nodeConfig.trainConfiguration.gar.obj.integrateParameters(
@@ -205,14 +233,20 @@ class SimulatedRunner : Runner() {
                                                 countPerPeer,
                                                 iteration % iterationsBeforeEvaluations[nodeIndex] == 0 && (nodeIndex == 0 || !ONLY_EVALUATE_FIRST_NODE)
                                             )
+                                            network.setParameters(averageParams)
+                                            val tw = network.paramTable()
+                                            for (index in nodeConfig.dataset.defaultIteratorDistribution.value.indices) {
+                                                cw.getValue("4_W").putColumn(index, tw.getValue("4_W").getColumn(index.toLong()))
+                                            }
                                             recentOtherModelsBuffer.addAll(newOtherModelBuffer.toList())
                                             while (recentOtherModelsBuffer.size > SIZE_RECENT_OTHER_MODELS) {
                                                 recentOtherModelsBuffer.removeFirst()
                                             }
-                                            network.setParameters(averageParams)
                                         }
 
                                         if (iteration % iterationsBeforeEvaluations[nodeIndex] == 0 && (nodeIndex == 0 || !ONLY_EVALUATE_FIRST_NODE)) {
+                                            val oldTw = copyParamTable(network.paramTable())
+                                            network.setParamTable(cw)
                                             val elapsedTime2 = System.currentTimeMillis() - start
                                             val extraElements2 = mapOf(
                                                 Pair("before or after averaging", "before"),
@@ -228,14 +262,26 @@ class SimulatedRunner : Runner() {
                                                 nodeIndex,
                                                 nodeIndex == 0
                                             )
+                                            network.setParamTable(oldTw)
                                         }
                                     }
                                     newOtherModelBuffer.clear()
                                 }
 
+                                var tw = network.paramTable()
+                                tw.getValue("4_W").muli(0)
+                                for (index in usedClassIndices) {
+                                    tw.getValue("4_W").putColumn(index, cw.getValue("4_W").getColumn(index.toLong()))
+                                }
+
                                 oldParams[nodeIndex] = network.params().dup()
 
                                 epochEnd = fitNetwork(network, iterTrains[nodeIndex])
+
+                                tw = network.paramTable()
+                                for (index in usedClassIndices) {
+                                    cw.getValue("4_W").putColumn(index, tw.getValue("4_W").getColumn(index.toLong()))
+                                }
 
                                 if (iteration % iterationsBeforeSendings[nodeIndex] == 0) {
                                     shareModel(
@@ -249,6 +295,8 @@ class SimulatedRunner : Runner() {
                                 }
 
                                 if (iteration % iterationsBeforeEvaluations[nodeIndex] == 0 && (nodeIndex == 0 || !ONLY_EVALUATE_FIRST_NODE)) {
+                                    val oldTw = copyParamTable(network.paramTable())
+                                    network.setParamTable(cw)
                                     val elapsedTime = System.currentTimeMillis() - start
                                     val extraElements = mapOf(
                                         Pair("before or after averaging", "after"),
@@ -264,6 +312,7 @@ class SimulatedRunner : Runner() {
                                         nodeIndex,
                                         nodeIndex == 0
                                     )
+                                    network.setParamTable(oldTw)
                                 }
                             }
                         }
@@ -276,6 +325,10 @@ class SimulatedRunner : Runner() {
                 e.printStackTrace()
             }
 //        }
+    }
+
+    private fun copyParamTable(paramTable: Map<String, INDArray>): Map<String, INDArray> {
+        return paramTable.map { Pair(it.key, it.value.dup()) }.toMap()
     }
 
     private fun fitNetwork(network: MultiLayerNetwork, dataSetIterator: CustomDataSetIterator): Boolean {
@@ -340,10 +393,10 @@ class SimulatedRunner : Runner() {
         val message = craftMessage(params, trainConfiguration.behavior, random)
         when (trainConfiguration.communicationPattern) {
             CommunicationPatterns.ALL -> newOtherModelBuffersTemp
-                .filterIndexed { index, _ -> index != nodeIndex && index in countPerPeer.keys }
+                .filterIndexed { index, _ -> index != nodeIndex /*&& index in countPerPeer.keys*/ }
                 .forEach { it[nodeIndex] = message }
             CommunicationPatterns.RANDOM -> newOtherModelBuffersTemp
-                .filterIndexed { index, _ -> index != nodeIndex && index in countPerPeer.keys }
+                .filterIndexed { index, _ -> index != nodeIndex /*&& index in countPerPeer.keys*/ }
                 .random()[nodeIndex] = message
             CommunicationPatterns.RR -> throw IllegalArgumentException("Not implemented yet")
             CommunicationPatterns.RING -> throw IllegalArgumentException("Not implemented yet")

@@ -18,6 +18,7 @@ import org.deeplearning4j.nn.conf.MultiLayerConfiguration
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration
 import org.deeplearning4j.nn.conf.inputs.InputType
 import org.deeplearning4j.nn.conf.layers.*
+import org.deeplearning4j.nn.conf.layers.misc.FrozenLayer
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.deeplearning4j.nn.weights.WeightInit
 import org.nd4j.linalg.activations.Activation
@@ -61,17 +62,71 @@ fun generateDefaultMNISTConfiguration(
             .Builder(SubsamplingLayer.PoolingType.MAX, intArrayOf(2, 2), intArrayOf(2, 2))
             .build()
         )
-        .layer(DenseLayer
-            .Builder()
-            .nOut(500)
-            .build()
-        )
         .layer(OutputLayer
             .Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
             .nOut(10)
             .activation(Activation.SOFTMAX)
             .weightInit(WeightInit.XAVIER)
+            .hasBias(false)
             .build()
+        )
+        .setInputType(InputType.convolutionalFlat(28, 28, 1))
+        .build()
+}
+
+fun generateDefaultMNISTConfigurationFrozen(
+    nnConfiguration: NNConfiguration,
+    seed: Int
+): MultiLayerConfiguration {
+    return NeuralNetConfiguration.Builder()
+        .seed(seed.toLong())
+        .activation(Activation.LEAKYRELU)
+        .weightInit(WeightInit.RELU)
+        .l2(nnConfiguration.l2.value)
+        .updater(nnConfiguration.optimizer.inst(nnConfiguration.learningRate))
+        .list()
+        .layer(
+            FrozenLayer.Builder().layer(
+                ConvolutionLayer.Builder(5, 5)
+//                .nIn(1)
+                    .stride(1, 1)
+                    .nOut(10)
+                    .activation(Activation.IDENTITY)
+                    .build()
+            ).build()
+        )
+        .layer(
+            FrozenLayer.Builder().layer(
+                SubsamplingLayer.Builder(SubsamplingLayer.PoolingType.MAX)
+                    .kernelSize(2, 2)
+                    .stride(2, 2)
+                    .build()
+            ).build()
+        )
+        .layer(
+            FrozenLayer.Builder().layer(
+                ConvolutionLayer.Builder(5, 5)
+                    .stride(1, 1)
+                    .nOut(50)
+                    .activation(Activation.IDENTITY)
+                    .build()
+            ).build()
+        )
+        .layer(
+            FrozenLayer.Builder().layer(
+                SubsamplingLayer.Builder(SubsamplingLayer.PoolingType.MAX)
+                    .kernelSize(2, 2)
+                    .stride(2, 2)
+                    .build()
+            ).build()
+        )
+        .layer(
+            OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
+                .nOut(10)
+                .activation(Activation.SOFTMAX)
+                .weightInit(WeightInit.XAVIER)
+                .hasBias(false)
+                .build()
         )
         .setInputType(InputType.convolutionalFlat(28, 28, 1))
         .build()
@@ -182,11 +237,11 @@ abstract class Runner {
     protected val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
     fun generateNetwork(
-        dataset: Datasets,
+        architecture: (nnConfiguration: NNConfiguration, seed: Int) -> MultiLayerConfiguration,
         nnConfiguration: NNConfiguration,
         seed: Int,
     ): MultiLayerNetwork {
-        val network = MultiLayerNetwork(dataset.architecture(nnConfiguration, seed))
+        val network = MultiLayerNetwork(architecture(nnConfiguration, seed))
         network.init()
         return network
     }
@@ -198,13 +253,13 @@ abstract class Runner {
     )
 
     protected fun getDataSetIterators(
-        dataset: Datasets,
+        inst: (iteratorConfiguration: DatasetIteratorConfiguration, seed: Long, dataSetType: CustomDataSetType, baseDirectory: File, behavior: Behaviors) -> CustomDataSetIterator,
         datasetIteratorConfiguration: DatasetIteratorConfiguration,
         seed: Long,
         baseDirectory: File,
         behavior: Behaviors,
     ): List<CustomDataSetIterator> {
-        val trainDataSetIterator = dataset.inst(
+        val trainDataSetIterator = inst(
             DatasetIteratorConfiguration(datasetIteratorConfiguration.batchSize,
                 datasetIteratorConfiguration.distribution,
                 datasetIteratorConfiguration.maxTestSamples),
@@ -214,7 +269,7 @@ abstract class Runner {
             behavior
         )
         logger.debug { "Loaded trainDataSetIterator" }
-        val testDataSetIterator = dataset.inst(
+        val testDataSetIterator = inst(
             DatasetIteratorConfiguration(BatchSizes.BATCH_200,
                 List(datasetIteratorConfiguration.distribution.size) { TEST_SET_SIZE },
                 datasetIteratorConfiguration.maxTestSamples),
@@ -224,7 +279,7 @@ abstract class Runner {
             behavior
         )
         logger.debug { "Loaded testDataSetIterator" }
-        val fullTestDataSetIterator = dataset.inst(
+        val fullTestDataSetIterator = inst(
             DatasetIteratorConfiguration(BatchSizes.BATCH_200,
                 List(datasetIteratorConfiguration.distribution.size) { datasetIteratorConfiguration.maxTestSamples.value },
                 datasetIteratorConfiguration.maxTestSamples),

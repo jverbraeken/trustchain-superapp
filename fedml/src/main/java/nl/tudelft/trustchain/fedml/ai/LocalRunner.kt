@@ -33,7 +33,7 @@ class LocalRunner : Runner() {
                 Behaviors.BENIGN
             )
             val network = generateNetwork(
-                mlConfiguration.dataset,
+                mlConfiguration.dataset.architecture,
                 mlConfiguration.nnConfiguration,
                 seed
             )

@@ -188,8 +188,10 @@ enum class MaxIterations(val id: String, val text: String, val value: Int) {
     ITER_150("iter_150", "150", 150),
     ITER_200("iter_200", "200", 200),
     ITER_250("iter_250", "250", 250),
+    ITER_300("iter_300", "300", 300),
     ITER_400("iter_400", "400", 400),
     ITER_500("iter_500", "500", 500),
+    ITER_1000("iter_1000", "1000", 1000),
 }
 
 fun loadMaxIteration(iteration: String?) = MaxIterations.values().firstOrNull { it.id == iteration }
