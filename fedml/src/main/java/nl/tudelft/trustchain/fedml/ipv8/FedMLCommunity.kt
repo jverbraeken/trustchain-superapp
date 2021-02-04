@@ -148,7 +148,7 @@ class FedMLCommunity(
     }
 
     internal fun sendToMaster(messageID: MessageId, message: Serializable, logging: Boolean = false, reliable: Boolean = false) {
-        logger.debug { "sendToMaster, messageId: ${messageID.id}" }
+//        logger.debug { "sendToMaster, messageId: ${messageID.id}" }
         val packet = serializePacket(messageID.id, message, true, logging = logging)
         send(master, packet, reliable)
     }

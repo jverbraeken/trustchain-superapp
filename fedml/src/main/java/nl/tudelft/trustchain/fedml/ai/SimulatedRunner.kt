@@ -51,6 +51,8 @@ class SimulatedRunner : Runner() {
                 for (test in figureConfig.indices) {
                     val testConfig = figureConfig[test]
                     logger.error { "Going to test: $figureName - ${testConfig[0].trainConfiguration.gar.id}" }
+
+                    // Initialize everything
                     evaluationProcessor.newSimulation("$figureName - ${testConfig[0].trainConfiguration.gar.id}", testConfig)
                     val start = System.currentTimeMillis()
                     nodes = testConfig.mapIndexed { i, config ->
@@ -69,14 +71,15 @@ class SimulatedRunner : Runner() {
                     nodes.forEachIndexed { i, node -> node.setCountPerPeer(countPerPeers.getValue(i)) }
                     nodes[0].printIterations()
 
-                    var epochEnd = true
-                    var epoch = -1
-
+                    // Pre-training for Bristle
                     if (testConfig[0].dataset == Datasets.MNIST && testConfig[0].trainConfiguration.gar == GARs.BRISTLE) {
                         nodes[0].pretrainNetwork(Bristle.PRE_TRAIN, start)
                         nodes.slice(1 until nodes.size).forEach { it.reInitializeWithFrozen(nodes[0].getNetworkParams()) }
                     }
 
+                    // Perform <x> iterations
+                    var epochEnd = true
+                    var epoch = -1
                     val startIteration = if (testConfig[0].trainConfiguration.gar == GARs.BRISTLE) Bristle.PRE_TRAIN else 0
                     for (iteration in startIteration until testConfig[0].trainConfiguration.maxIteration.value) {
                         if (epochEnd) {
@@ -167,7 +170,6 @@ class SimulatedRunner : Runner() {
         nodeIndex: Int,
         countPerPeer: Map<Int, Int>
     ) {
-        // Send to other peers
         val message = craftMessage(params, trainConfiguration.behavior, random)
         when (trainConfiguration.communicationPattern) {
             CommunicationPatterns.ALL -> nodes

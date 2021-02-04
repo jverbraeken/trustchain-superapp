@@ -104,7 +104,7 @@ class Bristle : AggregationRule() {
         network: MultiLayerNetwork,
         testDataSetIterator: CustomDataSetIterator,
     ): DoubleArray {
-        network.setParameters(model)
+        network.outputLayer.setParams(model)
         val evaluations = arrayOf(Evaluation())
         network.doEvaluation(testDataSetIterator, *evaluations)
         return testDataSetIterator.labels.map {
@@ -219,7 +219,7 @@ class Bristle : AggregationRule() {
     }
 
     companion object {
-        const val PRE_TRAIN = 200
+        const val PRE_TRAIN = 150
     }
 }
 

@@ -70,7 +70,7 @@ class Node(
     private val iterTestFull: CustomDataSetIterator
     private val logging: Boolean
 
-    private lateinit var cw: Map<String, INDArray>
+    private lateinit var cw: INDArray
     private lateinit var countPerPeer: Map<Int, Int>
     private var slowdownRemainingIterations = 0
 
@@ -96,9 +96,9 @@ class Node(
         modelPoisoningAttack = modelPoisoningConfiguration.attack
         numAttackers = modelPoisoningConfiguration.numAttackers
 
-        oldParams = network.params().dup()
-        newParams = NDArray(network.params().shape().map { it.toInt() }.toIntArray())
-        gradient = NDArray(network.params().shape().map { it.toInt() }.toIntArray())
+        oldParams = if (gar == GARs.BRISTLE) network.outputLayer.params().dup() else network.params().dup()
+        newParams = NDArray()
+        gradient = NDArray()
         val iters = getDataSetIterators(
             dataset.inst,
             datasetIteratorConfiguration,
@@ -111,10 +111,6 @@ class Node(
         iterTestFull = iters[2]
 
         logging = nodeIndex == 0 || !ONLY_EVALUATE_FIRST_NODE
-    }
-
-    private fun initializeCWCold() {
-        cw = copyParamTable(network.paramTable())
     }
 
     fun pretrainNetwork(iterations: Int, start: Long) {
@@ -152,14 +148,15 @@ class Node(
     fun reInitializeWithFrozen(preTrainedNetwork: INDArray) {
         network = generateNetwork(::generateDefaultMNISTConfigurationFrozen, nnConfiguration, nodeIndex)
         network.setParams(preTrainedNetwork.dup())
-        initializeCWCold()
-        cw.getValue("4_W").muli(0)
+        cw = network.outputLayer.params().dup()
+        cw.muli(0)
+        updateCW()
     }
 
     fun performIteration(epoch: Int, iteration: Int): Boolean {
 //        logger.debug { "Node: $nodeIndex" }
 
-        newParams = network.params().dup()
+        newParams = if (gar == GARs.BRISTLE) network.outputLayer.params().dup() else network.params().dup()
         gradient = oldParams.sub(newParams)
 
         if (joiningLateSkip()) {
@@ -169,38 +166,30 @@ class Node(
             return false
         }
 
-
         if (iteration % iterationsBeforeSending == 0) {
             if (behavior == Behaviors.BENIGN) {
                 addPotentialAttacks()
                 potentiallyIntegrateParameters(iteration)
-                potentiallyEvaluate(epoch, iteration)
+                potentiallyEvaluate(epoch, iteration, "before")
             }
             newOtherModelBuffer.clear()
         }
 
         if (gar == GARs.BRISTLE) {
-            val tw = network.paramTable()
-            tw.getValue("4_W").muli(0)
-            for (index in usedClassIndices) {
-                tw.getValue("4_W").putColumn(index, cw.getValue("4_W").getColumn(index.toLong()))
-            }
+            resetTW()
         }
 
-        oldParams = network.params().dup()
+        oldParams = if (gar == GARs.BRISTLE) network.outputLayer.params().dup() else network.params().dup()
 
         val epochEnd = fitNetwork(network, iterTrain)
 
         if (gar == GARs.BRISTLE) {
-            val tw = network.paramTable()
-            for (index in usedClassIndices) {
-                cw.getValue("4_W").putColumn(index, tw.getValue("4_W").getColumn(index.toLong()))
-            }
+            updateCW()
         }
 
         if (iteration % iterationsBeforeSending == 0) {
             shareModel(
-                network.params().dup(),
+                if (gar == GARs.BRISTLE) network.outputLayer.params().dup() else network.params().dup(),
                 trainConfiguration,
                 random,
                 nodeIndex,
@@ -208,27 +197,24 @@ class Node(
             )
         }
 
-        if (iteration % iterationsBeforeEvaluation == 0 && (nodeIndex == 0 || !ONLY_EVALUATE_FIRST_NODE)) {
-            val oldTw = copyParamTable(network.paramTable())
-            network.setParamTable(cw)
-            val elapsedTime = System.currentTimeMillis() - start
-            val extraElements = mapOf(
-                Pair("before or after averaging", "after"),
-                Pair("#peers included in current batch", "")
-            )
-            evaluationProcessor.evaluate(
-                iterTestFull,
-                network,
-                extraElements,
-                elapsedTime,
-                iteration,
-                epoch,
-                nodeIndex,
-                nodeIndex == 0
-            )
-            network.setParamTable(oldTw)
-        }
+        potentiallyEvaluate(epoch, iteration, "after")
         return epochEnd
+    }
+
+    private fun updateCW() {
+        val tw = network.outputLayer.params()
+        for (index in usedClassIndices) {
+            cw.putColumn(index, tw.getColumn(index.toLong()))
+        }
+    }
+
+    private fun resetTW() {
+        val tw = network.outputLayer.params()
+        tw.muli(0)
+        for (index in usedClassIndices) {
+            tw.putColumn(index, cw.getColumn(index.toLong()))
+        }
+        network.outputLayer.setParams(tw)
     }
 
     private fun joiningLateSkip(): Boolean {
@@ -290,10 +276,12 @@ class Node(
                 countPerPeer,
                 logging && (iteration % iterationsBeforeEvaluation == 0)
             )
-            network.setParameters(averageParams)
-            val tw = network.paramTable()
-            for (index in 0 until cw.getValue("4_W").columns()) {
-                cw.getValue("4_W").putColumn(index, tw.getValue("4_W").getColumn(index.toLong()))
+            if (gar == GARs.BRISTLE) {
+                for (index in 0 until cw.columns()) {
+                    cw.putColumn(index, averageParams.getColumn(index.toLong()))
+                }
+            } else {
+                network.setParameters(averageParams)
             }
             recentOtherModelsBuffer.addAll(newOtherModelBuffer.toList())
             while (recentOtherModelsBuffer.size > SIZE_RECENT_OTHER_MODELS) {
@@ -302,31 +290,36 @@ class Node(
         }
     }
 
-    private fun potentiallyEvaluate(epoch: Int, iteration: Int) {
+    private fun potentiallyEvaluate(epoch: Int, iteration: Int, beforeOrAfter: String) {
         if (logging && (iteration % iterationsBeforeEvaluation == 0)) {
-            val oldTw = copyParamTable(network.paramTable())
-            network.setParamTable(cw)
-            val elapsedTime2 = System.currentTimeMillis() - start
-            val extraElements2 = mapOf(
-                Pair("before or after averaging", "before"),
-                Pair("#peers included in current batch", newOtherModelBuffer.size.toString())
-            )
-            evaluationProcessor.evaluate(
-                iterTestFull,
-                network,
-                extraElements2,
-                elapsedTime2,
-                iteration,
-                epoch,
-                nodeIndex,
-                nodeIndex == 0
-            )
-            network.setParamTable(oldTw)
-        }
-    }
+            val evaluationScript = {
+                val elapsedTime2 = System.currentTimeMillis() - start
+                val extraElements2 = mapOf(
+                    Pair("before or after averaging", beforeOrAfter),
+                    Pair("#peers included in current batch", newOtherModelBuffer.size.toString())
+                )
+                evaluationProcessor.evaluate(
+                    iterTestFull,
+                    network,
+                    extraElements2,
+                    elapsedTime2,
+                    iteration,
+                    epoch,
+                    nodeIndex,
+                    nodeIndex == 0
+                )
+            }
+            if (gar == GARs.BRISTLE) {
+                val oldTw = network.outputLayer.params().dup()
+                network.outputLayer.setParams(cw)
 
-    private fun copyParamTable(paramTable: Map<String, INDArray>): Map<String, INDArray> {
-        return paramTable.map { Pair(it.key, it.value.dup()) }.toMap()
+                evaluationScript.invoke()
+
+                network.outputLayer.setParams(oldTw)
+            } else {
+                evaluationScript.invoke()
+            }
+        }
     }
 
     fun applyNetworkBuffers() {
