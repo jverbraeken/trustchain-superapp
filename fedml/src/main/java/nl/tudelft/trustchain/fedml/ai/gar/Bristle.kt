@@ -217,6 +217,10 @@ class Bristle : AggregationRule() {
         debug(logging) { "weightedAverage: $result" }
         return result
     }
+
+    companion object {
+        const val PRE_TRAIN = 200
+    }
 }
 
 private fun <E> Collection<E>.std(): Double {
