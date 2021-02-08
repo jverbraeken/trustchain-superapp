@@ -11,9 +11,9 @@
             android:paddingVertical="0dp">
 
             <Button
-                android:id="@+id/btnPing"
+                android:id="@+id/btnTransfer"
                 style="@style/button"
-                android:text="@string/ping" />
+                android:text="@string/transfer" />
 
             <Button
                 android:id="@+id/btnRunLocal"

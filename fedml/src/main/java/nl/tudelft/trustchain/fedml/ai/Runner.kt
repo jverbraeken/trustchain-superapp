@@ -75,6 +75,52 @@ fun generateDefaultMNISTConfiguration(
         .build()
 }
 
+fun generateDefaultMNISTConfigurationTransfer(
+    nnConfiguration: NNConfiguration,
+    seed: Int,
+): MultiLayerConfiguration {
+    return NeuralNetConfiguration.Builder()
+        .seed(seed.toLong())
+        .activation(Activation.LEAKYRELU)
+        .weightInit(WeightInit.RELU)
+        .l2(nnConfiguration.l2.value)
+        .updater(nnConfiguration.optimizer.inst(nnConfiguration.learningRate))
+        .list()
+        .layer(
+            ConvolutionLayer
+                .Builder(intArrayOf(5, 5), intArrayOf(1, 1))
+                .nOut(10)
+                .build()
+        )
+        .layer(
+            SubsamplingLayer
+                .Builder(SubsamplingLayer.PoolingType.MAX, intArrayOf(2, 2), intArrayOf(2, 2))
+                .build()
+        )
+        .layer(
+            ConvolutionLayer
+                .Builder(intArrayOf(5, 5), intArrayOf(1, 1))
+                .nOut(50)
+                .build()
+        )
+        .layer(
+            SubsamplingLayer
+                .Builder(SubsamplingLayer.PoolingType.MAX, intArrayOf(2, 2), intArrayOf(2, 2))
+                .build()
+        )
+        .layer(
+            OutputLayer
+                .Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
+                .nOut(26)
+                .activation(Activation.SOFTMAX)
+                .weightInit(WeightInit.XAVIER)
+                .hasBias(false)
+                .build()
+        )
+        .setInputType(InputType.convolutionalFlat(28, 28, 1))
+        .build()
+}
+
 fun generateDefaultMNISTConfigurationFrozen(
     nnConfiguration: NNConfiguration,
     seed: Int

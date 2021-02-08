@@ -5,7 +5,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.*
-import nl.tudelft.trustchain.fedml.ai.gar.Bristle
 import nl.tudelft.trustchain.fedml.ipv8.MsgPsiCaClientToServer
 import nl.tudelft.trustchain.fedml.ipv8.MsgPsiCaServerToClient
 import org.nd4j.linalg.api.ndarray.INDArray
@@ -48,52 +47,12 @@ class SimulatedRunner : Runner() {
                 val figureName = figureNames[figure]
                 val figureConfig = configs[figure]
 
-                for (test in figureConfig.indices) {
-                    val testConfig = figureConfig[test]
-                    logger.error { "Going to test: $figureName - ${testConfig[0].trainConfiguration.gar.id}" }
+                for (transfer in booleanArrayOf(true, false)) {
 
-                    // Initialize everything
-                    evaluationProcessor.newSimulation("$figureName - ${testConfig[0].trainConfiguration.gar.id}", testConfig)
-                    val start = System.currentTimeMillis()
-                    nodes = testConfig.mapIndexed { i, config ->
-                        Node(
-                            i,
-                            config,
-                            ::generateNetwork,
-                            ::getDataSetIterators,
-                            baseDirectory,
-                            evaluationProcessor,
-                            start,
-                            ::shareModel
-                        )
+                    for (test in figureConfig.indices) {
+                        val testConfig = figureConfig[test]
+                        performTest(baseDirectory, transfer, figureName, testConfig, evaluationProcessor)
                     }
-                    val countPerPeers = getCountPerPeers(testConfig, nodes)
-                    nodes.forEachIndexed { i, node -> node.setCountPerPeer(countPerPeers.getValue(i)) }
-                    nodes[0].printIterations()
-
-                    // Pre-training for Bristle
-                    if (testConfig[0].trainConfiguration.gar == GARs.BRISTLE) {
-                        nodes[0].pretrainNetwork(Bristle.PRE_TRAIN, start)
-                        nodes.slice(1 until nodes.size).forEach { it.reInitializeWithFrozen(nodes[0].getNetworkParams()) }
-                    }
-
-                    // Perform <x> iterations
-                    var epochEnd = true
-                    var epoch = -1
-                    val startIteration = if (testConfig[0].trainConfiguration.gar == GARs.BRISTLE) Bristle.PRE_TRAIN else 0
-                    for (iteration in startIteration until testConfig[0].trainConfiguration.maxIteration.value) {
-                        if (epochEnd) {
-                            epoch++
-                            logger.debug { "Epoch: $epoch" }
-                            epochEnd = false
-                        }
-                        logger.debug { "Iteration: $iteration" }
-
-                        nodes.forEach { it.applyNetworkBuffers() }
-                        val endEpochs = nodes.map { it.performIteration(epoch, iteration) }
-                        if (endEpochs.any { it }) epochEnd = true
-                    }
-                    logger.warn { "Test finished" }
                 }
             }
             logger.error { "All tests finished" }
@@ -102,6 +61,53 @@ class SimulatedRunner : Runner() {
             e.printStackTrace()
         }
 //        }
+    }
+
+    private fun performTest(
+        baseDirectory: File,
+        transfer: Boolean,
+        figureName: String,
+        testConfig: List<MLConfiguration>,
+        evaluationProcessor: EvaluationProcessor
+    ) {
+        logger.error { "Going to test: $figureName - ${testConfig[0].trainConfiguration.gar.id} - ${if (transfer) "transfer" else "regular"}" }
+
+        // Initialize everything
+        evaluationProcessor.newSimulation("$figureName - ${testConfig[0].trainConfiguration.gar.id}", testConfig)
+        val start = System.currentTimeMillis()
+        nodes = testConfig.mapIndexed { i, config ->
+            Node(
+                i,
+                config,
+                ::generateNetwork,
+                ::getDataSetIterators,
+                baseDirectory,
+                evaluationProcessor,
+                start,
+                ::shareModel,
+                transfer
+            )
+        }
+        val countPerPeers = getCountPerPeers(testConfig, nodes)
+        nodes.forEachIndexed { i, node -> node.setCountPerPeer(countPerPeers.getValue(i)) }
+        nodes[0].printIterations()
+
+        // Perform <x> iterations
+        var epochEnd = true
+        var epoch = -1
+        for (iteration in 0 until testConfig[0].trainConfiguration.maxIteration.value) {
+            if (epochEnd) {
+                epoch++
+                logger.debug { "Epoch: $epoch" }
+                epochEnd = false
+            }
+            logger.debug { "Iteration: $iteration" }
+
+            nodes.forEach { it.applyNetworkBuffers() }
+            val endEpochs = nodes.map { it.performIteration(epoch, iteration) }
+            if (endEpochs.any { it }) epochEnd = true
+        }
+        logger.warn { "Test finished" }
     }
 
     private fun getCountPerPeers(testConfig: List<MLConfiguration>, nodes: List<Node>): Map<Int, Map<Int, Int>> {

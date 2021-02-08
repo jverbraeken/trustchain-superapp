@@ -16,6 +16,7 @@
     <string name="ping">Ping</string>
     <string name="pong">Pong</string>
 
+    <string name="transfer">Transfer</string>
     <string name="run_local">Run locally</string>
     <string name="run_isolated">Run isolated</string>
     <string name="run_distr_sim0">S 0</string>

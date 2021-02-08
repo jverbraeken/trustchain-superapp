@@ -6,6 +6,7 @@ import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener
+import org.deeplearning4j.util.ModelSerializer
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.cpu.nativecpu.NDArray
 import java.io.File
@@ -27,13 +28,8 @@ class Node(
     baseDirectory: File,
     private val evaluationProcessor: EvaluationProcessor,
     private val start: Long,
-    val shareModel: (
-        params: INDArray,
-        trainConfiguration: TrainConfiguration,
-        random: Random,
-        nodeIndex: Int,
-        countPerPeer: Map<Int, Int>
-    ) -> Unit
+    val shareModel: (params: INDArray, trainConfiguration: TrainConfiguration, random: Random, nodeIndex: Int, countPerPeer: Map<Int, Int>) -> Unit,
+    fromTransfer: Boolean
 ) {
     private val dataset = testConfig.dataset
     private val recentOtherModelsBuffer = ArrayDeque<Pair<Int, INDArray>>()
@@ -75,9 +71,6 @@ class Node(
     private var slowdownRemainingIterations = 0
 
     init {
-
-        network = generateNetwork(dataset.architecture, testConfig.nnConfiguration, nodeIndex)
-
         datasetIteratorConfiguration = testConfig.datasetIteratorConfiguration
         distribution = datasetIteratorConfiguration.distribution
         usedClassIndices = distribution.mapIndexed { ind, v -> if (v > 0) ind else null }.filterNotNull()
@@ -96,6 +89,16 @@ class Node(
         modelPoisoningAttack = modelPoisoningConfiguration.attack
         numAttackers = modelPoisoningConfiguration.numAttackers
 
+        if (fromTransfer) {
+            network = loadFromTransferNetwork(File(baseDirectory, dataset.transferFilename), dataset.architectureFrozen)
+        } else {
+            network = generateNetwork(dataset.architecture, testConfig.nnConfiguration, nodeIndex)
+        }
+        if (gar == GARs.BRISTLE) {
+            cw = network.outputLayer.paramTable().getValue("W").dup()
+            cw.muli(0)
+        }
+
         oldParams = if (gar == GARs.BRISTLE) network.outputLayer.paramTable().getValue("W").dup() else network.params().dup()
         newParams = NDArray()
         gradient = NDArray()
@@ -113,44 +116,16 @@ class Node(
         logging = nodeIndex == 0 || !ONLY_EVALUATE_FIRST_NODE
     }
 
-    fun pretrainNetwork(iterations: Int, start: Long) {
-        repeat(iterations) { iteration ->
-            val elem = try {
-                iterTrain.next()
-            } catch (e: NoSuchElementException) {
-                iterTrain.reset()
-                iterTrain.next()
-            }
-            network.fit(elem)
-
-            if (iteration % iterationsBeforeEvaluation == 0) {
-                val elapsedTime2 = System.currentTimeMillis() - start
-                val extraElements2 = mapOf(
-                    Pair("before or after averaging", "before"),
-                    Pair("#peers included in current batch", "1")
-                )
-                evaluationProcessor.evaluate(
-                    iterTestFull,
-                    network,
-                    extraElements2,
-                    elapsedTime2,
-                    iteration,
-                    0,
-                    0,
-                    true
-                )
+    private fun loadFromTransferNetwork(transferFile: File, generateFrozenArchitecture: (nnConfiguration: NNConfiguration, seed: Int) -> MultiLayerConfiguration): MultiLayerNetwork {
+        val transferNetwork = ModelSerializer.restoreMultiLayerNetwork(transferFile)
+        val frozenNetwork = generateNetwork(generateFrozenArchitecture, nnConfiguration, nodeIndex)
+        for ((k, v) in transferNetwork.paramTable()) {
+            if (k.split("_")[0].toInt() < transferNetwork.layers.size - 1) {
+                frozenNetwork.setParam(k, v.dup())
             }
         }
-        val initParams = network.params().dup()
-        reInitializeWithFrozen(initParams)
-    }
-
-    fun reInitializeWithFrozen(preTrainedNetwork: INDArray) {
-        network = generateNetwork(::generateDefaultHARConfigurationFrozen, nnConfiguration, nodeIndex)
-        network.setParams(preTrainedNetwork.dup())
-        cw = network.outputLayer.paramTable().getValue("W").dup()
-        cw.muli(0)
-        updateCW()
+        oldParams = frozenNetwork.outputLayer.paramTable().getValue("W").dup()
+        return frozenNetwork
     }
 
     fun performIteration(epoch: Int, iteration: Int): Boolean {
@@ -175,17 +150,17 @@ class Node(
             newOtherModelBuffer.clear()
         }
 
-        if (gar == GARs.BRISTLE) {
-            resetTW()
-        }
+//        if (gar == GARs.BRISTLE) {
+//            resetTW()
+//        }
 
         oldParams = if (gar == GARs.BRISTLE) network.outputLayer.paramTable().getValue("W").dup() else network.params().dup()
 
         val epochEnd = fitNetwork(network, iterTrain)
 
-        if (gar == GARs.BRISTLE) {
-            updateCW()
-        }
+//        if (gar == GARs.BRISTLE) {
+//            updateCW()
+//        }
 
         if (iteration % iterationsBeforeSending == 0) {
             shareModel(

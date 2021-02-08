@@ -2,7 +2,6 @@ package nl.tudelft.trustchain.fedml.ui
 
 import android.content.res.AssetManager
 import android.os.Bundle
-import android.os.Debug
 import android.os.StrictMode
 import android.view.View
 import android.widget.AdapterView
@@ -73,6 +72,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
         getIpv8().getOverlay<FedMLCommunity>()
             ?: throw java.lang.IllegalStateException("FedMLCommunity is not configured")
     }
+    private val transferRunner by lazy { TransferRunner() }
     private val localRunner by lazy { LocalRunner() }
     private val simulatedRunner by lazy { SimulatedRunner() }
     private val distributedRunner = DistributedRunner(community)
@@ -80,7 +80,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        buttonsBinding.btnPing.setOnClickListener { onBtnPingClicked() }
+        buttonsBinding.btnTransfer.setOnClickListener { onBtnTransferClicked() }
         buttonsBinding.btnRunLocal.setOnClickListener { onBtnRunLocallyClicked() }
         buttonsBinding.btnRunIsolated.setOnClickListener { onBtnSimulateDistributedLocallyClicked(-1) }
         buttonsBinding.btnRunDistrSim0.setOnClickListener { onBtnSimulateDistributedLocallyClicked(0) }
@@ -254,8 +254,12 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
 
     ////// BUTTON CLICK LISTENERS
 
-    private fun onBtnPingClicked() {
-        community.sendToAll(MessageId.MSG_PING, MsgPing("Ping"))
+    private fun onBtnTransferClicked() {
+        transferRunner.run(
+            baseDirectory,
+            getSeed(),
+            createMLConfiguration()
+        )
     }
 
     private fun onBtnRunLocallyClicked() {

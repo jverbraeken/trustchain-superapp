@@ -10,7 +10,9 @@ import nl.tudelft.trustchain.fedml.ai.modelPoisoningAttack.Fang2020Krum
 import nl.tudelft.trustchain.fedml.ai.modelPoisoningAttack.Fang2020TrimmedMean
 import nl.tudelft.trustchain.fedml.ai.modelPoisoningAttack.ModelPoisoningAttack
 import nl.tudelft.trustchain.fedml.ai.modelPoisoningAttack.NoAttack
+import org.deeplearning4j.datasets.iterator.impl.EmnistDataSetIterator
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration
+import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 import org.nd4j.linalg.learning.config.*
 import org.nd4j.linalg.schedule.ISchedule
 import org.nd4j.linalg.schedule.MapSchedule
@@ -28,8 +30,13 @@ enum class Datasets(
     val defaultBatchSize: BatchSizes,
     val defaultIteratorDistribution: IteratorDistributions,
     val architecture: (nnConfiguration: NNConfiguration, seed: Int) -> MultiLayerConfiguration,
+    val architectureTransfer: (nnConfiguration: NNConfiguration, seed: Int) -> MultiLayerConfiguration,
+    val architectureFrozen: (nnConfiguration: NNConfiguration, seed: Int) -> MultiLayerConfiguration,
     val inst: (iteratorConfiguration: DatasetIteratorConfiguration, seed: Long, dataSetType: CustomDataSetType, baseDirectory: File, behavior: Behaviors) -> CustomDataSetIterator,
+    val instTransfer: (batchSize: Int, train: Boolean) -> DataSetIterator,
+    val transferFilename: String,
 ) {
+
     MNIST(
         "mnist",
         "MNIST",
@@ -42,7 +49,11 @@ enum class Datasets(
         BatchSizes.BATCH_5,
         IteratorDistributions.DISTRIBUTION_MNIST_2,
         ::generateDefaultMNISTConfiguration,
-        CustomMnistDataSetIterator::create
+        ::generateDefaultMNISTConfigurationTransfer,
+        ::generateDefaultMNISTConfigurationFrozen,
+        CustomMnistDataSetIterator::create,
+        ::createEmnistDataSetIterator,
+        "transferMnist",
     ),
     CIFAR10(
         "cifar10",
@@ -54,7 +65,11 @@ enum class Datasets(
         BatchSizes.BATCH_32,
         IteratorDistributions.DISTRIBUTION_CIFAR_50,
         ::generateDefaultCIFARConfiguration,
-        CustomCifar10DataSetIterator::create
+        ::generateDefaultMNISTConfiguration,
+        ::generateDefaultMNISTConfigurationFrozen,
+        CustomCifar10DataSetIterator::create,
+        ::createEmnistDataSetIterator,
+        "transferCifar",
     ),
 
     /*TINYIMAGENET(
@@ -79,8 +94,16 @@ enum class Datasets(
         BatchSizes.BATCH_32,
         IteratorDistributions.DISTRIBUTION_HAR_100,
         ::generateDefaultHARConfiguration,
-        HARDataSetIterator::create
-    ),
+        ::generateDefaultMNISTConfiguration,
+        ::generateDefaultMNISTConfigurationFrozen,
+        HARDataSetIterator::create,
+        ::createEmnistDataSetIterator,
+        "transferHar",
+    ),;
+}
+
+private fun createEmnistDataSetIterator(batchSize: Int, train: Boolean): DataSetIterator {
+    return EmnistDataSetIterator(EmnistDataSetIterator.Set.LETTERS, batchSize, train)
 }
 
 fun loadDataset(dataset: String?) = Datasets.values().firstOrNull { it.id == dataset }
