@@ -72,7 +72,7 @@ class SimulatedRunner : Runner() {
                     nodes[0].printIterations()
 
                     // Pre-training for Bristle
-                    if (testConfig[0].dataset == Datasets.MNIST && testConfig[0].trainConfiguration.gar == GARs.BRISTLE) {
+                    if (testConfig[0].trainConfiguration.gar == GARs.BRISTLE) {
                         nodes[0].pretrainNetwork(Bristle.PRE_TRAIN, start)
                         nodes.slice(1 until nodes.size).forEach { it.reInitializeWithFrozen(nodes[0].getNetworkParams()) }
                     }

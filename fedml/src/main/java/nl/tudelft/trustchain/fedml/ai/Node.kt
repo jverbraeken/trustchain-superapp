@@ -96,7 +96,7 @@ class Node(
         modelPoisoningAttack = modelPoisoningConfiguration.attack
         numAttackers = modelPoisoningConfiguration.numAttackers
 
-        oldParams = if (gar == GARs.BRISTLE) network.outputLayer.params().dup() else network.params().dup()
+        oldParams = if (gar == GARs.BRISTLE) network.outputLayer.paramTable().getValue("W").dup() else network.params().dup()
         newParams = NDArray()
         gradient = NDArray()
         val iters = getDataSetIterators(
@@ -146,9 +146,9 @@ class Node(
     }
 
     fun reInitializeWithFrozen(preTrainedNetwork: INDArray) {
-        network = generateNetwork(::generateDefaultMNISTConfigurationFrozen, nnConfiguration, nodeIndex)
+        network = generateNetwork(::generateDefaultHARConfigurationFrozen, nnConfiguration, nodeIndex)
         network.setParams(preTrainedNetwork.dup())
-        cw = network.outputLayer.params().dup()
+        cw = network.outputLayer.paramTable().getValue("W").dup()
         cw.muli(0)
         updateCW()
     }
@@ -156,7 +156,7 @@ class Node(
     fun performIteration(epoch: Int, iteration: Int): Boolean {
 //        logger.debug { "Node: $nodeIndex" }
 
-        newParams = if (gar == GARs.BRISTLE) network.outputLayer.params().dup() else network.params().dup()
+        newParams = if (gar == GARs.BRISTLE) network.outputLayer.paramTable().getValue("W").dup() else network.params().dup()
         gradient = oldParams.sub(newParams)
 
         if (joiningLateSkip()) {
@@ -179,7 +179,7 @@ class Node(
             resetTW()
         }
 
-        oldParams = if (gar == GARs.BRISTLE) network.outputLayer.params().dup() else network.params().dup()
+        oldParams = if (gar == GARs.BRISTLE) network.outputLayer.paramTable().getValue("W").dup() else network.params().dup()
 
         val epochEnd = fitNetwork(network, iterTrain)
 
@@ -189,7 +189,7 @@ class Node(
 
         if (iteration % iterationsBeforeSending == 0) {
             shareModel(
-                if (gar == GARs.BRISTLE) network.outputLayer.params().dup() else network.params().dup(),
+                if (gar == GARs.BRISTLE) network.outputLayer.paramTable().getValue("W").dup() else network.params().dup(),
                 trainConfiguration,
                 random,
                 nodeIndex,
@@ -202,19 +202,19 @@ class Node(
     }
 
     private fun updateCW() {
-        val tw = network.outputLayer.params()
+        val tw = network.outputLayer.paramTable().getValue("W")
         for (index in usedClassIndices) {
             cw.putColumn(index, tw.getColumn(index.toLong()))
         }
     }
 
     private fun resetTW() {
-        val tw = network.outputLayer.params()
+        val tw = network.outputLayer.paramTable().getValue("W")
         tw.muli(0)
         for (index in usedClassIndices) {
             tw.putColumn(index, cw.getColumn(index.toLong()))
         }
-        network.outputLayer.setParams(tw)
+        network.outputLayer.setParam("W", tw)
     }
 
     private fun joiningLateSkip(): Boolean {
@@ -310,12 +310,12 @@ class Node(
                 )
             }
             if (gar == GARs.BRISTLE) {
-                val oldTw = network.outputLayer.params().dup()
-                network.outputLayer.setParams(cw)
+                val oldTw = network.outputLayer.paramTable().getValue("W").dup()
+                network.outputLayer.setParam("W", cw)
 
                 evaluationScript.invoke()
 
-                network.outputLayer.setParams(oldTw)
+                network.outputLayer.setParam("W", oldTw)
             } else {
                 evaluationScript.invoke()
             }
