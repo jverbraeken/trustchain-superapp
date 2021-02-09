@@ -24,6 +24,7 @@ class EvaluationProcessor(
     private val configurationHeader = arrayOf(
         "name",
         "simulationIndex",
+        "transfer",
         "dataset",
         "optimizer",
         "learning rate",
@@ -108,17 +109,18 @@ class EvaluationProcessor(
 
     fun newSimulation(
         name: String,
-        mlConfiguration: List<MLConfiguration>
+        mlConfiguration: List<MLConfiguration>,
+        transfer: Boolean
     ) {
         this.currentName = name
         mlConfiguration.forEachIndexed { index, configuration ->
-            val line = parseConfiguration(name, index, configuration)
+            val line = parseConfiguration(name, index, configuration, transfer)
             configurationLines.add(line)
         }
         PrintWriter(fileMeta).use { pw -> configurationLines.forEach(pw::println) }
     }
 
-    private fun parseConfiguration(name: String, index: Int, configuration: MLConfiguration): String {
+    private fun parseConfiguration(name: String, index: Int, configuration: MLConfiguration, transfer: Boolean): String {
         val nnConfiguration = configuration.nnConfiguration
         val datasetIteratorConfiguration = configuration.datasetIteratorConfiguration
         val trainConfiguration = configuration.trainConfiguration
@@ -126,7 +128,9 @@ class EvaluationProcessor(
         return arrayOf(
             name,
             index.toString(),
+            transfer,
             configuration.dataset.text,
+
             nnConfiguration.optimizer.text,
             nnConfiguration.learningRate.text,
             nnConfiguration.momentum?.text ?: "<null>",

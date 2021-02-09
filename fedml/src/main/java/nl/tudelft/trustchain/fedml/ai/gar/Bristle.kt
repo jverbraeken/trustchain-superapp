@@ -17,18 +17,6 @@ private const val MIN_NUMBER_MODELS_FOR_DISTANCE_SCREENING = 20
  * byzantine-resilient decentralized stochastic gradient descent federated learning, non i.i.d., history-sensitive (= more robust), practical
  */
 class Bristle : AggregationRule() {
-
-    private fun average(models: HashMap<Int, INDArray>) : INDArray {
-        var arr: INDArray? = null
-        models.onEachIndexed { indexAsNum, (_, model) ->
-            if (indexAsNum == 0) {
-                arr = model.dup()
-            } else {
-                arr!!.addi(model)
-            }
-        }
-        return arr!!.divi(models.size)
-    }
     @ExperimentalStdlibApi
     override fun integrateParameters(
         network: MultiLayerNetwork,
@@ -41,12 +29,7 @@ class Bristle : AggregationRule() {
         logging: Boolean,
     ): INDArray {
         debug(logging) { formatName("BRISTLE") }
-        val models = HashMap<Int, INDArray>()
-        models[-1] = oldModel.sub(gradient)
-        models.putAll(newOtherModels)
-        debug(logging) { "Found ${models.size} models in total" }
-        return average(models)
-        /*debug(logging) { "Found ${newOtherModels.size} other models" }
+        debug(logging) { "Found ${newOtherModels.size} other models" }
         debug(logging) { "oldModel: ${oldModel.getFloat(0)}" }
         val newModel = oldModel.sub(gradient)
         debug(logging) { "newModel: ${newModel.getFloat(0)}" }
@@ -88,7 +71,7 @@ class Bristle : AggregationRule() {
             newModel
         } else {
             weightedAverage(modelsPerClassToWeight, combinedModels, newModel, logging)
-        }*/
+        }
     }
 
     override fun isDirectIntegration(): Boolean {

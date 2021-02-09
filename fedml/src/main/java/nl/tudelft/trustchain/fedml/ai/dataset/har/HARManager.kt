@@ -120,6 +120,7 @@ class HARManager(
     fun getLabels(): List<String> {
         return sampledLabelsArr
             .distinct()
+            .sorted()
             .map { i: Int -> i.toString() }
     }
 

@@ -96,7 +96,7 @@ class Node(
         }
         if (gar == GARs.BRISTLE) {
             cw = network.outputLayer.paramTable().getValue("W").dup()
-            cw.muli(0)
+//            cw.muli(0)
         }
 
         oldParams = if (gar == GARs.BRISTLE) network.outputLayer.paramTable().getValue("W").dup() else network.params().dup()
@@ -150,17 +150,17 @@ class Node(
             newOtherModelBuffer.clear()
         }
 
-//        if (gar == GARs.BRISTLE) {
-//            resetTW()
-//        }
+        if (gar == GARs.BRISTLE) {
+            resetTW()
+        }
 
         oldParams = if (gar == GARs.BRISTLE) network.outputLayer.paramTable().getValue("W").dup() else network.params().dup()
 
         val epochEnd = fitNetwork(network, iterTrain)
 
-//        if (gar == GARs.BRISTLE) {
-//            updateCW()
-//        }
+        if (gar == GARs.BRISTLE) {
+            updateCW()
+        }
 
         if (iteration % iterationsBeforeSending == 0) {
             shareModel(

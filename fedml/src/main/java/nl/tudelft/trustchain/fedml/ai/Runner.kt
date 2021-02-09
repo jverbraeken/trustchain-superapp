@@ -23,6 +23,7 @@ import org.nd4j.linalg.cpu.nativecpu.NDArray
 import org.nd4j.linalg.lossfunctions.LossFunctions
 import java.io.File
 import java.math.BigInteger
+import kotlin.math.min
 import kotlin.random.Random
 
 private val logger = KotlinLogging.logger("Runner")
@@ -386,7 +387,7 @@ abstract class Runner {
         val testDataSetIterator = inst(
             DatasetIteratorConfiguration(
                 BatchSizes.BATCH_200,
-                List(datasetIteratorConfiguration.distribution.size) { TEST_SET_SIZE },
+                datasetIteratorConfiguration.distribution.map { min(TEST_SET_SIZE, it) },
                 datasetIteratorConfiguration.maxTestSamples
             ),
             seed + 2,

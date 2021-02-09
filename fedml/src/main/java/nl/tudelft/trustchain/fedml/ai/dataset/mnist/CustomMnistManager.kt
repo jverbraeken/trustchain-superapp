@@ -113,6 +113,7 @@ class CustomMnistManager(
     fun getLabels(): List<String> {
         return sampledLabels
             .distinct()
+            .sorted()
             .map { i: Int -> i.toString() }
     }
 

@@ -37,7 +37,7 @@ class TransferRunner : Runner() {
                 "local",
                 ArrayList()
             )
-            evaluationProcessor.newSimulation("transfer", listOf(mlConfiguration))
+            evaluationProcessor.newSimulation("transfer", listOf(mlConfiguration), false)
             network.setListeners(
                 ScoreIterationListener(printScoreIterations)
             )

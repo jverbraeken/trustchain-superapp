@@ -42,7 +42,7 @@ class LocalRunner : Runner() {
                 "local",
                 ArrayList()
             )
-            evaluationProcessor.newSimulation("local run", listOf(mlConfiguration))
+            evaluationProcessor.newSimulation("local run", listOf(mlConfiguration), false)
             network.setListeners(
                 ScoreIterationListener(printScoreIterations)
             )

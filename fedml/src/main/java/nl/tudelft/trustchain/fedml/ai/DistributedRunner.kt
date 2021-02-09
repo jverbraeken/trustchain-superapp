@@ -353,7 +353,8 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 )
                 evaluationProcessor.newSimulation(
                     "$figureName - ${mlConfiguration.trainConfiguration.gar.id}",
-                    listOf(mlConfiguration)
+                    listOf(mlConfiguration),
+                    false
                 )
                 val network = generateNetwork(
                     mlConfiguration.dataset.architecture,

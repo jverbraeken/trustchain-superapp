@@ -51,6 +51,10 @@ class SimulatedRunner : Runner() {
 
                     for (test in figureConfig.indices) {
                         val testConfig = figureConfig[test]
+                        if (!transfer && testConfig[0].trainConfiguration.gar == GARs.BRISTLE) {
+                            // BRISTLE can only work with transfer learning; otherwise all layers except for its outputlayer will stay 0
+                            continue
+                        }
                         performTest(baseDirectory, transfer, figureName, testConfig, evaluationProcessor)
                     }
                 }
@@ -70,10 +74,11 @@ class SimulatedRunner : Runner() {
         testConfig: List<MLConfiguration>,
         evaluationProcessor: EvaluationProcessor
     ) {
-        logger.error { "Going to test: $figureName - ${testConfig[0].trainConfiguration.gar.id} - ${if (transfer) "transfer" else "regular"}" }
+        val fullFigureName = "$figureName - ${testConfig[0].trainConfiguration.gar.id} - ${if (transfer) "transfer" else "regular"}"
+        logger.error { "Going to test: $fullFigureName" }
 
         // Initialize everything
-        evaluationProcessor.newSimulation("$figureName - ${testConfig[0].trainConfiguration.gar.id}", testConfig)
+        evaluationProcessor.newSimulation(fullFigureName, testConfig, transfer)
         val start = System.currentTimeMillis()
         nodes = testConfig.mapIndexed { i, config ->
             Node(
@@ -104,7 +109,9 @@ class SimulatedRunner : Runner() {
             logger.debug { "Iteration: $iteration" }
 
             nodes.forEach { it.applyNetworkBuffers() }
-            val endEpochs = nodes.map { it.performIteration(epoch, iteration) }
+            val endEpochs = nodes.mapIndexed { i, node ->
+                node.performIteration(epoch, iteration)
+            }
             if (endEpochs.any { it }) epochEnd = true
         }
         logger.warn { "Test finished" }
