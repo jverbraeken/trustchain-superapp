@@ -17,7 +17,7 @@ import kotlin.random.Random
 
 private val bigPrime = BigInteger("100012421")
 private val logger = KotlinLogging.logger("Node")
-private const val ONLY_EVALUATE_FIRST_NODE = true
+private const val ONLY_EVALUATE_FIRST_NODE = false
 private const val SIZE_RECENT_OTHER_MODELS = 20
 
 class Node(
@@ -89,10 +89,10 @@ class Node(
         modelPoisoningAttack = modelPoisoningConfiguration.attack
         numAttackers = modelPoisoningConfiguration.numAttackers
 
-        if (fromTransfer) {
-            network = loadFromTransferNetwork(File(baseDirectory, dataset.transferFilename), dataset.architectureFrozen)
+        network = if (fromTransfer) {
+            loadFromTransferNetwork(File(baseDirectory, dataset.transferFilename), dataset.architectureFrozen)
         } else {
-            network = generateNetwork(dataset.architecture, testConfig.nnConfiguration, nodeIndex)
+            generateNetwork(dataset.architecture, testConfig.nnConfiguration, nodeIndex)
         }
         if (gar == GARs.BRISTLE) {
             cw = network.outputLayer.paramTable().getValue("W").dup()
@@ -316,10 +316,6 @@ class Node(
 
     fun printIterations() {
         network.setListeners(ScoreIterationListener(5))
-    }
-
-    fun getNetworkParams(): INDArray {
-        return network.params().dup()
     }
 
     fun getLabels(): List<String> {

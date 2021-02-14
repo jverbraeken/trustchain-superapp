@@ -23,7 +23,7 @@ abstract class AggregationRule {
     abstract fun isDirectIntegration(): Boolean
 
     protected fun debug(logging: Boolean, msg: () -> String) {
-        if (logging) {
+        if (true) {
             mpl.debug(msg)
             EvaluationProcessor.log(msg.invoke())
         }

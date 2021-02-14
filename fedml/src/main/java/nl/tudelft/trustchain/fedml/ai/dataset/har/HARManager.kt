@@ -121,7 +121,7 @@ class HARManager(
         return sampledLabelsArr
             .distinct()
             .sorted()
-            .map { i: Int -> i.toString() }
+            .map { it.toString() }
     }
 
     companion object {

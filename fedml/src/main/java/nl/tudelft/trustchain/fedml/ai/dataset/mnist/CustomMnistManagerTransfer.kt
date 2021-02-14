@@ -113,7 +113,8 @@ class CustomMnistManagerTransfer(
     fun getLabels(): List<String> {
         return sampledLabels
             .distinct()
-            .map { i: Int -> i.toString() }
+            .sorted()
+            .map { it.toString() }
     }
 
     fun getInputColumns(): Int {

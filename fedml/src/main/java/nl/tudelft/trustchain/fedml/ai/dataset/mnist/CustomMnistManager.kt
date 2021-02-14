@@ -114,7 +114,7 @@ class CustomMnistManager(
         return sampledLabels
             .distinct()
             .sorted()
-            .map { i: Int -> i.toString() }
+            .map { it.toString() }
     }
 
     fun getInputColumns(): Int {
