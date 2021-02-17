@@ -5,10 +5,9 @@ import nl.tudelft.trustchain.fedml.ai.CustomDataSetType
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDataFetcher
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
-import org.deeplearning4j.datasets.base.MnistFetcher
 import org.deeplearning4j.common.resources.DL4JResources
 import org.deeplearning4j.common.resources.ResourceType
-import org.deeplearning4j.datasets.fetchers.DataSetType
+import org.deeplearning4j.datasets.base.MnistFetcher
 import org.deeplearning4j.datasets.fetchers.MnistDataFetcher
 import org.nd4j.linalg.api.buffer.DataType
 import org.nd4j.linalg.dataset.DataSet
@@ -18,7 +17,7 @@ import java.io.File
 import java.util.stream.IntStream
 
 class CustomMnistDataFetcher(
-    iteratorDistribution: IntArray,
+    val iteratorDistribution: IntArray,
     seed: Long,
     dataSetType: CustomDataSetType,
     maxTestSamples: Int,
@@ -79,6 +78,7 @@ class CustomMnistDataFetcher(
         cursor = 0
         inputColumns = man.getInputColumns()
         order = IntStream.range(0, totalExamples).toArray()
+        order2 = man.temporary.map { IntStream.range(0, it.size).toArray() }.toTypedArray()
         reset() //Shuffle order
     }
 
@@ -96,28 +96,53 @@ class CustomMnistDataFetcher(
 
     override fun fetch(numExamples: Int) {
         check(hasMore()) { "Unable to get more; there are no more images" }
-        var labels = Nd4j.zeros(DataType.FLOAT, numExamples.toLong(), numOutcomes.toLong())
-        if (featureData.size != numExamples) {
-            featureData = Array(numExamples) { FloatArray(28 * 28) }
+        if (numExamples == 5) {
+            val a = 4
+            var labels = Nd4j.zeros(DataType.FLOAT, a.toLong(), numOutcomes.toLong())
+            if (featureData.size != a) {
+                featureData = Array(a) { FloatArray(28 * 28) }
+            }
+            var actualExamples = 0
+            for ((labelll, label) in iteratorDistribution.indices.filterNot { iteratorDistribution[it] == 0 }.withIndex()) {
+                featureData[labelll] = man.temporary[label][order2[label][cursor2]]
+                labels.put(labelll, label, 1.0f)
+                actualExamples++
+            }
+            cursor2++
+            val features = Nd4j.create(
+                if (featureData.size == actualExamples) featureData
+                else featureData.copyOfRange(0, actualExamples)
+            )
+            if (actualExamples < a) {
+                labels = labels[NDArrayIndex.interval(0, actualExamples), NDArrayIndex.all()]
+            }
+            features.divi(255.0)
+            curr = DataSet(features, labels)
+        } else {
+            var labels = Nd4j.zeros(DataType.FLOAT, numExamples.toLong(), numOutcomes.toLong())
+            if (featureData.size != numExamples) {
+                featureData = Array(numExamples) { FloatArray(28 * 28) }
+            }
+            var actualExamples = 0
+            for (i in 0 until numExamples) {
+                if (!hasMore()) break
+                val (image, label) = man.readEntry(order[cursor])
+                featureData[actualExamples] = image
+                labels.put(actualExamples, label, 1.0f)
+                actualExamples++
+                cursor++
+            }
+            val features = Nd4j.create(
+                if (featureData.size == actualExamples) featureData
+                else featureData.copyOfRange(0, actualExamples)
+            )
+            if (actualExamples < numExamples) {
+                labels = labels[NDArrayIndex.interval(0, actualExamples), NDArrayIndex.all()]
+            }
+            features.divi(255.0)
+            curr = DataSet(features, labels)
         }
-        var actualExamples = 0
-        for (i in 0 until numExamples) {
-            if (!hasMore()) break
-            val (image, label) = man.readEntry(order[cursor])
-            featureData[actualExamples] = image
-            labels.put(actualExamples, label, 1.0f)
-            actualExamples++
-            cursor++
-        }
-        val features = Nd4j.create(
-            if (featureData.size == actualExamples) featureData
-            else featureData.copyOfRange(0, actualExamples)
-        )
-        if (actualExamples < numExamples) {
-            labels = labels[NDArrayIndex.interval(0, actualExamples), NDArrayIndex.all()]
-        }
-        features.divi(255.0)
-        curr = DataSet(features, labels)
+        cursor = totalExamples  // Require a reset before getting next batch, otherwise iterator keeps iterating
     }
 
     private fun createTestBatches(): Array<DataSet?> {

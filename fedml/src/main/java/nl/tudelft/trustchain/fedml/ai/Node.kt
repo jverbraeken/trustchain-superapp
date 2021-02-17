@@ -114,6 +114,7 @@ class Node(
         iterTestFull = iters[2]
 
         logging = nodeIndex == 0 || !ONLY_EVALUATE_FIRST_NODE
+        logger.debug { "Logging ($nodeIndex): $logging" }
     }
 
     private fun loadFromTransferNetwork(transferFile: File, generateFrozenArchitecture: (nnConfiguration: NNConfiguration, seed: Int) -> MultiLayerConfiguration): MultiLayerNetwork {
@@ -179,7 +180,8 @@ class Node(
     private fun updateCW() {
         val tw = network.outputLayer.paramTable().getValue("W")
         for (index in usedClassIndices) {
-            cw.putColumn(index, tw.getColumn(index.toLong()))
+            logger.debug { "Replacing cw on node $nodeIndex: $index" }
+            cw.putColumn(index, tw.getColumn(index.toLong()).dup())
         }
     }
 
@@ -187,7 +189,7 @@ class Node(
         val tw = network.outputLayer.paramTable().getValue("W")
         tw.muli(0)
         for (index in usedClassIndices) {
-            tw.putColumn(index, cw.getColumn(index.toLong()))
+            tw.putColumn(index, cw.getColumn(index.toLong()).dup())
         }
         network.outputLayer.setParam("W", tw)
     }
@@ -253,8 +255,13 @@ class Node(
             )
             if (gar == GARs.BRISTLE) {
                 for (index in 0 until cw.columns()) {
-                    cw.putColumn(index, averageParams.getColumn(index.toLong()))
+                    logger.debug { "Replacing cw on node $nodeIndex: $index" }
+                    cw.putColumn(index, averageParams.getColumn(index.toLong()).dup())
                 }
+//                val avg = cw.meanNumber()
+//                for (index in 0 until cw.columns()) {
+//                    cw.putColumn(index, cw.getColumn(index.toLong()).sub(cw.getColumn(index.toLong()).meanNumber()))
+//                }
             } else {
                 network.setParameters(averageParams)
             }
@@ -266,7 +273,8 @@ class Node(
     }
 
     private fun potentiallyEvaluate(epoch: Int, iteration: Int, beforeOrAfter: String) {
-        if (logging && (iteration % iterationsBeforeEvaluation == 0)) {
+        logger.debug { "logging($nodeIndex): $logging" }
+        if (/*logging*//*nodeIndex == 0*/true && (iteration % iterationsBeforeEvaluation == 0)) {
             val evaluationScript = {
                 val elapsedTime2 = System.currentTimeMillis() - start
                 val extraElements2 = mapOf(
@@ -281,7 +289,7 @@ class Node(
                     iteration,
                     epoch,
                     nodeIndex,
-                    nodeIndex == 0
+                    logging
                 )
             }
             if (gar == GARs.BRISTLE) {

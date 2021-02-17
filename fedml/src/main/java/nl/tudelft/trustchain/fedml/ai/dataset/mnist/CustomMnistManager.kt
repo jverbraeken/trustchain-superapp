@@ -20,6 +20,7 @@ class CustomMnistManager(
 ) : DatasetManager() {
     private val sampledImages: Array<FloatArray>
     private val sampledLabels: IntArray
+    val temporary = Array<ArrayList<FloatArray>>(10) { ArrayList() }
 
     init {
         fullImagesArr.computeIfAbsent(imagesFile) { loadImages(imagesFile, numExamples) }
@@ -73,6 +74,9 @@ class CustomMnistManager(
             for (j in 0 until minOf(labelIndexMapping[label].size, maxSamplesOfLabel, maxTestSamples)) {
                 results[count] = Pair(tmpImagesArr[labelIndexMapping[label][j]], label)
                 count++
+                temporary[label].add(tmpImagesArr[labelIndexMapping[label][j]].map { byte ->
+                    (byte.toInt() and 0xFF).toFloat()
+                }.toFloatArray())
             }
         }
         results.shuffle(random)

@@ -97,7 +97,7 @@ class Bristle : AggregationRule() {
         debug(logging) { "weightedAverage: $weightedAverage" }
 
 
-        val unboundedScoresPerSelectedPeer = getScoresPerSelectedPeer(peers, myRecalls, recallsPerPeer, selectedClassesPerPeer, weightedDiffsPerSelectedPeer, seqAttackPenaltiesPerSelectedPeer, false)
+        /*val unboundedScoresPerSelectedPeer = getScoresPerSelectedPeer(peers, myRecalls, recallsPerPeer, selectedClassesPerPeer, weightedDiffsPerSelectedPeer, seqAttackPenaltiesPerSelectedPeer, false)
         debug(logging) { "unboundedScoresPerSelectedPeer: ${unboundedScoresPerSelectedPeer.map { Pair(it.key, it.value.toList()) }}" }
 
         val certaintyPerSelectedPeer = getCertaintyPerSelectedPeer(peers, recallsPerPeer)
@@ -107,8 +107,8 @@ class Bristle : AggregationRule() {
         debug(logging) { "weightPerSelectedPeer: $weightPerSelectedPeer" }
 
         val result = incorporateForeignWeights(peers, weightPerSelectedPeer, combinedModels, weightedAverage, testDataSetIterator.labels, logging)
-        debug(logging) { "result: $result" }
-        return result
+        debug(logging) { "result: $result" }*/
+        return weightedAverage
     }
 
     override fun isDirectIntegration(): Boolean {
@@ -275,13 +275,19 @@ class Bristle : AggregationRule() {
         val totalWeights = DoubleArray(newModel.columns()) { 1.0 }
         weightsPerSelectedPeer.forEach { (peer, weights) ->
             weights.forEach { (clazz, weight) ->
-                arr.putColumn(clazz, combinedModels[peer]!!.getColumn(clazz.toLong()).mul(weight))
+                val currentClassParameters = arr.getColumn(clazz.toLong())
+                val extraClassParameters = combinedModels[peer]!!.getColumn(clazz.toLong()).mul(weight)
+                val newClassParameters = currentClassParameters.add(extraClassParameters)
+                arr.putColumn(clazz, newClassParameters)
                 totalWeights[clazz] += weight
             }
         }
         debug(logging) { "totalWeights: ${totalWeights.contentToString()}" }
         totalWeights.forEachIndexed { index, weight ->
-            arr.putColumn(index, arr.getColumn(index.toLong()).div(weight))
+            if (weight != 1.0) {  // optimization
+                val scaledColumn = arr.getColumn(index.toLong()).div(weight)
+                arr.putColumn(index, scaledColumn/*.subi(newModel.meanNumber())*/)
+            }
         }
         return arr
     }
@@ -347,7 +353,7 @@ class Bristle : AggregationRule() {
         debug(true) { "  => avg: $avg" }
         val std = this.fold(0.0) { a, b -> a + (b - avg).pow(2) }
         debug(true) { "  => std: $std" }
-        debug(true) { "  => avg: $this" }
+        debug(true) { "  => this: ${this.toList()}" }
         debug(true) { "  => size: $size" }
         return sqrt(std / this.size)
     }
