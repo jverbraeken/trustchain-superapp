@@ -100,7 +100,7 @@ class Bristle : AggregationRule() {
         /*val unboundedScoresPerSelectedPeer = getScoresPerSelectedPeer(peers, myRecalls, recallsPerPeer, selectedClassesPerPeer, weightedDiffsPerSelectedPeer, seqAttackPenaltiesPerSelectedPeer, false)
         debug(logging) { "unboundedScoresPerSelectedPeer: ${unboundedScoresPerSelectedPeer.map { Pair(it.key, it.value.toList()) }}" }
 
-        val certaintyPerSelectedPeer = getCertaintyPerSelectedPeer(peers, recallsPerPeer)
+        val certaintyPerSelectedPeer = getCertaintyPerSelectedPeer(peers, recallsPerPeer, selectedClassesPerPeer)
         debug(logging) { "certaintyPerSelectedPeer: $certaintyPerSelectedPeer" }
 
         val weightPerSelectedPeer = getWeightPerSelectedPeer(peers, unboundedScoresPerSelectedPeer, certaintyPerSelectedPeer)
@@ -198,14 +198,16 @@ class Bristle : AggregationRule() {
         peerRecallPerClass: Map<Peer, DoubleArray>,
         selectedClassesPerPeer: Map<Peer, IntArray>
     ): Map<Peer, Map<Class, SeqAttackPenalty>> {
+        val previousPeerRecalls = HashSet<DoubleArray>()
         return peers.map { peer ->
             val seqAttackPenaltiesPerSelectedClass = selectedClassesPerPeer.getValue(peer).map { selectedClass ->
                 var seqAttackPenalty = 0.0
-                for (i in 0 until peer) {
-                    seqAttackPenalty += max(0.0, 2 * (myRecallPerClass[selectedClass] - peerRecallPerClass.getValue(peer)[selectedClass]))
+                for (recalls in previousPeerRecalls) {
+                    seqAttackPenalty += max(0.0, 2 * (myRecallPerClass[selectedClass] - recalls[selectedClass]))
                 }
                 Pair(selectedClass, seqAttackPenalty)
             }.toMap()
+            previousPeerRecalls.add(peerRecallPerClass.getValue(peer))
             Pair(peer, seqAttackPenaltiesPerSelectedClass)
         }.toMap()
     }
@@ -270,16 +272,18 @@ class Bristle : AggregationRule() {
         combinedModels: Map<Int, INDArray>,
         newModel: INDArray,
         logging: Boolean,
+        selectedClassesPerPeer: Map<Peer, IntArray>,
     ): INDArray {
         val arr = newModel.dup()
         val totalWeights = DoubleArray(newModel.columns()) { 1.0 }
         weightsPerSelectedPeer.forEach { (peer, weights) ->
             weights.forEach { (clazz, weight) ->
-                val currentClassParameters = arr.getColumn(clazz.toLong())
-                val extraClassParameters = combinedModels[peer]!!.getColumn(clazz.toLong()).mul(weight)
+                val selectedClass = selectedClassesPerPeer.getValue(peer)[clazz]
+                val currentClassParameters = arr.getColumn(selectedClass.toLong())
+                val extraClassParameters = combinedModels[peer]!!.getColumn(selectedClass.toLong()).mul(weight)
                 val newClassParameters = currentClassParameters.add(extraClassParameters)
-                arr.putColumn(clazz, newClassParameters)
-                totalWeights[clazz] += weight
+                arr.putColumn(selectedClass, newClassParameters)
+                totalWeights[selectedClass] += weight
             }
         }
         debug(logging) { "totalWeights: ${totalWeights.contentToString()}" }
@@ -295,10 +299,13 @@ class Bristle : AggregationRule() {
     private fun getCertaintyPerSelectedPeer(
         peers: IntArray,
         peerRecallPerClass: Map<Peer, DoubleArray>,
+        selectedClassesPerPeer: Map<Peer, IntArray>,
     ): Map<Peer, Double> {
         return peers.map { peer ->
-            val average = peerRecallPerClass.getValue(peer).average()
-            val std = peerRecallPerClass.getValue(peer).std()
+            val selectedClasses = selectedClassesPerPeer.getValue(peer)
+            val recallPerSelectedClasses = peerRecallPerClass.getValue(peer).sliceArray(selectedClasses.toList())
+            val average = recallPerSelectedClasses.average()
+            val std = recallPerSelectedClasses.std()
             Pair(peer, max(0.0, average - std * 2))
         }.toMap()
     }
