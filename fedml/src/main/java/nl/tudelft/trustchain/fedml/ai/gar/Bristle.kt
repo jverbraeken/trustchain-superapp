@@ -1,5 +1,6 @@
 package nl.tudelft.trustchain.fedml.ai.gar
 
+import nl.tudelft.trustchain.fedml.ai.NDArrayStrings2
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.nd4j.evaluation.classification.Evaluation
@@ -35,11 +36,12 @@ class Bristle : AggregationRule() {
         countPerPeer: Map<Int, Int>,
         logging: Boolean,
     ): INDArray {
+        val formatter = NDArrayStrings2()
         debug(logging) { formatName("BRISTLE") }
         debug(logging) { "Found ${newOtherModels.size} other models" }
-        debug(logging) { "oldModel: ${oldModel.getFloat(0)}" }
+        debug(logging) { "oldModel: ${formatter.format(oldModel)}" }
         val newModel = oldModel.sub(gradient)
-        debug(logging) { "newModel: ${newModel.getFloat(0)}" }
+        debug(logging) { "newModel: ${formatter.format(newModel)}" }
         debug(logging) { "otherModels: ${newOtherModels.map { it.value.getFloat(0) }.toCollection(ArrayList())}" }
 
         val distances = getDistances(newModel, newOtherModels, recentOtherModels, logging)
@@ -65,7 +67,9 @@ class Bristle : AggregationRule() {
         val combinedModels = HashMap<Peer, INDArray>()
         combinedModels.putAll(exploitationModels)
         combinedModels.putAll(explorationModels)
-        debug(logging) { "combinedModels: ${combinedModels.map { it.value.getFloat(0) }.toCollection(ArrayList())}" }
+        combinedModels.forEach {
+            debug(logging) { "combinedModel (${it.key}): ${formatter.format(it.value)}" }
+        }
         val peers = combinedModels.keys.sorted().toIntArray()
         testDataSetIterator.reset()
 
@@ -93,11 +97,11 @@ class Bristle : AggregationRule() {
         val weightsPerSelectedPeer = getWeightsPerSelectedPeer(peers, selectedClassesPerPeer, scoresPerSelectedPeer, certaintiesPerSelectedPeer)
         debug(logging) { "weightsPerSelectedPeer: ${weightsPerSelectedPeer.map { Pair(it.key, it.value.toList()) }}" }
 
-        val weightedAverage = weightedAverage(weightsPerSelectedPeer, combinedModels, newModel, logging)
-        debug(logging) { "weightedAverage: $weightedAverage" }
+        val weightedAverage = weightedAverage(weightsPerSelectedPeer, combinedModels, newModel, logging, selectedClassesPerPeer, testDataSetIterator.labels)
+        debug(logging) { "weightedAverage: ${formatter.format(weightedAverage)}" }
 
 
-        /*val unboundedScoresPerSelectedPeer = getScoresPerSelectedPeer(peers, myRecalls, recallsPerPeer, selectedClassesPerPeer, weightedDiffsPerSelectedPeer, seqAttackPenaltiesPerSelectedPeer, false)
+        val unboundedScoresPerSelectedPeer = getScoresPerSelectedPeer(peers, myRecalls, recallsPerPeer, selectedClassesPerPeer, weightedDiffsPerSelectedPeer, seqAttackPenaltiesPerSelectedPeer, false)
         debug(logging) { "unboundedScoresPerSelectedPeer: ${unboundedScoresPerSelectedPeer.map { Pair(it.key, it.value.toList()) }}" }
 
         val certaintyPerSelectedPeer = getCertaintyPerSelectedPeer(peers, recallsPerPeer, selectedClassesPerPeer)
@@ -107,8 +111,8 @@ class Bristle : AggregationRule() {
         debug(logging) { "weightPerSelectedPeer: $weightPerSelectedPeer" }
 
         val result = incorporateForeignWeights(peers, weightPerSelectedPeer, combinedModels, weightedAverage, testDataSetIterator.labels, logging)
-        debug(logging) { "result: $result" }*/
-        return weightedAverage
+        debug(logging) { "result: ${formatter.format(result)}" }
+        return result
     }
 
     override fun isDirectIntegration(): Boolean {
@@ -273,17 +277,18 @@ class Bristle : AggregationRule() {
         newModel: INDArray,
         logging: Boolean,
         selectedClassesPerPeer: Map<Peer, IntArray>,
+        labels: List<String>,
     ): INDArray {
         val arr = newModel.dup()
         val totalWeights = DoubleArray(newModel.columns()) { 1.0 }
         weightsPerSelectedPeer.forEach { (peer, weights) ->
-            weights.forEach { (clazz, weight) ->
-                val selectedClass = selectedClassesPerPeer.getValue(peer)[clazz]
-                val currentClassParameters = arr.getColumn(selectedClass.toLong())
-                val extraClassParameters = combinedModels[peer]!!.getColumn(selectedClass.toLong()).mul(weight)
+            weights.forEach { (selectedClass, weight) ->
+                val correspondingClass = labels[selectedClass].toInt()
+                val currentClassParameters = arr.getColumn(correspondingClass.toLong())
+                val extraClassParameters = combinedModels[peer]!!.getColumn(correspondingClass.toLong()).mul(weight)
                 val newClassParameters = currentClassParameters.add(extraClassParameters)
-                arr.putColumn(selectedClass, newClassParameters)
-                totalWeights[selectedClass] += weight
+                arr.putColumn(correspondingClass, newClassParameters)
+                totalWeights[correspondingClass] += weight
             }
         }
         debug(logging) { "totalWeights: ${totalWeights.contentToString()}" }
@@ -338,9 +343,31 @@ class Bristle : AggregationRule() {
         val foreignLabels = (0 until weightedAverage.columns()).subtract(labels.map { it.toInt() })
         debug(logging) { "foreignLabels: $foreignLabels" }
         peers.forEach { peer ->
+            /*if (labels.contains("0") && labels.contains("1") && labels.contains("2") && labels.contains("3")) {
+                debug(logging) { "a" }
+                val targetColumn = combinedModels.getValue(peer).getColumn(4.toLong())
+                arr.putColumn(4, arr.getColumn(4).add(targetColumn.mul(weightPerSelectedPeer.getValue(peer))))
+            }
+            if (labels.contains("1") && labels.contains("2") && labels.contains("3") && labels.contains("4")) {
+                debug(logging) { "b" }
+                if (peer == 0) {
+                    debug(logging) { "c" }
+                    val targetColumn = combinedModels.getValue(peer).getColumn(0.toLong())
+                    arr.putColumn(0, arr.getColumn(0).add(targetColumn.mul(weightPerSelectedPeer.getValue(peer))))
+                } else if (peer == 2) {
+                    debug(logging) { "d" }
+                    val targetColumn = combinedModels.getValue(peer).getColumn(5.toLong())
+                    arr.putColumn(5, arr.getColumn(5).add(targetColumn.mul(weightPerSelectedPeer.getValue(peer))))
+                }
+            }
+            if (labels.contains("2") && labels.contains("3") && labels.contains("4") && labels.contains("5")) {
+                val targetColumn = combinedModels.getValue(peer).getColumn(1.toLong())
+                arr.putColumn(1, arr.getColumn(1).add(targetColumn.mul(weightPerSelectedPeer.getValue(peer))))
+                debug(logging) { "e ${weightedAverage.getColumn(1).getFloat(2)} ${combinedModels.getValue(peer).getColumn(1).getFloat(2)} ${arr.getColumn(1).getFloat(2)}" }
+            }*/
             foreignLabels.forEach { label ->
                 val targetColumn = combinedModels.getValue(peer).getColumn(label.toLong())
-                arr.putColumn(label, targetColumn.mul(weightPerSelectedPeer.getValue(peer)))
+                arr.putColumn(label, arr.getColumn(label.toLong()).add(targetColumn.mul(weightPerSelectedPeer.getValue(peer))))
             }
         }
         val totalWeight = weightPerSelectedPeer.values.sum() + 1   // + 1 for the current node

@@ -31,6 +31,7 @@ class Node(
     val shareModel: (params: INDArray, trainConfiguration: TrainConfiguration, random: Random, nodeIndex: Int, countPerPeer: Map<Int, Int>) -> Unit,
     fromTransfer: Boolean
 ) {
+    val formatter = NDArrayStrings2()
     private val dataset = testConfig.dataset
     private val recentOtherModelsBuffer = ArrayDeque<Pair<Int, INDArray>>()
     private val newOtherModelBufferTemp = ConcurrentHashMap<Int, INDArray>()
@@ -94,6 +95,8 @@ class Node(
         } else {
             generateNetwork(dataset.architecture, testConfig.nnConfiguration, nodeIndex)
         }
+        network.outputLayer.params().muli(0)
+        logger.debug { "6 - outputlayer $nodeIndex: ${formatter.format(network.outputLayer.paramTable().getValue("W"))}" }
         if (gar == GARs.BRISTLE) {
             cw = network.outputLayer.paramTable().getValue("W").dup()
 //            cw.muli(0)
@@ -142,6 +145,7 @@ class Node(
             return false
         }
 
+        logger.debug { "5 - outputlayer $nodeIndex: ${formatter.format(network.outputLayer.paramTable().getValue("W"))}" }
         if (iteration % iterationsBeforeSending == 0) {
             if (behavior == Behaviors.BENIGN) {
                 addPotentialAttacks()
@@ -151,10 +155,12 @@ class Node(
             newOtherModelBuffer.clear()
         }
 
+        logger.debug { "4 - outputlayer $nodeIndex: ${formatter.format(network.outputLayer.paramTable().getValue("W"))}" }
         if (gar == GARs.BRISTLE) {
             resetTW()
         }
 
+        logger.debug { "3 - outputlayer $nodeIndex: ${formatter.format(network.outputLayer.paramTable().getValue("W"))}" }
         oldParams = if (gar == GARs.BRISTLE) network.outputLayer.paramTable().getValue("W").dup() else network.params().dup()
 
         val epochEnd = fitNetwork(network, iterTrain)
@@ -162,8 +168,12 @@ class Node(
         if (gar == GARs.BRISTLE) {
             updateCW()
         }
+        logger.debug { "2 - outputlayer $nodeIndex: ${formatter.format(cw)}" }
 
         if (iteration % iterationsBeforeSending == 0) {
+            logger.debug { "1... - outputlayer $nodeIndex: ${formatter.format(network.outputLayer.paramTable().getValue("W"))}" }
+            network.outputLayer.setParam("W", cw)
+            logger.debug { "1 - outputlayer $nodeIndex: ${formatter.format(network.outputLayer.paramTable().getValue("W"))}" }
             shareModel(
                 if (gar == GARs.BRISTLE) network.outputLayer.paramTable().getValue("W").dup() else network.params().dup(),
                 trainConfiguration,
@@ -187,8 +197,11 @@ class Node(
 
     private fun resetTW() {
         val tw = network.outputLayer.paramTable().getValue("W")
-        tw.muli(0)
+        /*tw.muli(0)
         for (index in usedClassIndices) {
+            tw.putColumn(index, cw.getColumn(index.toLong()).dup())
+        }*/
+        for (index in 0 until 10) {
             tw.putColumn(index, cw.getColumn(index.toLong()).dup())
         }
         network.outputLayer.setParam("W", tw)
@@ -259,9 +272,9 @@ class Node(
                     cw.putColumn(index, averageParams.getColumn(index.toLong()).dup())
                 }
 //                val avg = cw.meanNumber()
-//                for (index in 0 until cw.columns()) {
-//                    cw.putColumn(index, cw.getColumn(index.toLong()).sub(cw.getColumn(index.toLong()).meanNumber()))
-//                }
+                for (index in 0 until cw.columns()) {
+                    cw.putColumn(index, cw.getColumn(index.toLong()).sub(cw.getColumn(index.toLong()).meanNumber()))
+                }
             } else {
                 network.setParameters(averageParams)
             }
@@ -293,12 +306,8 @@ class Node(
                 )
             }
             if (gar == GARs.BRISTLE) {
-                val oldTw = network.outputLayer.paramTable().getValue("W").dup()
                 network.outputLayer.setParam("W", cw)
-
                 evaluationScript.invoke()
-
-                network.outputLayer.setParam("W", oldTw)
             } else {
                 evaluationScript.invoke()
             }
@@ -315,7 +324,7 @@ class Node(
     }
 
     fun addNetworkMessage(from: Int, message: INDArray) {
-        newOtherModelBufferTemp[from] = message
+        newOtherModelBufferTemp[from] = message.dup()
     }
 
     fun getSRAKeyPair(): SRAKeyPair {
