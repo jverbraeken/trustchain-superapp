@@ -15,7 +15,8 @@ class HARDataSetIterator(
     seed: Long,
     dataSetType: CustomDataSetType,
     baseDirectory: File,
-    behavior: Behaviors
+    behavior: Behaviors,
+    transfer: Boolean,
 ) : CustomBaseDatasetIterator(
     iteratorConfiguration.batchSize.value,
     -1,
@@ -25,7 +26,8 @@ class HARDataSetIterator(
         iteratorConfiguration.distribution.toIntArray(),
         dataSetType,
         if (dataSetType == CustomDataSetType.TEST || dataSetType == CustomDataSetType.FULL_TEST) iteratorConfiguration.maxTestSamples.value else Integer.MAX_VALUE,
-        behavior
+        behavior,
+        transfer
     )
 ), CustomDataSetIterator {
     override val testBatches by lazy {customFetcher.testBatches}
@@ -40,9 +42,10 @@ class HARDataSetIterator(
             seed: Long,
             dataSetType: CustomDataSetType,
             baseDirectory: File,
-            behavior: Behaviors
+            behavior: Behaviors,
+            transfer: Boolean,
         ): HARDataSetIterator {
-            return HARDataSetIterator(iteratorConfiguration, seed, dataSetType, baseDirectory, behavior)
+            return HARDataSetIterator(iteratorConfiguration, seed, dataSetType, baseDirectory, behavior, transfer)
         }
     }
 }

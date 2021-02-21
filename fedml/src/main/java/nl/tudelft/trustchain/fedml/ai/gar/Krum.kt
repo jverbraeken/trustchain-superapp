@@ -2,6 +2,7 @@ package nl.tudelft.trustchain.fedml.ai.gar
 
 import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
+import nl.tudelft.trustchain.fedml.d
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.nd4j.linalg.api.ndarray.INDArray
 
@@ -35,15 +36,15 @@ class Krum(private val b: Int) : AggregationRule() {
         countPerPeer: Map<Int, Int>,
         logging: Boolean
     ): INDArray {
-        debug(logging) { formatName("Krum") }
+        logger.d(logging) { formatName("Krum") }
         val modelMap = HashMap<Int, INDArray>()
         val newModel = oldModel.sub(gradient)
         modelMap[-1] = newModel
         modelMap.putAll(newOtherModels)
         val models = modelMap.values.toTypedArray()
-        debug(logging) { "Found ${models.size} models in total" }
+        logger.d(logging) { "Found ${models.size} models in total" }
         return if (models.size <= b + 2 + 1) {  // The additional +1 is because we need to add the current peer itself
-            debug(logging) { "Not using KRUM rule because not enough models found..." }
+            logger.d(logging) { "Not using KRUM rule because not enough models found..." }
             newModel
         } else {
             val bestCandidate = getKrum(models, b)

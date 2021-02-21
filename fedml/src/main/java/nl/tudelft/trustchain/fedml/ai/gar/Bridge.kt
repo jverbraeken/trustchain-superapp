@@ -2,7 +2,7 @@ package nl.tudelft.trustchain.fedml.ai.gar
 
 import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
-import org.bytedeco.javacpp.indexer.FloatIndexer
+import nl.tudelft.trustchain.fedml.d
 import org.bytedeco.javacpp.indexer.FloatRawIndexer
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.nd4j.linalg.api.ndarray.INDArray
@@ -28,11 +28,11 @@ class Bridge(private val b: Int) : AggregationRule() {
         countPerPeer: Map<Int, Int>,
         logging: Boolean
     ): INDArray {
-        debug(logging) { formatName("BRIDGE") }
+        logger.d(logging) { formatName("BRIDGE") }
         val models = HashMap<Int, INDArray>()
         models[-1] = oldModel.sub(gradient)
         models.putAll(newOtherModels)
-        debug(logging) { "Found ${models.size} models in total" }
+        logger.d(logging) { "Found ${models.size} models in total" }
         return if (models.size < minimumModels) {
             oldModel
         } else {
@@ -43,7 +43,7 @@ class Bridge(private val b: Int) : AggregationRule() {
                 modelsAsArrays.forEachIndexed { j, modelsAsArray -> elements[j] = modelsAsArray[i] }
                 newVector[i] = trimmedMean(b, elements)
             }
-            NDArray(Array(1) { newVector})
+            NDArray(Array(1) { newVector })
         }
     }
 

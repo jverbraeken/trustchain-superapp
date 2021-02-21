@@ -2,7 +2,7 @@ package nl.tudelft.trustchain.fedml.ai.gar
 
 import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
-import org.bytedeco.javacpp.indexer.FloatIndexer
+import nl.tudelft.trustchain.fedml.d
 import org.bytedeco.javacpp.indexer.FloatRawIndexer
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.nd4j.linalg.api.ndarray.INDArray
@@ -27,11 +27,11 @@ class Median : AggregationRule() {
         countPerPeer: Map<Int, Int>,
         logging: Boolean
     ): INDArray {
-        debug(logging) { formatName("Median") }
+        logger.d(logging) { formatName("Median") }
         val models = HashMap<Int, INDArray>()
         models[-1] = oldModel.sub(gradient)
         models.putAll(newOtherModels)
-        debug(logging) { "Found ${models.size} models in total" }
+        logger.d(logging) { "Found ${models.size} models in total" }
         return median(models)
     }
 
@@ -39,7 +39,7 @@ class Median : AggregationRule() {
         return false
     }
 
-    private fun median(models: HashMap<Int, INDArray>) : INDArray {
+    private fun median(models: HashMap<Int, INDArray>): INDArray {
         /*
             The "intuitive" way to implement this (see commented code below) is extremely (!) slow due to a horrible
             implementation of the median() function in the dl4j library. It's approximately 130x faster to implement our own median
@@ -56,7 +56,7 @@ class Median : AggregationRule() {
             modelsAsArrays.forEachIndexed { j, modelsAsArray -> elements[j] = modelsAsArray[i] }
             newVector[i] = medianHelper(elements)
         }
-        return NDArray(Array(1) { newVector})
+        return NDArray(Array(1) { newVector })
     }
 
     private fun toFloatArray(first: INDArray): FloatArray {

@@ -23,14 +23,16 @@ class LocalRunner : Runner() {
                 seed.toLong(),
                 CustomDataSetType.TRAIN,
                 baseDirectory,
-                Behaviors.BENIGN
+                Behaviors.BENIGN,
+                false,
             )
             val testDataSetIterator = mlConfiguration.dataset.inst(
                 mlConfiguration.datasetIteratorConfiguration,
                 seed.toLong() + 1,
                 CustomDataSetType.FULL_TEST,
                 baseDirectory,
-                Behaviors.BENIGN
+                Behaviors.BENIGN,
+                false,
             )
             val network = generateNetwork(
                 mlConfiguration.dataset.architecture,

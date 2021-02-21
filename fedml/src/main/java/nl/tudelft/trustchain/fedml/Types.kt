@@ -32,9 +32,7 @@ enum class Datasets(
     val architecture: (nnConfiguration: NNConfiguration, seed: Int) -> MultiLayerConfiguration,
     val architectureTransfer: (nnConfiguration: NNConfiguration, seed: Int) -> MultiLayerConfiguration,
     val architectureFrozen: (nnConfiguration: NNConfiguration, seed: Int) -> MultiLayerConfiguration,
-    val inst: (iteratorConfiguration: DatasetIteratorConfiguration, seed: Long, dataSetType: CustomDataSetType, baseDirectory: File, behavior: Behaviors) -> CustomDataSetIterator,
-    val instTransfer: (batchSize: Int, train: Boolean) -> DataSetIterator,
-    val transferFilename: String,
+    val inst: (iteratorConfiguration: DatasetIteratorConfiguration, seed: Long, dataSetType: CustomDataSetType, baseDirectory: File, behavior: Behaviors, transfer: Boolean) -> CustomDataSetIterator,
 ) {
 
     MNIST(
@@ -52,8 +50,6 @@ enum class Datasets(
         ::generateDefaultMNISTConfigurationTransfer,
         ::generateDefaultMNISTConfigurationFrozen,
         CustomMnistDataSetIterator::create,
-        ::createEmnistDataSetIterator,
-        "transferMnist",
     ),
     CIFAR10(
         "cifar10",
@@ -68,8 +64,6 @@ enum class Datasets(
         ::generateDefaultMNISTConfiguration,
         ::generateDefaultMNISTConfigurationFrozen,
         CustomCifar10DataSetIterator::create,
-        ::createEmnistDataSetIterator,
-        "transferCifar",
     ),
 
     /*TINYIMAGENET(
@@ -97,8 +91,6 @@ enum class Datasets(
         ::generateDefaultMNISTConfiguration,
         ::generateDefaultMNISTConfigurationFrozen,
         HARDataSetIterator::create,
-        ::createEmnistDataSetIterator,
-        "transferHar",
     ),;
 }
 

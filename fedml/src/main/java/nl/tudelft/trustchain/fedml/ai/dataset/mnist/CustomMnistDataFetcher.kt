@@ -1,14 +1,17 @@
 package nl.tudelft.trustchain.fedml.ai.dataset.mnist
 
+import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.Behaviors
 import nl.tudelft.trustchain.fedml.ai.CustomDataSetType
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDataFetcher
-import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
+import org.apache.commons.io.FileUtils
 import org.deeplearning4j.common.resources.DL4JResources
 import org.deeplearning4j.common.resources.ResourceType
+import org.deeplearning4j.datasets.base.EmnistFetcher
 import org.deeplearning4j.datasets.base.MnistFetcher
 import org.deeplearning4j.datasets.fetchers.MnistDataFetcher
+import org.deeplearning4j.datasets.iterator.impl.EmnistDataSetIterator
 import org.nd4j.linalg.api.buffer.DataType
 import org.nd4j.linalg.dataset.DataSet
 import org.nd4j.linalg.factory.Nd4j
@@ -16,46 +19,62 @@ import org.nd4j.linalg.indexing.NDArrayIndex
 import java.io.File
 import java.util.stream.IntStream
 
+private val logger = KotlinLogging.logger("CustomMnistDataFetcher")
+private const val NUM_EMNIST_TRAINING_EXAMPLES = 124800
+private const val NUM_EMNIST_TESTING_EXAMPLES = 20800
+private const val NUM_EMNIST_CLASSES = 26
+private const val NUM_MNIST_CLASSES = 10
+private const val NUM_EMNIST_EXAMPLES_PER_CLASS = 2200
+private const val SIZE_IMAGE = 28 * 28
+private const val FILENAME_EMNIST_TRAIN_IMAGES = "emnist-letters-train-images-idx3-ubyte"
+private const val FILENAME_EMNIST_TRAIN_LABELS = "emnist-letters-train-images-idx3-ubyte"
+private const val FILENAME_EMNIST_TEST_IMAGES = "emnist-letters-train-images-idx3-ubyte"
+private const val FILENAME_EMNIST_TEST_LABELS = "emnist-letters-train-images-idx3-ubyte"
+
 class CustomMnistDataFetcher(
     val iteratorDistribution: IntArray,
     seed: Long,
-    dataSetType: CustomDataSetType,
+    val dataSetType: CustomDataSetType,
     maxTestSamples: Int,
     behavior: Behaviors,
+    transfer: Boolean,
 ) : CustomBaseDataFetcher(seed) {
     override val testBatches by lazy { createTestBatches() }
 
     @Transient
     private var man: CustomMnistManager
-    private var featureData = Array(1) { FloatArray(28 * 28) }
+    private var featureData = Array(1) { FloatArray(SIZE_IMAGE) }
 
     init {
-        if (!mnistExists()) {
-            MnistFetcher().downloadAndUntar()
+        if (!mnistExists(transfer)) {
+            (if (transfer) EmnistFetcher(EmnistDataSetIterator.Set.LETTERS) else MnistFetcher()).downloadAndUntar()
         }
-        val mnistRoot = DL4JResources.getDirectory(ResourceType.DATASET, "MNIST").absolutePath
+        val mnistRoot = DL4JResources.getDirectory(ResourceType.DATASET, if (transfer) "EMNIST" else "MNIST").absolutePath
         val images: String
         val labels: String
-        val maxExamples: Int
+        val numExamples: Int
         if (dataSetType == CustomDataSetType.TRAIN) {
-            images = FilenameUtils.concat(mnistRoot, MnistFetcher.TRAINING_FILES_FILENAME_UNZIPPED)
-            labels = FilenameUtils.concat(mnistRoot, MnistFetcher.TRAINING_FILE_LABELS_FILENAME_UNZIPPED)
-            maxExamples = MnistDataFetcher.NUM_EXAMPLES
+            images = FilenameUtils.concat(mnistRoot, if (transfer) FILENAME_EMNIST_TRAIN_IMAGES else MnistFetcher.TRAINING_FILES_FILENAME_UNZIPPED)
+            labels = FilenameUtils.concat(mnistRoot, if (transfer) FILENAME_EMNIST_TRAIN_LABELS else MnistFetcher.TRAINING_FILE_LABELS_FILENAME_UNZIPPED)
+            numExamples = if (transfer) NUM_EMNIST_TRAINING_EXAMPLES else MnistDataFetcher.NUM_EXAMPLES
         } else {
-            images = FilenameUtils.concat(mnistRoot, MnistFetcher.TEST_FILES_FILENAME_UNZIPPED)
-            labels = FilenameUtils.concat(mnistRoot, MnistFetcher.TEST_FILE_LABELS_FILENAME_UNZIPPED)
-            maxExamples = MnistDataFetcher.NUM_EXAMPLES_TEST
+            images = FilenameUtils.concat(mnistRoot, if (transfer) FILENAME_EMNIST_TEST_IMAGES else MnistFetcher.TEST_FILES_FILENAME_UNZIPPED)
+            labels = FilenameUtils.concat(mnistRoot, if (transfer) FILENAME_EMNIST_TEST_LABELS else MnistFetcher.TEST_FILE_LABELS_FILENAME_UNZIPPED)
+            numExamples = if (transfer) NUM_EMNIST_TESTING_EXAMPLES else MnistDataFetcher.NUM_EXAMPLES_TEST
         }
-        try {
-            man = CustomMnistManager(
+        val createMan = {
+            CustomMnistManager(
                 images,
                 labels,
-                maxExamples,
-                iteratorDistribution,
+                numExamples,
+                if (transfer) (0 until NUM_EMNIST_CLASSES).map { NUM_EMNIST_EXAMPLES_PER_CLASS }.toIntArray() else iteratorDistribution,
                 maxTestSamples,
                 seed,
                 if (dataSetType == CustomDataSetType.FULL_TEST) Behaviors.BENIGN else behavior
             )
+        }
+        try {
+            man = createMan.invoke()
         } catch (e: Exception) {
             try {
                 FileUtils.deleteDirectory(File(mnistRoot))
@@ -63,92 +82,65 @@ class CustomMnistDataFetcher(
                 // Ignore
             }
             MnistFetcher().downloadAndUntar()
-            man = CustomMnistManager(
-                images,
-                labels,
-                maxExamples,
-                iteratorDistribution,
-                if (dataSetType == CustomDataSetType.TRAIN) Int.MAX_VALUE else maxTestSamples,
-                seed,
-                behavior
-            )
+            man = createMan.invoke()
         }
         totalExamples = man.getNumSamples()
-        numOutcomes = NUM_LABELS
+        numOutcomes = if (transfer) NUM_EMNIST_CLASSES else NUM_MNIST_CLASSES
         cursor = 0
         inputColumns = man.getInputColumns()
         order = IntStream.range(0, totalExamples).toArray()
-        order2 = man.temporary.map { IntStream.range(0, it.size).toArray() }.toTypedArray()
         reset() //Shuffle order
     }
 
-    private fun mnistExists(): Boolean {
-        val mnistRoot = DL4JResources.getDirectory(ResourceType.DATASET, "MNIST").absolutePath
-        var f = File(mnistRoot, MnistFetcher.TRAINING_FILES_FILENAME_UNZIPPED)
+    private fun mnistExists(transfer: Boolean): Boolean {
+        val mnistRoot = DL4JResources.getDirectory(ResourceType.DATASET, if (transfer) "EMNIST" else "MNIST").absolutePath
+        var f = File(mnistRoot, if (transfer) FILENAME_EMNIST_TRAIN_IMAGES else MnistFetcher.TRAINING_FILES_FILENAME_UNZIPPED)
         if (!f.exists()) return false
-        f = File(mnistRoot, MnistFetcher.TRAINING_FILE_LABELS_FILENAME_UNZIPPED)
+        f = File(mnistRoot, if (transfer) FILENAME_EMNIST_TRAIN_LABELS else MnistFetcher.TRAINING_FILE_LABELS_FILENAME_UNZIPPED)
         if (!f.exists()) return false
-        f = File(mnistRoot, MnistFetcher.TEST_FILES_FILENAME_UNZIPPED)
+        f = File(mnistRoot, if (transfer) FILENAME_EMNIST_TEST_IMAGES else MnistFetcher.TEST_FILES_FILENAME_UNZIPPED)
         if (!f.exists()) return false
-        f = File(mnistRoot, MnistFetcher.TEST_FILE_LABELS_FILENAME_UNZIPPED)
+        f = File(mnistRoot, if (transfer) FILENAME_EMNIST_TEST_LABELS else MnistFetcher.TEST_FILE_LABELS_FILENAME_UNZIPPED)
         return f.exists()
     }
 
     override fun fetch(numExamples: Int) {
         check(hasMore()) { "Unable to get more; there are no more images" }
-        if (numExamples == 5) {
-            val a = 4
-            var labels = Nd4j.zeros(DataType.FLOAT, a.toLong(), numOutcomes.toLong())
-            if (featureData.size != a) {
-                featureData = Array(a) { FloatArray(28 * 28) }
-            }
-            var actualExamples = 0
-            for ((labelll, label) in iteratorDistribution.indices.filterNot { iteratorDistribution[it] == 0 }.withIndex()) {
-                featureData[labelll] = man.temporary[label][order2[label][cursor2]]
-                labels.put(labelll, label, 1.0f)
-                actualExamples++
-            }
-            cursor2++
-            val features = Nd4j.create(
-                if (featureData.size == actualExamples) featureData
-                else featureData.copyOfRange(0, actualExamples)
-            )
-            if (actualExamples < a) {
-                labels = labels[NDArrayIndex.interval(0, actualExamples), NDArrayIndex.all()]
-            }
-            features.divi(255.0)
-            curr = DataSet(features, labels)
-        } else {
-            var labels = Nd4j.zeros(DataType.FLOAT, numExamples.toLong(), numOutcomes.toLong())
-            if (featureData.size != numExamples) {
-                featureData = Array(numExamples) { FloatArray(28 * 28) }
-            }
-            var actualExamples = 0
-            for (i in 0 until numExamples) {
-                if (!hasMore()) break
-                val (image, label) = man.readEntry(order[cursor])
-                featureData[actualExamples] = image
-                labels.put(actualExamples, label, 1.0f)
-                actualExamples++
-                cursor++
-            }
-            val features = Nd4j.create(
-                if (featureData.size == actualExamples) featureData
-                else featureData.copyOfRange(0, actualExamples)
-            )
-            if (actualExamples < numExamples) {
-                labels = labels[NDArrayIndex.interval(0, actualExamples), NDArrayIndex.all()]
-            }
-            features.divi(255.0)
-            curr = DataSet(features, labels)
+        var labels = Nd4j.zeros(DataType.FLOAT, numExamples.toLong(), numOutcomes.toLong())
+        if (featureData.size != numExamples) {
+            featureData = Array(numExamples) { FloatArray(SIZE_IMAGE) }
         }
-        cursor = totalExamples  // Require a reset before getting next batch, otherwise iterator keeps iterating
+        var actualExamples = 0
+        for (i in 0 until numExamples) {
+            if (!hasMore()) break
+            val (image, label) = man.readEntry(order[cursor])
+            featureData[actualExamples] = image
+            labels.put(actualExamples, label, 1.0f)
+            actualExamples++
+            cursor++
+        }
+        val features = Nd4j.create(
+            if (featureData.size == actualExamples) featureData
+            else featureData.copyOfRange(0, actualExamples)
+        )
+        if (actualExamples < numExamples) {
+            labels = labels[NDArrayIndex.interval(0, actualExamples), NDArrayIndex.all()]
+        }
+        features.divi(255.0)
+        curr = DataSet(features, labels)
+        if (dataSetType != CustomDataSetType.TRAIN) {
+            /**
+             * Non-training iterators are called not by the next() function but by supplying the whole iterator
+             * => require a reset before getting next batch, otherwise the iterator keeps iterating
+             */
+            cursor = totalExamples
+        }
     }
 
     private fun createTestBatches(): Array<DataSet?> {
         val testBatches = man.createTestBatches()
         if (featureData.size != TEST_BATCH_SIZE) {
-            featureData = Array(TEST_BATCH_SIZE) { FloatArray(28 * 28) }
+            featureData = Array(TEST_BATCH_SIZE) { FloatArray(SIZE_IMAGE) }
         }
         val result = arrayListOf<DataSet?>()
         for ((label, batch) in testBatches.withIndex()) {
@@ -176,7 +168,6 @@ class CustomMnistDataFetcher(
         get() = man.getLabels()
 
     companion object {
-        const val NUM_LABELS = 10
         const val TEST_BATCH_SIZE = 10
     }
 }

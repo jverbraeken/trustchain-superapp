@@ -32,6 +32,7 @@ class HARDataFetcher(
     dataSetType: CustomDataSetType,
     maxTestSamples: Int,
     behavior: Behaviors,
+    transfer: Boolean,
 ) : CustomBaseDataFetcher(seed) {
     override val testBatches by lazy { createTestBatches() }
     val labels: List<String>

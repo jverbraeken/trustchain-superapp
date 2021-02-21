@@ -6,6 +6,7 @@ import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.nd4j.linalg.api.ndarray.INDArray
 
+
 abstract class AggregationRule {
     private val mpl = KotlinLogging.logger("AggregationRule")
 
@@ -21,13 +22,6 @@ abstract class AggregationRule {
     ): INDArray
 
     abstract fun isDirectIntegration(): Boolean
-
-    protected fun debug(logging: Boolean, msg: () -> String) {
-        if (true) {
-            mpl.debug(msg)
-            EvaluationProcessor.log(msg.invoke())
-        }
-    }
 
     protected fun formatName(name: String): String {
         return "<====      $name      ====>"

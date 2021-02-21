@@ -15,6 +15,7 @@ class CustomCifar10DataSetIterator(
     seed: Long,
     dataSetType: CustomDataSetType,
     behavior: Behaviors,
+    transfer: Boolean,
 ) : CustomRecordReaderDataSetIterator(
     CustomCifar10Fetcher().getRecordReader(
         seed,
@@ -41,8 +42,9 @@ class CustomCifar10DataSetIterator(
             dataSetType: CustomDataSetType,
             baseDirectory: File,
             behavior: Behaviors,
+            transfer: Boolean,
         ): CustomCifar10DataSetIterator {
-            return CustomCifar10DataSetIterator(iteratorConfiguration, seed, dataSetType, behavior)
+            return CustomCifar10DataSetIterator(iteratorConfiguration, seed, dataSetType, behavior, transfer)
         }
     }
 }

@@ -1,11 +1,10 @@
 package nl.tudelft.trustchain.fedml.ai.gar
 
 import mu.KotlinLogging
-import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDatasetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
+import nl.tudelft.trustchain.fedml.d
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.nd4j.linalg.api.ndarray.INDArray
-import org.nd4j.linalg.cpu.nativecpu.NDArray
 import org.nd4j.linalg.dataset.DataSet
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 import kotlin.math.ceil
@@ -25,13 +24,13 @@ class Mozi(private val fracBenign: Double) : AggregationRule() {
         countPerPeer: Map<Int, Int>,
         logging: Boolean
     ): INDArray {
-        debug(logging) { formatName("MOZI") }
-        debug(logging) { "Found ${newOtherModels.size} other models" }
-        debug(logging) { "oldModel: " + oldModel.getDouble(0) }
+        logger.d(logging) { formatName("MOZI") }
+        logger.d(logging) { "Found ${newOtherModels.size} other models" }
+        logger.d(logging) { "oldModel: " + oldModel.getDouble(0) }
         val Ndistance = applyDistanceFilter(oldModel, newOtherModels, logging)
-        debug(logging) { "After distance filter, remaining:${Ndistance.size}" }
+        logger.d(logging) { "After distance filter, remaining:${Ndistance.size}" }
         val Nperformance = applyPerformanceFilter(oldModel, Ndistance, network, testDataSetIterator, logging)
-        debug(logging) { "After performance filter, remaining:${Nperformance.size}" }
+        logger.d(logging) { "After performance filter, remaining:${Nperformance.size}" }
 //        if (Nperformance.isEmpty()) {
 //            logger.debug("Nperformance empty => taking ${Ndistance[0].getDouble(0)}")
 //            Nperformance = arrayListOf(Ndistance[0])
@@ -70,7 +69,7 @@ class Mozi(private val fracBenign: Double) : AggregationRule() {
         for (model in models.withIndex()) {
             network.setParameters(model.value)
             scores[model.index] = network.score(sample)
-            debug(logging) { "otherLoss = ${scores[model.index]}" }
+            logger.d(logging) { "otherLoss = ${scores[model.index]}" }
         }
         return scores
     }
@@ -83,12 +82,12 @@ class Mozi(private val fracBenign: Double) : AggregationRule() {
         val distances = hashMapOf<Int, Double>()
         for (otherModel in newOtherModels) {
             val distance = oldModel.distance2(otherModel.value)
-            debug(logging) { "Distance calculated: $distance" }
+            logger.d(logging) { "Distance calculated: $distance" }
             distances[otherModel.key] = distance
         }
         val sortedDistances = distances.toList().sortedBy { it.second }.toMap()
         val numBenign = ceil(fracBenign * newOtherModels.size).toInt()
-        debug(logging) { "#benign: $numBenign" }
+        logger.d(logging) { "#benign: $numBenign" }
         return sortedDistances
             .keys
             .take(numBenign)
@@ -107,21 +106,21 @@ class Mozi(private val fracBenign: Double) : AggregationRule() {
         testDataSetIterator.reset()
         val sample = testDataSetIterator.next(TEST_BATCH)
         val oldLoss = calculateLoss(oldModel, network, sample)
-        debug(logging) { "oldLoss: $oldLoss" }
+        logger.d(logging) { "oldLoss: $oldLoss" }
         val otherLosses = calculateLoss(newOtherModels, network, sample, logging)
         for ((index, otherLoss) in otherLosses.withIndex()) {
-            debug(logging) { "otherLoss $index: $otherLoss" }
+            logger.d(logging) { "otherLoss $index: $otherLoss" }
             if (otherLoss <= oldLoss) {
                 result.add(newOtherModels[index])
-                debug(logging) { "ADDING model($index): " + newOtherModels[index].getDouble(0) }
+                logger.d(logging) { "ADDING model($index): " + newOtherModels[index].getDouble(0) }
             } else {
-                debug(logging) { "NOT adding model($index): " + newOtherModels[index].getDouble(0) }
+                logger.d(logging) { "NOT adding model($index): " + newOtherModels[index].getDouble(0) }
             }
         }
         return result.toTypedArray()
     }
 
-    private fun average(list: Array<INDArray>) : INDArray {
+    private fun average(list: Array<INDArray>): INDArray {
         var arr: INDArray? = null
         list.forEachIndexed { i, model ->
             if (i == 0) {

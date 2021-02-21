@@ -366,7 +366,7 @@ abstract class Runner {
     )
 
     protected fun getDataSetIterators(
-        inst: (iteratorConfiguration: DatasetIteratorConfiguration, seed: Long, dataSetType: CustomDataSetType, baseDirectory: File, behavior: Behaviors) -> CustomDataSetIterator,
+        inst: (iteratorConfiguration: DatasetIteratorConfiguration, seed: Long, dataSetType: CustomDataSetType, baseDirectory: File, behavior: Behaviors, transfer: Boolean) -> CustomDataSetIterator,
         datasetIteratorConfiguration: DatasetIteratorConfiguration,
         seed: Long,
         baseDirectory: File,
@@ -381,7 +381,8 @@ abstract class Runner {
             seed,
             CustomDataSetType.TRAIN,
             baseDirectory,
-            behavior
+            behavior,
+            false,
         )
         logger.debug { "Loaded trainDataSetIterator" }
         val testDataSetIterator = inst(
@@ -390,10 +391,11 @@ abstract class Runner {
                 datasetIteratorConfiguration.distribution.map { min(TEST_SET_SIZE, it) },
                 datasetIteratorConfiguration.maxTestSamples
             ),
-            seed + 2,
+            seed + 1,
             CustomDataSetType.TEST,
             baseDirectory,
-            behavior
+            behavior,
+            false,
         )
         logger.debug { "Loaded testDataSetIterator" }
         val fullTestDataSetIterator = inst(
@@ -402,10 +404,11 @@ abstract class Runner {
                 List(datasetIteratorConfiguration.distribution.size) { datasetIteratorConfiguration.maxTestSamples.value },
                 datasetIteratorConfiguration.maxTestSamples
             ),
-            seed + 3,
+            seed + 2,
             CustomDataSetType.FULL_TEST,
             baseDirectory,
-            behavior
+            behavior,
+            false,
         )
         logger.debug { "Loaded fullTestDataSetIterator" }
         return listOf(trainDataSetIterator, testDataSetIterator, fullTestDataSetIterator)

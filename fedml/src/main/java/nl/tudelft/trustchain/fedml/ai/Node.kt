@@ -12,19 +12,20 @@ import org.nd4j.linalg.cpu.nativecpu.NDArray
 import java.io.File
 import java.math.BigInteger
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.math.log
 import kotlin.math.round
 import kotlin.random.Random
 
 private val bigPrime = BigInteger("100012421")
 private val logger = KotlinLogging.logger("Node")
-private const val ONLY_EVALUATE_FIRST_NODE = false
+private const val ONLY_EVALUATE_FIRST_NODE = true
 private const val SIZE_RECENT_OTHER_MODELS = 20
 
 class Node(
     private val nodeIndex: Int,
     testConfig: MLConfiguration,
     private val generateNetwork: (architecture: (nnConfiguration: NNConfiguration, seed: Int) -> MultiLayerConfiguration, nnConfiguration: NNConfiguration, seed: Int) -> MultiLayerNetwork,
-    getDataSetIterators: (inst: (iteratorConfiguration: DatasetIteratorConfiguration, seed: Long, dataSetType: CustomDataSetType, baseDirectory: File, behavior: Behaviors) -> CustomDataSetIterator, datasetIteratorConfiguration: DatasetIteratorConfiguration, seed: Long, baseDirectory: File, behavior: Behaviors) -> List<CustomDataSetIterator>,
+    getDataSetIterators: (inst: (iteratorConfiguration: DatasetIteratorConfiguration, seed: Long, dataSetType: CustomDataSetType, baseDirectory: File, behavior: Behaviors, transfer: Boolean) -> CustomDataSetIterator, datasetIteratorConfiguration: DatasetIteratorConfiguration, seed: Long, baseDirectory: File, behavior: Behaviors) -> List<CustomDataSetIterator>,
     baseDirectory: File,
     private val evaluationProcessor: EvaluationProcessor,
     private val start: Long,
@@ -91,15 +92,13 @@ class Node(
         numAttackers = modelPoisoningConfiguration.numAttackers
 
         network = if (fromTransfer) {
-            loadFromTransferNetwork(File(baseDirectory, dataset.transferFilename), dataset.architectureFrozen)
+            loadFromTransferNetwork(File(baseDirectory, "transfer-${dataset.id}"), dataset.architectureFrozen)
         } else {
             generateNetwork(dataset.architecture, testConfig.nnConfiguration, nodeIndex)
         }
         network.outputLayer.params().muli(0)
-        logger.debug { "6 - outputlayer $nodeIndex: ${formatter.format(network.outputLayer.paramTable().getValue("W"))}" }
         if (gar == GARs.BRISTLE) {
             cw = network.outputLayer.paramTable().getValue("W").dup()
-//            cw.muli(0)
         }
 
         oldParams = if (gar == GARs.BRISTLE) network.outputLayer.paramTable().getValue("W").dup() else network.params().dup()
@@ -117,7 +116,6 @@ class Node(
         iterTestFull = iters[2]
 
         logging = nodeIndex == 0 || !ONLY_EVALUATE_FIRST_NODE
-        logger.debug { "Logging ($nodeIndex): $logging" }
     }
 
     private fun loadFromTransferNetwork(transferFile: File, generateFrozenArchitecture: (nnConfiguration: NNConfiguration, seed: Int) -> MultiLayerConfiguration): MultiLayerNetwork {
@@ -133,8 +131,6 @@ class Node(
     }
 
     fun performIteration(epoch: Int, iteration: Int): Boolean {
-//        logger.debug { "Node: $nodeIndex" }
-
         newParams = if (gar == GARs.BRISTLE) network.outputLayer.paramTable().getValue("W").dup() else network.params().dup()
         gradient = oldParams.sub(newParams)
 
@@ -145,7 +141,7 @@ class Node(
             return false
         }
 
-        logger.debug { "5 - outputlayer $nodeIndex: ${formatter.format(network.outputLayer.paramTable().getValue("W"))}" }
+        logger.t(logging) { "5 - outputlayer $nodeIndex: ${formatter.format(network.outputLayer.paramTable().getValue("W"))}" }
         if (iteration % iterationsBeforeSending == 0) {
             if (behavior == Behaviors.BENIGN) {
                 addPotentialAttacks()
@@ -155,12 +151,12 @@ class Node(
             newOtherModelBuffer.clear()
         }
 
-        logger.debug { "4 - outputlayer $nodeIndex: ${formatter.format(network.outputLayer.paramTable().getValue("W"))}" }
+        logger.t(logging) { "4 - outputlayer $nodeIndex: ${formatter.format(network.outputLayer.paramTable().getValue("W"))}" }
         if (gar == GARs.BRISTLE) {
             resetTW()
         }
 
-        logger.debug { "3 - outputlayer $nodeIndex: ${formatter.format(network.outputLayer.paramTable().getValue("W"))}" }
+        logger.t(logging) { "3 - outputlayer $nodeIndex: ${formatter.format(network.outputLayer.paramTable().getValue("W"))}" }
         oldParams = if (gar == GARs.BRISTLE) network.outputLayer.paramTable().getValue("W").dup() else network.params().dup()
 
         val epochEnd = fitNetwork(network, iterTrain)
@@ -168,12 +164,12 @@ class Node(
         if (gar == GARs.BRISTLE) {
             updateCW()
         }
-        logger.debug { "2 - outputlayer $nodeIndex: ${formatter.format(cw)}" }
+        logger.t(logging) { "2 - outputlayer $nodeIndex: ${formatter.format(cw)}" }
 
         if (iteration % iterationsBeforeSending == 0) {
-            logger.debug { "1... - outputlayer $nodeIndex: ${formatter.format(network.outputLayer.paramTable().getValue("W"))}" }
+            logger.t(logging) { "1... - outputlayer $nodeIndex: ${formatter.format(network.outputLayer.paramTable().getValue("W"))}" }
             network.outputLayer.setParam("W", cw)
-            logger.debug { "1 - outputlayer $nodeIndex: ${formatter.format(network.outputLayer.paramTable().getValue("W"))}" }
+            logger.t(logging) { "1 - outputlayer $nodeIndex: ${formatter.format(network.outputLayer.paramTable().getValue("W"))}" }
             shareModel(
                 if (gar == GARs.BRISTLE) network.outputLayer.paramTable().getValue("W").dup() else network.params().dup(),
                 trainConfiguration,
@@ -190,17 +186,12 @@ class Node(
     private fun updateCW() {
         val tw = network.outputLayer.paramTable().getValue("W")
         for (index in usedClassIndices) {
-            logger.debug { "Replacing cw on node $nodeIndex: $index" }
             cw.putColumn(index, tw.getColumn(index.toLong()).dup())
         }
     }
 
     private fun resetTW() {
         val tw = network.outputLayer.paramTable().getValue("W")
-        /*tw.muli(0)
-        for (index in usedClassIndices) {
-            tw.putColumn(index, cw.getColumn(index.toLong()).dup())
-        }*/
         for (index in 0 until 10) {
             tw.putColumn(index, cw.getColumn(index.toLong()).dup())
         }
@@ -268,7 +259,6 @@ class Node(
             )
             if (gar == GARs.BRISTLE) {
                 for (index in 0 until cw.columns()) {
-                    logger.debug { "Replacing cw on node $nodeIndex: $index" }
                     cw.putColumn(index, averageParams.getColumn(index.toLong()).dup())
                 }
 //                val avg = cw.meanNumber()
@@ -286,8 +276,7 @@ class Node(
     }
 
     private fun potentiallyEvaluate(epoch: Int, iteration: Int, beforeOrAfter: String) {
-        logger.debug { "logging($nodeIndex): $logging" }
-        if (/*logging*//*nodeIndex == 0*/true && (iteration % iterationsBeforeEvaluation == 0)) {
+        if (logging && (iteration % iterationsBeforeEvaluation == 0)) {
             val evaluationScript = {
                 val elapsedTime2 = System.currentTimeMillis() - start
                 val extraElements2 = mapOf(
