@@ -29,9 +29,7 @@ enum class Datasets(
     val defaultL2: L2Regularizations,
     val defaultBatchSize: BatchSizes,
     val defaultIteratorDistribution: IteratorDistributions,
-    val architecture: (nnConfiguration: NNConfiguration, seed: Int) -> MultiLayerConfiguration,
-    val architectureTransfer: (nnConfiguration: NNConfiguration, seed: Int) -> MultiLayerConfiguration,
-    val architectureFrozen: (nnConfiguration: NNConfiguration, seed: Int) -> MultiLayerConfiguration,
+    val architecture: (nnConfiguration: NNConfiguration, seed: Int, mode: NNConfigurationMode) -> MultiLayerConfiguration,
     val inst: (iteratorConfiguration: DatasetIteratorConfiguration, seed: Long, dataSetType: CustomDataSetType, baseDirectory: File, behavior: Behaviors, transfer: Boolean) -> CustomDataSetIterator,
 ) {
 
@@ -47,8 +45,6 @@ enum class Datasets(
         BatchSizes.BATCH_5,
         IteratorDistributions.DISTRIBUTION_MNIST_2,
         ::generateDefaultMNISTConfiguration,
-        ::generateDefaultMNISTConfigurationTransfer,
-        ::generateDefaultMNISTConfigurationFrozen,
         CustomMnistDataSetIterator::create,
     ),
     CIFAR10(
@@ -61,8 +57,6 @@ enum class Datasets(
         BatchSizes.BATCH_32,
         IteratorDistributions.DISTRIBUTION_CIFAR_50,
         ::generateDefaultCIFARConfiguration,
-        ::generateDefaultMNISTConfiguration,
-        ::generateDefaultMNISTConfigurationFrozen,
         CustomCifar10DataSetIterator::create,
     ),
 
@@ -88,8 +82,6 @@ enum class Datasets(
         BatchSizes.BATCH_32,
         IteratorDistributions.DISTRIBUTION_HAR_100,
         ::generateDefaultHARConfiguration,
-        ::generateDefaultMNISTConfiguration,
-        ::generateDefaultMNISTConfigurationFrozen,
         HARDataSetIterator::create,
     ),;
 }

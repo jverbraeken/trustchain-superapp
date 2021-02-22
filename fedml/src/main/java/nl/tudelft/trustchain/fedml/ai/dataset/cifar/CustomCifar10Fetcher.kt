@@ -12,56 +12,39 @@ import org.nd4j.common.util.ArchiveUtils
 import org.nd4j.linalg.dataset.DataSet
 import java.io.File
 import java.io.IOException
-import java.net.URI
 import java.net.URL
-import java.util.zip.Adler32
-import java.util.zip.Checksum
 import kotlin.math.min
 
 private val logger = KotlinLogging.logger("CustomCifar10Fetcher")
 
 class CustomCifar10Fetcher {
-    private fun downloadAndExtract() {
-        val localFilename = "cifar10_dl4j.v1.zip"
-        val tmpFile = File(System.getProperty("java.io.tmpdir"), localFilename)
-        val localCacheDir = getLocalCacheDir()
+    private fun downloadAndExtract(transfer: Boolean, localCache: File) {
+        val tmpFile = File(System.getProperty("java.io.tmpdir"), if (transfer) LOCAL_FILE_NAME_TRANSFER else LOCAL_FILE_NAME_REGULAR)
 
         // Check empty cache
-        if (localCacheDir.exists()) {
-            val list = localCacheDir.listFiles()
-            if (list == null || list.isEmpty()) localCacheDir.delete()
+        if (localCache.exists()) {
+            val list = localCache.listFiles()
+            if (list == null || list.isEmpty()) localCache.delete()
         }
-        if (!localCacheDir.exists()) {
-            localCacheDir.mkdirs()
+        if (!localCache.exists()) {
+            localCache.mkdirs()
             tmpFile.delete()
             logger.info("Downloading dataset to " + tmpFile.absolutePath)
-            FileUtils.copyURLToFile(URL(REMOTE_DATA_URL), tmpFile)
+            FileUtils.copyURLToFile(URL(if (transfer) REMOTE_DATA_URL_TRANSFER else REMOTE_DATA_URL_REGULAR), tmpFile)
         } else {
             // Directory exists and is non-empty - assume OK
-            logger.info("Using cached dataset at " + localCacheDir.absolutePath)
+            logger.info("Using cached dataset at " + localCache.absolutePath)
             return
         }
-        logger.info("Verifying download...")
-        val adler: Checksum = Adler32()
-        FileUtils.checksum(tmpFile, adler)
-        val localChecksum = adler.value
-        logger.info("Checksum local is $localChecksum, expecting $EXPECTED_CHECKSUM")
-        if (localChecksum != EXPECTED_CHECKSUM) {
-            logger.error("Checksums do not match. Cleaning up files and failing...")
-            tmpFile.delete()
-            throw IllegalStateException("Dataset file failed checksum: $tmpFile - expected checksum $EXPECTED_CHECKSUM vs. actual checksum $localChecksum. If this error persists, please open an issue at https://github.com/deeplearning4j/deeplearning4j.")
-        }
         try {
-            ArchiveUtils.unzipFileTo(tmpFile.absolutePath, localCacheDir.absolutePath, false)
+            ArchiveUtils.unzipFileTo(tmpFile.absolutePath, localCache.absolutePath, false)
         } catch (t: Throwable) {
             // Catch any errors during extraction, and delete the directory to avoid leaving the dir in an invalid state
-            if (localCacheDir.exists()) FileUtils.deleteDirectory(localCacheDir)
+            if (localCache.exists()) {
+                FileUtils.deleteDirectory(localCache)
+            }
             throw t
         }
-    }
-
-    private fun getLocalCacheDir(): File {
-        return DL4JResources.getDirectory(ResourceType.DATASET, LOCAL_CACHE_NAME)
     }
 
     private fun deleteIfEmpty(localCache: File) {
@@ -85,6 +68,7 @@ class CustomCifar10Fetcher {
         imageTransform: ImageTransform?,
         iteratorDistribution: IntArray,
         maxSamples: Int,
+        transfer: Boolean,
     ): CustomImageRecordReader {
         Preconditions.checkState(
             imgDim == null || imgDim.size == 2,
@@ -92,12 +76,12 @@ class CustomCifar10Fetcher {
             imgDim
         )
         // check empty cache
-        val localCache = getLocalCacheDir()
+        val localCache = DL4JResources.getDirectory(ResourceType.DATASET, if (transfer) LOCAL_CACHE_NAME_TRANSFER else LOCAL_CACHE_NAME_REGULAR)
         deleteIfEmpty(localCache)
         try {
             if (!localCache.exists()) {
                 logger.debug { "Creating cache..." }
-                downloadAndExtract()
+                downloadAndExtract(transfer, localCache)
             }
         } catch (e: Exception) {
             throw RuntimeException("Could not download CIFAR-10", e)
@@ -106,9 +90,13 @@ class CustomCifar10Fetcher {
         val train = (set == CustomDataSetType.TRAIN)
         val datasetPath = if (train) File(localCache, "/train/") else File(localCache, "/test/")
         val random = kotlin.random.Random(rngSeed)
-        val maxElementsPerLabel = iteratorDistribution.map { min(maxSamples, it) }
-        val numSamplesPerLabel = if (train) NUM_TRAINING_SAMPLES_PER_LABEL else NUM_TESTING_SAMPLES_PER_LABEL
-        val files = CustomFileSplit(datasetPath, random, numSamplesPerLabel).files
+        val maxElementsPerLabel = if (transfer) (0 until NUM_LABELS_TRANSFER).map { if (train) NUM_TRAINING_SAMPLES_PER_LABEL_TRANSFER else NUM_TESTING_SAMPLES_PER_LABEL_TRANSFER }.toIntArray() else iteratorDistribution.map { min(maxSamples, it) }.toIntArray()
+        val numSamplesPerLabel = if (train) {
+            if (transfer) NUM_TRAINING_SAMPLES_PER_LABEL_TRANSFER else NUM_TRAINING_SAMPLES_PER_LABEL_REGULAR
+        } else {
+            if (transfer) NUM_TESTING_SAMPLES_PER_LABEL_TRANSFER else NUM_TESTING_SAMPLES_PER_LABEL_REGULAR
+        }
+        val files = CustomFileSplit(datasetPath, random, numSamplesPerLabel, if (transfer) NUM_LABELS_TRANSFER else NUM_LABELS_REGULAR).files
         val fileSelection = files
             .mapIndexed { i, list -> list.copyOfRange(0, maxElementsPerLabel[i]) }
             .flatMap { it.asIterable() }
@@ -116,12 +104,15 @@ class CustomCifar10Fetcher {
             .toTypedArray()
         val h = imgDim?.get(0) ?: INPUT_HEIGHT
         val w = imgDim?.get(1) ?: INPUT_WIDTH
+        val labels = (0 until if (transfer) NUM_LABELS_TRANSFER else NUM_LABELS_REGULAR).map { it.toString() }.toTypedArray()
         val testBatches = if (set == CustomDataSetType.FULL_TEST) {
             createTestBatches(
                 h.toLong(),
                 w.toLong(),
                 imageTransform,
-                files
+                files,
+                transfer,
+                labels,
             )
         } else null
 
@@ -133,6 +124,7 @@ class CustomCifar10Fetcher {
             fileSelection,
             false,
             testBatches,
+            labels,
         )
     }
 
@@ -140,7 +132,9 @@ class CustomCifar10Fetcher {
         h: Long,
         w: Long,
         imageTransform: ImageTransform?,
-        files: Array<out Array<File>>
+        files: Array<out Array<File>>,
+        transfer: Boolean,
+        labels: Array<String>
     ): Array<DataSet?> {
         return files.map {
             if (files.isEmpty()) null
@@ -153,25 +147,32 @@ class CustomCifar10Fetcher {
                         imageTransform,
                         it,
                         true,
-                        null
+                        null,
+                        labels
                     ),
                     20,
                     1,
-                    NUM_LABELS
+                    if (transfer) NUM_LABELS_TRANSFER else NUM_LABELS_REGULAR
                 ).next(20)
             }
         }.toTypedArray()
     }
 
     companion object {
-        private const val LOCAL_CACHE_NAME = "cifar10"
-        private const val EXPECTED_CHECKSUM = 292852033L
-        private const val REMOTE_DATA_URL = "https://api.onedrive.com/v1.0/shares/s!AvNMRY4ml2WPgZpmYiFDOhNyFgakRQ/root/content"
+        private const val LOCAL_CACHE_NAME_REGULAR = "cifar10"
+        private const val LOCAL_CACHE_NAME_TRANSFER = "cifar100"
+        private const val REMOTE_DATA_URL_REGULAR = "https://api.onedrive.com/v1.0/shares/s!AvNMRY4ml2WPgZpmYiFDOhNyFgakRQ/root/content"
+        private const val REMOTE_DATA_URL_TRANSFER = "https://api.onedrive.com/v1.0/shares/s!AvNMRY4ml2WPgaA98zlT5itmCF0s8w/root/content"
+        private const val LOCAL_FILE_NAME_REGULAR = "cifar10_dl4j.v1.zip"
+        private const val LOCAL_FILE_NAME_TRANSFER = "cifar100_dl4j.v1.zip"
         const val INPUT_WIDTH = 32
         const val INPUT_HEIGHT = 32
         const val INPUT_CHANNELS = 3
-        const val NUM_LABELS = 10
-        const val NUM_TRAINING_SAMPLES_PER_LABEL = 5000
-        const val NUM_TESTING_SAMPLES_PER_LABEL = 1000
+        const val NUM_LABELS_REGULAR = 10
+        const val NUM_LABELS_TRANSFER = 100
+        const val NUM_TRAINING_SAMPLES_PER_LABEL_REGULAR = 5000
+        const val NUM_TRAINING_SAMPLES_PER_LABEL_TRANSFER = 500
+        const val NUM_TESTING_SAMPLES_PER_LABEL_REGULAR = 1000
+        const val NUM_TESTING_SAMPLES_PER_LABEL_TRANSFER = 100
     }
 }

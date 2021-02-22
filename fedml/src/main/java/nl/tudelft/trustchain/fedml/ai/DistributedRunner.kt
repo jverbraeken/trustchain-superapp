@@ -359,7 +359,8 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 val network = generateNetwork(
                     mlConfiguration.dataset.architecture,
                     mlConfiguration.nnConfiguration,
-                    seed
+                    seed,
+                    NNConfigurationMode.REGULAR
                 )
                 network.setListeners(ScoreIterationListener(printScoreIterations))
 

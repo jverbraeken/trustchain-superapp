@@ -10,7 +10,7 @@ import java.io.File
 import kotlin.math.min
 
 
-private val logger = KotlinLogging.logger("LocalRunner")
+private val logger = KotlinLogging.logger("TransferRunner")
 private const val ITERATIONS_BEFORE_EVALUATION = 1000
 
 class TransferRunner : Runner() {
@@ -47,9 +47,10 @@ class TransferRunner : Runner() {
             )
             logger.debug { "Loaded testDataSetIterator" }
             val network = generateNetwork(
-                mlConfiguration.dataset.architectureTransfer,
+                mlConfiguration.dataset.architecture,
                 mlConfiguration.nnConfiguration,
-                seed
+                seed,
+                NNConfigurationMode.TRANSFER
             )
             val evaluationProcessor = EvaluationProcessor(
                 baseDirectory,

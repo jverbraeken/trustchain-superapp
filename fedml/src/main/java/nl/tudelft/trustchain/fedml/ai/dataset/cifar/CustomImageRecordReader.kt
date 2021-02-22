@@ -36,11 +36,11 @@ class CustomImageRecordReader(
     private val imageTransform: ImageTransform?,
     private val files: Array<File>,
     private val alwaysReturningSameResult: Boolean = false,
-    val testBatches: Array<DataSet?>?
+    val testBatches: Array<DataSet?>?,
+    private val labels: Array<String>
 ) : BaseRecordReader() {
     private var iter: Iterator<File>
     private var currentFile: File? = null
-    private var labels = listOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
     private var imageLoader: NativeImageLoader? = null
     private lateinit var conf: Configuration
     private var sameResultToReturn: List<List<Writable?>?>? = null
@@ -87,7 +87,9 @@ class CustomImageRecordReader(
         else iter.hasNext()
     }
 
-    override fun getLabels() = labels
+    override fun getLabels(): List<String> {
+        return labels.toList()
+    }
 
     override fun batchesSupported() = imageLoader is NativeImageLoader
 

@@ -37,7 +37,8 @@ class LocalRunner : Runner() {
             val network = generateNetwork(
                 mlConfiguration.dataset.architecture,
                 mlConfiguration.nnConfiguration,
-                seed
+                seed,
+                NNConfigurationMode.REGULAR
             )
             val evaluationProcessor = EvaluationProcessor(
                 baseDirectory,

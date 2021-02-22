@@ -12,7 +12,6 @@ import org.nd4j.linalg.cpu.nativecpu.NDArray
 import java.io.File
 import java.math.BigInteger
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.math.log
 import kotlin.math.round
 import kotlin.random.Random
 
@@ -24,7 +23,7 @@ private const val SIZE_RECENT_OTHER_MODELS = 20
 class Node(
     private val nodeIndex: Int,
     testConfig: MLConfiguration,
-    private val generateNetwork: (architecture: (nnConfiguration: NNConfiguration, seed: Int) -> MultiLayerConfiguration, nnConfiguration: NNConfiguration, seed: Int) -> MultiLayerNetwork,
+    private val generateNetwork: (architecture: (nnConfiguration: NNConfiguration, seed: Int, mode: NNConfigurationMode) -> MultiLayerConfiguration, nnConfiguration: NNConfiguration, seed: Int, mode: NNConfigurationMode) -> MultiLayerNetwork,
     getDataSetIterators: (inst: (iteratorConfiguration: DatasetIteratorConfiguration, seed: Long, dataSetType: CustomDataSetType, baseDirectory: File, behavior: Behaviors, transfer: Boolean) -> CustomDataSetIterator, datasetIteratorConfiguration: DatasetIteratorConfiguration, seed: Long, baseDirectory: File, behavior: Behaviors) -> List<CustomDataSetIterator>,
     baseDirectory: File,
     private val evaluationProcessor: EvaluationProcessor,
@@ -92,9 +91,9 @@ class Node(
         numAttackers = modelPoisoningConfiguration.numAttackers
 
         network = if (fromTransfer) {
-            loadFromTransferNetwork(File(baseDirectory, "transfer-${dataset.id}"), dataset.architectureFrozen)
+            loadFromTransferNetwork(File(baseDirectory, "transfer-${dataset.id}"), dataset.architecture)
         } else {
-            generateNetwork(dataset.architecture, testConfig.nnConfiguration, nodeIndex)
+            generateNetwork(dataset.architecture, testConfig.nnConfiguration, nodeIndex, NNConfigurationMode.REGULAR)
         }
         network.outputLayer.params().muli(0)
         if (gar == GARs.BRISTLE) {
@@ -118,9 +117,9 @@ class Node(
         logging = nodeIndex == 0 || !ONLY_EVALUATE_FIRST_NODE
     }
 
-    private fun loadFromTransferNetwork(transferFile: File, generateFrozenArchitecture: (nnConfiguration: NNConfiguration, seed: Int) -> MultiLayerConfiguration): MultiLayerNetwork {
+    private fun loadFromTransferNetwork(transferFile: File, generateArchitecture: (nnConfiguration: NNConfiguration, seed: Int, mode: NNConfigurationMode) -> MultiLayerConfiguration): MultiLayerNetwork {
         val transferNetwork = ModelSerializer.restoreMultiLayerNetwork(transferFile)
-        val frozenNetwork = generateNetwork(generateFrozenArchitecture, nnConfiguration, nodeIndex)
+        val frozenNetwork = generateNetwork(generateArchitecture, nnConfiguration, nodeIndex, NNConfigurationMode.FROZEN)
         for ((k, v) in transferNetwork.paramTable()) {
             if (k.split("_")[0].toInt() < transferNetwork.layers.size - 1) {
                 frozenNetwork.setParam(k, v.dup())

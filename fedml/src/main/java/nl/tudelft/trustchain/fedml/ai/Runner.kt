@@ -7,6 +7,7 @@ import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.BatchSizes
 import nl.tudelft.trustchain.fedml.Behaviors
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
+import nl.tudelft.trustchain.fedml.ai.dataset.cifar.CustomCifar10Fetcher
 import nl.tudelft.trustchain.fedml.ai.dataset.har.HARDataFetcher
 import org.datavec.image.loader.CifarLoader
 import org.deeplearning4j.nn.api.OptimizationAlgorithm
@@ -30,10 +31,39 @@ private val logger = KotlinLogging.logger("Runner")
 
 private const val TEST_SET_SIZE = 10
 
+enum class NNConfigurationMode {
+    REGULAR, TRANSFER, FROZEN
+}
+
 fun generateDefaultMNISTConfiguration(
     nnConfiguration: NNConfiguration,
     seed: Int,
+    mode: NNConfigurationMode,
 ): MultiLayerConfiguration {
+    val numClasses = if (mode == NNConfigurationMode.TRANSFER) 26 else 10
+    val layers = arrayOf<Layer>(
+        ConvolutionLayer
+            .Builder(intArrayOf(5, 5), intArrayOf(1, 1))
+            .nOut(10)
+            .build(),
+        SubsamplingLayer
+            .Builder(SubsamplingLayer.PoolingType.MAX, intArrayOf(2, 2), intArrayOf(2, 2))
+            .build(),
+        ConvolutionLayer
+            .Builder(intArrayOf(5, 5), intArrayOf(1, 1))
+            .nOut(50)
+            .build(),
+        SubsamplingLayer
+            .Builder(SubsamplingLayer.PoolingType.MAX, intArrayOf(2, 2), intArrayOf(2, 2))
+            .build(),
+        OutputLayer
+            .Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
+            .nOut(numClasses)
+            .activation(Activation.SOFTMAX)
+            .weightInit(WeightInit.XAVIER)
+            .hasBias(false)
+            .build()
+    )
     return NeuralNetConfiguration.Builder()
         .seed(seed.toLong())
         .activation(Activation.LEAKYRELU)
@@ -42,140 +72,34 @@ fun generateDefaultMNISTConfiguration(
         .updater(nnConfiguration.optimizer.inst(nnConfiguration.learningRate))
         .list()
         .layer(
-            ConvolutionLayer
-                .Builder(intArrayOf(5, 5), intArrayOf(1, 1))
-                .nOut(10)
-                .build()
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[0]).build()
+            } else {
+                layers[0]
+            }
         )
         .layer(
-            SubsamplingLayer
-                .Builder(SubsamplingLayer.PoolingType.MAX, intArrayOf(2, 2), intArrayOf(2, 2))
-                .build()
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[1]).build()
+            } else {
+                layers[1]
+            }
         )
         .layer(
-            ConvolutionLayer
-                .Builder(intArrayOf(5, 5), intArrayOf(1, 1))
-                .nOut(50)
-                .build()
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[2]).build()
+            } else {
+                layers[2]
+            }
         )
         .layer(
-            SubsamplingLayer
-                .Builder(SubsamplingLayer.PoolingType.MAX, intArrayOf(2, 2), intArrayOf(2, 2))
-                .build()
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[3]).build()
+            } else {
+                layers[3]
+            }
         )
-        .layer(
-            OutputLayer
-                .Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
-                .nOut(10)
-                .activation(Activation.SOFTMAX)
-                .weightInit(WeightInit.XAVIER)
-                .hasBias(false)
-                .build()
-        )
-        .setInputType(InputType.convolutionalFlat(28, 28, 1))
-        .build()
-}
-
-fun generateDefaultMNISTConfigurationTransfer(
-    nnConfiguration: NNConfiguration,
-    seed: Int,
-): MultiLayerConfiguration {
-    return NeuralNetConfiguration.Builder()
-        .seed(seed.toLong())
-        .activation(Activation.LEAKYRELU)
-        .weightInit(WeightInit.RELU)
-        .l2(nnConfiguration.l2.value)
-        .updater(nnConfiguration.optimizer.inst(nnConfiguration.learningRate))
-        .list()
-        .layer(
-            ConvolutionLayer
-                .Builder(intArrayOf(5, 5), intArrayOf(1, 1))
-                .nOut(10)
-                .build()
-        )
-        .layer(
-            SubsamplingLayer
-                .Builder(SubsamplingLayer.PoolingType.MAX, intArrayOf(2, 2), intArrayOf(2, 2))
-                .build()
-        )
-        .layer(
-            ConvolutionLayer
-                .Builder(intArrayOf(5, 5), intArrayOf(1, 1))
-                .nOut(50)
-                .build()
-        )
-        .layer(
-            SubsamplingLayer
-                .Builder(SubsamplingLayer.PoolingType.MAX, intArrayOf(2, 2), intArrayOf(2, 2))
-                .build()
-        )
-        .layer(
-            OutputLayer
-                .Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
-                .nOut(26)
-                .activation(Activation.SOFTMAX)
-                .weightInit(WeightInit.XAVIER)
-                .hasBias(false)
-                .build()
-        )
-        .setInputType(InputType.convolutionalFlat(28, 28, 1))
-        .build()
-}
-
-fun generateDefaultMNISTConfigurationFrozen(
-    nnConfiguration: NNConfiguration,
-    seed: Int
-): MultiLayerConfiguration {
-    return NeuralNetConfiguration.Builder()
-        .seed(seed.toLong())
-        .activation(Activation.LEAKYRELU)
-        .weightInit(WeightInit.RELU)
-        .l2(nnConfiguration.l2.value)
-        .updater(nnConfiguration.optimizer.inst(nnConfiguration.learningRate))
-        .list()
-        .layer(
-            FrozenLayer.Builder().layer(
-                ConvolutionLayer.Builder(5, 5)
-//                .nIn(1)
-                    .stride(1, 1)
-                    .nOut(10)
-                    .activation(Activation.IDENTITY)
-                    .build()
-            ).build()
-        )
-        .layer(
-            FrozenLayer.Builder().layer(
-                SubsamplingLayer.Builder(SubsamplingLayer.PoolingType.MAX)
-                    .kernelSize(2, 2)
-                    .stride(2, 2)
-                    .build()
-            ).build()
-        )
-        .layer(
-            FrozenLayer.Builder().layer(
-                ConvolutionLayer.Builder(5, 5)
-                    .stride(1, 1)
-                    .nOut(50)
-                    .activation(Activation.IDENTITY)
-                    .build()
-            ).build()
-        )
-        .layer(
-            FrozenLayer.Builder().layer(
-                SubsamplingLayer.Builder(SubsamplingLayer.PoolingType.MAX)
-                    .kernelSize(2, 2)
-                    .stride(2, 2)
-                    .build()
-            ).build()
-        )
-        .layer(
-            OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
-                .nOut(10)
-                .activation(Activation.SOFTMAX)
-                .weightInit(WeightInit.XAVIER)
-                .hasBias(false)
-                .build()
-        )
+        .layer(layers[4])
         .setInputType(InputType.convolutionalFlat(28, 28, 1))
         .build()
 }
@@ -183,11 +107,42 @@ fun generateDefaultMNISTConfigurationFrozen(
 fun generateDefaultCIFARConfiguration(
     nnConfiguration: NNConfiguration,
     seed: Int,
+    mode: NNConfigurationMode,
 ): MultiLayerConfiguration {
     val width = CifarLoader.WIDTH
     val height = CifarLoader.HEIGHT
     val channels = CifarLoader.CHANNELS
-    val numLabels = CifarLoader.NUM_LABELS
+    val numClasses = if (mode == NNConfigurationMode.TRANSFER) CustomCifar10Fetcher.NUM_LABELS_TRANSFER else CifarLoader.NUM_LABELS
+    val layers = arrayOf<Layer>(
+        ConvolutionLayer
+            .Builder(intArrayOf(3, 3), intArrayOf(1, 1), intArrayOf(1, 1))
+            .nIn(CifarLoader.CHANNELS)
+            .nOut(32)
+            .build(),
+        SubsamplingLayer
+            .Builder(intArrayOf(2, 2), intArrayOf(2, 2))
+            .poolingType(SubsamplingLayer.PoolingType.MAX)
+            .build(),
+        ConvolutionLayer
+            .Builder(intArrayOf(1, 1), intArrayOf(1, 1), intArrayOf(1, 1))
+            .nOut(16)
+            .build(),
+        SubsamplingLayer
+            .Builder(intArrayOf(3, 3), intArrayOf(1, 1), intArrayOf(1, 1))
+            .poolingType(SubsamplingLayer.PoolingType.MAX)
+            .build(),
+        SubsamplingLayer
+            .Builder(intArrayOf(2, 2), intArrayOf(2, 2))
+            .poolingType(SubsamplingLayer.PoolingType.MAX)
+            .build(),
+        OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
+            .name("output")
+            .dropOut(0.8)
+            .nOut(numClasses)
+            .activation(Activation.SOFTMAX)
+            .weightInit(WeightInit.XAVIER)
+            .build()
+    )
     return NeuralNetConfiguration.Builder()
         .seed(seed.toLong())
         .activation(Activation.LEAKYRELU)
@@ -196,50 +151,44 @@ fun generateDefaultCIFARConfiguration(
         .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
         .list()
         .layer(
-            ConvolutionLayer
-                .Builder(intArrayOf(3, 3), intArrayOf(1, 1), intArrayOf(1, 1))
-                .nIn(CifarLoader.CHANNELS)
-                .nOut(32)
-                .build()
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[0]).build()
+            } else {
+                layers[0]
+            }
         )
         .layer(BatchNormalization())
         .layer(
-            SubsamplingLayer
-                .Builder(intArrayOf(2, 2), intArrayOf(2, 2))
-                .poolingType(SubsamplingLayer.PoolingType.MAX)
-                .build()
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[1]).build()
+            } else {
+                layers[1]
+            }
         )
-
         .layer(
-            ConvolutionLayer
-                .Builder(intArrayOf(1, 1), intArrayOf(1, 1), intArrayOf(1, 1))
-                .nOut(16)
-                .build()
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[2]).build()
+            } else {
+                layers[2]
+            }
         )
         .layer(BatchNormalization())
         .layer(
-            SubsamplingLayer
-                .Builder(intArrayOf(3, 3), intArrayOf(1, 1), intArrayOf(1, 1))
-                .poolingType(SubsamplingLayer.PoolingType.MAX)
-                .build()
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[3]).build()
+            } else {
+                layers[3]
+            }
         )
         .layer(BatchNormalization())
         .layer(
-            SubsamplingLayer
-                .Builder(intArrayOf(2, 2), intArrayOf(2, 2))
-                .poolingType(SubsamplingLayer.PoolingType.MAX)
-                .build()
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[4]).build()
+            } else {
+                layers[4]
+            }
         )
-
-        .layer(
-            OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
-                .name("output")
-                .dropOut(0.8)
-                .nOut(numLabels)
-                .activation(Activation.SOFTMAX)
-                .weightInit(WeightInit.XAVIER)
-                .build()
-        )
+        .layer(layers[5])
         .setInputType(InputType.convolutional(height.toLong(), width.toLong(), channels.toLong()))
         .build()
 }
@@ -247,7 +196,32 @@ fun generateDefaultCIFARConfiguration(
 fun generateDefaultHARConfiguration(
     nnConfiguration: NNConfiguration,
     seed: Int,
+    mode: NNConfigurationMode,
 ): MultiLayerConfiguration {
+    val numClasses = if (mode == NNConfigurationMode.TRANSFER) HARDataFetcher.NUM_LABELS else HARDataFetcher.NUM_LABELS
+    val layers = arrayOf<Layer>(
+        Convolution1DLayer
+            .Builder(3)
+            .nIn(128)
+            .nOut(64)
+            .build(),
+        Subsampling1DLayer
+            .Builder(SubsamplingLayer.PoolingType.MAX, 2, 2)
+            .build(),
+        Convolution1DLayer
+            .Builder(3)
+            .nOut(64)
+            .build(),
+        GlobalPoolingLayer
+            .Builder(PoolingType.MAX)
+            .build(),
+        OutputLayer
+            .Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
+            .nOut(HARDataFetcher.NUM_LABELS)
+            .activation(Activation.SOFTMAX)
+            .weightInit(WeightInit.XAVIER)
+            .build(),
+    )
     return NeuralNetConfiguration.Builder()
         .seed(seed.toLong())
         .l2(nnConfiguration.l2.value)
@@ -256,90 +230,34 @@ fun generateDefaultHARConfiguration(
         .updater(nnConfiguration.optimizer.inst(nnConfiguration.learningRate))
         .list()
         .layer(
-            Convolution1DLayer
-                .Builder(3)
-                .nIn(128)
-                .nOut(64)
-                .build()
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[0]).build()
+            } else {
+                layers[0]
+            }
         )
         .layer(
-            Subsampling1DLayer
-                .Builder(SubsamplingLayer.PoolingType.MAX, 2, 2)
-                .build()
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[1]).build()
+            } else {
+                layers[1]
+            }
         )
         .layer(
-            Convolution1DLayer
-                .Builder(3)
-                .nOut(64)
-                .build()
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[2]).build()
+            } else {
+                layers[2]
+            }
         )
         .layer(
-            GlobalPoolingLayer
-                .Builder(PoolingType.MAX)
-                .build()
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[3]).build()
+            } else {
+                layers[3]
+            }
         )
-        .layer(
-            OutputLayer
-                .Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
-                .nOut(HARDataFetcher.NUM_LABELS)
-                .activation(Activation.SOFTMAX)
-                .weightInit(WeightInit.XAVIER)
-                .build()
-        )
-        .setInputType(InputType.recurrent(9, 128))
-        .build()
-}
-
-fun generateDefaultHARConfigurationFrozen(
-    nnConfiguration: NNConfiguration,
-    seed: Int
-): MultiLayerConfiguration {
-    return NeuralNetConfiguration.Builder()
-        .seed(seed.toLong())
-        .l2(nnConfiguration.l2.value)
-        .activation(Activation.LEAKYRELU)
-        .weightInit(WeightInit.RELU)
-        .updater(nnConfiguration.optimizer.inst(nnConfiguration.learningRate))
-        .list()
-        .layer(
-            FrozenLayer.Builder().layer(
-                Convolution1DLayer
-                    .Builder(3)
-                    .nIn(128)
-                    .nOut(64)
-                    .build()
-            ).build()
-        )
-        .layer(
-            FrozenLayer.Builder().layer(
-                Subsampling1DLayer
-                    .Builder(SubsamplingLayer.PoolingType.MAX, 2, 2)
-                    .build()
-            ).build()
-        )
-        .layer(
-            FrozenLayer.Builder().layer(
-                Convolution1DLayer
-                    .Builder(3)
-                    .nOut(64)
-                    .build()
-            ).build()
-        )
-        .layer(
-            FrozenLayer.Builder().layer(
-                GlobalPoolingLayer
-                    .Builder(PoolingType.MAX)
-                    .build()
-            ).build()
-        )
-        .layer(
-            OutputLayer
-                .Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
-                .nOut(HARDataFetcher.NUM_LABELS)
-                .activation(Activation.SOFTMAX)
-                .weightInit(WeightInit.XAVIER)
-                .build()
-        )
+        .layer(layers[4])
         .setInputType(InputType.recurrent(9, 128))
         .build()
 }
@@ -350,11 +268,12 @@ abstract class Runner {
     protected val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
     fun generateNetwork(
-        architecture: (nnConfiguration: NNConfiguration, seed: Int) -> MultiLayerConfiguration,
+        architecture: (nnConfiguration: NNConfiguration, seed: Int, mode: NNConfigurationMode) -> MultiLayerConfiguration,
         nnConfiguration: NNConfiguration,
         seed: Int,
+        mode: NNConfigurationMode,
     ): MultiLayerNetwork {
-        val network = MultiLayerNetwork(architecture(nnConfiguration, seed))
+        val network = MultiLayerNetwork(architecture(nnConfiguration, seed, mode))
         network.init()
         return network
     }

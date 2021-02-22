@@ -5,7 +5,6 @@ import nl.tudelft.trustchain.fedml.Behaviors
 import nl.tudelft.trustchain.fedml.ai.CustomDataSetType
 import nl.tudelft.trustchain.fedml.ai.DatasetIteratorConfiguration
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
-import org.nd4j.linalg.dataset.DataSet
 import java.io.File
 
 private val logger = KotlinLogging.logger("CustomCifar10DataSetIterator")
@@ -24,10 +23,11 @@ class CustomCifar10DataSetIterator(
         null,
         iteratorConfiguration.distribution.toIntArray(),
         if (dataSetType == CustomDataSetType.TEST || dataSetType == CustomDataSetType.FULL_TEST) iteratorConfiguration.maxTestSamples.value else Integer.MAX_VALUE,
+        transfer,
     ),
     iteratorConfiguration.batchSize.value,
     1,
-    CustomCifar10Fetcher.NUM_LABELS
+    if (transfer) CustomCifar10Fetcher.NUM_LABELS_TRANSFER else CustomCifar10Fetcher.NUM_LABELS_REGULAR
 ), CustomDataSetIterator {
     override val testBatches by lazy { recordReader.testBatches!! }
 
