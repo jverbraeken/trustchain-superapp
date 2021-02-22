@@ -90,7 +90,7 @@ class CustomCifar10Fetcher {
         val train = (set == CustomDataSetType.TRAIN)
         val datasetPath = if (train) File(localCache, "/train/") else File(localCache, "/test/")
         val random = kotlin.random.Random(rngSeed)
-        val maxElementsPerLabel = if (transfer) (0 until NUM_LABELS_TRANSFER).map { if (train) NUM_TRAINING_SAMPLES_PER_LABEL_TRANSFER else NUM_TESTING_SAMPLES_PER_LABEL_TRANSFER }.toIntArray() else iteratorDistribution.map { min(maxSamples, it) }.toIntArray()
+        val maxElementsPerLabel = if (transfer) (0 until NUM_LABELS_TRANSFER).map { if (train) NUM_TRAINING_SAMPLES_PER_LABEL_TRANSFER else 10 }.toIntArray() else iteratorDistribution.map { min(maxSamples, it) }.toIntArray()
         val numSamplesPerLabel = if (train) {
             if (transfer) NUM_TRAINING_SAMPLES_PER_LABEL_TRANSFER else NUM_TRAINING_SAMPLES_PER_LABEL_REGULAR
         } else {

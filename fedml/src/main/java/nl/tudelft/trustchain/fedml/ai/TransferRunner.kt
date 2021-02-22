@@ -11,7 +11,7 @@ import kotlin.math.min
 
 
 private val logger = KotlinLogging.logger("TransferRunner")
-private const val ITERATIONS_BEFORE_EVALUATION = 1000
+private const val ITERATIONS_BEFORE_EVALUATION = 100
 
 class TransferRunner : Runner() {
     override fun run(
@@ -98,10 +98,6 @@ class TransferRunner : Runner() {
                             true
                         )
                     }
-                }
-
-                if (epoch >= 2) {
-                    break@epochLoop
                 }
             }
             logger.debug { "Done training the network" }

@@ -114,33 +114,28 @@ fun generateDefaultCIFARConfiguration(
     val channels = CifarLoader.CHANNELS
     val numClasses = if (mode == NNConfigurationMode.TRANSFER) CustomCifar10Fetcher.NUM_LABELS_TRANSFER else CifarLoader.NUM_LABELS
     val layers = arrayOf<Layer>(
-        ConvolutionLayer
-            .Builder(intArrayOf(3, 3), intArrayOf(1, 1), intArrayOf(1, 1))
-            .nIn(CifarLoader.CHANNELS)
-            .nOut(32)
-            .build(),
-        SubsamplingLayer
-            .Builder(intArrayOf(2, 2), intArrayOf(2, 2))
-            .poolingType(SubsamplingLayer.PoolingType.MAX)
-            .build(),
-        ConvolutionLayer
-            .Builder(intArrayOf(1, 1), intArrayOf(1, 1), intArrayOf(1, 1))
-            .nOut(16)
-            .build(),
-        SubsamplingLayer
-            .Builder(intArrayOf(3, 3), intArrayOf(1, 1), intArrayOf(1, 1))
-            .poolingType(SubsamplingLayer.PoolingType.MAX)
-            .build(),
-        SubsamplingLayer
-            .Builder(intArrayOf(2, 2), intArrayOf(2, 2))
-            .poolingType(SubsamplingLayer.PoolingType.MAX)
-            .build(),
+        ConvolutionLayer.Builder().kernelSize(3,3).stride(1,1).padding(1,1).activation(Activation.LEAKYRELU)
+            .nIn(channels).nOut(32).build(),
+        SubsamplingLayer.Builder().kernelSize(2,2).stride(2,2).poolingType(SubsamplingLayer.PoolingType.MAX).build(),
+        ConvolutionLayer.Builder().kernelSize(1,1).stride(1,1).padding(1,1).activation(Activation.LEAKYRELU)
+            .nOut(16).build(),
+        ConvolutionLayer.Builder().kernelSize(3,3).stride(1,1).padding(1,1).activation(Activation.LEAKYRELU)
+            .nOut(64).build(),
+        SubsamplingLayer.Builder().kernelSize(2,2).stride(2,2).poolingType(SubsamplingLayer.PoolingType.MAX).build(),
+        ConvolutionLayer.Builder().kernelSize(1,1).stride(1,1).padding(1,1).activation(Activation.LEAKYRELU)
+            .nOut(32).build(),
+        ConvolutionLayer.Builder().kernelSize(3,3).stride(1,1).padding(1,1).activation(Activation.LEAKYRELU)
+            .nOut(128).build(),
+        ConvolutionLayer.Builder().kernelSize(1,1).stride(1,1).padding(1,1).activation(Activation.LEAKYRELU)
+            .nOut(64).build(),
+        ConvolutionLayer.Builder().kernelSize(1,1).stride(1,1).padding(1,1).activation(Activation.LEAKYRELU)
+            .nOut(numClasses).build(),
+        SubsamplingLayer.Builder().kernelSize(2,2).stride(2,2).poolingType(SubsamplingLayer.PoolingType.AVG).build(),
         OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
             .name("output")
-            .dropOut(0.8)
             .nOut(numClasses)
+            .dropOut(0.8)
             .activation(Activation.SOFTMAX)
-            .weightInit(WeightInit.XAVIER)
             .build()
     )
     return NeuralNetConfiguration.Builder()
@@ -165,6 +160,7 @@ fun generateDefaultCIFARConfiguration(
                 layers[1]
             }
         )
+
         .layer(
             if (mode == NNConfigurationMode.FROZEN) {
                 FrozenLayer.Builder().layer(layers[2]).build()
@@ -188,7 +184,49 @@ fun generateDefaultCIFARConfiguration(
                 layers[4]
             }
         )
-        .layer(layers[5])
+
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[5]).build()
+            } else {
+                layers[5]
+            }
+        )
+        .layer(BatchNormalization())
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[6]).build()
+            } else {
+                layers[6]
+            }
+        )
+        .layer(BatchNormalization())
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[7]).build()
+            } else {
+                layers[7]
+            }
+        )
+        .layer(BatchNormalization())
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[8]).build()
+            } else {
+                layers[8]
+            }
+        )
+        .layer(BatchNormalization())
+
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[9]).build()
+            } else {
+                layers[9]
+            }
+        )
+
+        .layer(layers[10])
         .setInputType(InputType.convolutional(height.toLong(), width.toLong(), channels.toLong()))
         .build()
 }
