@@ -5,6 +5,7 @@ import nl.tudelft.trustchain.fedml.Behaviors
 import nl.tudelft.trustchain.fedml.ai.CustomDataSetType
 import nl.tudelft.trustchain.fedml.ai.DatasetIteratorConfiguration
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
+import org.nd4j.linalg.dataset.api.preprocessor.ImagePreProcessingScaler
 import java.io.File
 
 private val logger = KotlinLogging.logger("CustomCifar10DataSetIterator")
@@ -44,7 +45,9 @@ class CustomCifar10DataSetIterator(
             behavior: Behaviors,
             transfer: Boolean,
         ): CustomCifar10DataSetIterator {
-            return CustomCifar10DataSetIterator(iteratorConfiguration, seed, dataSetType, behavior, transfer)
+            val iterator = CustomCifar10DataSetIterator(iteratorConfiguration, seed, dataSetType, behavior, transfer)
+            iterator.setPreProcessor(ImagePreProcessingScaler(0.0, 1.0))
+            return iterator
         }
     }
 }

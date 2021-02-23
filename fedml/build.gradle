@@ -87,22 +87,10 @@ dependencies {
     implementation (group: "org.nd4j", name: "nd4j-native", version: dl4j_version) {
         exclude group: "net.java.dev.jna", module: "jna"
     }
-//    implementation (group: "org.nd4j", name: "nd4j-native", version: dl4jVersion, classifier: "android-arm") {
-//        exclude group: "net.java.dev.jna", module: "jna"
-//    }
-    implementation (group: "org.nd4j", name: "nd4j-native", version: dl4j_version, classifier: "android-arm64") {
-        exclude group: "net.java.dev.jna", module: "jna"
-    }
-//    implementation (group: "org.nd4j", name: "nd4j-native", version: dl4jVersion, classifier: "android-x86") {
-//        exclude group: "net.java.dev.jna", module: "jna"
-//    }
     implementation (group: "org.nd4j", name: "nd4j-native", version: dl4j_version, classifier: "android-x86_64") {
         exclude group: "net.java.dev.jna", module: "jna"
     }
     implementation group: "org.bytedeco", name: "openblas", version: openblas_version
-//    implementation group: "org.bytedeco", name: "openblas", version: openblasVersion, classifier: "android-arm"
-    implementation group: "org.bytedeco", name: "openblas", version: openblas_version, classifier: "android-arm64"
-//    implementation group: "org.bytedeco", name: "openblas", version: openblasVersion, classifier: "android-x86"
     implementation group: "org.bytedeco", name: "openblas", version: openblas_version, classifier: "android-x86_64"
     implementation "org.bytedeco:opencv:$opencv_version"
     implementation "org.bytedeco:leptonica:$leptonica_version"

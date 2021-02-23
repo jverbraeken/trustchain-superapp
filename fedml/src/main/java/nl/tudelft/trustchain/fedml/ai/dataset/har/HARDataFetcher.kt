@@ -83,7 +83,6 @@ class HARDataFetcher(
         totalExamples = man.getNumSamples()
         numOutcomes = NUM_LABELS
         cursor = 0
-        inputColumns = NUM_ATTRIBUTES
         order = IntArray(totalExamples)
         for (i in order.indices) {
             order[i] = i
@@ -144,7 +143,6 @@ class HARDataFetcher(
     }
 
     companion object {
-        const val NUM_ATTRIBUTES = 561
         const val NUM_DIMENSIONS = 9
         const val NUM_TIMESTEPS = 128
         const val NUM_LABELS = 6
