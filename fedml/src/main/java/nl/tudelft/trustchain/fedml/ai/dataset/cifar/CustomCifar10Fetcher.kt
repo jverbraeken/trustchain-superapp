@@ -159,20 +159,20 @@ class CustomCifar10Fetcher {
     }
 
     companion object {
-        private const val LOCAL_CACHE_NAME_REGULAR = "cifar10"
-        private const val LOCAL_CACHE_NAME_TRANSFER = "cifar100"
-        private const val REMOTE_DATA_URL_REGULAR = "https://api.onedrive.com/v1.0/shares/s!AvNMRY4ml2WPgZpmYiFDOhNyFgakRQ/root/content"
-        private const val REMOTE_DATA_URL_TRANSFER = "https://api.onedrive.com/v1.0/shares/s!AvNMRY4ml2WPgaA98zlT5itmCF0s8w/root/content"
-        private const val LOCAL_FILE_NAME_REGULAR = "cifar10_dl4j.v1.zip"
-        private const val LOCAL_FILE_NAME_TRANSFER = "cifar100_dl4j.v1.zip"
+        private const val LOCAL_CACHE_NAME_TRANSFER = "cifar10"
+        private const val LOCAL_CACHE_NAME_REGULAR = "cifar100"
+        private const val REMOTE_DATA_URL_TRANSFER = "https://api.onedrive.com/v1.0/shares/s!AvNMRY4ml2WPgZpmYiFDOhNyFgakRQ/root/content"
+        private const val REMOTE_DATA_URL_REGULAR = "https://api.onedrive.com/v1.0/shares/s!AvNMRY4ml2WPgaA98zlT5itmCF0s8w/root/content"
+        private const val LOCAL_FILE_NAME_TRANSFER = "cifar10_dl4j.v1.zip"
+        private const val LOCAL_FILE_NAME_REGULAR = "cifar100_dl4j.v1.zip"
         const val INPUT_WIDTH = 32
         const val INPUT_HEIGHT = 32
         const val INPUT_CHANNELS = 3
-        const val NUM_LABELS_REGULAR = 10
-        const val NUM_LABELS_TRANSFER = 100
-        const val NUM_TRAINING_SAMPLES_PER_LABEL_REGULAR = 5000
-        const val NUM_TRAINING_SAMPLES_PER_LABEL_TRANSFER = 500
-        const val NUM_TESTING_SAMPLES_PER_LABEL_REGULAR = 1000
-        const val NUM_TESTING_SAMPLES_PER_LABEL_TRANSFER = 100
+        const val NUM_LABELS_TRANSFER = 10
+        const val NUM_LABELS_REGULAR = 100
+        const val NUM_TRAINING_SAMPLES_PER_LABEL_TRANSFER = 5000
+        const val NUM_TRAINING_SAMPLES_PER_LABEL_REGULAR = 500
+        const val NUM_TESTING_SAMPLES_PER_LABEL_TRANSFER = 1000
+        const val NUM_TESTING_SAMPLES_PER_LABEL_REGULAR = 100
     }
 }
