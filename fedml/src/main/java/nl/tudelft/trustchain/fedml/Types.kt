@@ -111,6 +111,7 @@ fun loadDataset(dataset: String?) = Datasets.values().firstOrNull { it.id == dat
 enum class BatchSizes(val id: String, val text: String, val value: Int) {
     BATCH_1("batch_1", "1", 1),
     BATCH_5("batch_5", "5", 5),
+    BATCH_16("batch_16", "16", 16),
     BATCH_32("batch_32", "32", 32),
     BATCH_64("batch_64", "64", 64),
     BATCH_96("batch_96", "96", 96),

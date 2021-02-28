@@ -95,17 +95,17 @@ class MobiActDataFetcher(
             activityToSamples = elements
                 .groupBy { it.first }
                 .map { (label, samples) ->
-                    Pair(label, samples.groupBy { it.second }.map { it.value.map { it.third }.toTypedArray() })
+                    Pair(label, samples.groupBy { it.second }.map { it.value.subList(0, 50).map { it.third }.toTypedArray() })
                 }
             val allSamples = activityToSamples!!
                 .map { (label, samplesPerHuman) ->
                     samplesPerHuman.map { Pair(label, it) }
                 }
                 .flatten()
-                .map { (label, data) ->
+                /*.map { (label, data) ->
                     val newData = data.copyOf(500).map { it ?: doubleArrayOf(0.0, 0.0, 0.0) }.toTypedArray()
                     Pair(label, newData)
-                }
+                }*/
                 .shuffled()
             logger.debug { "4" }
 

@@ -328,7 +328,7 @@ fun generateDefaultMobiActConfiguration(
     val numClasses = if (mode == NNConfigurationMode.TRANSFER) 6 else -1
     val layers = arrayOf<Layer>(
         Convolution1DLayer
-            .Builder(7, 1, 1)
+            .Builder(5, 1, 1)
             .nIn(3)
             .nOut(64)
             .build(),
@@ -336,14 +336,14 @@ fun generateDefaultMobiActConfiguration(
             .Builder(SubsamplingLayer.PoolingType.MAX, 2, 2)
             .build(),
         Convolution1DLayer
-            .Builder(7)
+            .Builder(3, 1, 2)
             .nOut(128)
             .build(),
         Subsampling1DLayer
             .Builder(SubsamplingLayer.PoolingType.MAX, 2, 2)
             .build(),
         Convolution1DLayer
-            .Builder(7)
+            .Builder(3, 1, 1)
             .nOut(256)
             .build(),
         GlobalPoolingLayer
