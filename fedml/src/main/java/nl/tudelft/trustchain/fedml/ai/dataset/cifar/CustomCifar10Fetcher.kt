@@ -64,7 +64,7 @@ class CustomCifar10Fetcher {
     fun getRecordReader(
         rngSeed: Long,
         imgDim: IntArray?,
-        set: CustomDataSetType,
+        dataSetType: CustomDataSetType,
         imageTransform: ImageTransform?,
         iteratorDistribution: IntArray,
         maxSamples: Int,
@@ -87,7 +87,7 @@ class CustomCifar10Fetcher {
             throw RuntimeException("Could not download CIFAR-10", e)
         }
 
-        val train = (set == CustomDataSetType.TRAIN)
+        val train = (dataSetType == CustomDataSetType.TRAIN)
         val datasetPath = if (train) File(localCache, "/train/") else File(localCache, "/test/")
         val random = kotlin.random.Random(rngSeed)
         val maxElementsPerLabel = if (transfer) (0 until NUM_LABELS_TRANSFER).map { if (train) NUM_TRAINING_SAMPLES_PER_LABEL_TRANSFER else 10 }.toIntArray() else iteratorDistribution.map { min(maxSamples, it) }.toIntArray()
@@ -105,7 +105,7 @@ class CustomCifar10Fetcher {
         val h = imgDim?.get(0) ?: INPUT_HEIGHT
         val w = imgDim?.get(1) ?: INPUT_WIDTH
         val labels = (0 until if (transfer) NUM_LABELS_TRANSFER else NUM_LABELS_REGULAR).map { it.toString() }.toTypedArray()
-        val testBatches = if (set == CustomDataSetType.FULL_TEST) {
+        val testBatches = if (dataSetType == CustomDataSetType.FULL_TEST) {
             createTestBatches(
                 h.toLong(),
                 w.toLong(),
@@ -125,6 +125,7 @@ class CustomCifar10Fetcher {
             false,
             testBatches,
             labels,
+            dataSetType
         )
     }
 
@@ -148,7 +149,8 @@ class CustomCifar10Fetcher {
                         it,
                         true,
                         null,
-                        labels
+                        labels,
+                        CustomDataSetType.TEST
                     ),
                     20,
                     1,

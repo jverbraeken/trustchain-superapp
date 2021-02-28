@@ -113,7 +113,7 @@ fun generateDefaultCIFARConfiguration(
     val width = CifarLoader.WIDTH
     val height = CifarLoader.HEIGHT
     val channels = CifarLoader.CHANNELS
-    val numClasses = if (mode == NNConfigurationMode.TRANSFER) CustomCifar10Fetcher.NUM_LABELS_TRANSFER else CifarLoader.NUM_LABELS
+    val numClasses = if (mode == NNConfigurationMode.TRANSFER) CustomCifar10Fetcher.NUM_LABELS_TRANSFER else CustomCifar10Fetcher.NUM_LABELS_REGULAR
     val layers = arrayOf<Layer>(
 
         ConvolutionLayer.Builder().kernelSize(3,3).stride(1,1).padding(1,1).activation(Activation.LEAKYRELU)
@@ -145,6 +145,7 @@ fun generateDefaultCIFARConfiguration(
             .name("output")
             .nOut(numClasses)
             .activation(Activation.SOFTMAX)
+            .hasBias(false)
             .build()
     )
     return NeuralNetConfiguration.Builder()

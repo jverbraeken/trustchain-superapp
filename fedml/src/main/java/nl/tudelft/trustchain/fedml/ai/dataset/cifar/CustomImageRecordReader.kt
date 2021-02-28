@@ -1,6 +1,7 @@
 package nl.tudelft.trustchain.fedml.ai.dataset.cifar
 
 import mu.KotlinLogging
+import nl.tudelft.trustchain.fedml.ai.CustomDataSetType
 import org.datavec.api.conf.Configuration
 import org.datavec.api.records.Record
 import org.datavec.api.records.metadata.RecordMetaData
@@ -37,7 +38,8 @@ class CustomImageRecordReader(
     private val files: Array<File>,
     private val alwaysReturningSameResult: Boolean = false,
     val testBatches: Array<DataSet?>?,
-    private val labels: Array<String>
+    private val labels: Array<String>,
+    val dataSetType: CustomDataSetType,
 ) : BaseRecordReader() {
     private var iter: Iterator<File>
     private var currentFile: File? = null
@@ -45,6 +47,7 @@ class CustomImageRecordReader(
     private lateinit var conf: Configuration
     private var sameResultToReturn: List<List<Writable?>?>? = null
     private var alwaysReturningSameResultDone = false
+    private var stopIterator = false
 
     init {
         if (imageLoader == null) {
@@ -84,7 +87,7 @@ class CustomImageRecordReader(
 
     override fun hasNext(): Boolean {
         return if (alwaysReturningSameResultDone) false
-        else iter.hasNext()
+        else return if (stopIterator) false else iter.hasNext()
     }
 
     override fun getLabels(): List<String> {
@@ -141,6 +144,14 @@ class CustomImageRecordReader(
         ret.add(labels)
         val res = NDArrayRecordBatch(ret)
         if (alwaysReturningSameResult) sameResultToReturn = res
+
+        if (dataSetType != CustomDataSetType.TRAIN) {
+            /**
+             * Non-training iterators are called not by the next() function but by supplying the whole iterator
+             * => require a reset before getting next batch, otherwise the iterator keeps iterating
+             */
+            stopIterator = true
+        }
         return res
     }
 
@@ -171,6 +182,7 @@ class CustomImageRecordReader(
     override fun reset() {
         iter = files.iterator()
         alwaysReturningSameResultDone = false
+        stopIterator = false
     }
 
     override fun resetSupported() = true

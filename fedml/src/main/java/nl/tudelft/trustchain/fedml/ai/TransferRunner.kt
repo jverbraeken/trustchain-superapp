@@ -33,18 +33,6 @@ class TransferRunner : Runner() {
                 Behaviors.BENIGN,
                 true,
             )
-            val hoiiiii = Datasets.HAR.inst(
-                DatasetIteratorConfiguration(
-                    mlConfiguration.datasetIteratorConfiguration.batchSize,
-                    mlConfiguration.datasetIteratorConfiguration.distribution,
-                    mlConfiguration.datasetIteratorConfiguration.maxTestSamples
-                ),
-                seed.toLong(),
-                CustomDataSetType.TRAIN,
-                baseDirectory,
-                Behaviors.BENIGN,
-                true,
-            )
             logger.debug { "Loaded trainDataSetIterator" }
             val testDataSetIterator = mlConfiguration.dataset.inst(
                 DatasetIteratorConfiguration(
@@ -78,6 +66,7 @@ class TransferRunner : Runner() {
             var epoch = 0
             var iterations = 0
             var iterationsToEvaluation = 0
+            ModelSerializer.writeModel(network, File(baseDirectory, "transfer-${mlConfiguration.dataset.id}"), false)
             epochLoop@ while (true) {
                 epoch++
                 trainDataSetIterator.reset()
