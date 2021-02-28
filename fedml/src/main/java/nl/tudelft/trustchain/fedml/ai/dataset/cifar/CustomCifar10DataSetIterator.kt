@@ -11,7 +11,7 @@ import java.io.File
 private val logger = KotlinLogging.logger("CustomCifar10DataSetIterator")
 
 class CustomCifar10DataSetIterator(
-    iteratorConfiguration: DatasetIteratorConfiguration,
+    val iteratorConfiguration: DatasetIteratorConfiguration,
     seed: Long,
     dataSetType: CustomDataSetType,
     behavior: Behaviors,
@@ -33,7 +33,10 @@ class CustomCifar10DataSetIterator(
     override val testBatches by lazy { recordReader.testBatches!! }
 
     override fun getLabels(): List<String> {
-        return recordReader.labels.toList()
+        return iteratorConfiguration.distribution
+            .zip(iteratorConfiguration.distribution.indices)
+            .filter { (numSamples, _) -> numSamples > 0 }
+            .map { it.second.toString() }
     }
 
     companion object {

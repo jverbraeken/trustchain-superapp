@@ -1,15 +1,14 @@
-package nl.tudelft.trustchain.fedml.ai.dataset.mnist
+package nl.tudelft.trustchain.fedml.ai.dataset.mobi_act
 
 import nl.tudelft.trustchain.fedml.Behaviors
 import nl.tudelft.trustchain.fedml.ai.CustomDataSetType
 import nl.tudelft.trustchain.fedml.ai.DatasetIteratorConfiguration
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDatasetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
-import org.deeplearning4j.datasets.fetchers.DataSetType
 import java.io.File
 
 
-class CustomMnistDataSetIterator(
+class MobiActDataSetIterator(
     val iteratorConfiguration: DatasetIteratorConfiguration,
     seed: Long,
     dataSetType: CustomDataSetType,
@@ -18,7 +17,7 @@ class CustomMnistDataSetIterator(
 ) : CustomBaseDatasetIterator(
     iteratorConfiguration.batchSize.value,
     -1,
-    CustomMnistDataFetcher(
+    MobiActDataFetcher(
         iteratorConfiguration.distribution.toIntArray(),
         seed,
         dataSetType,
@@ -44,8 +43,8 @@ class CustomMnistDataSetIterator(
             baseDirectory: File,
             behavior: Behaviors,
             transfer: Boolean
-        ): CustomMnistDataSetIterator {
-            return CustomMnistDataSetIterator(iteratorConfiguration, seed, dataSetType, behavior, transfer)
+        ): MobiActDataSetIterator {
+            return MobiActDataSetIterator(iteratorConfiguration, seed, dataSetType, behavior, transfer)
         }
     }
 }

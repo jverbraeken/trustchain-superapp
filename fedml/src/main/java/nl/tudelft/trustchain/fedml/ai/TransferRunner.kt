@@ -4,6 +4,7 @@ import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.BatchSizes
 import nl.tudelft.trustchain.fedml.Behaviors
+import nl.tudelft.trustchain.fedml.Datasets
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener
 import org.deeplearning4j.util.ModelSerializer
 import java.io.File
@@ -19,8 +20,20 @@ class TransferRunner : Runner() {
         seed: Int,
         mlConfiguration: MLConfiguration,
     ) {
-        scope.launch {
+//        scope.launch {
             val trainDataSetIterator = mlConfiguration.dataset.inst(
+                DatasetIteratorConfiguration(
+                    mlConfiguration.datasetIteratorConfiguration.batchSize,
+                    mlConfiguration.datasetIteratorConfiguration.distribution,
+                    mlConfiguration.datasetIteratorConfiguration.maxTestSamples
+                ),
+                seed.toLong(),
+                CustomDataSetType.TRAIN,
+                baseDirectory,
+                Behaviors.BENIGN,
+                true,
+            )
+            val hoiiiii = Datasets.HAR.inst(
                 DatasetIteratorConfiguration(
                     mlConfiguration.datasetIteratorConfiguration.batchSize,
                     mlConfiguration.datasetIteratorConfiguration.distribution,
@@ -80,11 +93,6 @@ class TransferRunner : Runner() {
                     iterations += 1
                     iterationsToEvaluation += 1
 
-                    if (endEpoch) {
-                        ModelSerializer.writeModel(network, File(baseDirectory, "transfer-${mlConfiguration.dataset.id}"), false)
-                        break
-                    }
-
                     if (iterationsToEvaluation % ITERATIONS_BEFORE_EVALUATION == 0) {
                         val end = System.currentTimeMillis()
                         evaluationProcessor.evaluate(
@@ -98,10 +106,15 @@ class TransferRunner : Runner() {
                             true
                         )
                     }
+
+                    if (endEpoch) {
+                        ModelSerializer.writeModel(network, File(baseDirectory, "transfer-${mlConfiguration.dataset.id}"), false)
+                        break
+                    }
                 }
             }
             logger.debug { "Done training the network" }
             evaluationProcessor.done()
         }
-    }
+//    }
 }
