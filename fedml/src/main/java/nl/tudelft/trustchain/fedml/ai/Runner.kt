@@ -519,7 +519,7 @@ fun generateDefaultHARConfiguration(
 ): MultiLayerConfiguration {
     val numClasses = if (mode == NNConfigurationMode.TRANSFER) HARDataFetcher.NUM_LABELS else HARDataFetcher.NUM_LABELS
     val layers = arrayOf<Layer>(
-        Convolution1DLayer
+        /*Convolution1DLayer
             .Builder(3)
             .nIn(128)
             .nOut(64)
@@ -530,64 +530,7 @@ fun generateDefaultHARConfiguration(
         Convolution1DLayer
             .Builder(3)
             .nOut(64)
-            .build(),
-        GlobalPoolingLayer
-            .Builder(PoolingType.MAX)
-            .build(),
-        OutputLayer
-            .Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
-            .nOut(HARDataFetcher.NUM_LABELS)
-            .activation(Activation.SOFTMAX)
-            .weightInit(WeightInit.XAVIER)
-            .build(),
-    )
-    return NeuralNetConfiguration.Builder()
-        .seed(seed.toLong())
-        .l2(nnConfiguration.l2.value)
-        .activation(Activation.LEAKYRELU)
-        .weightInit(WeightInit.RELU)
-        .updater(nnConfiguration.optimizer.inst(nnConfiguration.learningRate))
-        .list()
-        .layer(
-            if (mode == NNConfigurationMode.FROZEN) {
-                FrozenLayer.Builder().layer(layers[0]).build()
-            } else {
-                layers[0]
-            }
-        )
-        .layer(
-            if (mode == NNConfigurationMode.FROZEN) {
-                FrozenLayer.Builder().layer(layers[1]).build()
-            } else {
-                layers[1]
-            }
-        )
-        .layer(
-            if (mode == NNConfigurationMode.FROZEN) {
-                FrozenLayer.Builder().layer(layers[2]).build()
-            } else {
-                layers[2]
-            }
-        )
-        .layer(
-            if (mode == NNConfigurationMode.FROZEN) {
-                FrozenLayer.Builder().layer(layers[3]).build()
-            } else {
-                layers[3]
-            }
-        )
-        .layer(layers[4])
-        .setInputType(InputType.recurrent(9, 128))
-        .build()
-}
-
-fun generateDefaultMobiActConfiguration(
-    nnConfiguration: NNConfiguration,
-    seed: Int,
-    mode: NNConfigurationMode,
-): MultiLayerConfiguration {
-    val numClasses = if (mode == NNConfigurationMode.TRANSFER) 6 else -1
-    val layers = arrayOf<Layer>(
+            .build(),*/
         Convolution1DLayer
             .Builder(5, 1, 1)
             .nIn(3)
@@ -612,7 +555,7 @@ fun generateDefaultMobiActConfiguration(
             .build(),
         OutputLayer
             .Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
-            .nOut(6)
+            .nOut(HARDataFetcher.NUM_LABELS)
             .activation(Activation.SOFTMAX)
             .weightInit(WeightInit.XAVIER)
             .build(),
@@ -667,7 +610,126 @@ fun generateDefaultMobiActConfiguration(
             }
         )
         .layer(layers[6])
-        .setInputType(InputType.recurrent(3, 500))
+        .setInputType(InputType.recurrent(3, 50))
+        .build()
+}
+
+fun generateDefaultMobiActConfiguration(
+    nnConfiguration: NNConfiguration,
+    seed: Int,
+    mode: NNConfigurationMode,
+): MultiLayerConfiguration {
+    val numClasses = if (mode == NNConfigurationMode.TRANSFER) 20 else 6
+    val layers = arrayOf<Layer>(
+        /*Convolution1DLayer
+            .Builder(5, 1, 1)
+            .nIn(3)
+            .nOut(64)
+            .build(),
+        Subsampling1DLayer
+            .Builder(SubsamplingLayer.PoolingType.MAX, 2, 2)
+            .build(),
+        Convolution1DLayer
+            .Builder(3, 1, 2)
+            .nOut(128)
+            .build(),
+        Subsampling1DLayer
+            .Builder(SubsamplingLayer.PoolingType.MAX, 2, 2)
+            .build(),
+        Convolution1DLayer
+            .Builder(3, 1, 1)
+            .nOut(256)
+            .build(),
+        GlobalPoolingLayer
+            .Builder(PoolingType.MAX)
+            .build(),
+        OutputLayer
+            .Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
+            .nOut(6)
+            .activation(Activation.SOFTMAX)
+            .weightInit(WeightInit.XAVIER)
+            .build(),*/
+
+        Convolution1DLayer
+            .Builder(5, 1, 1)
+            .nIn(3)
+            .nOut(64)
+            .build(),
+        Subsampling1DLayer
+            .Builder(SubsamplingLayer.PoolingType.MAX, 2, 2)
+            .build(),
+        Convolution1DLayer
+            .Builder(3, 1, 2)
+            .nOut(128)
+            .build(),
+        Subsampling1DLayer
+            .Builder(SubsamplingLayer.PoolingType.MAX, 2, 2)
+            .build(),
+        Convolution1DLayer
+            .Builder(3, 1, 1)
+            .nOut(256)
+            .build(),
+        GlobalPoolingLayer
+            .Builder(PoolingType.MAX)
+            .build(),
+        OutputLayer
+            .Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
+            .nOut(numClasses)
+            .activation(Activation.SOFTMAX)
+            .weightInit(WeightInit.XAVIER)
+            .build(),
+    )
+    return NeuralNetConfiguration.Builder()
+        .seed(seed.toLong())
+        .l2(nnConfiguration.l2.value)
+        .activation(Activation.LEAKYRELU)
+        .weightInit(WeightInit.RELU)
+        .updater(nnConfiguration.optimizer.inst(nnConfiguration.learningRate))
+        .list()
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[0]).build()
+            } else {
+                layers[0]
+            }
+        )
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[1]).build()
+            } else {
+                layers[1]
+            }
+        )
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[2]).build()
+            } else {
+                layers[2]
+            }
+        )
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[3]).build()
+            } else {
+                layers[3]
+            }
+        )
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[4]).build()
+            } else {
+                layers[4]
+            }
+        )
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[5]).build()
+            } else {
+                layers[5]
+            }
+        )
+        .layer(layers[6])
+        .setInputType(InputType.recurrent(3, 50))
         .build()
 }
 

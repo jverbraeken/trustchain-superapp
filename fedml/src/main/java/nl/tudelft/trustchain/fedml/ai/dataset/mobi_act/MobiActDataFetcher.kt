@@ -76,45 +76,59 @@ class MobiActDataFetcher(
                     downloadAndExtract(transfer, localCache)
                 }
             } catch (e: Exception) {
-                throw RuntimeException("Could not download CIFAR-10", e)
+                throw RuntimeException("Could not download WISDM", e)
             }
 
             val root = DL4JResources.getDirectory(
                 ResourceType.DATASET,
                 if (transfer) LOCAL_CACHE_NAME_TRANSFER else LOCAL_CACHE_NAME_REGULAR
             ).absolutePath
-            val file = if (transfer) {
-                File(FilenameUtils.concat(root, "WISDM_ar_v1.1_raw.txt"))
-            } else {
-                File(FilenameUtils.concat(root, "WISDM_ar_v1.1_raw.txt"))
-            }
-            val lines = file.bufferedReader().readLines()
-            logger.debug { "1" }
-            val elements = lines.map { it.fastsplit(',') }
-            logger.debug { "2" }
-            activityToSamples = elements
-                .groupBy { it.first }
-                .map { (label, samples) ->
-                    Pair(label, samples.groupBy { it.second }.map { it.value.subList(0, 50).map { it.third }.toTypedArray() })
-                }
-            val allSamples = activityToSamples!!
-                .map { (label, samplesPerHuman) ->
-                    samplesPerHuman.map { Pair(label, it) }
-                }
-                .flatten()
-                /*.map { (label, data) ->
-                    val newData = data.copyOf(500).map { it ?: doubleArrayOf(0.0, 0.0, 0.0) }.toTypedArray()
-                    Pair(label, newData)
-                }*/
-                .shuffled()
-            logger.debug { "4" }
+            if (!transfer) {
+                val file = File(FilenameUtils.concat(root, "WISDM_ar_v1.1_raw.txt"))
+                val lines = file.bufferedReader().readLines()
+                logger.debug { "1" }
+                val elements = lines.map { it.fastsplit(',') }
+                logger.debug { "2" }
+                activityToSamples = elements
+                    .groupBy { it.first }
+                    .map { (label, samples) ->
+                        Pair(label, samples.groupBy { it.second }.map { it.value.subList(0, 50).map { it.third }.toTypedArray() })
+                    }
+                val allSamples = activityToSamples!!
+                    .map { (label, samplesPerHuman) ->
+                        samplesPerHuman.map { Pair(label, it) }
+                    }
+                    .flatten()
+                    /*.map { (label, data) ->
+                        val newData = data.copyOf(500).map { it ?: doubleArrayOf(0.0, 0.0, 0.0) }.toTypedArray()
+                        Pair(label, newData)
+                    }*/
+                    .shuffled()
+                logger.debug { "4" }
 
-            shuffledSamplesTrain = allSamples.subList(0, (0.7 * allSamples.size).toInt()).toTypedArray()
-            shuffledSamplesTest = allSamples.subList((0.7 * allSamples.size).toInt(), allSamples.size).toTypedArray()
+                shuffledSamplesTrain = allSamples.subList(0, (0.7 * allSamples.size).toInt()).toTypedArray()
+                shuffledSamplesTest = allSamples.subList((0.7 * allSamples.size).toInt(), allSamples.size).toTypedArray()
+            } else {
+                val allSamples = ArrayList<Pair<Int, Array<DoubleArray>>>()
+                val folders = File(root).listFiles()!!
+                for ((i, folder) in folders.withIndex()) {
+                    val files = folder.listFiles()!!
+                    for (file in files) {
+                        val allLines = file.bufferedReader().readLines()
+                        val lines = allLines.subList(16, 16 + 50)
+                        val data = lines.map { it.fastSplitMobi() }.toTypedArray()
+                        allSamples.add(Pair(i, data))
+                    }
+                }
+                allSamples.shuffle()
+
+                shuffledSamplesTrain = allSamples.subList(0, (0.7 * allSamples.size).toInt()).toTypedArray()
+                shuffledSamplesTest = allSamples.subList((0.7 * allSamples.size).toInt(), allSamples.size).toTypedArray()
+            }
         }
 
         totalExamples = if (dataSetType == CustomDataSetType.TRAIN) shuffledSamplesTrain!!.size else shuffledSamplesTest!!.size
-        numOutcomes = if (transfer) activityToSamples!!.size else -10
+        numOutcomes = if (!transfer) activityToSamples!!.size else 20
         cursor = 0
         inputColumns = 500
         order = IntStream.range(0, totalExamples).toArray()
@@ -136,7 +150,7 @@ class MobiActDataFetcher(
 
     override fun fetch(numExamples: Int) {
         check(hasMore()) { "Unable to get more; there are no more images" }
-        var labels = Nd4j.zeros(DataType.FLOAT, numExamples.toLong(), 6)
+        var labels = Nd4j.zeros(DataType.FLOAT, numExamples.toLong(), numOutcomes.toLong())
         if (featureData.size != numExamples) {
             featureData = Array(numExamples) { Array(3) { DoubleArray(500) } }
         }
@@ -211,12 +225,18 @@ class MobiActDataFetcher(
 
     companion object {
         const val TEST_BATCH_SIZE = 10
-        private const val REMOTE_DATA_URL_REGULAR = "https://api.onedrive.com/v1.0/shares/s!AvNMRY4ml2WPgaBQ2on0dU-zWnGL9A/root/content"
+        /*private const val REMOTE_DATA_URL_REGULAR = "https://api.onedrive.com/v1.0/shares/s!AvNMRY4ml2WPgaEo6NyGY9o7BwLlDQ/root/content"
         private const val REMOTE_DATA_URL_TRANSFER = "https://api.onedrive.com/v1.0/shares/s!AvNMRY4ml2WPgaBQ2on0dU-zWnGL9A/root/content"
-        private const val LOCAL_CACHE_NAME_REGULAR = "mobi_act"
+        private const val LOCAL_CACHE_NAME_REGULAR = "mobiact"
         private const val LOCAL_CACHE_NAME_TRANSFER = "wisdm"
-        private const val LOCAL_FILE_NAME_REGULAR = "?"
-        private const val LOCAL_FILE_NAME_TRANSFER = "WISDM_ar_v1.1_raw.zip"
+        private const val LOCAL_FILE_NAME_REGULAR = "MobiAct.zip"
+        private const val LOCAL_FILE_NAME_TRANSFER = "WISDM_ar_v1.1_raw.zip"*/
+        private const val REMOTE_DATA_URL_TRANSFER = "https://api.onedrive.com/v1.0/shares/s!AvNMRY4ml2WPgaEo6NyGY9o7BwLlDQ/root/content"
+        private const val REMOTE_DATA_URL_REGULAR = "https://api.onedrive.com/v1.0/shares/s!AvNMRY4ml2WPgaBQ2on0dU-zWnGL9A/root/content"
+        private const val LOCAL_CACHE_NAME_TRANSFER = "mobiact"
+        private const val LOCAL_CACHE_NAME_REGULAR = "wisdm"
+        private const val LOCAL_FILE_NAME_TRANSFER = "MobiAct.zip"
+        private const val LOCAL_FILE_NAME_REGULAR = "WISDM_ar_v1.1_raw.zip"
 
         private var activityToSamples: List<Pair<Int, List<Array<DoubleArray>>>>? = null
         private var shuffledSamplesTrain: Array<Pair<Int, Array<DoubleArray>>>? = null
@@ -275,4 +295,31 @@ private fun String.fastsplit(c: Char): Triple<Int, Int, DoubleArray> {
         logger.debug { count }
     }
     return Triple(activity, human, data)
+}
+
+private fun String.fastSplitMobi(): DoubleArray {
+    val data = DoubleArray(3)
+    var start = 0
+    var count = 0
+    try {
+        for (i in this.indices) {
+            if (this[i] == ',') {
+                if (count > 0) {  // Skip timestep
+                    data[count - 1] = this.substring(start + 1, i).toDouble()
+                }
+                start = i + 2
+                count++
+            }
+        }
+    } catch (e: Exception) {
+        logger.debug { this }
+    }
+    try {
+        data[2] = this.substring(start + 1).toDouble()
+    } catch (e: Exception) {
+        logger.debug { start }
+        logger.debug { this }
+        logger.debug { count }
+    }
+    return data
 }

@@ -71,6 +71,8 @@ class Node(
     private lateinit var countPerPeer: Map<Int, Int>
     private var slowdownRemainingIterations = 0
 
+    private val labels: List<String>
+
     init {
         datasetIteratorConfiguration = testConfig.datasetIteratorConfiguration
         distribution = datasetIteratorConfiguration.distribution
@@ -91,7 +93,7 @@ class Node(
         numAttackers = modelPoisoningConfiguration.numAttackers
 
         network = if (fromTransfer) {
-            loadFromTransferNetwork(File(baseDirectory, "transfer-${dataset.id}"), dataset.architecture)
+            loadFromTransferNetwork(File(baseDirectory, "transfer-har"), dataset.architecture)
         } else {
             generateNetwork(dataset.architecture, testConfig.nnConfiguration, nodeIndex, NNConfigurationMode.REGULAR)
         }
@@ -113,6 +115,8 @@ class Node(
         iterTrain = iters[0]
         iterTest = iters[1]
         iterTestFull = iters[2]
+
+        labels = iterTrain.labels
 
         logging = nodeIndex == 0 || !ONLY_EVALUATE_FIRST_NODE
     }
@@ -191,7 +195,7 @@ class Node(
 
     private fun resetTW() {
         val tw = network.outputLayer.paramTable().getValue("W")
-        for (index in 0 until 10) {
+        for (index in 0 until labels.size) {
             tw.putColumn(index, cw.getColumn(index.toLong()).dup())
         }
         network.outputLayer.setParam("W", tw)
@@ -324,7 +328,7 @@ class Node(
     }
 
     fun getLabels(): List<String> {
-        return iterTrain.labels
+        return labels
     }
 
     fun setCountPerPeer(countPerPeer: Map<Int, Int>) {

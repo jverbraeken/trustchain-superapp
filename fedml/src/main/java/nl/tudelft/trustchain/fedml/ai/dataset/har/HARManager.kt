@@ -4,6 +4,9 @@ import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.Behaviors
 import nl.tudelft.trustchain.fedml.ai.dataset.DatasetManager
 import java.io.File
+import kotlin.math.ceil
+import kotlin.math.floor
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 private val logger = KotlinLogging.logger("HARManager")
@@ -57,7 +60,11 @@ class HARManager(
             val parts = trimmed.split(REGEX_SPLIT).toTypedArray()
             parts.map { s: String -> s.toFloat() }.toTypedArray()
         }.toTypedArray()
-        return transposeMatrix(features)
+        val transposed = transposeMatrix(features)
+        return (0 until 50).map { i ->
+            if (i % 2 == 0) transposed[(i * 2.5).roundToInt()]
+            else transposed[floor(i * 2.5).toInt()].zip(transposed[ceil(i * 2.5).toInt()]).map { (e1, e2) -> (e1 + e2) / 2 }.toFloatArray()
+        }.toTypedArray()
     }
 
     private fun sampleData(
