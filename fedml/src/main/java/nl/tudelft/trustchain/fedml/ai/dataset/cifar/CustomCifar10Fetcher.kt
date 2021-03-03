@@ -171,7 +171,7 @@ class CustomCifar10Fetcher {
         const val INPUT_HEIGHT = 32
         const val INPUT_CHANNELS = 3
         const val NUM_LABELS_TRANSFER = 10
-        const val NUM_LABELS_REGULAR = 100
+        const val NUM_LABELS_REGULAR = 6
         const val NUM_TRAINING_SAMPLES_PER_LABEL_TRANSFER = 5000
         const val NUM_TRAINING_SAMPLES_PER_LABEL_REGULAR = 500
         const val NUM_TESTING_SAMPLES_PER_LABEL_TRANSFER = 1000

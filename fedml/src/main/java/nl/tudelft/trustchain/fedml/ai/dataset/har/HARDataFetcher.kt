@@ -51,25 +51,25 @@ class HARDataFetcher(
             val basePath = Paths.get(baseDirectory.path, "train", "Inertial Signals")
             data.add(basePath.resolve("body_acc_x_train.txt").toFile())
             data.add(basePath.resolve("body_acc_y_train.txt").toFile())
-            data.add(basePath.resolve("body_acc_z_train.txt").toFile())
+            data.add(basePath.resolve("body_acc_z_train.txt").toFile())/*
             data.add(basePath.resolve("body_gyro_x_train.txt").toFile())
             data.add(basePath.resolve("body_gyro_y_train.txt").toFile())
             data.add(basePath.resolve("body_gyro_z_train.txt").toFile())
             data.add(basePath.resolve("total_acc_x_train.txt").toFile())
             data.add(basePath.resolve("total_acc_y_train.txt").toFile())
-            data.add(basePath.resolve("total_acc_z_train.txt").toFile())
+            data.add(basePath.resolve("total_acc_z_train.txt").toFile())*/
             labels = File(File(baseDirectory, "train"), "y_train.txt")
         } else {
             val basePath = Paths.get(baseDirectory.path, "test", "Inertial Signals")
             data.add(basePath.resolve("body_acc_x_test.txt").toFile())
             data.add(basePath.resolve("body_acc_y_test.txt").toFile())
-            data.add(basePath.resolve("body_acc_z_test.txt").toFile())
+            data.add(basePath.resolve("body_acc_z_test.txt").toFile())/*
             data.add(basePath.resolve("body_gyro_x_test.txt").toFile())
             data.add(basePath.resolve("body_gyro_y_test.txt").toFile())
             data.add(basePath.resolve("body_gyro_z_test.txt").toFile())
             data.add(basePath.resolve("total_acc_x_test.txt").toFile())
             data.add(basePath.resolve("total_acc_y_test.txt").toFile())
-            data.add(basePath.resolve("total_acc_z_test.txt").toFile())
+            data.add(basePath.resolve("total_acc_z_test.txt").toFile())*/
             labels = File(File(baseDirectory, "test"), "y_test.txt")
         }
         man = HARManager(
@@ -102,7 +102,7 @@ class HARDataFetcher(
             if (!hasMore()) break
             val label = man.readLabel(order[cursor])
             labels.put(actualExamples, label, 1.0f)
-            featureData[actualExamples] = man.readEntry(order[cursor])
+            featureData[actualExamples] = transpose(man.readEntry(order[cursor]))
             actualExamples++
             i++
             cursor++
@@ -142,9 +142,19 @@ class HARDataFetcher(
         return DataSet(features, labels)
     }
 
+    private fun transpose(second: Array<FloatArray>): Array<FloatArray> {
+        val result = Array(second[0].size) { FloatArray(second.size) }
+        for (i in second.indices) {
+            for (j in second[i].indices) {
+                result[j][i] = second[i][j]
+            }
+        }
+        return result
+    }
+
     companion object {
-        const val NUM_DIMENSIONS = 9
-        const val NUM_TIMESTEPS = 128
+        const val NUM_DIMENSIONS = 3
+        const val NUM_TIMESTEPS = 50
         const val NUM_LABELS = 6
         const val TEST_BATCH_SIZE = 20
     }
