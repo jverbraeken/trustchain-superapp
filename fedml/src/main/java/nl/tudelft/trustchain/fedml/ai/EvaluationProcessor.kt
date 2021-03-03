@@ -1,6 +1,7 @@
 package nl.tudelft.trustchain.fedml.ai
 
 import mu.KotlinLogging
+import nl.tudelft.trustchain.fedml.d
 import org.deeplearning4j.nn.api.Model
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.nd4j.evaluation.IEvaluation
@@ -234,7 +235,7 @@ class EvaluationProcessor(
         testDataSetIterator.reset()
         val evaluations = arrayOf(Evaluation())
 
-        if (logging) logger.debug {
+        logger.d(logging) {
             "Starting evaluation, #iterations = $iterations, ${
                 extraElements.getOrDefault(
                     "before or after averaging",
@@ -245,7 +246,7 @@ class EvaluationProcessor(
         network.doEvaluation(testDataSetIterator, *evaluations)
 
         for (evaluation in evaluations) {
-            if (logging) logger.debug { "${evaluation.javaClass.simpleName}:\n${evaluation.stats()}" }
+            logger.d(logging) { "${evaluation.javaClass.simpleName}:\n${evaluation.stats(false, true)}" }
         }
         return call(network, evaluations, simulationIndex, network.score(), extraElements, elapsedTime, iterations, epoch)
     }
