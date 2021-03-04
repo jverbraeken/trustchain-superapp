@@ -92,17 +92,13 @@ class MobiActDataFetcher(
                 activityToSamples = elements
                     .groupBy { it.first }
                     .map { (label, samples) ->
-                        Pair(label, samples.groupBy { it.second }.map { it.value.subList(0, 50).map { it.third }.toTypedArray() })
+                        Pair(label, samples.groupBy { it.second }.map { it.value.subList(0, 298).map { it.third }.toTypedArray() })
                     }
                 val allSamples = activityToSamples!!
                     .map { (label, samplesPerHuman) ->
                         samplesPerHuman.map { Pair(label, it) }
                     }
                     .flatten()
-                    /*.map { (label, data) ->
-                        val newData = data.copyOf(500).map { it ?: doubleArrayOf(0.0, 0.0, 0.0) }.toTypedArray()
-                        Pair(label, newData)
-                    }*/
                     .shuffled()
                 logger.debug { "4" }
 
@@ -114,8 +110,7 @@ class MobiActDataFetcher(
                 for ((i, folder) in folders.withIndex()) {
                     val files = folder.listFiles()!!
                     for (file in files) {
-                        val allLines = file.bufferedReader().readLines()
-                        val lines = allLines.subList(16, 16 + 50)
+                        val lines = file.bufferedReader().readLines().subList(16, 16 + 298)
                         val data = lines.map { it.fastSplitMobi() }.toTypedArray()
                         allSamples.add(Pair(i, data))
                     }

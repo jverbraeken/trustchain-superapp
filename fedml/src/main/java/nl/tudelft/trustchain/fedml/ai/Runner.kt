@@ -361,7 +361,7 @@ fun generateDefaultMobiActConfiguration(
 ): MultiLayerConfiguration {
     val numClasses = if (mode == NNConfigurationMode.TRANSFER) 20 else 6
     val layers = arrayOf<Layer>(
-        /*Convolution1DLayer
+        Convolution1DLayer
             .Builder(5, 1, 1)
             .nIn(3)
             .nOut(64)
@@ -388,9 +388,9 @@ fun generateDefaultMobiActConfiguration(
             .nOut(6)
             .activation(Activation.SOFTMAX)
             .weightInit(WeightInit.XAVIER)
-            .build(),*/
+            .build()
 
-        Convolution1DLayer
+        /*Convolution1DLayer
             .Builder(5, 1, 1)
             .nIn(3)
             .nOut(64)
@@ -417,7 +417,7 @@ fun generateDefaultMobiActConfiguration(
             .nOut(numClasses)
             .activation(Activation.SOFTMAX)
             .weightInit(WeightInit.XAVIER)
-            .build(),
+            .build(),*/
     )
     return NeuralNetConfiguration.Builder()
         .seed(seed.toLong())
@@ -469,7 +469,6 @@ fun generateDefaultMobiActConfiguration(
             }
         )
         .layer(layers[6])
-        .setInputType(InputType.recurrent(3, 50))
         .build()
 }
 
