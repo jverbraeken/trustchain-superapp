@@ -148,7 +148,7 @@ fun generateDefaultCIFARConfiguration(
             .hasBias(false)
             .build()
     )
-    return NeuralNetConfiguration.Builder()
+    /*return NeuralNetConfiguration.Builder()
         .seed(seed.toLong())
         .activation(Activation.LEAKYRELU)
         .weightInit(WeightInit.RELU)
@@ -162,8 +162,6 @@ fun generateDefaultCIFARConfiguration(
                 layers[0]
             }
         )
-        .layer(BatchNormalization())
-
         .layer(
             if (mode == NNConfigurationMode.FROZEN) {
                 FrozenLayer.Builder().layer(layers[1]).build()
@@ -178,8 +176,269 @@ fun generateDefaultCIFARConfiguration(
                 layers[2]
             }
         )
-        .layer(BatchNormalization())
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[3]).build()
+            } else {
+                layers[3]
+            }
+        )
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[4]).build()
+            } else {
+                layers[4]
+            }
+        )
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[5]).build()
+            } else {
+                layers[5]
+            }
+        )
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[6]).build()
+            } else {
+                layers[6]
+            }
+        )
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[7]).build()
+            } else {
+                layers[7]
+            }
+        )
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[8]).build()
+            } else {
+                layers[8]
+            }
+        )
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[9]).build()
+            } else {
+                layers[9]
+            }
+        )
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[10]).build()
+            } else {
+                layers[10]
+            }
+        )
+        .layer(layers[11])
+        .setInputType(InputType.convolutional(height.toLong(), width.toLong(), channels.toLong()))
+        .build()*/
+    /*val layers = arrayOf<Layer>(
 
+        ConvolutionLayer.Builder().kernelSize(3,3).stride(1,1).padding(1,1).activation(Activation.LEAKYRELU)
+            .nIn(channels).nOut(64).build(),
+        ConvolutionLayer.Builder().kernelSize(3,3).stride(1,1).padding(1,1).activation(Activation.LEAKYRELU)
+            .nOut(64).build(),
+        SubsamplingLayer.Builder().kernelSize(2,2).stride(2,2).poolingType(SubsamplingLayer.PoolingType.MAX).build(),
+
+        ConvolutionLayer.Builder().kernelSize(3,3).stride(1,1).padding(1,1).activation(Activation.LEAKYRELU)
+            .nOut(128).build(),
+        ConvolutionLayer.Builder().kernelSize(3,3).stride(1,1).padding(1,1).activation(Activation.LEAKYRELU)
+            .nOut(128).build(),
+        SubsamplingLayer.Builder().kernelSize(2,2).stride(2,2).poolingType(SubsamplingLayer.PoolingType.MAX).build(),
+
+        ConvolutionLayer.Builder().kernelSize(3,3).stride(1,1).padding(1,1).activation(Activation.LEAKYRELU)
+            .nOut(256).build(),
+        ConvolutionLayer.Builder().kernelSize(3,3).stride(1,1).padding(1,1).activation(Activation.LEAKYRELU)
+            .nOut(256).build(),
+        ConvolutionLayer.Builder().kernelSize(3,3).stride(1,1).padding(1,1).activation(Activation.LEAKYRELU)
+            .nOut(256).build(),
+        SubsamplingLayer.Builder().kernelSize(2,2).stride(2,2).poolingType(SubsamplingLayer.PoolingType.MAX).build(),
+
+        ConvolutionLayer.Builder().kernelSize(3,3).stride(1,1).padding(1,1).activation(Activation.LEAKYRELU)
+            .nOut(512).build(),
+        ConvolutionLayer.Builder().kernelSize(3,3).stride(1,1).padding(1,1).activation(Activation.LEAKYRELU)
+            .nOut(512).build(),
+        ConvolutionLayer.Builder().kernelSize(3,3).stride(1,1).padding(1,1).activation(Activation.LEAKYRELU)
+            .nOut(512).build(),
+        SubsamplingLayer.Builder().kernelSize(2,2).stride(2,2).poolingType(SubsamplingLayer.PoolingType.MAX).build(),
+
+        ConvolutionLayer.Builder().kernelSize(3,3).stride(1,1).padding(1,1).activation(Activation.LEAKYRELU)
+            .nOut(512).build(),
+        ConvolutionLayer.Builder().kernelSize(3,3).stride(1,1).padding(1,1).activation(Activation.LEAKYRELU)
+            .nOut(512).build(),
+        ConvolutionLayer.Builder().kernelSize(3,3).stride(1,1).padding(1,1).activation(Activation.LEAKYRELU)
+            .nOut(512).build(),
+        SubsamplingLayer.Builder().kernelSize(2,2).stride(2,2).poolingType(SubsamplingLayer.PoolingType.MAX).build(),
+
+        OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
+            .name("output")
+            .nOut(numClasses)
+            .activation(Activation.SOFTMAX)
+            .hasBias(false)
+            .build()
+    )*/
+    return NeuralNetConfiguration.Builder()
+        .seed(seed.toLong())
+        .activation(Activation.LEAKYRELU)
+        .weightInit(WeightInit.RELU)
+        .updater(nnConfiguration.optimizer.inst(nnConfiguration.learningRate))
+        .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
+        .list()
+        /*.layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[0]).build()
+            } else {
+                layers[0]
+            }
+        )
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[1]).build()
+            } else {
+                layers[1]
+            }
+        )
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[2]).build()
+            } else {
+                layers[2]
+            }
+        )
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[3]).build()
+            } else {
+                layers[3]
+            }
+        )
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[4]).build()
+            } else {
+                layers[4]
+            }
+        )
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[5]).build()
+            } else {
+                layers[5]
+            }
+        )
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[6]).build()
+            } else {
+                layers[6]
+            }
+        )
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[7]).build()
+            } else {
+                layers[7]
+            }
+        )
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[8]).build()
+            } else {
+                layers[8]
+            }
+        )
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[9]).build()
+            } else {
+                layers[9]
+            }
+        )
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[10]).build()
+            } else {
+                layers[10]
+            }
+        )
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[11]).build()
+            } else {
+                layers[11]
+            }
+        )
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[12]).build()
+            } else {
+                layers[12]
+            }
+        )
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[13]).build()
+            } else {
+                layers[13]
+            }
+        )
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[14]).build()
+            } else {
+                layers[14]
+            }
+        )
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[15]).build()
+            } else {
+                layers[15]
+            }
+        )
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[16]).build()
+            } else {
+                layers[16]
+            }
+        )
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[17]).build()
+            } else {
+                layers[17]
+            }
+        )
+        .layer(layers[18])*/
+
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[0]).build()
+            } else {
+                layers[0]
+            }
+        )
+        .layer(BatchNormalization())
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[1]).build()
+            } else {
+                layers[1]
+            }
+        )
+        .layer(BatchNormalization())
+        .layer(
+            if (mode == NNConfigurationMode.FROZEN) {
+                FrozenLayer.Builder().layer(layers[2]).build()
+            } else {
+                layers[2]
+            }
+        )
+        .layer(BatchNormalization())
         .layer(
             if (mode == NNConfigurationMode.FROZEN) {
                 FrozenLayer.Builder().layer(layers[3]).build()
@@ -221,6 +480,7 @@ fun generateDefaultCIFARConfiguration(
                 layers[7]
             }
         )
+        .layer(BatchNormalization())
         .layer(
             if (mode == NNConfigurationMode.FROZEN) {
                 FrozenLayer.Builder().layer(layers[8]).build()
