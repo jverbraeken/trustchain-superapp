@@ -5,6 +5,7 @@ import nl.tudelft.trustchain.fedml.ai.CustomDataSetType
 import nl.tudelft.trustchain.fedml.ai.DatasetIteratorConfiguration
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDatasetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
+import org.nd4j.linalg.dataset.api.preprocessor.NormalizerStandardize
 import java.io.File
 
 
@@ -44,7 +45,11 @@ class MobiActDataSetIterator(
             behavior: Behaviors,
             transfer: Boolean
         ): MobiActDataSetIterator {
-            return MobiActDataSetIterator(iteratorConfiguration, seed, dataSetType, behavior, transfer)
+            val iterator = MobiActDataSetIterator(iteratorConfiguration, seed, dataSetType, behavior, transfer)
+            val preProcessor = NormalizerStandardize()
+            preProcessor.fit(iterator)
+            iterator.setPreProcessor(preProcessor)
+            return iterator
         }
     }
 }
