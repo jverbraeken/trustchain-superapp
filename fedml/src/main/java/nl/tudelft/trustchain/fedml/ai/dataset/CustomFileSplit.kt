@@ -24,13 +24,11 @@ class CustomFileSplit(datasetPath: File, random: Random, numSamplesPerLabel: Int
             val listFiles = labelFile.listFiles()
             if (listFiles != null) {
                 val label = if (listFiles.first().isDirectory) -1 else labelFile.name.toInt()
-                if (label < 6) {
-                    for (f in listFiles) {
-                        if (f.isDirectory) {
-                            queue.add(f)
-                        } else {
-                            out[label][count[label]++] = f
-                        }
+                for (f in listFiles) {
+                    if (f.isDirectory) {
+                        queue.add(f)
+                    } else {
+                        out[label][count[label]++] = f
                     }
                 }
             }

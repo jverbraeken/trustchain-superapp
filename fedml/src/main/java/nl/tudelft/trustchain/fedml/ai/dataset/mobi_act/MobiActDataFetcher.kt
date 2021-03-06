@@ -87,7 +87,7 @@ class MobiActDataFetcher(
                 val file = File(FilenameUtils.concat(root, "WISDM_ar_v1.1_raw.txt"))
                 val lines = file.bufferedReader().readLines()
                 logger.debug { "1" }
-                val elements = lines.map { it.fastsplit(',') }
+                val elements = lines.map { it.fastsplit() }
                 logger.debug { "2" }
                 activityToSamples = elements
                     .groupBy { it.first }
@@ -239,7 +239,7 @@ class MobiActDataFetcher(
     }
 }
 
-private fun String.fastsplit(c: Char): Triple<Int, Int, DoubleArray> {
+private inline fun String.fastsplit(): Triple<Int, Int, DoubleArray> {
     /*val labels = arrayOf(
         "Walking",
         "Jogging",
@@ -255,7 +255,7 @@ private fun String.fastsplit(c: Char): Triple<Int, Int, DoubleArray> {
     var count = 0
     try {
         for (i in this.indices) {
-            if (this[i] == c) {
+            if (this[i] == ',') {
                 when {
                     count == 0 -> {
                         human = this.substring(start, i).toInt()
@@ -292,7 +292,7 @@ private fun String.fastsplit(c: Char): Triple<Int, Int, DoubleArray> {
     return Triple(activity, human, data)
 }
 
-private fun String.fastSplitMobi(): DoubleArray {
+private inline fun String.fastSplitMobi(): DoubleArray {
     val data = DoubleArray(3)
     var start = 0
     var count = 0
