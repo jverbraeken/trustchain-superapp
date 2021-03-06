@@ -93,7 +93,7 @@ class Node(
         numAttackers = modelPoisoningConfiguration.numAttackers
 
         network = if (fromTransfer) {
-            loadFromTransferNetwork(File(baseDirectory, "transfer-har"), dataset.architecture)
+            loadFromTransferNetwork(File(baseDirectory, "transfer-${dataset.id}"), dataset.architecture)
         } else {
             generateNetwork(dataset.architecture, testConfig.nnConfiguration, nodeIndex, NNConfigurationMode.REGULAR)
         }

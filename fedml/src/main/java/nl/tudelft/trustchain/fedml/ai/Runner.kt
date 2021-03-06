@@ -623,7 +623,7 @@ fun generateDefaultMobiActConfiguration(
     val numClasses = if (mode == NNConfigurationMode.TRANSFER) 20 else 6
     val layers = arrayOf<Layer>(
         Convolution1DLayer
-            .Builder(5, 1, 1)
+            .Builder(23, 1, 11)
             .nIn(3)
             .nOut(64)
             .build(),
@@ -631,23 +631,15 @@ fun generateDefaultMobiActConfiguration(
             .Builder(SubsamplingLayer.PoolingType.MAX, 2, 2)
             .build(),
         Convolution1DLayer
-            .Builder(3, 1, 2)
-            .nOut(128)
+            .Builder(15, 1, 7)
+            .nOut(96)
             .build(),
         Subsampling1DLayer
-            .Builder(SubsamplingLayer.PoolingType.MAX, 2, 2)
+            .Builder(SubsamplingLayer.PoolingType.MAX, 4, 2)
             .build(),
         Convolution1DLayer
-            .Builder(3, 1, 1)
-            .nOut(256)
-            .build(),
-        Convolution1DLayer
-            .Builder(3, 1, 1)
-            .nOut(256)
-            .build(),
-        Convolution1DLayer
-            .Builder(3, 1, 1)
-            .nOut(256)
+            .Builder(7, 1, 3)
+            .nOut(128)
             .build(),
         GlobalPoolingLayer
             .Builder(PoolingType.MAX)
@@ -681,7 +673,6 @@ fun generateDefaultMobiActConfiguration(
                 layers[1]
             }
         )
-        .layer(BatchNormalization())
         .layer(
             if (mode == NNConfigurationMode.FROZEN) {
                 FrozenLayer.Builder().layer(layers[2]).build()
@@ -697,7 +688,6 @@ fun generateDefaultMobiActConfiguration(
                 layers[3]
             }
         )
-        .layer(BatchNormalization())
         .layer(
             if (mode == NNConfigurationMode.FROZEN) {
                 FrozenLayer.Builder().layer(layers[4]).build()
@@ -705,7 +695,6 @@ fun generateDefaultMobiActConfiguration(
                 layers[4]
             }
         )
-        .layer(BatchNormalization())
         .layer(
             if (mode == NNConfigurationMode.FROZEN) {
                 FrozenLayer.Builder().layer(layers[5]).build()
@@ -714,22 +703,8 @@ fun generateDefaultMobiActConfiguration(
             }
         )
         .layer(BatchNormalization())
-        .layer(
-            if (mode == NNConfigurationMode.FROZEN) {
-                FrozenLayer.Builder().layer(layers[6]).build()
-            } else {
-                layers[6]
-            }
-        )
-        .layer(
-            if (mode == NNConfigurationMode.FROZEN) {
-                FrozenLayer.Builder().layer(layers[7]).build()
-            } else {
-                layers[7]
-            }
-        )
-        .layer(BatchNormalization())
-        .layer(layers[8])
+        .layer(layers[6])
+        .setInputType(InputType.recurrent(3, 298))
         .build()
 }
 
