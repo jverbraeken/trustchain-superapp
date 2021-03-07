@@ -9,10 +9,8 @@ import nl.tudelft.trustchain.fedml.Behaviors
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.cifar.CustomCifar10Fetcher
 import nl.tudelft.trustchain.fedml.ai.dataset.har.HARDataFetcher
-import nl.tudelft.trustchain.fedml.ai.dataset.mobi_act.MobiActDataFetcher
 import org.datavec.image.loader.CifarLoader
 import org.deeplearning4j.nn.api.OptimizationAlgorithm
-import org.deeplearning4j.nn.conf.GradientNormalization
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration
 import org.deeplearning4j.nn.conf.inputs.InputType
@@ -623,31 +621,16 @@ fun generateDefaultMobiActConfiguration(
     val numClasses = if (mode == NNConfigurationMode.TRANSFER) 20 else 6
     val layers = arrayOf<Layer>(
         Convolution1DLayer
-            .Builder(5, 1, 1)
+            .Builder(15, 1, 7)
             .nIn(3)
-            .nOut(64)
+            .nOut(96)
             .build(),
         Subsampling1DLayer
             .Builder(SubsamplingLayer.PoolingType.MAX, 2, 2)
             .build(),
         Convolution1DLayer
-            .Builder(3, 1, 2)
+            .Builder(9, 1, 4)
             .nOut(128)
-            .build(),
-        Subsampling1DLayer
-            .Builder(SubsamplingLayer.PoolingType.MAX, 2, 2)
-            .build(),
-        Convolution1DLayer
-            .Builder(3, 1, 1)
-            .nOut(256)
-            .build(),
-        Convolution1DLayer
-            .Builder(3, 1, 1)
-            .nOut(256)
-            .build(),
-        Convolution1DLayer
-            .Builder(3, 1, 1)
-            .nOut(256)
             .build(),
         GlobalPoolingLayer
             .Builder(PoolingType.MAX)
@@ -681,7 +664,6 @@ fun generateDefaultMobiActConfiguration(
                 layers[1]
             }
         )
-        .layer(BatchNormalization())
         .layer(
             if (mode == NNConfigurationMode.FROZEN) {
                 FrozenLayer.Builder().layer(layers[2]).build()
@@ -689,7 +671,6 @@ fun generateDefaultMobiActConfiguration(
                 layers[2]
             }
         )
-        .layer(BatchNormalization())
         .layer(
             if (mode == NNConfigurationMode.FROZEN) {
                 FrozenLayer.Builder().layer(layers[3]).build()
@@ -698,38 +679,8 @@ fun generateDefaultMobiActConfiguration(
             }
         )
         .layer(BatchNormalization())
-        .layer(
-            if (mode == NNConfigurationMode.FROZEN) {
-                FrozenLayer.Builder().layer(layers[4]).build()
-            } else {
-                layers[4]
-            }
-        )
-        .layer(BatchNormalization())
-        .layer(
-            if (mode == NNConfigurationMode.FROZEN) {
-                FrozenLayer.Builder().layer(layers[5]).build()
-            } else {
-                layers[5]
-            }
-        )
-        .layer(BatchNormalization())
-        .layer(
-            if (mode == NNConfigurationMode.FROZEN) {
-                FrozenLayer.Builder().layer(layers[6]).build()
-            } else {
-                layers[6]
-            }
-        )
-        .layer(
-            if (mode == NNConfigurationMode.FROZEN) {
-                FrozenLayer.Builder().layer(layers[7]).build()
-            } else {
-                layers[7]
-            }
-        )
-        .layer(BatchNormalization())
-        .layer(layers[8])
+        .layer(layers[4])
+        .setInputType(InputType.recurrent(3, 298))
         .build()
 }
 
