@@ -5,8 +5,13 @@ import nl.tudelft.trustchain.fedml.Behaviors
 import nl.tudelft.trustchain.fedml.ai.CustomDataSetType
 import nl.tudelft.trustchain.fedml.ai.DatasetIteratorConfiguration
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
+import org.datavec.image.transform.FlipImageTransform
+import org.datavec.image.transform.ImageTransform
+import org.datavec.image.transform.PipelineImageTransform
+import org.datavec.image.transform.RotateImageTransform
 import org.nd4j.linalg.dataset.api.preprocessor.ImagePreProcessingScaler
 import java.io.File
+import kotlin.random.Random
 
 private val logger = KotlinLogging.logger("CustomCifar10DataSetIterator")
 
@@ -21,7 +26,7 @@ class CustomCifar10DataSetIterator(
         seed,
         null,
         dataSetType,
-        null,
+        CustomPipelineImageTransform(CustomFlipImageTransform(0, java.util.Random(42)), RotateImageTransform(java.util.Random(42), 0.0f, 0.0f, 20.0f, 0.1f)),
         iteratorConfiguration.distribution.toIntArray(),
         if (dataSetType == CustomDataSetType.TEST || dataSetType == CustomDataSetType.FULL_TEST) iteratorConfiguration.maxTestSamples.value else Integer.MAX_VALUE,
         transfer,

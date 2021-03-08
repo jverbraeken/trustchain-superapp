@@ -1,4 +1,4 @@
-package nl.tudelft.trustchain.fedml.ai.dataset.har
+package nl.tudelft.trustchain.fedml.ai.dataset.har_unused
 
 import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.Behaviors

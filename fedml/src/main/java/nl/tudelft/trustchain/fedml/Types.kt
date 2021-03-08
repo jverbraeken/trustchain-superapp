@@ -3,9 +3,8 @@ package nl.tudelft.trustchain.fedml
 import nl.tudelft.trustchain.fedml.ai.*
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.cifar.CustomCifar10DataSetIterator
-import nl.tudelft.trustchain.fedml.ai.dataset.har.HARDataSetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.mnist.CustomMnistDataSetIterator
-import nl.tudelft.trustchain.fedml.ai.dataset.mobi_act.MobiActDataSetIterator
+import nl.tudelft.trustchain.fedml.ai.dataset.wisdm.WISDMDataSetIterator
 import nl.tudelft.trustchain.fedml.ai.gar.*
 import nl.tudelft.trustchain.fedml.ai.modelPoisoningAttack.Fang2020Krum
 import nl.tudelft.trustchain.fedml.ai.modelPoisoningAttack.Fang2020TrimmedMean
@@ -73,7 +72,7 @@ enum class Datasets(
         Runner::generateDefaultTinyImageNetConfiguration,
         CustomMnistDataSetIterator::create
     ),*/
-    HAR(
+    /*HAR(
         "har",
         "HAR",
         Optimizers.ADAM,
@@ -84,10 +83,10 @@ enum class Datasets(
         IteratorDistributions.DISTRIBUTION_HAR_100,
         ::generateDefaultHARConfiguration,
         HARDataSetIterator::create,
-    ),
-    MOBI_ACT(
-        "mobi_act",
-        "Mobi Act",
+    ),*/
+    WISDM(
+        "wisdm",
+        "WISDM",
 //        Optimizers.NESTEROVS,
         Optimizers.ADAM,
 //        LearningRates.SCHEDULE1,
@@ -96,8 +95,8 @@ enum class Datasets(
         L2Regularizations.L2_1EM4,
         BatchSizes.BATCH_5,
         IteratorDistributions.DISTRIBUTION_WISDM_100,
-        ::generateDefaultMobiActConfiguration,
-        MobiActDataSetIterator::create,
+        ::generateDefaultWISDMConfiguration,
+        WISDMDataSetIterator::create,
     ),
 }
 
@@ -216,6 +215,7 @@ enum class MaxIterations(val id: String, val text: String, val value: Int) {
     ITER_400("iter_400", "400", 400),
     ITER_500("iter_500", "500", 500),
     ITER_1000("iter_1000", "1000", 1000),
+    ITER_10000("iter_10000", "10000", 10000),
 }
 
 fun loadMaxIteration(iteration: String?) = MaxIterations.values().firstOrNull { it.id == iteration }
@@ -288,6 +288,7 @@ enum class NumAttackers(val id: String, val text: String, val num: Int) {
     NUM_2("num_2", "2", 2),
     NUM_3("num_3", "3", 3),
     NUM_4("num_4", "4", 4),
+    NUM_8("num_8", "8", 8),
     NUM_10("num_10", "10", 10),
     NUM_20("num_20", "20", 20),
     NUM_35("num_35", "35", 35),

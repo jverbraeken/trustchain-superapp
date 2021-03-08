@@ -15,6 +15,7 @@ import org.datavec.api.writable.Writable
 import org.datavec.api.writable.batch.NDArrayRecordBatch
 import org.datavec.image.loader.NativeImageLoader
 import org.datavec.image.recordreader.BaseImageRecordReader
+import org.datavec.image.recordreader.ImageRecordReader
 import org.datavec.image.transform.ImageTransform
 import org.nd4j.linalg.api.concurrency.AffinityManager
 import org.nd4j.linalg.api.ndarray.INDArray

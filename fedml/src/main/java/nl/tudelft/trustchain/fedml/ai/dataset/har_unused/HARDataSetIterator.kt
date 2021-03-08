@@ -1,12 +1,10 @@
-package nl.tudelft.trustchain.fedml.ai.dataset.har
+package nl.tudelft.trustchain.fedml.ai.dataset.har_unused
 
 import nl.tudelft.trustchain.fedml.Behaviors
 import nl.tudelft.trustchain.fedml.ai.CustomDataSetType
 import nl.tudelft.trustchain.fedml.ai.DatasetIteratorConfiguration
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomBaseDatasetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
-import org.deeplearning4j.datasets.fetchers.DataSetType
-import org.nd4j.linalg.dataset.DataSet
 import java.io.File
 
 
