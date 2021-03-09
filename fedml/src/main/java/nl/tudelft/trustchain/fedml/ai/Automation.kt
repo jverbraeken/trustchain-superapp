@@ -25,7 +25,7 @@ data class Figure(
 data class Test(val gar: String)
 
 fun loadAutomation(baseDirectory: File): Automation {
-    val file = Paths.get(baseDirectory.path, "automation.config").toFile()
+    val file = Paths.get(baseDirectory.path, "automation.json").toFile()
     val string = file.readLines().joinToString("")
     return Json.decodeFromString(string)
 }

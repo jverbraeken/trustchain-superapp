@@ -17,8 +17,6 @@ import nl.tudelft.trustchain.fedml.*
 import nl.tudelft.trustchain.fedml.ai.*
 import nl.tudelft.trustchain.fedml.databinding.*
 import nl.tudelft.trustchain.fedml.ipv8.FedMLCommunity
-import nl.tudelft.trustchain.fedml.ipv8.FedMLCommunity.MessageId
-import nl.tudelft.trustchain.fedml.ipv8.MsgPing
 import org.deeplearning4j.common.resources.DL4JResources
 import java.io.*
 
@@ -199,7 +197,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
             if (!dir.exists()) {
                 dir.mkdirs()
             }
-            copyAsset(assetManager, "automation.config")
+            copyAsset(assetManager, "automation.json")
         } catch (e: IOException) {
             // Probably a directory
         }

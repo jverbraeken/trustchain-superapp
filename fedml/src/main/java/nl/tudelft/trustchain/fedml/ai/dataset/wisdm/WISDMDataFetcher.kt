@@ -1,4 +1,4 @@
-package nl.tudelft.trustchain.fedml.ai.dataset.mobi_act
+package nl.tudelft.trustchain.fedml.ai.dataset.wisdm
 
 import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.Behaviors
@@ -18,9 +18,9 @@ import java.io.IOException
 import java.net.URL
 import java.util.stream.IntStream
 
-private val logger = KotlinLogging.logger("MobiActDataFetcher")
+private val logger = KotlinLogging.logger("WISDMDataFetcher")
 
-class MobiActDataFetcher(
+class WISDMDataFetcher(
     val iteratorDistribution: IntArray,
     seed: Long,
     val dataSetType: CustomDataSetType,
@@ -103,7 +103,8 @@ class MobiActDataFetcher(
                 logger.debug { "4" }
 
                 shuffledSamplesTrain = allSamples.subList(0, (0.7 * allSamples.size).toInt()).toTypedArray()
-                shuffledSamplesTest = allSamples.subList((0.7 * allSamples.size).toInt(), allSamples.size).toTypedArray()
+                shuffledSamplesTest = allSamples.subList(0, (0.7 * allSamples.size).toInt()).toTypedArray()
+                logger.debug { "asdf: ${shuffledSamplesTrain!!.toList().toMap().map { Pair(it.key, it.value.size) }}" }
             } else {
                 val allSamples = ArrayList<Pair<Int, Array<DoubleArray>>>()
                 val folders = File(root).listFiles()!!

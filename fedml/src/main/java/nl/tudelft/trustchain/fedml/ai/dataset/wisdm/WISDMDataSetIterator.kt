@@ -1,4 +1,4 @@
-package nl.tudelft.trustchain.fedml.ai.dataset.mobi_act
+package nl.tudelft.trustchain.fedml.ai.dataset.wisdm
 
 import nl.tudelft.trustchain.fedml.Behaviors
 import nl.tudelft.trustchain.fedml.ai.CustomDataSetType
@@ -9,7 +9,7 @@ import org.nd4j.linalg.dataset.api.preprocessor.NormalizerStandardize
 import java.io.File
 
 
-class MobiActDataSetIterator(
+class WISDMDataSetIterator(
     val iteratorConfiguration: DatasetIteratorConfiguration,
     seed: Long,
     dataSetType: CustomDataSetType,
@@ -18,7 +18,7 @@ class MobiActDataSetIterator(
 ) : CustomBaseDatasetIterator(
     iteratorConfiguration.batchSize.value,
     -1,
-    MobiActDataFetcher(
+    WISDMDataFetcher(
         iteratorConfiguration.distribution.toIntArray(),
         seed,
         dataSetType,
@@ -44,8 +44,8 @@ class MobiActDataSetIterator(
             baseDirectory: File,
             behavior: Behaviors,
             transfer: Boolean
-        ): MobiActDataSetIterator {
-            val iterator = MobiActDataSetIterator(iteratorConfiguration, seed, dataSetType, behavior, transfer)
+        ): WISDMDataSetIterator {
+            val iterator = WISDMDataSetIterator(iteratorConfiguration, seed, dataSetType, behavior, transfer)
             val preProcessor = NormalizerStandardize()
             preProcessor.fit(iterator)
             iterator.setPreProcessor(preProcessor)
