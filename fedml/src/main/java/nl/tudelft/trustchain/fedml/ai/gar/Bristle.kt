@@ -147,7 +147,11 @@ class Bristle : AggregationRule() {
         network: MultiLayerNetwork,
         testDataSetIterator: CustomDataSetIterator,
     ): DoubleArray {
-        network.outputLayer.setParam("W", model)
+        val tw = network.outputLayer.paramTable()
+        for (index in 0 until tw.getValue("W").columns()) {
+            tw.getValue("W").putColumn(index, model.getColumn(index.toLong()).dup())
+        }
+        network.outputLayer.setParamTable(tw)
         val evaluations = arrayOf(Evaluation())
         network.doEvaluation(testDataSetIterator, *evaluations)
         return testDataSetIterator.labels.map {

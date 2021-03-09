@@ -172,7 +172,11 @@ class Node(
         if (iteration % iterationsBeforeSending == 0) {
             if (gar == GARs.BRISTLE) {
                 logger.t(logging) { "1... - outputlayer $nodeIndex: ${formatter.format(network.outputLayer.paramTable().getValue("W")) }"}
-                network.outputLayer.setParam("W", cw)
+                val tw = network.outputLayer.paramTable()
+                for (index in 0 until tw["W"]!!.columns()) {
+                    tw["W"]!!.putColumn(index, cw.getColumn(index.toLong()).dup())
+                }
+                network.outputLayer.setParamTable(tw)
                 logger.t(logging) { "1 - outputlayer $nodeIndex: ${formatter.format(network.outputLayer.paramTable().getValue("W"))}" }
             }
             shareModel(
@@ -196,11 +200,11 @@ class Node(
     }
 
     private fun resetTW() {
-        val tw = network.outputLayer.paramTable().getValue("W")
-        for (index in 0 until labels.size) {
-            tw.putColumn(index, cw.getColumn(index.toLong()).dup())
+        val tw = network.outputLayer.paramTable()
+        for (index in labels.indices) {
+            tw.getValue("W").putColumn(index, cw.getColumn(index.toLong()).dup())
         }
-        network.outputLayer.setParam("W", tw)
+        network.outputLayer.setParamTable(tw)
     }
 
     private fun joiningLateSkip(): Boolean {
@@ -300,7 +304,11 @@ class Node(
                 )
             }
             if (gar == GARs.BRISTLE) {
-                network.outputLayer.setParam("W", cw)
+                val tw = network.outputLayer.paramTable()
+                for (index in labels.indices) {
+                    tw.getValue("W").putColumn(index, cw.getColumn(index.toLong()).dup())
+                }
+                network.outputLayer.setParamTable(tw)
                 evaluationScript.invoke()
             } else {
                 evaluationScript.invoke()

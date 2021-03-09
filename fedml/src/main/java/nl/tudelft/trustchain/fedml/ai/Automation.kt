@@ -30,7 +30,7 @@ fun loadAutomation(baseDirectory: File): Automation {
     return Json.decodeFromString(string)
 }
 
-private val ISOLATED_FIGURE_NAME = arrayOf("Figure 1.2")
+private val ISOLATED_FIGURE_NAME = arrayOf("Figure 3.1")
 private val ISOLATED_FIGURE_GAR = arrayOf("average")
 
 /**
@@ -56,13 +56,12 @@ fun generateConfigs(
     val iterationsBeforeEvaluation = automation.fixedValues.getValue("iterationsBeforeEvaluation").toInt()
     val iterationsBeforeSending = automation.fixedValues.getValue("iterationsBeforeSending").toInt()
     val figures = automation.figures
-    logger.debug { "Testing figure: ${automationPart * ((figures.size - 4) / 16)}" }
     val myFigures =
         if (automationPart == -1)
             figures.filter { it.name in ISOLATED_FIGURE_NAME }
         else
             figures.subList(automationPart * ((figures.size - 4) / 16) + if (automationPart == 0) 0 else 4, (automationPart + 1) * ((figures.size - 4) / 16) + 4)
-    logger.debug { "figures.subList(${automationPart * ((figures.size - 4) / 16) + if (automationPart == 0) 0 else 4}, ${(automationPart + 1) * ((figures.size - 4) / 16) + 4})" }
+    logger.debug { "myFigures: ${myFigures.map { it.name }}" }
 
     for (figure in myFigures) {
         configurations.add(arrayListOf())
