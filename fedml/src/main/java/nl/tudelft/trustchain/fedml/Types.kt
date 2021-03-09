@@ -134,7 +134,7 @@ enum class IteratorDistributions(val id: String, val text: String, val value: In
     ),
     DISTRIBUTION_MNIST_5("mnist_7_to_4_with_100", "MNIST 0 to 7 with 100", intArrayOf(100, 100, 100, 0, 0, 0, 0, 100, 100, 100)),
     DISTRIBUTION_CIFAR_50("cifar_50", "CIFAR 50", intArrayOf(50, 50, 50, 50, 50, 50, 50, 50, 50, 50)),
-    DISTRIBUTION_HAR_100("har_100", "HAR 100", intArrayOf(100, 100, 100, 100, 100, 100)),
+//    DISTRIBUTION_HAR_100("har_100", "HAR 100", intArrayOf(100, 100, 100, 100, 100, 100)),
     DISTRIBUTION_WISDM_100("wisdm_100", "WISDM 100", intArrayOf(100, 100, 100, 100, 100, 100)),
 }
 

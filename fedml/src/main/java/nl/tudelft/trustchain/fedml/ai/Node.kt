@@ -170,9 +170,11 @@ class Node(
         logger.t(logging) { "2 - outputlayer $nodeIndex: ${formatter.format(cw)}" }
 
         if (iteration % iterationsBeforeSending == 0) {
-            logger.t(logging) { "1... - outputlayer $nodeIndex: ${formatter.format(network.outputLayer.paramTable().getValue("W"))}" }
-            network.outputLayer.setParam("W", cw)
-            logger.t(logging) { "1 - outputlayer $nodeIndex: ${formatter.format(network.outputLayer.paramTable().getValue("W"))}" }
+            if (gar == GARs.BRISTLE) {
+                logger.t(logging) { "1... - outputlayer $nodeIndex: ${formatter.format(network.outputLayer.paramTable().getValue("W")) }"}
+                network.outputLayer.setParam("W", cw)
+                logger.t(logging) { "1 - outputlayer $nodeIndex: ${formatter.format(network.outputLayer.paramTable().getValue("W"))}" }
+            }
             shareModel(
                 if (gar == GARs.BRISTLE) network.outputLayer.paramTable().getValue("W").dup() else network.params().dup(),
                 trainConfiguration,

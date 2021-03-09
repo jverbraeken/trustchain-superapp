@@ -120,10 +120,6 @@ fun generateDefaultCIFARConfiguration(
         SubsamplingLayer.Builder().kernelSize(2,2).stride(2,2).poolingType(SubsamplingLayer.PoolingType.MAX).build(),
 
         ConvolutionLayer.Builder().kernelSize(3,3).stride(1,1).padding(1,1).activation(Activation.LEAKYRELU)
-            .nOut(96).build(),
-        SubsamplingLayer.Builder().kernelSize(2,2).stride(2,2).poolingType(SubsamplingLayer.PoolingType.MAX).build(),
-
-        ConvolutionLayer.Builder().kernelSize(3,3).stride(1,1).padding(1,1).activation(Activation.LEAKYRELU)
             .nOut(128).build(),
         SubsamplingLayer.Builder().kernelSize(2,2).stride(2,2).poolingType(SubsamplingLayer.PoolingType.MAX).build(),
 
@@ -172,23 +168,8 @@ fun generateDefaultCIFARConfiguration(
                 layers[3]
             }
         )
-        .layer(
-            if (mode == NNConfigurationMode.FROZEN) {
-                FrozenLayer.Builder().layer(layers[4]).build()
-            } else {
-                layers[4]
-            }
-        )
         .layer(BatchNormalization())
-        .layer(
-            if (mode == NNConfigurationMode.FROZEN) {
-                FrozenLayer.Builder().layer(layers[5]).build()
-            } else {
-                layers[5]
-            }
-        )
-        .layer(BatchNormalization())
-        .layer(layers[6])
+        .layer(layers[4])
         .setInputType(InputType.convolutional(height.toLong(), width.toLong(), channels.toLong()))
         .build()
 }

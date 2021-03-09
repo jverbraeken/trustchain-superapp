@@ -198,6 +198,9 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
                 dir.mkdirs()
             }
             copyAsset(assetManager, "automation.json")
+            copyAsset(assetManager, "transfer-mnist")
+            copyAsset(assetManager, "transfer-cifar10")
+            copyAsset(assetManager, "transfer-wisdm")
         } catch (e: IOException) {
             // Probably a directory
         }
@@ -223,9 +226,12 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     }
 
     private fun copyAsset(assetManager: AssetManager, asset: String) {
-        assetManager.open(asset).use { input ->
-            FileOutputStream(File(baseDirectory, asset)).use { output ->
-                copyFile(input, output)
+        val file = File(baseDirectory, asset)
+        if (!file.exists()) {
+            assetManager.open(asset).use { input ->
+                FileOutputStream(file).use { output ->
+                    copyFile(input, output)
+                }
             }
         }
     }
