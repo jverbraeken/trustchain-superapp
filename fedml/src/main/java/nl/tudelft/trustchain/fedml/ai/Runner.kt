@@ -433,11 +433,7 @@ abstract class Runner {
     }
 
     private fun craftNoiseMessage(first: INDArray, random: Random): INDArray {
-        return if (first.rows() > 1) {
-            val numColumns = first.columns()
-            NDArray(Array(first.rows()) { FloatArray(numColumns) { random.nextFloat() / 2 - 0.2f } })
-        } else {
-            NDArray(Array(1) { FloatArray(first.rows()) { random.nextFloat() / 2 - 0.2f } })
-        }
+        val numColumns = first.columns()
+        return NDArray(Array(first.rows()) { FloatArray(numColumns) { random.nextFloat() / 2 - 0.2f } })
     }
 }

@@ -31,7 +31,7 @@ fun loadAutomation(baseDirectory: File): Automation {
 }
 
 private val ISOLATED_FIGURE_NAME = arrayOf("Figure 3.1")
-private val ISOLATED_FIGURE_GAR = arrayOf("average")
+private val ISOLATED_FIGURE_GAR = arrayOf("median")
 
 /**
  * @return 1. the configuration per node, per test, per figure ; 2. the names of the figures
