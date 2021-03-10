@@ -67,7 +67,7 @@ class Fang2020TrimmedMean(private val b: Int) : ModelPoisoningAttack() {
                     max = if (max >= elements[j]) max else elements[j]
                 }
                 if (max > 0) {
-                    val size = if (max > 1) 0f else (b * max + EPSILON) - (max)
+                    val size = if (max > 10) 0f else (b * max + EPSILON) - (max)
                     newMatrices.forEach { it[0][i] = max + random.nextFloat() * size }
                 }
                 else {
@@ -89,7 +89,7 @@ class Fang2020TrimmedMean(private val b: Int) : ModelPoisoningAttack() {
                     newMatrices.forEach { it[0][i] = min / b + random.nextFloat() * size }
                 }
                 else {
-                    min = if (min < -1) -1f else min
+                    min = if (min < -10) -10f else min
                     val size = (min) - (b * min - EPSILON)
                     newMatrices.forEach { it[0][i] = b * min - EPSILON + random.nextFloat() * size }
                 }

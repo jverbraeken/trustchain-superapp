@@ -22,7 +22,7 @@ class Fang2020Krum(private val b: Int) : ModelPoisoningAttack() {
         otherModels: Map<Int, INDArray>,
         random: Random
     ): Map<Int, INDArray> {
-        logger.debug { formatName("Fang 2020 Trimmed Mean") }
+        logger.debug { formatName("Fang 2020 Krum") }
         val models = arrayOf<INDArray>(oldModel.sub(gradient), *(otherModels.values.toTypedArray()))
         logger.debug { "Found ${models.size} models in total" }
         if (models.size < 4) {
@@ -50,6 +50,7 @@ class Fang2020Krum(private val b: Int) : ModelPoisoningAttack() {
             otherModels.values
                 .map { it.distance2(oldModel) }.toTypedArray()
                 .maxOrNull()!!
+        logger.debug { "lambda 1: $lambda" }
 
         while (lambda >= 1e-5) {
             val w1 = oldModel.sub(ns.mul(lambda))
@@ -57,12 +58,18 @@ class Fang2020Krum(private val b: Int) : ModelPoisoningAttack() {
             val newModels = Array<INDArray>(c) { w1 }
             val combinedModels = arrayOf(*models, *newModels)
             if (getKrum(combinedModels, b) >= models.size) {
-                return transformToResult(newModels)
+                logger.debug { "${newModels.map { it.minNumber() }}; ${newModels.map { it.maxNumber() }}" }
+                return transformToResult(newModels.map {
+                    if (it.minNumber().toDouble() < -10 || it.maxNumber().toDouble() > 10) oldModel else it
+                }.toTypedArray())
             }
             lambda /= 2
         }
+        logger.debug { "lambda 2: $lambda" }
         val w1 = oldModel.sub(ns.mul(lambda))
         val newModels = Array<INDArray>(c) { w1 }
+
+        logger.debug { "${newModels.map { it.minNumber() }}; ${newModels.map { it.maxNumber() }}" }
         return transformToResult(newModels)
     }
 
