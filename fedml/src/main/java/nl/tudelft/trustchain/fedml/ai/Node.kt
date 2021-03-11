@@ -17,7 +17,7 @@ import kotlin.random.Random
 
 private val bigPrime = BigInteger("100012421")
 private val logger = KotlinLogging.logger("Node")
-private const val ONLY_EVALUATE_FIRST_NODE = true
+private const val ONLY_EVALUATE_FIRST_NODE = false
 private const val SIZE_RECENT_OTHER_MODELS = 20
 
 class Node(
@@ -170,7 +170,7 @@ class Node(
         logger.t(logging) { "2 - outputlayer $nodeIndex: ${formatter.format(cw)}" }
 
         if (iteration % iterationsBeforeSending == 0) {
-            if (gar == GARs.BRISTLE) {
+            /*if (gar == GARs.BRISTLE) {
                 logger.t(logging) { "1... - outputlayer $nodeIndex: ${formatter.format(network.outputLayer.paramTable().getValue("W")) }"}
                 val tw = network.outputLayer.paramTable()
                 for (index in 0 until tw["W"]!!.columns()) {
@@ -178,9 +178,10 @@ class Node(
                 }
                 network.outputLayer.setParamTable(tw)
                 logger.t(logging) { "1 - outputlayer $nodeIndex: ${formatter.format(network.outputLayer.paramTable().getValue("W"))}" }
-            }
+            }*/
+            logger.t(logging) { "1... - cw $nodeIndex: ${formatter.format(cw) }"}
             shareModel(
-                if (gar == GARs.BRISTLE) network.outputLayer.paramTable().getValue("W").dup() else network.params().dup(),
+                if (gar == GARs.BRISTLE) cw.dup() else network.params().dup(),
                 trainConfiguration,
                 random,
                 nodeIndex,
@@ -201,7 +202,7 @@ class Node(
 
     private fun resetTW() {
         val tw = network.outputLayer.paramTable()
-        for (index in labels.indices) {
+        for (index in 0 until cw.columns()) {
             tw.getValue("W").putColumn(index, cw.getColumn(index.toLong()).dup())
         }
         network.outputLayer.setParamTable(tw)
@@ -305,10 +306,11 @@ class Node(
             }
             if (gar == GARs.BRISTLE) {
                 val tw = network.outputLayer.paramTable()
-                for (index in labels.indices) {
+                for (index in 0 until tw["W"]!!.columns()) {
                     tw.getValue("W").putColumn(index, cw.getColumn(index.toLong()).dup())
                 }
                 network.outputLayer.setParamTable(tw)
+                logger.t(logging) { "Evaluating with $nodeIndex: ${formatter.format(network.outputLayer.paramTable().getValue("W")) }"}
                 evaluationScript.invoke()
             } else {
                 evaluationScript.invoke()

@@ -98,7 +98,14 @@ class Bristle : AggregationRule() {
         val certaintiesPerSelectedPeer = getCertaintiesPerSelectedPeer(peers, selectedClassesPerPeer, recallsPerPeer)
         logger.d(logging) { "certaintiesPerSelectedPeer: ${certaintiesPerSelectedPeer.map { Pair(it.key, it.value.toList()) }}" }
 
-        val weightsPerSelectedPeer = getWeightsPerSelectedPeer(peers, selectedClassesPerPeer, scoresPerSelectedPeer, certaintiesPerSelectedPeer)
+
+
+        val certaintyPerSelectedPeer = getCertaintyPerSelectedPeer(peers, recallsPerPeer, selectedClassesPerPeer)
+        logger.d(logging) { "certaintyPerSelectedPeer: $certaintyPerSelectedPeer" }
+
+
+
+        val weightsPerSelectedPeer = getWeightsPerSelectedPeer(peers, selectedClassesPerPeer, scoresPerSelectedPeer, certaintiesPerSelectedPeer, certaintyPerSelectedPeer)
         logger.d(logging) { "weightsPerSelectedPeer: ${weightsPerSelectedPeer.map { Pair(it.key, it.value.toList()) }}" }
 
         val weightedAverage = weightedAverage(weightsPerSelectedPeer, combinedModels, newModel, logging, testDataSetIterator.labels)
@@ -107,9 +114,6 @@ class Bristle : AggregationRule() {
 
         val unboundedScoresPerSelectedPeer = getScoresPerSelectedPeer(peers, myRecalls, recallsPerPeer, selectedClassesPerPeer, weightedDiffsPerSelectedPeer, seqAttackPenaltiesPerSelectedPeer, false)
         logger.d(logging) { "unboundedScoresPerSelectedPeer: ${unboundedScoresPerSelectedPeer.map { Pair(it.key, it.value.toList()) }}" }
-
-        val certaintyPerSelectedPeer = getCertaintyPerSelectedPeer(peers, recallsPerPeer, selectedClassesPerPeer)
-        logger.d(logging) { "certaintyPerSelectedPeer: $certaintyPerSelectedPeer" }
 
         val weightPerSelectedPeer = getWeightPerSelectedPeer(peers, unboundedScoresPerSelectedPeer, certaintyPerSelectedPeer)
         logger.d(logging) { "weightPerSelectedPeer: $weightPerSelectedPeer" }
@@ -264,7 +268,8 @@ class Bristle : AggregationRule() {
         peers: IntArray,
         selectedClassesPerPeer: Map<Peer, IntArray>,
         scoresPerSelectedPeer: Map<Peer, Map<Class, Score>>,
-        certaintiesPerSelectedPeer: Map<Peer, Map<Class, Certainty>>
+        certaintiesPerSelectedPeer: Map<Peer, Map<Class, Certainty>>,
+        certaintyPerSelectedPeer: Map<Peer, Double>
     ): Map<Peer, Map<Class, Weight>> {
         return peers.map { peer ->
             val weightPerSelectedClass = selectedClassesPerPeer.getValue(peer).map { selectedClass ->
@@ -272,7 +277,7 @@ class Bristle : AggregationRule() {
                 sigmoid *= 10  // sigmoid from 0 -> 1 to 0 -> 10
                 sigmoid -= 4  // sigmoid from 0 -> 10 to -4 -> 6
                 sigmoid = max(0.0, sigmoid)  // no negative weights
-                sigmoid *= certaintiesPerSelectedPeer.getValue(peer).getValue(selectedClass)
+                sigmoid *= certaintyPerSelectedPeer.getValue(peer)/*certaintiesPerSelectedPeer.getValue(peer).getValue(selectedClass)*/
                 Pair(selectedClass, sigmoid)
             }.toMap()
             Pair(peer, weightPerSelectedClass)
@@ -318,7 +323,7 @@ class Bristle : AggregationRule() {
             val recallPerSelectedClasses = peerRecallPerClass.getValue(peer).sliceArray(selectedClasses.toList())
             val average = recallPerSelectedClasses.average()
             val std = recallPerSelectedClasses.std()
-            Pair(peer, max(0.0, average - std * 2))
+            Pair(peer, max(0.0, average - std))
         }.toMap()
     }
 

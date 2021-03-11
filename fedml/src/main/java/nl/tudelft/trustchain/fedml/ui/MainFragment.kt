@@ -21,6 +21,7 @@ import org.deeplearning4j.common.resources.DL4JResources
 import java.io.*
 
 private val logger = KotlinLogging.logger("FedML.MainFragment")
+private const val ALWAYS_REPLACE = true
 
 //-e activity fedml -e dataset mnist -e optimizer adam -e learningRate rate_1em3 -e momentum none -e l2Regularization l2_5em3 -e batchSize batch_32 -e maxIteration iter_250 -e iteratorDistribution mnist_1 -e maxTestSample num_200 -e gar mozi -e communicationPattern random -e behavior benign -e runner distributed -e run false
 //-e activity fedml -e dataset cifar10 -e optimizer sgd -e learningRate schedule1 -e momentum momentum_1em3 -e l2Regularization l2_1em4 -e batchSize batch_5 -e maxIteration iter_250 -e runner distributed -e run true
@@ -227,7 +228,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
 
     private fun copyAsset(assetManager: AssetManager, asset: String) {
         val file = File(baseDirectory, asset)
-        if (!file.exists()) {
+        if (!file.exists() || ALWAYS_REPLACE) {
             assetManager.open(asset).use { input ->
                 FileOutputStream(file).use { output ->
                     copyFile(input, output)
