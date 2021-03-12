@@ -1,0 +1,26 @@
+name,simulationIndex,transfer,dataset,optimizer,learning rate,momentum,l2,batchSize,iteratorDistribution,maxTestSamples,gar,communicationPattern,behavior,numEpochs,slowdown,joiningLate,iterationsBeforeEvaluation,iterationsBeforeSending,local model poisoning attack,#attackers
+Figure 0.1 - average - transfer,0,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Benign,300,x 0.2,0,10,1,<none>,0
+Figure 0.1 - average - transfer,1,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+Figure 0.1 - average - transfer,2,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+Figure 0.1 - average - transfer,3,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+Figure 0.1 - average - transfer,4,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+Figure 0.1 - median - transfer,0,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Median,All,Benign,300,x 0.2,0,10,1,<none>,0
+Figure 0.1 - median - transfer,1,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Median,All,Benign,300,-,0,10,1,<none>,0
+Figure 0.1 - median - transfer,2,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Median,All,Benign,300,-,0,10,1,<none>,0
+Figure 0.1 - median - transfer,3,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Median,All,Benign,300,-,0,10,1,<none>,0
+Figure 0.1 - median - transfer,4,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Median,All,Benign,300,-,0,10,1,<none>,0
+Figure 0.1 - krum - transfer,0,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Krum (b=1),All,Benign,300,x 0.2,0,10,1,<none>,0
+Figure 0.1 - krum - transfer,1,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+Figure 0.1 - krum - transfer,2,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+Figure 0.1 - krum - transfer,3,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+Figure 0.1 - krum - transfer,4,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+Figure 0.1 - bridge - transfer,0,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bridge (b=1),All,Benign,300,x 0.2,0,10,1,<none>,0
+Figure 0.1 - bridge - transfer,1,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+Figure 0.1 - bridge - transfer,2,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+Figure 0.1 - bridge - transfer,3,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+Figure 0.1 - bridge - transfer,4,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+Figure 0.1 - mozi - transfer,0,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Mozi (frac=0.5),All,Benign,300,x 0.2,0,10,1,<none>,0
+Figure 0.1 - mozi - transfer,1,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+Figure 0.1 - mozi - transfer,2,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+Figure 0.1 - mozi - transfer,3,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+Figure 0.1 - mozi - transfer,4,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0

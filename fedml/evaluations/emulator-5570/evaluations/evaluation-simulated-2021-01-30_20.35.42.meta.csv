@@ -1,0 +1,19 @@
+name,simulationIndex,dataset,optimizer,learning rate,momentum,l2,batchSize,iteratorDistribution,maxTestSamples,gar,communicationPattern,behavior,numEpochs,slowdown,joiningLate,iterationsBeforeEvaluation,iterationsBeforeSending,local model poisoning attack,#attackers
+Figure 3.3 - average,0,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Simple average,All,Benign,200,-,0,10,1,Fang 2020 (krum),20
+Figure 3.3 - average,1,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Simple average,All,Benign,200,-,0,10,1,Fang 2020 (krum),20
+Figure 3.3 - average,2,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Simple average,All,Benign,200,-,0,10,1,Fang 2020 (krum),20
+Figure 3.3 - average,3,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Simple average,All,Benign,200,-,0,10,1,Fang 2020 (krum),20
+Figure 3.3 - average,4,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Simple average,All,Benign,200,-,0,10,1,Fang 2020 (krum),20
+Figure 3.3 - average,5,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Simple average,All,Benign,200,-,0,10,1,Fang 2020 (krum),20
+Figure 3.3 - average,6,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Simple average,All,Benign,200,-,0,10,1,Fang 2020 (krum),20
+Figure 3.3 - average,7,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Simple average,All,Benign,200,-,0,10,1,Fang 2020 (krum),20
+Figure 3.3 - average,8,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Simple average,All,Benign,200,-,0,10,1,Fang 2020 (krum),20
+Figure 3.3 - median,0,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Median,All,Benign,200,-,0,10,1,Fang 2020 (krum),20
+Figure 3.3 - median,1,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Median,All,Benign,200,-,0,10,1,Fang 2020 (krum),20
+Figure 3.3 - median,2,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Median,All,Benign,200,-,0,10,1,Fang 2020 (krum),20
+Figure 3.3 - median,3,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Median,All,Benign,200,-,0,10,1,Fang 2020 (krum),20
+Figure 3.3 - median,4,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Median,All,Benign,200,-,0,10,1,Fang 2020 (krum),20
+Figure 3.3 - median,5,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Median,All,Benign,200,-,0,10,1,Fang 2020 (krum),20
+Figure 3.3 - median,6,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Median,All,Benign,200,-,0,10,1,Fang 2020 (krum),20
+Figure 3.3 - median,7,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Median,All,Benign,200,-,0,10,1,Fang 2020 (krum),20
+Figure 3.3 - median,8,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Median,All,Benign,200,-,0,10,1,Fang 2020 (krum),20

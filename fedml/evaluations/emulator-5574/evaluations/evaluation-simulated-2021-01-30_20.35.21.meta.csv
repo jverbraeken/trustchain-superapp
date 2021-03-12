@@ -1,0 +1,55 @@
+name,simulationIndex,dataset,optimizer,learning rate,momentum,l2,batchSize,iteratorDistribution,maxTestSamples,gar,communicationPattern,behavior,numEpochs,slowdown,joiningLate,iterationsBeforeEvaluation,iterationsBeforeSending,local model poisoning attack,#attackers
+Figure 0.4 - average,0,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-0-0-0-0-0-0],10,Simple average,All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - average,1,MNIST,Adam,1e-3,<none>,5e-3,5,[0-50-50-50-50-0-0-0-0-0],10,Simple average,All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - average,2,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-50-50-50-50-0-0-0-0],10,Simple average,All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - average,3,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-50-50-50-50-0-0-0],10,Simple average,All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - average,4,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-50-50-50-50-0-0],10,Simple average,All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - average,5,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-50-50-50-50-0],10,Simple average,All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - average,6,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-50-50-50-50],10,Simple average,All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - average,7,MNIST,Adam,1e-3,<none>,5e-3,5,[50-0-0-0-0-0-0-50-50-50],10,Simple average,All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - average,8,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-0-0-0-0-0-0-50-50],10,Simple average,All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - median,0,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-0-0-0-0-0-0],10,Median,All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - median,1,MNIST,Adam,1e-3,<none>,5e-3,5,[0-50-50-50-50-0-0-0-0-0],10,Median,All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - median,2,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-50-50-50-50-0-0-0-0],10,Median,All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - median,3,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-50-50-50-50-0-0-0],10,Median,All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - median,4,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-50-50-50-50-0-0],10,Median,All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - median,5,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-50-50-50-50-0],10,Median,All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - median,6,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-50-50-50-50],10,Median,All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - median,7,MNIST,Adam,1e-3,<none>,5e-3,5,[50-0-0-0-0-0-0-50-50-50],10,Median,All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - median,8,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-0-0-0-0-0-0-50-50],10,Median,All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - krum,0,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-0-0-0-0-0-0],10,Krum (b=1),All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - krum,1,MNIST,Adam,1e-3,<none>,5e-3,5,[0-50-50-50-50-0-0-0-0-0],10,Krum (b=1),All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - krum,2,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-50-50-50-50-0-0-0-0],10,Krum (b=1),All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - krum,3,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-50-50-50-50-0-0-0],10,Krum (b=1),All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - krum,4,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-50-50-50-50-0-0],10,Krum (b=1),All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - krum,5,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-50-50-50-50-0],10,Krum (b=1),All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - krum,6,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-50-50-50-50],10,Krum (b=1),All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - krum,7,MNIST,Adam,1e-3,<none>,5e-3,5,[50-0-0-0-0-0-0-50-50-50],10,Krum (b=1),All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - krum,8,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-0-0-0-0-0-0-50-50],10,Krum (b=1),All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - bridge,0,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-0-0-0-0-0-0],10,Bridge (b=1),All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - bridge,1,MNIST,Adam,1e-3,<none>,5e-3,5,[0-50-50-50-50-0-0-0-0-0],10,Bridge (b=1),All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - bridge,2,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-50-50-50-50-0-0-0-0],10,Bridge (b=1),All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - bridge,3,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-50-50-50-50-0-0-0],10,Bridge (b=1),All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - bridge,4,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-50-50-50-50-0-0],10,Bridge (b=1),All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - bridge,5,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-50-50-50-50-0],10,Bridge (b=1),All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - bridge,6,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-50-50-50-50],10,Bridge (b=1),All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - bridge,7,MNIST,Adam,1e-3,<none>,5e-3,5,[50-0-0-0-0-0-0-50-50-50],10,Bridge (b=1),All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - bridge,8,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-0-0-0-0-0-0-50-50],10,Bridge (b=1),All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - mozi,0,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-0-0-0-0-0-0],10,Mozi (frac=0.5),All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - mozi,1,MNIST,Adam,1e-3,<none>,5e-3,5,[0-50-50-50-50-0-0-0-0-0],10,Mozi (frac=0.5),All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - mozi,2,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-50-50-50-50-0-0-0-0],10,Mozi (frac=0.5),All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - mozi,3,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-50-50-50-50-0-0-0],10,Mozi (frac=0.5),All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - mozi,4,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-50-50-50-50-0-0],10,Mozi (frac=0.5),All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - mozi,5,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-50-50-50-50-0],10,Mozi (frac=0.5),All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - mozi,6,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-50-50-50-50],10,Mozi (frac=0.5),All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - mozi,7,MNIST,Adam,1e-3,<none>,5e-3,5,[50-0-0-0-0-0-0-50-50-50],10,Mozi (frac=0.5),All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - mozi,8,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-0-0-0-0-0-0-50-50],10,Mozi (frac=0.5),All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - bristle,0,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-0-0-0-0-0-0],10,Bristle,All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - bristle,1,MNIST,Adam,1e-3,<none>,5e-3,5,[0-50-50-50-50-0-0-0-0-0],10,Bristle,All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - bristle,2,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-50-50-50-50-0-0-0-0],10,Bristle,All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - bristle,3,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-50-50-50-50-0-0-0],10,Bristle,All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - bristle,4,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-50-50-50-50-0-0],10,Bristle,All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - bristle,5,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-50-50-50-50-0],10,Bristle,All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - bristle,6,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-50-50-50-50],10,Bristle,All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - bristle,7,MNIST,Adam,1e-3,<none>,5e-3,5,[50-0-0-0-0-0-0-50-50-50],10,Bristle,All,Benign,500,-,0,10,1,<none>,0
+Figure 0.4 - bristle,8,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-0-0-0-0-0-0-50-50],10,Bristle,All,Benign,500,-,0,10,1,<none>,0

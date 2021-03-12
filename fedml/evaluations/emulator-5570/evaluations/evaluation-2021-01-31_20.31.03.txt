@@ -1,0 +1,900 @@
+<====      Simple average      ====>
+Found 9 models in total
+<====      Simple average      ====>
+Found 9 models in total
+<====      Simple average      ====>
+Found 9 models in total
+<====      Simple average      ====>
+Found 9 models in total
+<====      Simple average      ====>
+Found 9 models in total
+<====      Simple average      ====>
+Found 9 models in total
+<====      Simple average      ====>
+Found 9 models in total
+<====      Simple average      ====>
+Found 9 models in total
+<====      Simple average      ====>
+Found 9 models in total
+<====      BRISTLE      ====>
+Found 8 other models
+oldModel: -0.005620698
+newModel: -0.0064689573
+otherModels: [0.0010480732, -0.0041191583, -0.006519566, 0.0063139503, -0.005647482, -0.007677176, -0.0014711356, -0.007555788]
+Distance calculated: 45.98219680786133
+Distance calculated: 46.052330017089844
+Distance calculated: 45.892120361328125
+Distance calculated: 46.0186882019043
+Distance calculated: 45.866416931152344
+Distance calculated: 45.91918182373047
+Distance calculated: 46.1583251953125
+Distance calculated: 46.25715637207031
+distances: {5=45.866416931152344, 3=45.892120361328125, 6=45.91918182373047, 1100003=45.96243667602539, 1=45.98219680786133, 1100005=46.007083892822266, 4=46.0186882019043, 2=46.052330017089844, 1100001=46.063575744628906, 1100006=46.08633041381836, 1100004=46.088260650634766, 1100002=46.114654541015625, 7=46.1583251953125, 8=46.25715637207031, 1100007=46.28513717651367, 1100008=46.37773895263672}
+closeModels: [-0.005647482, -0.006519566, -0.007677176, 0.0010480732, 0.0063139503, -0.0041191583, -0.0014711356, -0.007555788]
+notCloseModels: []
+combinedModels: [0.0010480732, -0.0041191583, -0.006519566, 0.0063139503, -0.005647482, -0.007677176, -0.0014711356, -0.007555788]
+myRecallPerClass: [0.0, 0.6, 1.0, 0.1, 0.8, 0.0, 0.0, 0.0, 0.7, 0.0]
+peerRecallPerClass: [(1, [0.7, 0.4, 1.0, 0.7, 0.5, 0.0, 0.0, 0.0, 0.0, 0.1]), (2, [0.1, 0.0, 1.0, 0.8, 0.7, 0.8, 0.0, 0.0, 0.1, 0.4]), (3, [0.9, 0.8, 0.0, 0.7, 0.4, 0.0, 0.0, 0.0, 0.1, 0.1]), (4, [0.0, 0.0, 0.1, 0.8, 1.0, 0.1, 0.2, 1.0, 0.6, 0.7]), (5, [0.0, 0.0, 0.6, 0.9, 0.3, 0.0, 0.5, 0.0, 0.8, 0.6]), (6, [0.1, 0.0, 0.5, 0.0, 0.8, 0.9, 0.3, 0.6, 0.8, 0.0]), (7, [0.0, 0.9, 0.8, 0.8, 0.3, 0.5, 0.0, 0.0, 0.0, 0.0]), (8, [0.0, 0.1, 1.0, 0.7, 0.0, 0.0, 0.4, 0.5, 0.6, 0.0])]
+selectedClassesAndRecall (1): {0=0.7, 1=0.4, 2=1.0, 3=0.7, 4=0.5, 5=0.0, 6=0.0, 7=0.0, 8=0.0, 9=0.1}
+selectedClassesAndRecall (2): {0=0.1, 1=0.0, 2=1.0, 3=0.8, 4=0.7, 5=0.8, 6=0.0, 7=0.0, 8=0.1, 9=0.4}
+selectedClassesAndRecall (3): {0=0.9, 1=0.8, 2=0.0, 3=0.7, 4=0.4, 5=0.0, 6=0.0, 7=0.0, 8=0.1, 9=0.1}
+selectedClassesAndRecall (4): {0=0.0, 1=0.0, 2=0.1, 3=0.8, 4=1.0, 5=0.1, 6=0.2, 7=1.0, 8=0.6, 9=0.7}
+selectedClassesAndRecall (5): {0=0.0, 1=0.0, 2=0.6, 3=0.9, 4=0.3, 5=0.0, 6=0.5, 7=0.0, 8=0.8, 9=0.6}
+selectedClassesAndRecall (6): {0=0.1, 1=0.0, 2=0.5, 3=0.0, 4=0.8, 5=0.9, 6=0.3, 7=0.6, 8=0.8, 9=0.0}
+selectedClassesAndRecall (7): {0=0.0, 1=0.9, 2=0.8, 3=0.8, 4=0.3, 5=0.5, 6=0.0, 7=0.0, 8=0.0, 9=0.0}
+selectedClassesAndRecall (8): {0=0.0, 1=0.1, 2=1.0, 3=0.7, 4=0.0, 5=0.0, 6=0.4, 7=0.5, 8=0.6, 9=0.0}
+peer: 1, class: 0, myRecall: 0.0, peerRecall: 0.7, weightedDiff: 7.0, untrainedModelAmbiguity: 1.0, w: 49.0, seqAttackPenalty: 0.0
+peer: 1, class: 1, myRecall: 0.6, peerRecall: 0.4, weightedDiff: 0.6399999999999999, untrainedModelAmbiguity: 0.32, w: -0.1754292063196714, seqAttackPenalty: 0.0
+peer: 1, class: 2, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.32, w: 0.0, seqAttackPenalty: 0.0
+peer: 1, class: 3, myRecall: 0.1, peerRecall: 0.7, weightedDiff: 6.0, untrainedModelAmbiguity: 1.0, w: 47.100464305513775, seqAttackPenalty: 0.0
+peer: 1, class: 4, myRecall: 0.8, peerRecall: 0.5, weightedDiff: 0.9600000000000002, untrainedModelAmbiguity: 0.32, w: -0.8424403866158412, seqAttackPenalty: 0.0
+peer: 1, class: 5, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.32, w: 0.0, seqAttackPenalty: 0.0
+peer: 1, class: 6, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.32, w: 0.0, seqAttackPenalty: 0.0
+peer: 1, class: 7, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.32, w: 0.0, seqAttackPenalty: 0.0
+peer: 1, class: 8, myRecall: 0.7, peerRecall: 0.0, weightedDiff: 2.24, untrainedModelAmbiguity: 0.32, w: -26.21226043281873, seqAttackPenalty: 0.0
+peer: 1, class: 9, myRecall: 0.0, peerRecall: 0.1, weightedDiff: 1.0, untrainedModelAmbiguity: 1.0, w: 1.0, seqAttackPenalty: 0.0
+peer: 2, class: 0, myRecall: 0.0, peerRecall: 0.1, weightedDiff: 1.0, untrainedModelAmbiguity: 1.0, w: 1.0, seqAttackPenalty: -1.4
+peer: 2, class: 1, myRecall: 0.6, peerRecall: 0.0, weightedDiff: 1.92, untrainedModelAmbiguity: 0.32, w: -17.823903722696503, seqAttackPenalty: 0.3999999999999999
+peer: 2, class: 2, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.32, w: 0.0, seqAttackPenalty: 0.0
+peer: 2, class: 3, myRecall: 0.1, peerRecall: 0.8, weightedDiff: 7.000000000000001, untrainedModelAmbiguity: 1.0, w: 65.60860233241458, seqAttackPenalty: -1.2
+peer: 2, class: 4, myRecall: 0.8, peerRecall: 0.7, weightedDiff: 0.3200000000000003, untrainedModelAmbiguity: 0.32, w: -0.013358259983049773, seqAttackPenalty: 0.6000000000000001
+peer: 2, class: 5, myRecall: 0.0, peerRecall: 0.8, weightedDiff: 8.0, untrainedModelAmbiguity: 1.0, w: 64.0, seqAttackPenalty: 0.0
+peer: 2, class: 6, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.32, w: 0.0, seqAttackPenalty: 0.0
+peer: 2, class: 7, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.32, w: 0.0, seqAttackPenalty: 0.0
+peer: 2, class: 8, myRecall: 0.7, peerRecall: 0.1, weightedDiff: 1.92, untrainedModelAmbiguity: 0.32, w: -33.69622255820132, seqAttackPenalty: 1.4
+peer: 2, class: 9, myRecall: 0.0, peerRecall: 0.4, weightedDiff: 4.0, untrainedModelAmbiguity: 1.0, w: 16.0, seqAttackPenalty: -0.2
+peer: 3, class: 0, myRecall: 0.0, peerRecall: 0.9, weightedDiff: 9.0, untrainedModelAmbiguity: 1.0, w: 81.0, seqAttackPenalty: -1.5999999999999999
+peer: 3, class: 1, myRecall: 0.6, peerRecall: 0.8, weightedDiff: 2.000000000000001, untrainedModelAmbiguity: 1.0, w: 7.464263932294468, seqAttackPenalty: 1.5999999999999999
+peer: 3, class: 2, myRecall: 1.0, peerRecall: 0.0, weightedDiff: 3.2, untrainedModelAmbiguity: 0.32, w: -187.5749772459856, seqAttackPenalty: 0.0
+peer: 3, class: 3, myRecall: 0.1, peerRecall: 0.7, weightedDiff: 6.0, untrainedModelAmbiguity: 1.0, w: 47.100464305513775, seqAttackPenalty: -2.6
+peer: 3, class: 4, myRecall: 0.8, peerRecall: 0.4, weightedDiff: 1.28, untrainedModelAmbiguity: 0.32, w: -5.07638295987699, seqAttackPenalty: 0.8000000000000003
+peer: 3, class: 5, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.32, w: 0.0, seqAttackPenalty: -1.6
+peer: 3, class: 6, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.32, w: 0.0, seqAttackPenalty: 0.0
+peer: 3, class: 7, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.32, w: 0.0, seqAttackPenalty: 0.0
+peer: 3, class: 8, myRecall: 0.7, peerRecall: 0.1, weightedDiff: 1.92, untrainedModelAmbiguity: 0.32, w: -50.54433383730198, seqAttackPenalty: 2.5999999999999996
+peer: 3, class: 9, myRecall: 0.0, peerRecall: 0.1, weightedDiff: 1.0, untrainedModelAmbiguity: 1.0, w: 1.0, seqAttackPenalty: -1.0
+peer: 4, class: 0, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.32, w: 0.0, seqAttackPenalty: -3.4
+peer: 4, class: 1, myRecall: 0.6, peerRecall: 0.0, weightedDiff: 1.92, untrainedModelAmbiguity: 0.32, w: -28.00899156423736, seqAttackPenalty: 1.1999999999999997
+peer: 4, class: 2, myRecall: 1.0, peerRecall: 0.1, weightedDiff: 2.88, untrainedModelAmbiguity: 0.32, w: -350.25750492790183, seqAttackPenalty: 2.0
+peer: 4, class: 3, myRecall: 0.1, peerRecall: 0.8, weightedDiff: 7.000000000000001, untrainedModelAmbiguity: 1.0, w: 65.60860233241458, seqAttackPenalty: -3.8
+peer: 4, class: 4, myRecall: 0.8, peerRecall: 1.0, weightedDiff: 1.9999999999999996, untrainedModelAmbiguity: 1.0, w: 9.189586839976275, seqAttackPenalty: 1.6000000000000003
+peer: 4, class: 5, myRecall: 0.0, peerRecall: 0.1, weightedDiff: 1.0, untrainedModelAmbiguity: 1.0, w: 1.0, seqAttackPenalty: -1.6
+peer: 4, class: 6, myRecall: 0.0, peerRecall: 0.2, weightedDiff: 2.0, untrainedModelAmbiguity: 1.0, w: 4.0, seqAttackPenalty: 0.0
+peer: 4, class: 7, myRecall: 0.0, peerRecall: 1.0, weightedDiff: 10.0, untrainedModelAmbiguity: 1.0, w: 100.0, seqAttackPenalty: 0.0
+peer: 4, class: 8, myRecall: 0.7, peerRecall: 0.6, weightedDiff: 0.31999999999999995, untrainedModelAmbiguity: 0.32, w: -0.047544321014308534, seqAttackPenalty: 3.8
+peer: 4, class: 9, myRecall: 0.0, peerRecall: 0.7, weightedDiff: 7.0, untrainedModelAmbiguity: 1.0, w: 49.0, seqAttackPenalty: -1.2
+peer: 5, class: 0, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.32, w: 0.0, seqAttackPenalty: -3.4
+peer: 5, class: 1, myRecall: 0.6, peerRecall: 0.0, weightedDiff: 1.92, untrainedModelAmbiguity: 0.32, w: -43.28662332654864, seqAttackPenalty: 2.3999999999999995
+peer: 5, class: 2, myRecall: 1.0, peerRecall: 0.6, weightedDiff: 1.28, untrainedModelAmbiguity: 0.32, w: -14.577602399885038, seqAttackPenalty: 3.8
+peer: 5, class: 3, myRecall: 0.1, peerRecall: 0.9, weightedDiff: 8.0, untrainedModelAmbiguity: 1.0, w: 87.4265764322813, seqAttackPenalty: -5.2
+peer: 5, class: 4, myRecall: 0.8, peerRecall: 0.3, weightedDiff: 1.6, untrainedModelAmbiguity: 0.32, w: -15.838958028544148, seqAttackPenalty: 1.2000000000000004
+peer: 5, class: 5, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.32, w: 0.0, seqAttackPenalty: -1.8
+peer: 5, class: 6, myRecall: 0.0, peerRecall: 0.5, weightedDiff: 5.0, untrainedModelAmbiguity: 1.0, w: 25.0, seqAttackPenalty: -0.4
+peer: 5, class: 7, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.32, w: 0.0, seqAttackPenalty: -2.0
+peer: 5, class: 8, myRecall: 0.7, peerRecall: 0.8, weightedDiff: 1.0000000000000009, untrainedModelAmbiguity: 1.0, w: 1.0000000000000027, seqAttackPenalty: 4.0
+peer: 5, class: 9, myRecall: 0.0, peerRecall: 0.6, weightedDiff: 6.0, untrainedModelAmbiguity: 1.0, w: 36.0, seqAttackPenalty: -2.5999999999999996
+peer: 6, class: 0, myRecall: 0.0, peerRecall: 0.1, weightedDiff: 1.0, untrainedModelAmbiguity: 1.0, w: 1.0, seqAttackPenalty: -3.4
+peer: 6, class: 1, myRecall: 0.6, peerRecall: 0.0, weightedDiff: 1.92, untrainedModelAmbiguity: 0.32, w: -58.56425508885993, seqAttackPenalty: 3.5999999999999996
+peer: 6, class: 2, myRecall: 1.0, peerRecall: 0.5, weightedDiff: 1.6, untrainedModelAmbiguity: 0.32, w: -46.42243843704207, seqAttackPenalty: 4.6
+peer: 6, class: 3, myRecall: 0.1, peerRecall: 0.0, weightedDiff: 0.32, untrainedModelAmbiguity: 0.32, w: -0.027619920978123113, seqAttackPenalty: -6.800000000000001
+peer: 6, class: 4, myRecall: 0.8, peerRecall: 0.8, weightedDiff: 0.0, untrainedModelAmbiguity: 0.32, w: 0.0, seqAttackPenalty: 2.2
+peer: 6, class: 5, myRecall: 0.0, peerRecall: 0.9, weightedDiff: 9.0, untrainedModelAmbiguity: 1.0, w: 81.0, seqAttackPenalty: -1.8
+peer: 6, class: 6, myRecall: 0.0, peerRecall: 0.3, weightedDiff: 3.0, untrainedModelAmbiguity: 1.0, w: 9.0, seqAttackPenalty: -1.4
+peer: 6, class: 7, myRecall: 0.0, peerRecall: 0.6, weightedDiff: 6.0, untrainedModelAmbiguity: 1.0, w: 36.0, seqAttackPenalty: -2.0
+peer: 6, class: 8, myRecall: 0.7, peerRecall: 0.8, weightedDiff: 1.0000000000000009, untrainedModelAmbiguity: 1.0, w: 1.0000000000000027, seqAttackPenalty: 3.8
+peer: 6, class: 9, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.32, w: 0.0, seqAttackPenalty: -3.8
+peer: 7, class: 0, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.32, w: 0.0, seqAttackPenalty: -3.6
+peer: 7, class: 1, myRecall: 0.6, peerRecall: 0.9, weightedDiff: 3.0000000000000004, untrainedModelAmbiguity: 1.0, w: 24.19087841570059, seqAttackPenalty: 4.8
+peer: 7, class: 2, myRecall: 1.0, peerRecall: 0.8, weightedDiff: 0.6399999999999999, untrainedModelAmbiguity: 0.32, w: -0.8858370047999993, seqAttackPenalty: 5.6
+peer: 7, class: 3, myRecall: 0.1, peerRecall: 0.8, weightedDiff: 7.000000000000001, untrainedModelAmbiguity: 1.0, w: 65.60860233241458, seqAttackPenalty: -6.6000000000000005
+peer: 7, class: 4, myRecall: 0.8, peerRecall: 0.3, weightedDiff: 1.6, untrainedModelAmbiguity: 0.32, w: -23.038484405155124, seqAttackPenalty: 2.2
+peer: 7, class: 5, myRecall: 0.0, peerRecall: 0.5, weightedDiff: 5.0, untrainedModelAmbiguity: 1.0, w: 25.0, seqAttackPenalty: -3.6
+peer: 7, class: 6, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.32, w: 0.0, seqAttackPenalty: -2.0
+peer: 7, class: 7, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.32, w: 0.0, seqAttackPenalty: -3.2
+peer: 7, class: 8, myRecall: 0.7, peerRecall: 0.0, weightedDiff: 2.24, untrainedModelAmbiguity: 0.32, w: -120.57639799096616, seqAttackPenalty: 3.5999999999999996
+peer: 7, class: 9, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.32, w: 0.0, seqAttackPenalty: -3.8
+peer: 8, class: 0, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.32, w: 0.0, seqAttackPenalty: -3.6
+peer: 8, class: 1, myRecall: 0.6, peerRecall: 0.1, weightedDiff: 1.6, untrainedModelAmbiguity: 0.32, w: -32.514065477855446, seqAttackPenalty: 4.199999999999999
+peer: 8, class: 2, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.32, w: 0.0, seqAttackPenalty: 6.0
+peer: 8, class: 3, myRecall: 0.1, peerRecall: 0.7, weightedDiff: 6.0, untrainedModelAmbiguity: 1.0, w: 47.100464305513775, seqAttackPenalty: -8.0
+peer: 8, class: 4, myRecall: 0.8, peerRecall: 0.0, weightedDiff: 2.56, untrainedModelAmbiguity: 0.32, w: -217.69935619957204, seqAttackPenalty: 3.2
+peer: 8, class: 5, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.32, w: 0.0, seqAttackPenalty: -4.6
+peer: 8, class: 6, myRecall: 0.0, peerRecall: 0.4, weightedDiff: 4.0, untrainedModelAmbiguity: 1.0, w: 16.0, seqAttackPenalty: -2.0
+peer: 8, class: 7, myRecall: 0.0, peerRecall: 0.5, weightedDiff: 5.0, untrainedModelAmbiguity: 1.0, w: 25.0, seqAttackPenalty: -3.2
+peer: 8, class: 8, myRecall: 0.7, peerRecall: 0.6, weightedDiff: 0.31999999999999995, untrainedModelAmbiguity: 0.32, w: -0.05943040126788567, seqAttackPenalty: 5.0
+peer: 8, class: 9, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.32, w: 0.0, seqAttackPenalty: -3.8
+weightPerClass: [49.0, -0.1754292063196714, 0.0, 47.100464305513775, -0.8424403866158412, 0.0, 0.0, 0.0, -26.21226043281873, 1.0]
+weightSum: 69.87033427975953
+avg: 0.33999999999999997
+std: 0.3527038417709679
+certainty: 0.0
+sigmoid: 0.6679002239053656
+sigmoid: 6.6790022390536565
+sigmoid: 2.6790022390536565
+sigmoid: 0.0
+weightPerClass: [1.0, -17.823903722696503, 0.0, 65.60860233241458, -0.013358259983049773, 64.0, 0.0, 0.0, -33.69622255820132, 16.0]
+weightSum: 95.0751177915337
+avg: 0.39
+std: 0.37802116342871595
+certainty: 0.0
+sigmoid: 0.7212662208748459
+sigmoid: 7.212662208748459
+sigmoid: 3.2126622087484593
+sigmoid: 0.0
+weightPerClass: [81.0, 7.464263932294468, -187.5749772459856, 47.100464305513775, -5.07638295987699, 0.0, 0.0, 0.0, -50.54433383730198, 1.0]
+weightSum: -106.63096580535631
+avg: 0.30000000000000004
+std: 0.3492849839314596
+certainty: 0.0
+sigmoid: 0.2561055184206977
+sigmoid: 2.561055184206977
+sigmoid: -1.4389448157930231
+sigmoid: 0.0
+weightPerClass: [0.0, -28.00899156423736, -350.25750492790183, 65.60860233241458, 9.189586839976275, 1.0, 4.0, 100.0, -0.047544321014308534, 49.0]
+weightSum: -149.5158516407626
+avg: 0.45
+std: 0.39051248379533277
+certainty: 0.0
+sigmoid: 0.18314872443810243
+sigmoid: 1.8314872443810244
+sigmoid: -2.1685127556189756
+sigmoid: 0.0
+weightPerClass: [0.0, -43.28662332654864, -14.577602399885038, 87.4265764322813, -15.838958028544148, 0.0, 25.0, 0.0, 1.0000000000000027, 36.0]
+weightSum: 75.72339267730347
+avg: 0.37
+std: 0.33778691508109077
+certainty: 0.0
+sigmoid: 0.6807528883299331
+sigmoid: 6.807528883299331
+sigmoid: 2.807528883299331
+sigmoid: 0.0
+weightPerClass: [1.0, -58.56425508885993, -46.42243843704207, -0.027619920978123113, 0.0, 81.0, 9.0, 36.0, 1.0000000000000027, 0.0]
+weightSum: 22.98568655311988
+avg: 0.4
+std: 0.3464101615137755
+certainty: 0.0
+sigmoid: 0.5572125397890483
+sigmoid: 5.572125397890483
+sigmoid: 1.572125397890483
+sigmoid: 0.0
+weightPerClass: [0.0, 24.19087841570059, -0.8858370047999993, 65.60860233241458, -23.038484405155124, 25.0, 0.0, 0.0, -120.57639799096616, 0.0]
+weightSum: -29.70123865280611
+avg: 0.32999999999999996
+std: 0.3661966684720111
+certainty: 0.0
+sigmoid: 0.426287992059475
+sigmoid: 4.26287992059475
+sigmoid: 0.2628799205947496
+sigmoid: 0.0
+weightPerClass: [0.0, -32.514065477855446, 0.0, 47.100464305513775, -217.69935619957204, 0.0, 16.0, 25.0, -0.05943040126788567, 0.0]
+weightSum: -162.17238777318158
+avg: 0.33
+std: 0.34365680554879163
+certainty: 0.0
+sigmoid: 0.1649672635763093
+sigmoid: 1.649672635763093
+sigmoid: -2.350327364236907
+sigmoid: 0.0
+modelsPerClassToWeight: {1=0.0, 2=0.0, 3=0.0, 4=0.0, 5=0.0, 6=0.0, 7=0.0, 8=0.0}
+totalWeight: 1.0
+weightedAverage: [[   -0.0065,   -0.0089,   -0.0060,  ...-2.9695e-5,   -0.0006,    0.0007]]
+<====      BRISTLE      ====>
+Found 8 other models
+oldModel: -0.011805123
+newModel: -0.012130558
+otherModels: [-0.0017934003, -0.007205293, -0.011043067, 0.0015627787, -0.01078516, -0.011680676, -0.0012985668, -0.010353699]
+Distance calculated: 35.587013244628906
+Distance calculated: 41.88730239868164
+Distance calculated: 41.680503845214844
+Distance calculated: 35.7672233581543
+Distance calculated: 41.62461471557617
+Distance calculated: 37.839263916015625
+Distance calculated: 42.003360748291016
+Distance calculated: 34.55718231201172
+distances: {8=34.55718231201172, 1100008=34.621063232421875, 1=35.587013244628906, 1100001=35.63904571533203, 4=35.7672233581543, 1100004=35.81268310546875, 6=37.839263916015625, 1100006=37.965789794921875, 5=41.62461471557617, 3=41.680503845214844, 1100003=41.74032974243164, 1100005=41.75382995605469, 2=41.88730239868164, 1100002=41.94424819946289, 7=42.003360748291016, 1100007=42.11412811279297}
+closeModels: [-0.010353699, -0.0017934003, 0.0015627787, -0.011680676, -0.01078516, -0.011043067, -0.007205293, -0.0012985668]
+notCloseModels: []
+combinedModels: [-0.0017934003, -0.007205293, -0.011043067, 0.0015627787, -0.01078516, -0.011680676, -0.0012985668, -0.010353699]
+myRecallPerClass: [0.0, 0.1, 0.7, 0.0, 0.9, 0.3, 0.0, 1.0, 0.1, 0.0]
+peerRecallPerClass: [(1, [0.0, 0.3, 0.0, 0.0, 0.7, 0.0, 0.1, 1.0, 0.5, 0.3]), (2, [0.0, 0.0, 1.0, 0.0, 0.9, 0.6, 0.8, 0.7, 0.7, 0.2]), (3, [0.0, 0.5, 1.0, 0.0, 0.9, 0.7, 0.3, 1.0, 0.4, 0.1]), (4, [0.9, 0.7, 0.3, 0.1, 1.0, 0.5, 0.0, 0.4, 0.2, 0.0]), (5, [0.7, 1.0, 1.0, 0.0, 0.9, 0.5, 0.0, 1.0, 0.2, 0.3]), (6, [0.0, 1.0, 0.8, 1.0, 0.8, 0.4, 0.0, 0.7, 0.1, 0.5]), (7, [0.0, 0.0, 0.4, 0.4, 1.0, 0.6, 0.0, 0.9, 1.0, 0.0]), (8, [0.0, 0.0, 0.0, 0.0, 0.4, 0.0, 0.6, 0.8, 0.0, 0.0])]
+selectedClassesAndRecall (1): {0=0.0, 1=0.3, 2=0.0, 3=0.0, 4=0.7, 5=0.0, 6=0.1, 7=1.0, 8=0.5, 9=0.3}
+selectedClassesAndRecall (2): {0=0.0, 1=0.0, 2=1.0, 3=0.0, 4=0.9, 5=0.6, 6=0.8, 7=0.7, 8=0.7, 9=0.2}
+selectedClassesAndRecall (3): {0=0.0, 1=0.5, 2=1.0, 3=0.0, 4=0.9, 5=0.7, 6=0.3, 7=1.0, 8=0.4, 9=0.1}
+selectedClassesAndRecall (4): {0=0.9, 1=0.7, 2=0.3, 3=0.1, 4=1.0, 5=0.5, 6=0.0, 7=0.4, 8=0.2, 9=0.0}
+selectedClassesAndRecall (5): {0=0.7, 1=1.0, 2=1.0, 3=0.0, 4=0.9, 5=0.5, 6=0.0, 7=1.0, 8=0.2, 9=0.3}
+selectedClassesAndRecall (6): {0=0.0, 1=1.0, 2=0.8, 3=1.0, 4=0.8, 5=0.4, 6=0.0, 7=0.7, 8=0.1, 9=0.5}
+selectedClassesAndRecall (7): {0=0.0, 1=0.0, 2=0.4, 3=0.4, 4=1.0, 5=0.6, 6=0.0, 7=0.9, 8=1.0, 9=0.0}
+selectedClassesAndRecall (8): {0=0.0, 1=0.0, 2=0.0, 3=0.0, 4=0.4, 5=0.0, 6=0.6, 7=0.8, 8=0.0, 9=0.0}
+peer: 1, class: 0, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.31, w: 0.0, seqAttackPenalty: 0.0
+peer: 1, class: 1, myRecall: 0.1, peerRecall: 0.3, weightedDiff: 1.9999999999999998, untrainedModelAmbiguity: 1.0, w: 4.4382778882713785, seqAttackPenalty: 0.0
+peer: 1, class: 2, myRecall: 0.7, peerRecall: 0.0, weightedDiff: 2.17, untrainedModelAmbiguity: 0.31, w: -23.049521928237013, seqAttackPenalty: 0.0
+peer: 1, class: 3, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.31, w: 0.0, seqAttackPenalty: 0.0
+peer: 1, class: 4, myRecall: 0.9, peerRecall: 0.7, weightedDiff: 0.6200000000000002, untrainedModelAmbiguity: 0.31, w: -0.12499822595981255, seqAttackPenalty: 0.0
+peer: 1, class: 5, myRecall: 0.3, peerRecall: 0.0, weightedDiff: 0.9299999999999999, untrainedModelAmbiguity: 0.31, w: -0.7785135440154365, seqAttackPenalty: 0.0
+peer: 1, class: 6, myRecall: 0.0, peerRecall: 0.1, weightedDiff: 1.0, untrainedModelAmbiguity: 1.0, w: 1.0, seqAttackPenalty: 0.0
+peer: 1, class: 7, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.31, w: 0.0, seqAttackPenalty: 0.0
+peer: 1, class: 8, myRecall: 0.1, peerRecall: 0.5, weightedDiff: 4.0, untrainedModelAmbiguity: 1.0, w: 19.698310613518657, seqAttackPenalty: 0.0
+peer: 1, class: 9, myRecall: 0.0, peerRecall: 0.3, weightedDiff: 3.0, untrainedModelAmbiguity: 1.0, w: 9.0, seqAttackPenalty: 0.0
+peer: 2, class: 0, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.31, w: 0.0, seqAttackPenalty: 0.0
+peer: 2, class: 1, myRecall: 0.1, peerRecall: 0.0, weightedDiff: 0.31, untrainedModelAmbiguity: 0.31, w: -0.024991328063888905, seqAttackPenalty: -0.39999999999999997
+peer: 2, class: 2, myRecall: 0.7, peerRecall: 1.0, weightedDiff: 3.0000000000000004, untrainedModelAmbiguity: 1.0, w: 28.52461733083753, seqAttackPenalty: 1.4
+peer: 2, class: 3, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.31, w: 0.0, seqAttackPenalty: 0.0
+peer: 2, class: 4, myRecall: 0.9, peerRecall: 0.9, weightedDiff: 0.0, untrainedModelAmbiguity: 0.31, w: 0.0, seqAttackPenalty: 0.40000000000000013
+peer: 2, class: 5, myRecall: 0.3, peerRecall: 0.6, weightedDiff: 3.0, untrainedModelAmbiguity: 1.0, w: 14.75526705082986, seqAttackPenalty: 0.6
+peer: 2, class: 6, myRecall: 0.0, peerRecall: 0.8, weightedDiff: 8.0, untrainedModelAmbiguity: 1.0, w: 64.0, seqAttackPenalty: -0.2
+peer: 2, class: 7, myRecall: 1.0, peerRecall: 0.7, weightedDiff: 0.9300000000000002, untrainedModelAmbiguity: 0.31, w: -0.7213952335498816, seqAttackPenalty: 0.0
+peer: 2, class: 8, myRecall: 0.1, peerRecall: 0.7, weightedDiff: 6.0, untrainedModelAmbiguity: 1.0, w: 47.100464305513775, seqAttackPenalty: -0.8
+peer: 2, class: 9, myRecall: 0.0, peerRecall: 0.2, weightedDiff: 2.0, untrainedModelAmbiguity: 1.0, w: 4.0, seqAttackPenalty: -0.6
+peer: 3, class: 0, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.31, w: 0.0, seqAttackPenalty: 0.0
+peer: 3, class: 1, myRecall: 0.1, peerRecall: 0.5, weightedDiff: 4.0, untrainedModelAmbiguity: 1.0, w: 19.698310613518657, seqAttackPenalty: -0.19999999999999996
+peer: 3, class: 2, myRecall: 0.7, peerRecall: 1.0, weightedDiff: 3.0000000000000004, untrainedModelAmbiguity: 1.0, w: 28.52461733083753, seqAttackPenalty: 0.7999999999999998
+peer: 3, class: 3, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.31, w: 0.0, seqAttackPenalty: 0.0
+peer: 3, class: 4, myRecall: 0.9, peerRecall: 0.9, weightedDiff: 0.0, untrainedModelAmbiguity: 0.31, w: 0.0, seqAttackPenalty: 0.40000000000000013
+peer: 3, class: 5, myRecall: 0.3, peerRecall: 0.7, weightedDiff: 3.9999999999999996, untrainedModelAmbiguity: 1.0, w: 29.857055729177837, seqAttackPenalty: 0.0
+peer: 3, class: 6, myRecall: 0.0, peerRecall: 0.3, weightedDiff: 3.0, untrainedModelAmbiguity: 1.0, w: 9.0, seqAttackPenalty: -1.8
+peer: 3, class: 7, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.31, w: 0.0, seqAttackPenalty: 0.6000000000000001
+peer: 3, class: 8, myRecall: 0.1, peerRecall: 0.4, weightedDiff: 3.0000000000000004, untrainedModelAmbiguity: 1.0, w: 10.6123288111323, seqAttackPenalty: -2.0
+peer: 3, class: 9, myRecall: 0.0, peerRecall: 0.1, weightedDiff: 1.0, untrainedModelAmbiguity: 1.0, w: 1.0, seqAttackPenalty: -1.0
+peer: 4, class: 0, myRecall: 0.0, peerRecall: 0.9, weightedDiff: 9.0, untrainedModelAmbiguity: 1.0, w: 81.0, seqAttackPenalty: 0.0
+peer: 4, class: 1, myRecall: 0.1, peerRecall: 0.7, weightedDiff: 6.0, untrainedModelAmbiguity: 1.0, w: 47.100464305513775, seqAttackPenalty: -1.0
+peer: 4, class: 2, myRecall: 0.7, peerRecall: 0.3, weightedDiff: 1.2399999999999998, untrainedModelAmbiguity: 0.31, w: -2.867735357487533, seqAttackPenalty: 0.19999999999999973
+peer: 4, class: 3, myRecall: 0.0, peerRecall: 0.1, weightedDiff: 1.0, untrainedModelAmbiguity: 1.0, w: 1.0, seqAttackPenalty: 0.0
+peer: 4, class: 4, myRecall: 0.9, peerRecall: 1.0, weightedDiff: 0.9999999999999998, untrainedModelAmbiguity: 1.0, w: 0.9999999999999992, seqAttackPenalty: 0.40000000000000013
+peer: 4, class: 5, myRecall: 0.3, peerRecall: 0.5, weightedDiff: 2.0, untrainedModelAmbiguity: 1.0, w: 5.464161027017583, seqAttackPenalty: -0.7999999999999999
+peer: 4, class: 6, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.31, w: 0.0, seqAttackPenalty: -2.4
+peer: 4, class: 7, myRecall: 1.0, peerRecall: 0.4, weightedDiff: 1.8599999999999999, untrainedModelAmbiguity: 0.31, w: -26.11729723180922, seqAttackPenalty: 0.6000000000000001
+peer: 4, class: 8, myRecall: 0.1, peerRecall: 0.2, weightedDiff: 1.0, untrainedModelAmbiguity: 1.0, w: 1.0, seqAttackPenalty: -2.6
+peer: 4, class: 9, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.31, w: 0.0, seqAttackPenalty: -1.2
+peer: 5, class: 0, myRecall: 0.0, peerRecall: 0.7, weightedDiff: 7.0, untrainedModelAmbiguity: 1.0, w: 49.0, seqAttackPenalty: -1.8
+peer: 5, class: 1, myRecall: 0.1, peerRecall: 1.0, weightedDiff: 9.0, untrainedModelAmbiguity: 1.0, w: 112.62152279558863, seqAttackPenalty: -2.2
+peer: 5, class: 2, myRecall: 0.7, peerRecall: 1.0, weightedDiff: 3.0000000000000004, untrainedModelAmbiguity: 1.0, w: 28.52461733083753, seqAttackPenalty: 0.9999999999999997
+peer: 5, class: 3, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.31, w: 0.0, seqAttackPenalty: -0.2
+peer: 5, class: 4, myRecall: 0.9, peerRecall: 0.9, weightedDiff: 0.0, untrainedModelAmbiguity: 0.31, w: 0.0, seqAttackPenalty: 0.20000000000000018
+peer: 5, class: 5, myRecall: 0.3, peerRecall: 0.5, weightedDiff: 2.0, untrainedModelAmbiguity: 1.0, w: 5.464161027017583, seqAttackPenalty: -1.2
+peer: 5, class: 6, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.31, w: 0.0, seqAttackPenalty: -2.4
+peer: 5, class: 7, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.31, w: 0.0, seqAttackPenalty: 1.8
+peer: 5, class: 8, myRecall: 0.1, peerRecall: 0.2, weightedDiff: 1.0, untrainedModelAmbiguity: 1.0, w: 1.0, seqAttackPenalty: -2.8000000000000003
+peer: 5, class: 9, myRecall: 0.0, peerRecall: 0.3, weightedDiff: 3.0, untrainedModelAmbiguity: 1.0, w: 9.0, seqAttackPenalty: -1.2
+peer: 6, class: 0, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.31, w: 0.0, seqAttackPenalty: -3.2
+peer: 6, class: 1, myRecall: 0.1, peerRecall: 1.0, weightedDiff: 9.0, untrainedModelAmbiguity: 1.0, w: 112.62152279558863, seqAttackPenalty: -4.0
+peer: 6, class: 2, myRecall: 0.7, peerRecall: 0.8, weightedDiff: 1.0000000000000009, untrainedModelAmbiguity: 1.0, w: 1.0000000000000027, seqAttackPenalty: 0.3999999999999996
+peer: 6, class: 3, myRecall: 0.0, peerRecall: 1.0, weightedDiff: 10.0, untrainedModelAmbiguity: 1.0, w: 100.0, seqAttackPenalty: -0.2
+peer: 6, class: 4, myRecall: 0.9, peerRecall: 0.8, weightedDiff: 0.30999999999999994, untrainedModelAmbiguity: 0.31, w: -0.007355371526503016, seqAttackPenalty: 0.20000000000000018
+peer: 6, class: 5, myRecall: 0.3, peerRecall: 0.4, weightedDiff: 1.0000000000000004, untrainedModelAmbiguity: 1.0, w: 1.000000000000001, seqAttackPenalty: -1.6
+peer: 6, class: 6, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.31, w: 0.0, seqAttackPenalty: -2.4
+peer: 6, class: 7, myRecall: 1.0, peerRecall: 0.7, weightedDiff: 0.9300000000000002, untrainedModelAmbiguity: 0.31, w: -2.0199066539396684, seqAttackPenalty: 1.8
+peer: 6, class: 8, myRecall: 0.1, peerRecall: 0.1, weightedDiff: 0.0, untrainedModelAmbiguity: 0.31, w: 0.0, seqAttackPenalty: -3.0000000000000004
+peer: 6, class: 9, myRecall: 0.0, peerRecall: 0.5, weightedDiff: 5.0, untrainedModelAmbiguity: 1.0, w: 25.0, seqAttackPenalty: -1.7999999999999998
+peer: 7, class: 0, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.31, w: 0.0, seqAttackPenalty: -3.2
+peer: 7, class: 1, myRecall: 0.1, peerRecall: 0.0, weightedDiff: 0.31, untrainedModelAmbiguity: 0.31, w: -0.024991328063888905, seqAttackPenalty: -5.8
+peer: 7, class: 2, myRecall: 0.7, peerRecall: 0.4, weightedDiff: 0.9299999999999997, untrainedModelAmbiguity: 0.31, w: -0.894411115130413, seqAttackPenalty: 0.1999999999999994
+peer: 7, class: 3, myRecall: 0.0, peerRecall: 0.4, weightedDiff: 4.0, untrainedModelAmbiguity: 1.0, w: 16.0, seqAttackPenalty: -2.2
+peer: 7, class: 4, myRecall: 0.9, peerRecall: 1.0, weightedDiff: 0.9999999999999998, untrainedModelAmbiguity: 1.0, w: 0.9999999999999992, seqAttackPenalty: 0.40000000000000013
+peer: 7, class: 5, myRecall: 0.3, peerRecall: 0.6, weightedDiff: 3.0, untrainedModelAmbiguity: 1.0, w: 14.75526705082986, seqAttackPenalty: -1.8000000000000003
+peer: 7, class: 6, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.31, w: 0.0, seqAttackPenalty: -2.4
+peer: 7, class: 7, myRecall: 1.0, peerRecall: 0.9, weightedDiff: 0.30999999999999994, untrainedModelAmbiguity: 0.31, w: -0.017482620861225477, seqAttackPenalty: 2.4000000000000004
+peer: 7, class: 8, myRecall: 0.1, peerRecall: 1.0, weightedDiff: 9.0, untrainedModelAmbiguity: 1.0, w: 112.62152279558863, seqAttackPenalty: -3.0000000000000004
+peer: 7, class: 9, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.31, w: 0.0, seqAttackPenalty: -2.8
+peer: 8, class: 0, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.31, w: 0.0, seqAttackPenalty: -3.2
+peer: 8, class: 1, myRecall: 0.1, peerRecall: 0.0, weightedDiff: 0.31, untrainedModelAmbiguity: 0.31, w: -0.024991328063888905, seqAttackPenalty: -5.6
+peer: 8, class: 2, myRecall: 0.7, peerRecall: 0.0, weightedDiff: 2.17, untrainedModelAmbiguity: 0.31, w: -41.48913947082661, seqAttackPenalty: 0.7999999999999993
+peer: 8, class: 3, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.31, w: 0.0, seqAttackPenalty: -3.0
+peer: 8, class: 4, myRecall: 0.9, peerRecall: 0.4, weightedDiff: 1.55, untrainedModelAmbiguity: 0.31, w: -8.07465792792437, seqAttackPenalty: 0.20000000000000018
+peer: 8, class: 5, myRecall: 0.3, peerRecall: 0.0, weightedDiff: 0.9299999999999999, untrainedModelAmbiguity: 0.31, w: -0.7785135440154365, seqAttackPenalty: -2.4000000000000004
+peer: 8, class: 6, myRecall: 0.0, peerRecall: 0.6, weightedDiff: 6.0, untrainedModelAmbiguity: 1.0, w: 36.0, seqAttackPenalty: -2.4
+peer: 8, class: 7, myRecall: 1.0, peerRecall: 0.8, weightedDiff: 0.6199999999999999, untrainedModelAmbiguity: 0.31, w: -0.4188563496469588, seqAttackPenalty: 2.6000000000000005
+peer: 8, class: 8, myRecall: 0.1, peerRecall: 0.0, weightedDiff: 0.31, untrainedModelAmbiguity: 0.31, w: -0.024991328063888905, seqAttackPenalty: -4.800000000000001
+peer: 8, class: 9, myRecall: 0.0, peerRecall: 0.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.31, w: 0.0, seqAttackPenalty: -2.8
+weightPerClass: [0.0, 4.4382778882713785, -23.049521928237013, 0.0, -0.12499822595981255, -0.7785135440154365, 1.0, 0.0, 19.698310613518657, 9.0]
+weightSum: 10.183554803577774
+avg: 0.29
+std: 0.33
+certainty: 0.0
+sigmoid: 0.525436908064455
+sigmoid: 5.254369080644549
+sigmoid: 1.2543690806445493
+sigmoid: 0.0
+weightPerClass: [0.0, -0.024991328063888905, 28.52461733083753, 0.0, 0.0, 14.75526705082986, 64.0, -0.7213952335498816, 47.100464305513775, 4.0]
+weightSum: 157.6339621255674
+avg: 0.49000000000000005
+std: 0.378021163428716
+certainty: 0.0
+sigmoid: 0.8286854942368742
+sigmoid: 8.286854942368741
+sigmoid: 4.286854942368741
+sigmoid: 0.0
+weightPerClass: [0.0, 19.698310613518657, 28.52461733083753, 0.0, 0.0, 29.857055729177837, 9.0, 0.0, 10.6123288111323, 1.0]
+weightSum: 98.69231248466633
+avg: 0.48999999999999994
+std: 0.3753664875824692
+certainty: 0.0
+sigmoid: 0.7284797536925832
+sigmoid: 7.284797536925832
+sigmoid: 3.284797536925832
+sigmoid: 0.0
+weightPerClass: [81.0, 47.100464305513775, -2.867735357487533, 1.0, 0.9999999999999992, 5.464161027017583, 0.0, -26.11729723180922, 1.0, 0.0]
+weightSum: 107.57959274323461
+avg: 0.41
+std: 0.3419064199455752
+certainty: 0.0
+sigmoid: 0.7456975775087692
+sigmoid: 7.456975775087692
+sigmoid: 3.4569757750876917
+sigmoid: 0.0
+weightPerClass: [49.0, 112.62152279558863, 28.52461733083753, 0.0, 0.0, 5.464161027017583, 0.0, 0.0, 1.0, 9.0]
+weightSum: 205.61030115344377
+avg: 0.5599999999999999
+std: 0.39293765408777
+certainty: 0.0
+sigmoid: 0.8865628430409238
+sigmoid: 8.865628430409238
+sigmoid: 4.865628430409238
+sigmoid: 0.0
+weightPerClass: [0.0, 112.62152279558863, 1.0000000000000027, 100.0, -0.007355371526503016, 1.000000000000001, 0.0, -2.0199066539396684, 0.0, 25.0]
+weightSum: 237.59426077012247
+avg: 0.5299999999999999
+std: 0.3716180835212409
+certainty: 0.0
+sigmoid: 0.9149743150912353
+sigmoid: 9.149743150912354
+sigmoid: 5.149743150912354
+sigmoid: 0.0
+weightPerClass: [0.0, -0.024991328063888905, -0.894411115130413, 16.0, 0.9999999999999992, 14.75526705082986, 0.0, -0.017482620861225477, 112.62152279558863, 0.0]
+weightSum: 143.43990478236296
+avg: 0.43
+std: 0.4050925820105819
+certainty: 0.0
+sigmoid: 0.8075858131434933
+sigmoid: 8.075858131434932
+sigmoid: 4.0758581314349325
+sigmoid: 0.0
+weightPerClass: [0.0, -0.024991328063888905, -41.48913947082661, 0.0, -8.07465792792437, -0.7785135440154365, 36.0, -0.4188563496469588, -0.024991328063888905, 0.0]
+weightSum: -14.811149948541155
+avg: 0.18
+std: 0.28913664589601923
+certainty: 0.0
+sigmoid: 0.4630396670568328
+sigmoid: 4.630396670568328
+sigmoid: 0.6303966705683282
+sigmoid: 0.0
+modelsPerClassToWeight: {1=0.0, 2=0.0, 3=0.0, 4=0.0, 5=0.0, 6=0.0, 7=0.0, 8=0.0}
+totalWeight: 1.0
+weightedAverage: [[   -0.0121,   -0.0113,   -0.0089,  ...    0.0006,   -0.0015,   -0.0009]]
+<====      BRISTLE      ====>
+Found 8 other models
+oldModel: -0.012342611
+newModel: -0.012475058
+otherModels: [-0.012129089, -0.012370034, -0.012429155, -0.0115432795, -0.011758692, -0.0122659225, -0.012169883, -0.012108575]
+Distance calculated: 10.808043479919434
+Distance calculated: 7.115246772766113
+Distance calculated: 6.480318069458008
+Distance calculated: 5.306854724884033
+Distance calculated: 11.064247131347656
+Distance calculated: 31.148160934448242
+Distance calculated: 2.4717929363250732
+Distance calculated: 4.326467514038086
+distances: {7=2.4717929363250732, 8=4.326467514038086, 4=5.306854724884033, 3=6.480318069458008, 2=7.115246772766113, 1100003=7.254981994628906, 1=10.808043479919434, 5=11.064247131347656, 1100001=12.275918960571289, 1100008=12.781391143798828, 1100002=13.963191032409668, 1100004=15.520153045654297, 1100007=16.91494369506836, 6=31.148160934448242, 1100005=37.1551513671875, 1100006=37.85483169555664}
+closeModels: [-0.012169883, -0.012108575, -0.0115432795, -0.012429155, -0.012370034, -0.012129089, -0.011758692, -0.0122659225]
+notCloseModels: []
+combinedModels: [-0.012129089, -0.012370034, -0.012429155, -0.0115432795, -0.011758692, -0.0122659225, -0.012169883, -0.012108575]
+myRecallPerClass: [0.6, 0.8, 1.0, 0.7, 1.0, 0.8, 0.8, 0.5, 0.1, 0.8]
+peerRecallPerClass: [(1, [0.5, 0.9, 1.0, 0.5, 1.0, 0.9, 0.3, 0.4, 0.2, 0.8]), (2, [0.5, 1.0, 1.0, 0.4, 1.0, 0.6, 0.2, 0.6, 0.3, 0.8]), (3, [0.6, 0.7, 1.0, 0.8, 1.0, 0.7, 0.5, 0.7, 0.4, 0.8]), (4, [0.5, 0.7, 1.0, 0.5, 1.0, 0.6, 0.8, 0.2, 0.1, 0.8]), (5, [0.2, 0.5, 1.0, 0.4, 0.9, 0.7, 0.4, 0.1, 0.1, 0.8]), (6, [1.0, 0.8, 1.0, 0.0, 0.9, 0.9, 0.8, 0.7, 0.2, 0.4]), (7, [0.5, 0.7, 1.0, 0.7, 0.9, 0.6, 0.6, 0.4, 0.2, 0.8]), (8, [0.4, 0.7, 1.0, 0.5, 1.0, 0.6, 0.4, 0.7, 0.3, 0.8])]
+selectedClassesAndRecall (1): {0=0.5, 1=0.9, 2=1.0, 3=0.5, 4=1.0, 5=0.9, 6=0.3, 7=0.4, 8=0.2, 9=0.8}
+selectedClassesAndRecall (2): {0=0.5, 1=1.0, 2=1.0, 3=0.4, 4=1.0, 5=0.6, 6=0.2, 7=0.6, 8=0.3, 9=0.8}
+selectedClassesAndRecall (3): {0=0.6, 1=0.7, 2=1.0, 3=0.8, 4=1.0, 5=0.7, 6=0.5, 7=0.7, 8=0.4, 9=0.8}
+selectedClassesAndRecall (4): {0=0.5, 1=0.7, 2=1.0, 3=0.5, 4=1.0, 5=0.6, 6=0.8, 7=0.2, 8=0.1, 9=0.8}
+selectedClassesAndRecall (5): {0=0.2, 1=0.5, 2=1.0, 3=0.4, 4=0.9, 5=0.7, 6=0.4, 7=0.1, 8=0.1, 9=0.8}
+selectedClassesAndRecall (6): {0=1.0, 1=0.8, 2=1.0, 3=0.0, 4=0.9, 5=0.9, 6=0.8, 7=0.7, 8=0.2, 9=0.4}
+selectedClassesAndRecall (7): {0=0.5, 1=0.7, 2=1.0, 3=0.7, 4=0.9, 5=0.6, 6=0.6, 7=0.4, 8=0.2, 9=0.8}
+selectedClassesAndRecall (8): {0=0.4, 1=0.7, 2=1.0, 3=0.5, 4=1.0, 5=0.6, 6=0.4, 7=0.7, 8=0.3, 9=0.8}
+peer: 1, class: 0, myRecall: 0.6, peerRecall: 0.5, weightedDiff: 0.7099999999999997, untrainedModelAmbiguity: 0.7099999999999999, w: -0.2629708196417698, seqAttackPenalty: 0.0
+peer: 1, class: 1, myRecall: 0.8, peerRecall: 0.9, weightedDiff: 0.9999999999999998, untrainedModelAmbiguity: 1.0, w: 0.9999999999999993, seqAttackPenalty: 0.0
+peer: 1, class: 2, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 1, class: 3, myRecall: 0.7, peerRecall: 0.5, weightedDiff: 1.4199999999999995, untrainedModelAmbiguity: 0.7099999999999999, w: -4.137783798086158, seqAttackPenalty: 0.0
+peer: 1, class: 4, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 1, class: 5, myRecall: 0.8, peerRecall: 0.9, weightedDiff: 0.9999999999999998, untrainedModelAmbiguity: 1.0, w: 0.9999999999999993, seqAttackPenalty: 0.0
+peer: 1, class: 6, myRecall: 0.8, peerRecall: 0.3, weightedDiff: 3.5499999999999994, untrainedModelAmbiguity: 0.7099999999999999, w: -204.62518394884432, seqAttackPenalty: 0.0
+peer: 1, class: 7, myRecall: 0.5, peerRecall: 0.4, weightedDiff: 0.7099999999999997, untrainedModelAmbiguity: 0.7099999999999999, w: -0.27683360464300183, seqAttackPenalty: 0.0
+peer: 1, class: 8, myRecall: 0.1, peerRecall: 0.2, weightedDiff: 1.0, untrainedModelAmbiguity: 1.0, w: 1.0, seqAttackPenalty: 0.0
+peer: 1, class: 9, myRecall: 0.8, peerRecall: 0.8, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 2, class: 0, myRecall: 0.6, peerRecall: 0.5, weightedDiff: 0.7099999999999997, untrainedModelAmbiguity: 0.7099999999999999, w: -0.3155649835701238, seqAttackPenalty: 0.19999999999999996
+peer: 2, class: 1, myRecall: 0.8, peerRecall: 1.0, weightedDiff: 1.9999999999999996, untrainedModelAmbiguity: 1.0, w: 9.189586839976275, seqAttackPenalty: -0.19999999999999996
+peer: 2, class: 2, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 2, class: 3, myRecall: 0.7, peerRecall: 0.4, weightedDiff: 2.129999999999999, untrainedModelAmbiguity: 0.7099999999999999, w: -29.927154768802655, seqAttackPenalty: 0.3999999999999999
+peer: 2, class: 4, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 2, class: 5, myRecall: 0.8, peerRecall: 0.6, weightedDiff: 1.4200000000000004, untrainedModelAmbiguity: 0.7099999999999999, w: -4.361250642222308, seqAttackPenalty: -0.19999999999999996
+peer: 2, class: 6, myRecall: 0.8, peerRecall: 0.2, weightedDiff: 4.26, untrainedModelAmbiguity: 0.7099999999999999, w: -880.1370673903676, seqAttackPenalty: 1.0
+peer: 2, class: 7, myRecall: 0.5, peerRecall: 0.6, weightedDiff: 0.9999999999999998, untrainedModelAmbiguity: 1.0, w: 0.9999999999999994, seqAttackPenalty: 0.19999999999999996
+peer: 2, class: 8, myRecall: 0.1, peerRecall: 0.3, weightedDiff: 1.9999999999999998, untrainedModelAmbiguity: 1.0, w: 4.4382778882713785, seqAttackPenalty: -0.2
+peer: 2, class: 9, myRecall: 0.8, peerRecall: 0.8, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 3, class: 0, myRecall: 0.6, peerRecall: 0.6, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7099999999999999, w: 0.0, seqAttackPenalty: 0.3999999999999999
+peer: 3, class: 1, myRecall: 0.8, peerRecall: 0.7, weightedDiff: 0.7100000000000005, untrainedModelAmbiguity: 0.7099999999999999, w: -0.2372930752038888, seqAttackPenalty: -0.5999999999999999
+peer: 3, class: 2, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 3, class: 3, myRecall: 0.7, peerRecall: 0.8, weightedDiff: 1.0000000000000009, untrainedModelAmbiguity: 1.0, w: 1.0000000000000027, seqAttackPenalty: 0.9999999999999998
+peer: 3, class: 4, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 3, class: 5, myRecall: 0.8, peerRecall: 0.7, weightedDiff: 0.7100000000000005, untrainedModelAmbiguity: 0.7099999999999999, w: -0.28475169024466657, seqAttackPenalty: 0.20000000000000018
+peer: 3, class: 6, myRecall: 0.8, peerRecall: 0.5, weightedDiff: 2.13, untrainedModelAmbiguity: 0.7099999999999999, w: -76.62038197944833, seqAttackPenalty: 2.2
+peer: 3, class: 7, myRecall: 0.5, peerRecall: 0.7, weightedDiff: 1.9999999999999996, untrainedModelAmbiguity: 1.0, w: 6.7271713220297125, seqAttackPenalty: 0.0
+peer: 3, class: 8, myRecall: 0.1, peerRecall: 0.4, weightedDiff: 3.0000000000000004, untrainedModelAmbiguity: 1.0, w: 10.6123288111323, seqAttackPenalty: -0.6
+peer: 3, class: 9, myRecall: 0.8, peerRecall: 0.8, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 4, class: 0, myRecall: 0.6, peerRecall: 0.5, weightedDiff: 0.7099999999999997, untrainedModelAmbiguity: 0.7099999999999999, w: -0.3681591474984777, seqAttackPenalty: 0.3999999999999999
+peer: 4, class: 1, myRecall: 0.8, peerRecall: 0.7, weightedDiff: 0.7100000000000005, untrainedModelAmbiguity: 0.7099999999999999, w: -0.2372930752038888, seqAttackPenalty: -0.3999999999999997
+peer: 4, class: 2, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 4, class: 3, myRecall: 0.7, peerRecall: 0.5, weightedDiff: 1.4199999999999995, untrainedModelAmbiguity: 0.7099999999999999, w: -7.448010836555082, seqAttackPenalty: 0.7999999999999996
+peer: 4, class: 4, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 4, class: 5, myRecall: 0.8, peerRecall: 0.6, weightedDiff: 1.4200000000000004, untrainedModelAmbiguity: 0.7099999999999999, w: -6.105750899111233, seqAttackPenalty: 0.40000000000000036
+peer: 4, class: 6, myRecall: 0.8, peerRecall: 0.8, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7099999999999999, w: 0.0, seqAttackPenalty: 2.8000000000000003
+peer: 4, class: 7, myRecall: 0.5, peerRecall: 0.2, weightedDiff: 2.1299999999999994, untrainedModelAmbiguity: 0.7099999999999999, w: -17.0381921954207, seqAttackPenalty: -0.3999999999999999
+peer: 4, class: 8, myRecall: 0.1, peerRecall: 0.1, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7099999999999999, w: 0.0, seqAttackPenalty: -1.2000000000000002
+peer: 4, class: 9, myRecall: 0.8, peerRecall: 0.8, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 5, class: 0, myRecall: 0.6, peerRecall: 0.2, weightedDiff: 2.839999999999999, untrainedModelAmbiguity: 0.7099999999999999, w: -93.76948026146248, seqAttackPenalty: 0.5999999999999999
+peer: 5, class: 1, myRecall: 0.8, peerRecall: 0.5, weightedDiff: 2.13, untrainedModelAmbiguity: 0.7099999999999999, w: -23.9438693685776, seqAttackPenalty: -0.1999999999999995
+peer: 5, class: 2, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 5, class: 3, myRecall: 0.7, peerRecall: 0.4, weightedDiff: 2.129999999999999, untrainedModelAmbiguity: 0.7099999999999999, w: -47.0283860652613, seqAttackPenalty: 1.1999999999999995
+peer: 5, class: 4, myRecall: 1.0, peerRecall: 0.9, weightedDiff: 0.7099999999999997, untrainedModelAmbiguity: 0.7099999999999999, w: -0.21412263009417964, seqAttackPenalty: 0.0
+peer: 5, class: 5, myRecall: 0.8, peerRecall: 0.7, weightedDiff: 0.7100000000000005, untrainedModelAmbiguity: 0.7099999999999999, w: -0.42712753536699993, seqAttackPenalty: 0.8000000000000005
+peer: 5, class: 6, myRecall: 0.8, peerRecall: 0.4, weightedDiff: 2.8399999999999994, untrainedModelAmbiguity: 0.7099999999999999, w: -304.59349545779156, seqAttackPenalty: 2.8000000000000003
+peer: 5, class: 7, myRecall: 0.5, peerRecall: 0.1, weightedDiff: 2.8399999999999994, untrainedModelAmbiguity: 0.7099999999999999, w: -60.13468234855908, seqAttackPenalty: 0.20000000000000007
+peer: 5, class: 8, myRecall: 0.1, peerRecall: 0.1, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7099999999999999, w: 0.0, seqAttackPenalty: -1.2000000000000002
+peer: 5, class: 9, myRecall: 0.8, peerRecall: 0.8, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 6, class: 0, myRecall: 0.6, peerRecall: 1.0, weightedDiff: 4.0, untrainedModelAmbiguity: 1.0, w: 55.71523605095194, seqAttackPenalty: 1.4
+peer: 6, class: 1, myRecall: 0.8, peerRecall: 0.8, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7099999999999999, w: 0.0, seqAttackPenalty: 0.4000000000000006
+peer: 6, class: 2, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 6, class: 3, myRecall: 0.7, peerRecall: 0.0, weightedDiff: 4.969999999999999, untrainedModelAmbiguity: 0.7099999999999999, w: -1850.978634117746, seqAttackPenalty: 1.7999999999999994
+peer: 6, class: 4, myRecall: 1.0, peerRecall: 0.9, weightedDiff: 0.7099999999999997, untrainedModelAmbiguity: 0.7099999999999999, w: -0.25694715611301555, seqAttackPenalty: 0.19999999999999996
+peer: 6, class: 5, myRecall: 0.8, peerRecall: 0.9, weightedDiff: 0.9999999999999998, untrainedModelAmbiguity: 1.0, w: 0.9999999999999993, seqAttackPenalty: 1.0000000000000007
+peer: 6, class: 6, myRecall: 0.8, peerRecall: 0.8, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7099999999999999, w: 0.0, seqAttackPenalty: 3.6000000000000005
+peer: 6, class: 7, myRecall: 0.5, peerRecall: 0.7, weightedDiff: 1.9999999999999996, untrainedModelAmbiguity: 1.0, w: 6.7271713220297125, seqAttackPenalty: 1.0
+peer: 6, class: 8, myRecall: 0.1, peerRecall: 0.2, weightedDiff: 1.0, untrainedModelAmbiguity: 1.0, w: 1.0, seqAttackPenalty: -1.2000000000000002
+peer: 6, class: 9, myRecall: 0.8, peerRecall: 0.4, weightedDiff: 2.8399999999999994, untrainedModelAmbiguity: 0.7099999999999999, w: -80.1561830152083, seqAttackPenalty: 0.0
+peer: 7, class: 0, myRecall: 0.6, peerRecall: 0.5, weightedDiff: 0.7099999999999997, untrainedModelAmbiguity: 0.7099999999999999, w: -0.4207533114268317, seqAttackPenalty: 0.5999999999999999
+peer: 7, class: 1, myRecall: 0.8, peerRecall: 0.7, weightedDiff: 0.7100000000000005, untrainedModelAmbiguity: 0.7099999999999999, w: -0.33221030528544443, seqAttackPenalty: 0.4000000000000006
+peer: 7, class: 2, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 7, class: 3, myRecall: 0.7, peerRecall: 0.7, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7099999999999999, w: 0.0, seqAttackPenalty: 3.1999999999999993
+peer: 7, class: 4, myRecall: 1.0, peerRecall: 0.9, weightedDiff: 0.7099999999999997, untrainedModelAmbiguity: 0.7099999999999999, w: -0.29977168213185146, seqAttackPenalty: 0.3999999999999999
+peer: 7, class: 5, myRecall: 0.8, peerRecall: 0.6, weightedDiff: 1.4200000000000004, untrainedModelAmbiguity: 0.7099999999999999, w: -7.850251156000158, seqAttackPenalty: 0.8000000000000007
+peer: 7, class: 6, myRecall: 0.8, peerRecall: 0.6, weightedDiff: 1.4200000000000004, untrainedModelAmbiguity: 0.7099999999999999, w: -20.06175295422262, seqAttackPenalty: 3.6000000000000005
+peer: 7, class: 7, myRecall: 0.5, peerRecall: 0.4, weightedDiff: 0.7099999999999997, untrainedModelAmbiguity: 0.7099999999999999, w: -0.44293376742880297, seqAttackPenalty: 0.6000000000000001
+peer: 7, class: 8, myRecall: 0.1, peerRecall: 0.2, weightedDiff: 1.0, untrainedModelAmbiguity: 1.0, w: 1.0, seqAttackPenalty: -1.4000000000000001
+peer: 7, class: 9, myRecall: 0.8, peerRecall: 0.8, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7099999999999999, w: 0.0, seqAttackPenalty: 0.8
+peer: 8, class: 0, myRecall: 0.6, peerRecall: 0.4, weightedDiff: 1.4199999999999995, untrainedModelAmbiguity: 0.7099999999999999, w: -7.066380975472705, seqAttackPenalty: 0.7999999999999998
+peer: 8, class: 1, myRecall: 0.8, peerRecall: 0.7, weightedDiff: 0.7100000000000005, untrainedModelAmbiguity: 0.7099999999999999, w: -0.37966892032622224, seqAttackPenalty: 0.6000000000000008
+peer: 8, class: 2, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 8, class: 3, myRecall: 0.7, peerRecall: 0.5, weightedDiff: 1.4199999999999995, untrainedModelAmbiguity: 0.7099999999999999, w: -17.37869195196186, seqAttackPenalty: 3.1999999999999993
+peer: 8, class: 4, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7099999999999999, w: 0.0, seqAttackPenalty: 0.5999999999999999
+peer: 8, class: 5, myRecall: 0.8, peerRecall: 0.6, weightedDiff: 1.4200000000000004, untrainedModelAmbiguity: 0.7099999999999999, w: -9.594751412889083, seqAttackPenalty: 1.2000000000000008
+peer: 8, class: 6, myRecall: 0.8, peerRecall: 0.4, weightedDiff: 2.8399999999999994, untrainedModelAmbiguity: 0.7099999999999999, w: -400.7809150760416, seqAttackPenalty: 4.000000000000001
+peer: 8, class: 7, myRecall: 0.5, peerRecall: 0.7, weightedDiff: 1.9999999999999996, untrainedModelAmbiguity: 1.0, w: 6.7271713220297125, seqAttackPenalty: 0.8
+peer: 8, class: 8, myRecall: 0.1, peerRecall: 0.3, weightedDiff: 1.9999999999999998, untrainedModelAmbiguity: 1.0, w: 4.4382778882713785, seqAttackPenalty: -1.6
+peer: 8, class: 9, myRecall: 0.8, peerRecall: 0.8, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7099999999999999, w: 0.0, seqAttackPenalty: 0.8
+weightPerClass: [-0.2629708196417698, 0.9999999999999993, 0.0, -4.137783798086158, 0.0, 0.9999999999999993, -204.62518394884432, -0.27683360464300183, 1.0, 0.0]
+weightSum: -206.30277217121525
+avg: 0.65
+std: 0.2872281323269014
+certainty: 0.07554373534619718
+sigmoid: 0.11274260658782542
+sigmoid: 1.1274260658782542
+sigmoid: -2.8725739341217458
+sigmoid: 0.0
+weightPerClass: [-0.3155649835701238, 9.189586839976275, 0.0, -29.927154768802655, 0.0, -4.361250642222308, -880.1370673903676, 0.9999999999999994, 4.4382778882713785, 0.0]
+weightSum: -900.113173056715
+avg: 0.6399999999999999
+std: 0.28354893757515653
+certainty: 0.07290212484968683
+sigmoid: 1.2325502276847543E-4
+sigmoid: 0.0012325502276847543
+sigmoid: -3.9987674497723154
+sigmoid: 0.0
+weightPerClass: [0.0, -0.2372930752038888, 0.0, 1.0000000000000027, 0.0, -0.28475169024466657, -76.62038197944833, 6.7271713220297125, 10.6123288111323, 0.0]
+weightSum: -58.80292661173486
+avg: 0.72
+std: 0.18330302779823363
+certainty: 0.3533939444035327
+sigmoid: 0.3570871598148516
+sigmoid: 3.570871598148516
+sigmoid: -0.42912840185148404
+sigmoid: 0.0
+weightPerClass: [-0.3681591474984777, -0.2372930752038888, 0.0, -7.448010836555082, 0.0, -6.105750899111233, 0.0, -17.0381921954207, 0.0, 0.0]
+weightSum: -31.19740615378938
+avg: 0.6199999999999999
+std: 0.28913664589601923
+certainty: 0.04172670820796143
+sigmoid: 0.4226329661171902
+sigmoid: 4.226329661171902
+sigmoid: 0.2263296611719019
+sigmoid: 0.009443991730526728
+weightPerClass: [-93.76948026146248, -23.9438693685776, 0.0, -47.0283860652613, -0.21412263009417964, -0.42712753536699993, -304.59349545779156, -60.13468234855908, 0.0, 0.0]
+weightSum: -530.1111636671131
+avg: 0.51
+std: 0.3112876483254676
+certainty: 0.0
+sigmoid: 0.00496131081645644
+sigmoid: 0.0496131081645644
+sigmoid: -3.9503868918354357
+sigmoid: 0.0
+weightPerClass: [55.71523605095194, 0.0, 0.0, -1850.978634117746, -0.25694715611301555, 0.9999999999999993, 0.0, 6.7271713220297125, 1.0, -80.1561830152083]
+weightSum: -1866.9493569160857
+weightPerClass: [-0.4207533114268317, -0.33221030528544443, 0.0, 0.0, -0.29977168213185146, -7.850251156000158, -20.06175295422262, -0.44293376742880297, 1.0, 0.0]
+weightSum: -28.407673176495706
+avg: 0.64
+std: 0.22449944320643647
+certainty: 0.19100111358712707
+sigmoid: 0.4294545956281501
+sigmoid: 4.2945459562815005
+sigmoid: 0.2945459562815005
+sigmoid: 0.056258605652351835
+weightPerClass: [-7.066380975472705, -0.37966892032622224, 0.0, -17.37869195196186, 0.0, -9.594751412889083, -400.7809150760416, 6.7271713220297125, 4.4382778882713785, 0.0]
+weightSum: -424.03495912639033
+avg: 0.64
+std: 0.23323807579381203
+certainty: 0.17352384841237595
+sigmoid: 0.014198067493640143
+sigmoid: 0.14198067493640143
+sigmoid: -3.858019325063599
+sigmoid: 0.0
+modelsPerClassToWeight: {1=0.0, 2=0.0, 3=0.0, 4=0.009443991730526728, 5=0.0, 6=0.0, 7=0.056258605652351835, 8=0.0}
+totalWeight: 1.0657025973828786
+weightedAverage: [[   -0.0125,   -0.0097,   -0.0098,  ...    0.0009,   -0.0008,   -0.0017]]
+<====      BRISTLE      ====>
+Found 8 other models
+oldModel: -0.012231631
+newModel: -0.012143029
+otherModels: [-0.011603732, -0.011945825, -0.012191056, -0.010601677, -0.01185938, -0.011551841, -0.011711695, -0.011414235]
+Distance calculated: 0.8468859195709229
+Distance calculated: 0.6518927216529846
+Distance calculated: 0.48208853602409363
+Distance calculated: 0.8199730515480042
+Distance calculated: 0.6103129982948303
+Distance calculated: 0.7916813492774963
+Distance calculated: 0.8358158469200134
+Distance calculated: 0.8150058388710022
+distances: {3=0.48208853602409363, 5=0.6103129982948303, 2=0.6518927216529846, 1100003=0.737603485584259, 1100006=0.753045380115509, 1100007=0.7755510210990906, 6=0.7916813492774963, 1100008=0.8120208978652954, 8=0.8150058388710022, 1100002=0.8167845010757446, 4=0.8199730515480042, 1100004=0.8275259733200073, 7=0.8358158469200134, 1=0.8468859195709229, 1100005=0.8767264485359192, 1100001=0.8810468912124634}
+closeModels: [-0.012191056, -0.01185938, -0.011945825, -0.011551841, -0.011414235, -0.010601677, -0.011711695, -0.011603732]
+notCloseModels: []
+combinedModels: [-0.011603732, -0.011945825, -0.012191056, -0.010601677, -0.01185938, -0.011551841, -0.011711695, -0.011414235]
+myRecallPerClass: [0.2, 0.6, 1.0, 0.7, 1.0, 0.7, 0.1, 0.9, 1.0, 0.8]
+peerRecallPerClass: [(1, [0.7, 0.6, 1.0, 0.7, 1.0, 0.4, 0.6, 0.9, 0.4, 0.8]), (2, [0.4, 0.6, 1.0, 0.7, 0.9, 0.7, 0.7, 0.5, 0.9, 0.8]), (3, [0.4, 0.8, 1.0, 0.6, 1.0, 0.8, 0.7, 0.8, 1.0, 0.8]), (4, [0.6, 0.7, 1.0, 0.8, 1.0, 0.8, 0.1, 0.9, 0.4, 0.8]), (5, [0.2, 1.0, 1.0, 0.5, 1.0, 0.9, 0.5, 0.9, 1.0, 0.8]), (6, [0.8, 0.6, 1.0, 0.7, 1.0, 0.7, 0.1, 0.9, 0.4, 1.0]), (7, [0.4, 0.6, 1.0, 0.5, 1.0, 0.8, 0.8, 0.9, 0.5, 0.8]), (8, [0.4, 0.7, 1.0, 0.6, 1.0, 0.7, 0.4, 0.9, 1.0, 0.8])]
+selectedClassesAndRecall (1): {0=0.7, 1=0.6, 2=1.0, 3=0.7, 4=1.0, 5=0.4, 6=0.6, 7=0.9, 8=0.4, 9=0.8}
+selectedClassesAndRecall (2): {0=0.4, 1=0.6, 2=1.0, 3=0.7, 4=0.9, 5=0.7, 6=0.7, 7=0.5, 8=0.9, 9=0.8}
+selectedClassesAndRecall (3): {0=0.4, 1=0.8, 2=1.0, 3=0.6, 4=1.0, 5=0.8, 6=0.7, 7=0.8, 8=1.0, 9=0.8}
+selectedClassesAndRecall (4): {0=0.6, 1=0.7, 2=1.0, 3=0.8, 4=1.0, 5=0.8, 6=0.1, 7=0.9, 8=0.4, 9=0.8}
+selectedClassesAndRecall (5): {0=0.2, 1=1.0, 2=1.0, 3=0.5, 4=1.0, 5=0.9, 6=0.5, 7=0.9, 8=1.0, 9=0.8}
+selectedClassesAndRecall (6): {0=0.8, 1=0.6, 2=1.0, 3=0.7, 4=1.0, 5=0.7, 6=0.1, 7=0.9, 8=0.4, 9=1.0}
+selectedClassesAndRecall (7): {0=0.4, 1=0.6, 2=1.0, 3=0.5, 4=1.0, 5=0.8, 6=0.8, 7=0.9, 8=0.5, 9=0.8}
+selectedClassesAndRecall (8): {0=0.4, 1=0.7, 2=1.0, 3=0.6, 4=1.0, 5=0.7, 6=0.4, 7=0.9, 8=1.0, 9=0.8}
+peer: 1, class: 0, myRecall: 0.2, peerRecall: 0.7, weightedDiff: 4.999999999999999, untrainedModelAmbiguity: 1.0, w: 40.51641491731903, seqAttackPenalty: 0.0
+peer: 1, class: 1, myRecall: 0.6, peerRecall: 0.6, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 0.0
+peer: 1, class: 2, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 0.0
+peer: 1, class: 3, myRecall: 0.7, peerRecall: 0.7, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 0.0
+peer: 1, class: 4, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 0.0
+peer: 1, class: 5, myRecall: 0.7, peerRecall: 0.4, weightedDiff: 2.099999999999999, untrainedModelAmbiguity: 0.7, w: -20.183112626217316, seqAttackPenalty: 0.0
+peer: 1, class: 6, myRecall: 0.1, peerRecall: 0.6, weightedDiff: 5.0, untrainedModelAmbiguity: 1.0, w: 31.826252888660584, seqAttackPenalty: 0.0
+peer: 1, class: 7, myRecall: 0.9, peerRecall: 0.9, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 0.0
+peer: 1, class: 8, myRecall: 1.0, peerRecall: 0.4, weightedDiff: 4.199999999999999, untrainedModelAmbiguity: 0.7, w: -637.7079142126679, seqAttackPenalty: 0.0
+peer: 1, class: 9, myRecall: 0.8, peerRecall: 0.8, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 0.0
+peer: 2, class: 0, myRecall: 0.2, peerRecall: 0.4, weightedDiff: 2.0, untrainedModelAmbiguity: 1.0, w: 4.924577653379664, seqAttackPenalty: -0.9999999999999999
+peer: 2, class: 1, myRecall: 0.6, peerRecall: 0.6, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 0.0
+peer: 2, class: 2, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 0.0
+peer: 2, class: 3, myRecall: 0.7, peerRecall: 0.7, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 0.0
+peer: 2, class: 4, myRecall: 1.0, peerRecall: 0.9, weightedDiff: 0.6999999999999998, untrainedModelAmbiguity: 0.7, w: -0.20088207237083133, seqAttackPenalty: 0.0
+peer: 2, class: 5, myRecall: 0.7, peerRecall: 0.7, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 0.5999999999999999
+peer: 2, class: 6, myRecall: 0.1, peerRecall: 0.7, weightedDiff: 6.0, untrainedModelAmbiguity: 1.0, w: 47.100464305513775, seqAttackPenalty: -1.0
+peer: 2, class: 7, myRecall: 0.9, peerRecall: 0.5, weightedDiff: 2.8, untrainedModelAmbiguity: 0.7, w: -88.1327732855548, seqAttackPenalty: 0.0
+peer: 2, class: 8, myRecall: 1.0, peerRecall: 0.9, weightedDiff: 0.6999999999999998, untrainedModelAmbiguity: 0.7, w: -0.441940559215829, seqAttackPenalty: 1.2
+peer: 2, class: 9, myRecall: 0.8, peerRecall: 0.8, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 0.0
+peer: 3, class: 0, myRecall: 0.2, peerRecall: 0.4, weightedDiff: 2.0, untrainedModelAmbiguity: 1.0, w: 4.924577653379664, seqAttackPenalty: -1.4
+peer: 3, class: 1, myRecall: 0.6, peerRecall: 0.8, weightedDiff: 2.000000000000001, untrainedModelAmbiguity: 1.0, w: 7.464263932294468, seqAttackPenalty: 0.0
+peer: 3, class: 2, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 0.0
+peer: 3, class: 3, myRecall: 0.7, peerRecall: 0.6, weightedDiff: 0.6999999999999998, untrainedModelAmbiguity: 0.7, w: -0.23585607234302472, seqAttackPenalty: 0.0
+peer: 3, class: 4, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 0.19999999999999996
+peer: 3, class: 5, myRecall: 0.7, peerRecall: 0.8, weightedDiff: 1.0000000000000009, untrainedModelAmbiguity: 1.0, w: 1.0000000000000027, seqAttackPenalty: 0.5999999999999999
+peer: 3, class: 6, myRecall: 0.1, peerRecall: 0.7, weightedDiff: 6.0, untrainedModelAmbiguity: 1.0, w: 47.100464305513775, seqAttackPenalty: -2.2
+peer: 3, class: 7, myRecall: 0.9, peerRecall: 0.8, weightedDiff: 0.6999999999999998, untrainedModelAmbiguity: 0.7, w: -0.38145997779997803, seqAttackPenalty: 0.8
+peer: 3, class: 8, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 1.4
+peer: 3, class: 9, myRecall: 0.8, peerRecall: 0.8, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 0.0
+peer: 4, class: 0, myRecall: 0.2, peerRecall: 0.6, weightedDiff: 3.9999999999999996, untrainedModelAmbiguity: 1.0, w: 24.251465064166357, seqAttackPenalty: -1.7999999999999998
+peer: 4, class: 1, myRecall: 0.6, peerRecall: 0.7, weightedDiff: 0.9999999999999998, untrainedModelAmbiguity: 1.0, w: 0.9999999999999993, seqAttackPenalty: -0.40000000000000013
+peer: 4, class: 2, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 0.0
+peer: 4, class: 3, myRecall: 0.7, peerRecall: 0.8, weightedDiff: 1.0000000000000009, untrainedModelAmbiguity: 1.0, w: 1.0000000000000027, seqAttackPenalty: 0.19999999999999996
+peer: 4, class: 4, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 0.19999999999999996
+peer: 4, class: 5, myRecall: 0.7, peerRecall: 0.8, weightedDiff: 1.0000000000000009, untrainedModelAmbiguity: 1.0, w: 1.0000000000000027, seqAttackPenalty: 0.3999999999999997
+peer: 4, class: 6, myRecall: 0.1, peerRecall: 0.1, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: -3.4000000000000004
+peer: 4, class: 7, myRecall: 0.9, peerRecall: 0.9, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 1.0
+peer: 4, class: 8, myRecall: 1.0, peerRecall: 0.4, weightedDiff: 4.199999999999999, untrainedModelAmbiguity: 0.7, w: -1530.498994110403, seqAttackPenalty: 1.4
+peer: 4, class: 9, myRecall: 0.8, peerRecall: 0.8, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 0.0
+peer: 5, class: 0, myRecall: 0.2, peerRecall: 0.2, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: -2.5999999999999996
+peer: 5, class: 1, myRecall: 0.6, peerRecall: 1.0, weightedDiff: 4.0, untrainedModelAmbiguity: 1.0, w: 55.71523605095194, seqAttackPenalty: -0.6000000000000001
+peer: 5, class: 2, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 0.0
+peer: 5, class: 3, myRecall: 0.7, peerRecall: 0.5, weightedDiff: 1.3999999999999997, untrainedModelAmbiguity: 0.7, w: -3.9067763003476457, seqAttackPenalty: -2.220446049250313E-16
+peer: 5, class: 4, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 0.19999999999999996
+peer: 5, class: 5, myRecall: 0.7, peerRecall: 0.9, weightedDiff: 2.000000000000001, untrainedModelAmbiguity: 1.0, w: 8.28211939073103, seqAttackPenalty: 0.1999999999999995
+peer: 5, class: 6, myRecall: 0.1, peerRecall: 0.5, weightedDiff: 4.0, untrainedModelAmbiguity: 1.0, w: 19.698310613518657, seqAttackPenalty: -3.4000000000000004
+peer: 5, class: 7, myRecall: 0.9, peerRecall: 0.9, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 1.0
+peer: 5, class: 8, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 2.5999999999999996
+peer: 5, class: 9, myRecall: 0.8, peerRecall: 0.8, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 0.0
+peer: 6, class: 0, myRecall: 0.2, peerRecall: 0.8, weightedDiff: 6.000000000000001, untrainedModelAmbiguity: 1.0, w: 61.62371493874939, seqAttackPenalty: -2.5999999999999996
+peer: 6, class: 1, myRecall: 0.6, peerRecall: 0.6, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: -1.4000000000000001
+peer: 6, class: 2, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 0.0
+peer: 6, class: 3, myRecall: 0.7, peerRecall: 0.7, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 0.3999999999999997
+peer: 6, class: 4, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 0.19999999999999996
+peer: 6, class: 5, myRecall: 0.7, peerRecall: 0.7, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: -0.20000000000000062
+peer: 6, class: 6, myRecall: 0.1, peerRecall: 0.1, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: -4.2
+peer: 6, class: 7, myRecall: 0.9, peerRecall: 0.9, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 1.0
+peer: 6, class: 8, myRecall: 1.0, peerRecall: 0.4, weightedDiff: 4.199999999999999, untrainedModelAmbiguity: 0.7, w: -2295.7484911656043, seqAttackPenalty: 2.5999999999999996
+peer: 6, class: 9, myRecall: 0.8, peerRecall: 1.0, weightedDiff: 1.9999999999999996, untrainedModelAmbiguity: 1.0, w: 9.189586839976275, seqAttackPenalty: 0.0
+peer: 7, class: 0, myRecall: 0.2, peerRecall: 0.4, weightedDiff: 2.0, untrainedModelAmbiguity: 1.0, w: 4.924577653379664, seqAttackPenalty: -3.8
+peer: 7, class: 1, myRecall: 0.6, peerRecall: 0.6, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: -1.4000000000000001
+peer: 7, class: 2, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 0.0
+peer: 7, class: 3, myRecall: 0.7, peerRecall: 0.5, weightedDiff: 1.3999999999999997, untrainedModelAmbiguity: 0.7, w: -5.469486820486702, seqAttackPenalty: 0.3999999999999997
+peer: 7, class: 4, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 0.19999999999999996
+peer: 7, class: 5, myRecall: 0.7, peerRecall: 0.8, weightedDiff: 1.0000000000000009, untrainedModelAmbiguity: 1.0, w: 1.0000000000000027, seqAttackPenalty: -0.20000000000000062
+peer: 7, class: 6, myRecall: 0.1, peerRecall: 0.8, weightedDiff: 7.000000000000001, untrainedModelAmbiguity: 1.0, w: 65.60860233241458, seqAttackPenalty: -4.2
+peer: 7, class: 7, myRecall: 0.9, peerRecall: 0.9, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 1.0
+peer: 7, class: 8, myRecall: 1.0, peerRecall: 0.5, weightedDiff: 3.5, untrainedModelAmbiguity: 0.7, w: -1347.557907846635, seqAttackPenalty: 3.8
+peer: 7, class: 9, myRecall: 0.8, peerRecall: 0.8, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: -0.3999999999999999
+peer: 8, class: 0, myRecall: 0.2, peerRecall: 0.4, weightedDiff: 2.0, untrainedModelAmbiguity: 1.0, w: 4.924577653379664, seqAttackPenalty: -4.2
+peer: 8, class: 1, myRecall: 0.6, peerRecall: 0.7, weightedDiff: 0.9999999999999998, untrainedModelAmbiguity: 1.0, w: 0.9999999999999993, seqAttackPenalty: -1.4000000000000001
+peer: 8, class: 2, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 0.0
+peer: 8, class: 3, myRecall: 0.7, peerRecall: 0.6, weightedDiff: 0.6999999999999998, untrainedModelAmbiguity: 0.7, w: -0.4245409302174444, seqAttackPenalty: 0.7999999999999996
+peer: 8, class: 4, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 0.19999999999999996
+peer: 8, class: 5, myRecall: 0.7, peerRecall: 0.7, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: -0.4000000000000008
+peer: 8, class: 6, myRecall: 0.1, peerRecall: 0.4, weightedDiff: 3.0000000000000004, untrainedModelAmbiguity: 1.0, w: 10.6123288111323, seqAttackPenalty: -5.6000000000000005
+peer: 8, class: 7, myRecall: 0.9, peerRecall: 0.9, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 1.0
+peer: 8, class: 8, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: 4.8
+peer: 8, class: 9, myRecall: 0.8, peerRecall: 0.8, weightedDiff: 0.0, untrainedModelAmbiguity: 0.7, w: 0.0, seqAttackPenalty: -0.3999999999999999
+weightPerClass: [40.51641491731903, 0.0, 0.0, 0.0, 0.0, -20.183112626217316, 31.826252888660584, 0.0, -637.7079142126679, 0.0]
+weightSum: -585.5483590329056
+avg: 0.7100000000000001
+std: 0.20712315177207977
+certainty: 0.29575369645584054
+sigmoid: 0.002855970263048649
+sigmoid: 0.02855970263048649
+sigmoid: -3.9714402973695133
+sigmoid: 0.0
+weightPerClass: [4.924577653379664, 0.0, 0.0, 0.0, -0.20088207237083133, 0.0, 47.100464305513775, -88.1327732855548, -0.441940559215829, 0.0]
+weightSum: -36.75055395824803
+avg: 0.72
+std: 0.1777638883463118
+certainty: 0.3644722233073764
+sigmoid: 0.40914390837741993
+sigmoid: 4.091439083774199
+sigmoid: 0.0914390837741994
+sigmoid: 0.0333270061603719
+weightPerClass: [4.924577653379664, 7.464263932294468, 0.0, -0.23585607234302472, 0.0, 1.0000000000000027, 47.100464305513775, -0.38145997779997803, 0.0, 0.0]
+weightSum: 59.87198984104491
+avg: 0.79
+std: 0.18138357147217052
+certainty: 0.427232857055659
+sigmoid: 0.6453633845792554
+sigmoid: 6.453633845792553
+sigmoid: 2.4536338457925533
+sigmoid: 1.0482729981064167
+weightPerClass: [24.251465064166357, 0.9999999999999993, 0.0, 1.0000000000000027, 0.0, 1.0000000000000027, 0.0, 0.0, -1530.498994110403, 0.0]
+weightSum: -1503.2475290462367
+weightPerClass: [0.0, 55.71523605095194, 0.0, -3.9067763003476457, 0.0, 8.28211939073103, 19.698310613518657, 0.0, 0.0, 0.0]
+weightSum: 79.78888975485398
+avg: 0.78
+std: 0.26758176320519306
+certainty: 0.2448364735896139
+sigmoid: 0.6895227148272802
+sigmoid: 6.895227148272802
+sigmoid: 2.8952271482728023
+sigmoid: 0.7088572052240272
+weightPerClass: [61.62371493874939, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -2295.7484911656043, 9.189586839976275]
+weightSum: -2224.935189386879
+weightPerClass: [4.924577653379664, 0.0, 0.0, -5.469486820486702, 0.0, 1.0000000000000027, 65.60860233241458, 0.0, -1347.557907846635, 0.0]
+weightSum: -1281.4942146813275
+weightPerClass: [4.924577653379664, 0.9999999999999993, 0.0, -0.4245409302174444, 0.0, 0.0, 10.6123288111323, 0.0, 0.0, 0.0]
+weightSum: 16.11236553429452
+avg: 0.7500000000000001
+std: 0.2202271554554524
+certainty: 0.3095456890890953
+sigmoid: 0.5401939956381875
+sigmoid: 5.401939956381875
+sigmoid: 1.4019399563818746
+sigmoid: 0.4339644698597636
+modelsPerClassToWeight: {1=0.0, 2=0.0333270061603719, 3=1.0482729981064167, 4=0.0, 5=0.7088572052240272, 6=0.0, 7=0.0, 8=0.4339644698597636}
+totalWeight: 3.2244216793505793
+weightedAverage: [[   -0.0120,   -0.0081,   -0.0105,  ...    0.0008,   -0.0015,   -0.0019]]
+<====      BRISTLE      ====>
+Found 8 other models
+oldModel: -0.0099994745
+newModel: -0.009812098
+otherModels: [-0.0100362105, -0.010287215, -0.010313071, -0.007584219, -0.010157632, -0.010150514, -0.010160611, -0.009968511]
+Distance calculated: 0.33933818340301514
+Distance calculated: 0.3687640428543091
+Distance calculated: 0.3526771068572998
+Distance calculated: 0.7536965012550354
+Distance calculated: 0.3285601735115051
+Distance calculated: 0.35106560587882996
+Distance calculated: 0.36401620507240295
+Distance calculated: 0.3166825473308563
+distances: {8=0.3166825473308563, 5=0.3285601735115051, 1=0.33933818340301514, 6=0.35106560587882996, 3=0.3526771068572998, 1100001=0.35670575499534607, 1100006=0.3588007092475891, 1100007=0.36025747656822205, 1100005=0.3613491654396057, 7=0.36401620507240295, 1100003=0.3648403584957123, 2=0.3687640428543091, 1100002=0.3945910632610321, 1100008=0.3956577479839325, 1100004=0.6601323485374451, 4=0.7536965012550354}
+closeModels: [-0.009968511, -0.010157632, -0.0100362105, -0.010150514, -0.010313071, -0.010160611, -0.010287215, -0.007584219]
+notCloseModels: []
+combinedModels: [-0.0100362105, -0.010287215, -0.010313071, -0.007584219, -0.010157632, -0.010150514, -0.010160611, -0.009968511]
+myRecallPerClass: [0.7, 1.0, 1.0, 0.8, 0.9, 0.8, 0.3, 0.9, 0.8, 0.9]
+peerRecallPerClass: [(1, [0.5, 1.0, 1.0, 0.8, 0.9, 0.9, 0.3, 0.9, 0.8, 0.8]), (2, [0.9, 0.8, 1.0, 0.9, 0.9, 0.9, 0.3, 0.9, 0.4, 1.0]), (3, [0.8, 1.0, 1.0, 0.7, 0.9, 1.0, 0.7, 0.9, 0.4, 0.8]), (4, [0.6, 0.9, 1.0, 0.5, 1.0, 0.9, 0.8, 0.9, 0.9, 0.8]), (5, [0.4, 1.0, 1.0, 0.6, 0.9, 0.9, 0.6, 1.0, 0.9, 0.7]), (6, [0.7, 1.0, 1.0, 0.8, 0.9, 0.9, 0.7, 0.9, 0.4, 0.7]), (7, [0.8, 1.0, 1.0, 0.8, 0.9, 0.8, 0.6, 0.9, 0.4, 0.9]), (8, [0.9, 1.0, 1.0, 0.9, 1.0, 0.9, 0.7, 0.9, 0.4, 0.6])]
+selectedClassesAndRecall (1): {0=0.5, 1=1.0, 2=1.0, 3=0.8, 4=0.9, 5=0.9, 6=0.3, 7=0.9, 8=0.8, 9=0.8}
+selectedClassesAndRecall (2): {0=0.9, 1=0.8, 2=1.0, 3=0.9, 4=0.9, 5=0.9, 6=0.3, 7=0.9, 8=0.4, 9=1.0}
+selectedClassesAndRecall (3): {0=0.8, 1=1.0, 2=1.0, 3=0.7, 4=0.9, 5=1.0, 6=0.7, 7=0.9, 8=0.4, 9=0.8}
+selectedClassesAndRecall (4): {0=0.6, 1=0.9, 2=1.0, 3=0.5, 4=1.0, 5=0.9, 6=0.8, 7=0.9, 8=0.9, 9=0.8}
+selectedClassesAndRecall (5): {0=0.4, 1=1.0, 2=1.0, 3=0.6, 4=0.9, 5=0.9, 6=0.6, 7=1.0, 8=0.9, 9=0.7}
+selectedClassesAndRecall (6): {0=0.7, 1=1.0, 2=1.0, 3=0.8, 4=0.9, 5=0.9, 6=0.7, 7=0.9, 8=0.4, 9=0.7}
+selectedClassesAndRecall (7): {0=0.8, 1=1.0, 2=1.0, 3=0.8, 4=0.9, 5=0.8, 6=0.6, 7=0.9, 8=0.4, 9=0.9}
+selectedClassesAndRecall (8): {0=0.9, 1=1.0, 2=1.0, 3=0.9, 4=1.0, 5=0.9, 6=0.7, 7=0.9, 8=0.4, 9=0.6}
+peer: 1, class: 0, myRecall: 0.7, peerRecall: 0.5, weightedDiff: 1.6199999999999994, untrainedModelAmbiguity: 0.8099999999999999, w: -7.055630174637558, seqAttackPenalty: 0.0
+peer: 1, class: 1, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 1, class: 2, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 1, class: 3, myRecall: 0.8, peerRecall: 0.8, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 1, class: 4, myRecall: 0.9, peerRecall: 0.9, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 1, class: 5, myRecall: 0.8, peerRecall: 0.9, weightedDiff: 0.9999999999999998, untrainedModelAmbiguity: 1.0, w: 0.9999999999999993, seqAttackPenalty: 0.0
+peer: 1, class: 6, myRecall: 0.3, peerRecall: 0.3, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 1, class: 7, myRecall: 0.9, peerRecall: 0.9, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 1, class: 8, myRecall: 0.8, peerRecall: 0.8, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 1, class: 9, myRecall: 0.9, peerRecall: 0.8, weightedDiff: 0.8099999999999997, untrainedModelAmbiguity: 0.8099999999999999, w: -0.39986172216688454, seqAttackPenalty: 0.0
+peer: 2, class: 0, myRecall: 0.7, peerRecall: 0.9, weightedDiff: 2.000000000000001, untrainedModelAmbiguity: 1.0, w: 8.28211939073103, seqAttackPenalty: 0.3999999999999999
+peer: 2, class: 1, myRecall: 1.0, peerRecall: 0.8, weightedDiff: 1.6199999999999994, untrainedModelAmbiguity: 0.8099999999999999, w: -8.76632495816025, seqAttackPenalty: 0.0
+peer: 2, class: 2, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 2, class: 3, myRecall: 0.8, peerRecall: 0.9, weightedDiff: 0.9999999999999998, untrainedModelAmbiguity: 1.0, w: 0.9999999999999993, seqAttackPenalty: 0.0
+peer: 2, class: 4, myRecall: 0.9, peerRecall: 0.9, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 2, class: 5, myRecall: 0.8, peerRecall: 0.9, weightedDiff: 0.9999999999999998, untrainedModelAmbiguity: 1.0, w: 0.9999999999999993, seqAttackPenalty: -0.19999999999999996
+peer: 2, class: 6, myRecall: 0.3, peerRecall: 0.3, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 2, class: 7, myRecall: 0.9, peerRecall: 0.9, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 2, class: 8, myRecall: 0.8, peerRecall: 0.4, weightedDiff: 3.2399999999999998, untrainedModelAmbiguity: 0.8099999999999999, w: -139.40843212209552, seqAttackPenalty: 0.0
+peer: 2, class: 9, myRecall: 0.9, peerRecall: 1.0, weightedDiff: 0.9999999999999998, untrainedModelAmbiguity: 1.0, w: 0.9999999999999992, seqAttackPenalty: 0.19999999999999996
+peer: 3, class: 0, myRecall: 0.7, peerRecall: 0.8, weightedDiff: 1.0000000000000009, untrainedModelAmbiguity: 1.0, w: 1.0000000000000027, seqAttackPenalty: -2.220446049250313E-16
+peer: 3, class: 1, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: 0.3999999999999999
+peer: 3, class: 2, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 3, class: 3, myRecall: 0.8, peerRecall: 0.7, weightedDiff: 0.8100000000000006, untrainedModelAmbiguity: 0.8099999999999999, w: -0.41270248062246323, seqAttackPenalty: -0.19999999999999996
+peer: 3, class: 4, myRecall: 0.9, peerRecall: 0.9, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 3, class: 5, myRecall: 0.8, peerRecall: 1.0, weightedDiff: 1.9999999999999996, untrainedModelAmbiguity: 1.0, w: 9.189586839976275, seqAttackPenalty: -0.3999999999999999
+peer: 3, class: 6, myRecall: 0.3, peerRecall: 0.7, weightedDiff: 3.9999999999999996, untrainedModelAmbiguity: 1.0, w: 29.857055729177837, seqAttackPenalty: 0.0
+peer: 3, class: 7, myRecall: 0.9, peerRecall: 0.9, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 3, class: 8, myRecall: 0.8, peerRecall: 0.4, weightedDiff: 3.2399999999999998, untrainedModelAmbiguity: 0.8099999999999999, w: -250.93517781977195, seqAttackPenalty: 0.8
+peer: 3, class: 9, myRecall: 0.9, peerRecall: 0.8, weightedDiff: 0.8099999999999997, untrainedModelAmbiguity: 0.8099999999999999, w: -0.39986172216688454, seqAttackPenalty: 0.0
+peer: 4, class: 0, myRecall: 0.7, peerRecall: 0.6, weightedDiff: 0.8099999999999997, untrainedModelAmbiguity: 0.8099999999999999, w: -0.42595559432129815, seqAttackPenalty: -0.2000000000000004
+peer: 4, class: 1, myRecall: 1.0, peerRecall: 0.9, weightedDiff: 0.8099999999999997, untrainedModelAmbiguity: 0.8099999999999999, w: -0.5423886845999991, seqAttackPenalty: 0.3999999999999999
+peer: 4, class: 2, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 4, class: 3, myRecall: 0.8, peerRecall: 0.5, weightedDiff: 2.43, untrainedModelAmbiguity: 0.8099999999999999, w: -41.64341616636545, seqAttackPenalty: 2.220446049250313E-16
+peer: 4, class: 4, myRecall: 0.9, peerRecall: 1.0, weightedDiff: 0.9999999999999998, untrainedModelAmbiguity: 1.0, w: 0.9999999999999992, seqAttackPenalty: 0.0
+peer: 4, class: 5, myRecall: 0.8, peerRecall: 0.9, weightedDiff: 0.9999999999999998, untrainedModelAmbiguity: 1.0, w: 0.9999999999999993, seqAttackPenalty: -0.7999999999999998
+peer: 4, class: 6, myRecall: 0.3, peerRecall: 0.8, weightedDiff: 5.0, untrainedModelAmbiguity: 1.0, w: 51.57942669201989, seqAttackPenalty: -0.7999999999999999
+peer: 4, class: 7, myRecall: 0.9, peerRecall: 0.9, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 4, class: 8, myRecall: 0.8, peerRecall: 0.9, weightedDiff: 0.9999999999999998, untrainedModelAmbiguity: 1.0, w: 0.9999999999999993, seqAttackPenalty: 1.6
+peer: 4, class: 9, myRecall: 0.9, peerRecall: 0.8, weightedDiff: 0.8099999999999997, untrainedModelAmbiguity: 0.8099999999999999, w: -0.4798340666002614, seqAttackPenalty: 0.19999999999999996
+peer: 5, class: 0, myRecall: 0.7, peerRecall: 0.4, weightedDiff: 2.4299999999999993, untrainedModelAmbiguity: 0.8099999999999999, w: -36.450660983833494, seqAttackPenalty: -4.440892098500626E-16
+peer: 5, class: 1, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: 0.5999999999999999
+peer: 5, class: 2, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 5, class: 3, myRecall: 0.8, peerRecall: 0.6, weightedDiff: 1.6200000000000006, untrainedModelAmbiguity: 0.8099999999999999, w: -12.136208911211996, seqAttackPenalty: 0.6000000000000003
+peer: 5, class: 4, myRecall: 0.9, peerRecall: 0.9, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: -0.19999999999999996
+peer: 5, class: 5, myRecall: 0.8, peerRecall: 0.9, weightedDiff: 0.9999999999999998, untrainedModelAmbiguity: 1.0, w: 0.9999999999999993, seqAttackPenalty: -0.9999999999999998
+peer: 5, class: 6, myRecall: 0.3, peerRecall: 0.6, weightedDiff: 3.0, untrainedModelAmbiguity: 1.0, w: 14.75526705082986, seqAttackPenalty: -1.7999999999999998
+peer: 5, class: 7, myRecall: 0.9, peerRecall: 1.0, weightedDiff: 0.9999999999999998, untrainedModelAmbiguity: 1.0, w: 0.9999999999999992, seqAttackPenalty: 0.0
+peer: 5, class: 8, myRecall: 0.8, peerRecall: 0.9, weightedDiff: 0.9999999999999998, untrainedModelAmbiguity: 1.0, w: 0.9999999999999993, seqAttackPenalty: 1.4000000000000001
+peer: 5, class: 9, myRecall: 0.9, peerRecall: 0.7, weightedDiff: 1.6200000000000006, untrainedModelAmbiguity: 0.8099999999999999, w: -11.416115366790091, seqAttackPenalty: 0.3999999999999999
+peer: 6, class: 0, myRecall: 0.7, peerRecall: 0.7, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: 0.5999999999999994
+peer: 6, class: 1, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: 0.5999999999999999
+peer: 6, class: 2, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 6, class: 3, myRecall: 0.8, peerRecall: 0.8, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: 1.0000000000000004
+peer: 6, class: 4, myRecall: 0.9, peerRecall: 0.9, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: -0.19999999999999996
+peer: 6, class: 5, myRecall: 0.8, peerRecall: 0.9, weightedDiff: 0.9999999999999998, untrainedModelAmbiguity: 1.0, w: 0.9999999999999993, seqAttackPenalty: -1.1999999999999997
+peer: 6, class: 6, myRecall: 0.3, peerRecall: 0.7, weightedDiff: 3.9999999999999996, untrainedModelAmbiguity: 1.0, w: 29.857055729177837, seqAttackPenalty: -2.4
+peer: 6, class: 7, myRecall: 0.9, peerRecall: 0.9, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: -0.19999999999999996
+peer: 6, class: 8, myRecall: 0.8, peerRecall: 0.4, weightedDiff: 3.2399999999999998, untrainedModelAmbiguity: 0.8099999999999999, w: -306.69855066861015, seqAttackPenalty: 1.2000000000000002
+peer: 6, class: 9, myRecall: 0.9, peerRecall: 0.7, weightedDiff: 1.6200000000000006, untrainedModelAmbiguity: 0.8099999999999999, w: -14.677862614444404, seqAttackPenalty: 0.8
+peer: 7, class: 0, myRecall: 0.7, peerRecall: 0.8, weightedDiff: 1.0000000000000009, untrainedModelAmbiguity: 1.0, w: 1.0000000000000027, seqAttackPenalty: 0.5999999999999994
+peer: 7, class: 1, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: 0.5999999999999999
+peer: 7, class: 2, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 7, class: 3, myRecall: 0.8, peerRecall: 0.8, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: 1.0000000000000004
+peer: 7, class: 4, myRecall: 0.9, peerRecall: 0.9, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: -0.19999999999999996
+peer: 7, class: 5, myRecall: 0.8, peerRecall: 0.8, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: -1.3999999999999997
+peer: 7, class: 6, myRecall: 0.3, peerRecall: 0.6, weightedDiff: 3.0, untrainedModelAmbiguity: 1.0, w: 14.75526705082986, seqAttackPenalty: -3.1999999999999997
+peer: 7, class: 7, myRecall: 0.9, peerRecall: 0.9, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: -0.19999999999999996
+peer: 7, class: 8, myRecall: 0.8, peerRecall: 0.4, weightedDiff: 3.2399999999999998, untrainedModelAmbiguity: 0.8099999999999999, w: -418.22529636628656, seqAttackPenalty: 2.0
+peer: 7, class: 9, myRecall: 0.9, peerRecall: 0.9, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: 1.2000000000000002
+peer: 8, class: 0, myRecall: 0.7, peerRecall: 0.9, weightedDiff: 2.000000000000001, untrainedModelAmbiguity: 1.0, w: 8.28211939073103, seqAttackPenalty: 0.39999999999999925
+peer: 8, class: 1, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: 0.5999999999999999
+peer: 8, class: 2, myRecall: 1.0, peerRecall: 1.0, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: 0.0
+peer: 8, class: 3, myRecall: 0.8, peerRecall: 0.9, weightedDiff: 0.9999999999999998, untrainedModelAmbiguity: 1.0, w: 0.9999999999999993, seqAttackPenalty: 1.0000000000000004
+peer: 8, class: 4, myRecall: 0.9, peerRecall: 1.0, weightedDiff: 0.9999999999999998, untrainedModelAmbiguity: 1.0, w: 0.9999999999999992, seqAttackPenalty: -0.19999999999999996
+peer: 8, class: 5, myRecall: 0.8, peerRecall: 0.9, weightedDiff: 0.9999999999999998, untrainedModelAmbiguity: 1.0, w: 0.9999999999999993, seqAttackPenalty: -1.3999999999999997
+peer: 8, class: 6, myRecall: 0.3, peerRecall: 0.7, weightedDiff: 3.9999999999999996, untrainedModelAmbiguity: 1.0, w: 29.857055729177837, seqAttackPenalty: -3.8
+peer: 8, class: 7, myRecall: 0.9, peerRecall: 0.9, weightedDiff: 0.0, untrainedModelAmbiguity: 0.8099999999999999, w: 0.0, seqAttackPenalty: -0.19999999999999996
+peer: 8, class: 8, myRecall: 0.8, peerRecall: 0.4, weightedDiff: 3.2399999999999998, untrainedModelAmbiguity: 0.8099999999999999, w: -529.7520420639629, seqAttackPenalty: 2.8
+peer: 8, class: 9, myRecall: 0.9, peerRecall: 0.6, weightedDiff: 2.43, untrainedModelAmbiguity: 0.8099999999999999, w: -104.66704688025621, seqAttackPenalty: 1.2000000000000002
+weightPerClass: [-7.055630174637558, 0.0, 0.0, 0.0, 0.0, 0.9999999999999993, 0.0, 0.0, 0.0, -0.39986172216688454]
+weightSum: -6.455491896804443
+avg: 0.79
+std: 0.21189620100417092
+certainty: 0.3662075979916582
+sigmoid: 0.4838668725512252
+sigmoid: 4.838668725512251
+sigmoid: 0.8386687255122514
+sigmoid: 0.3071268594805669
+weightPerClass: [8.28211939073103, -8.76632495816025, 0.0, 0.9999999999999993, 0.0, 0.9999999999999993, 0.0, 0.0, -139.40843212209552, 0.9999999999999992]
+weightSum: -136.89263768952475
+avg: 0.8
+std: 0.23237900077244503
+certainty: 0.33524199845511
+sigmoid: 0.20279336177787896
+sigmoid: 2.0279336177787894
+sigmoid: -1.9720663822212106
+sigmoid: 0.0
+weightPerClass: [1.0000000000000027, 0.0, 0.0, -0.41270248062246323, 0.0, 9.189586839976275, 29.857055729177837, 0.0, -250.93517781977195, -0.39986172216688454]
+weightSum: -211.70109945340718
+avg: 0.8200000000000001
+std: 0.1777638883463118
+certainty: 0.4644722233073765
+sigmoid: 0.10745440371381187
+sigmoid: 1.0745440371381187
+sigmoid: -2.9254559628618813
+sigmoid: 0.0
+weightPerClass: [-0.42595559432129815, -0.5423886845999991, 0.0, -41.64341616636545, 0.9999999999999992, 0.9999999999999993, 51.57942669201989, 0.0, 0.9999999999999993, -0.4798340666002614]
+weightSum: 11.487832180132877
+avg: 0.8300000000000001
+std: 0.15524174696260024
+certainty: 0.5195165060747996
+sigmoid: 0.528688037649229
+sigmoid: 5.28688037649229
+sigmoid: 1.2868803764922898
+sigmoid: 0.6685555969314971
+weightPerClass: [-36.450660983833494, 0.0, 0.0, -12.136208911211996, 0.0, 0.9999999999999993, 14.75526705082986, 0.9999999999999992, 0.9999999999999993, -11.416115366790091]
+weightSum: -42.24771821100572
+avg: 0.8
+std: 0.2
+certainty: 0.4
+sigmoid: 0.3959241344316513
+sigmoid: 3.959241344316513
+sigmoid: -0.04075865568348691
+sigmoid: 0.0
+weightPerClass: [0.0, 0.0, 0.0, 0.0, 0.0, 0.9999999999999993, 29.857055729177837, 0.0, -306.69855066861015, -14.677862614444404]
+weightSum: -290.5193575538767
+avg: 0.8000000000000002
+std: 0.17320508075688776
+certainty: 0.45358983848622464
+sigmoid: 0.051897422443466165
+sigmoid: 0.5189742244346617
+sigmoid: -3.4810257755653384
+sigmoid: 0.0
+weightPerClass: [1.0000000000000027, 0.0, 0.0, 0.0, 0.0, 0.0, 14.75526705082986, 0.0, -418.22529636628656, 0.0]
+weightSum: -402.4700293154567
+avg: 0.8099999999999999
+std: 0.17578395831246946
+certainty: 0.45843208337506103
+sigmoid: 0.017555090714336058
+sigmoid: 0.17555090714336058
+sigmoid: -3.8244490928566393
+sigmoid: 0.0
+weightPerClass: [8.28211939073103, 0.0, 0.0, 0.9999999999999993, 0.9999999999999992, 0.9999999999999993, 29.857055729177837, 0.0, -529.7520420639629, -104.66704688025621]
+weightSum: -593.2799138243103
+avg: 0.8300000000000001
+std: 0.19
+certainty: 0.45000000000000007
+sigmoid: 0.0026440414467475723
+sigmoid: 0.026440414467475724
+sigmoid: -3.973559585532524
+sigmoid: 0.0
+modelsPerClassToWeight: {1=0.3071268594805669, 2=0.0, 3=0.0, 4=0.6685555969314971, 5=0.0, 6=0.0, 7=0.0, 8=0.0}
+totalWeight: 1.975682456412064
+weightedAverage: [[   -0.0091,   -0.0045,   -0.0095,  ...    0.0014,   -0.0016,   -0.0019]]

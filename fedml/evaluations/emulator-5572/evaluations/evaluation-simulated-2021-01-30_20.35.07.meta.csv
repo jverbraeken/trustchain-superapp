@@ -1,0 +1,55 @@
+name,simulationIndex,dataset,optimizer,learning rate,momentum,l2,batchSize,iteratorDistribution,maxTestSamples,gar,communicationPattern,behavior,numEpochs,slowdown,joiningLate,iterationsBeforeEvaluation,iterationsBeforeSending,local model poisoning attack,#attackers
+Figure 0.2 - average,0,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Simple average,All,Benign,200,-,0,10,1,<none>,0
+Figure 0.2 - average,1,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Simple average,All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - average,2,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Simple average,All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - average,3,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Simple average,All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - average,4,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Simple average,All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - average,5,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Simple average,All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - average,6,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Simple average,All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - average,7,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Simple average,All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - average,8,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Simple average,All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - median,0,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Median,All,Benign,200,-,0,10,1,<none>,0
+Figure 0.2 - median,1,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Median,All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - median,2,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Median,All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - median,3,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Median,All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - median,4,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Median,All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - median,5,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Median,All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - median,6,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Median,All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - median,7,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Median,All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - median,8,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Median,All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - krum,0,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Krum (b=1),All,Benign,200,-,0,10,1,<none>,0
+Figure 0.2 - krum,1,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Krum (b=1),All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - krum,2,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Krum (b=1),All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - krum,3,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Krum (b=1),All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - krum,4,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Krum (b=1),All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - krum,5,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Krum (b=1),All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - krum,6,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Krum (b=1),All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - krum,7,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Krum (b=1),All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - krum,8,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Krum (b=1),All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - bridge,0,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Bridge (b=1),All,Benign,200,-,0,10,1,<none>,0
+Figure 0.2 - bridge,1,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Bridge (b=1),All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - bridge,2,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Bridge (b=1),All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - bridge,3,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Bridge (b=1),All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - bridge,4,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Bridge (b=1),All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - bridge,5,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Bridge (b=1),All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - bridge,6,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Bridge (b=1),All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - bridge,7,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Bridge (b=1),All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - bridge,8,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Bridge (b=1),All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - mozi,0,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Mozi (frac=0.5),All,Benign,200,-,0,10,1,<none>,0
+Figure 0.2 - mozi,1,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Mozi (frac=0.5),All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - mozi,2,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Mozi (frac=0.5),All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - mozi,3,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Mozi (frac=0.5),All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - mozi,4,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Mozi (frac=0.5),All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - mozi,5,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Mozi (frac=0.5),All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - mozi,6,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Mozi (frac=0.5),All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - mozi,7,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Mozi (frac=0.5),All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - mozi,8,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Mozi (frac=0.5),All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - bristle,0,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Bristle,All,Benign,200,-,0,10,1,<none>,0
+Figure 0.2 - bristle,1,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Bristle,All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - bristle,2,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Bristle,All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - bristle,3,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Bristle,All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - bristle,4,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Bristle,All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - bristle,5,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Bristle,All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - bristle,6,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Bristle,All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - bristle,7,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Bristle,All,Benign,200,x 0.2,0,10,1,<none>,0
+Figure 0.2 - bristle,8,MNIST,Adam,1e-3,<none>,5e-3,5,[50-50-50-50-50-50-50-50-50-50],10,Bristle,All,Benign,200,x 0.2,0,10,1,<none>,0

@@ -1,0 +1,55 @@
+name,simulationIndex,dataset,optimizer,learning rate,momentum,l2,batchSize,iteratorDistribution,maxTestSamples,gar,communicationPattern,behavior,numEpochs,slowdown,joiningLate,iterationsBeforeEvaluation,iterationsBeforeSending,local model poisoning attack,#attackers
+Figure 1.2 - average,0,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Simple average,All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - average,1,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Simple average,All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - average,2,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Simple average,All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - average,3,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Simple average,All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - average,4,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Simple average,All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - average,5,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Simple average,All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - average,6,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Simple average,All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - average,7,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Simple average,All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - average,8,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Simple average,All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - median,0,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Median,All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - median,1,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Median,All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - median,2,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Median,All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - median,3,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Median,All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - median,4,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Median,All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - median,5,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Median,All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - median,6,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Median,All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - median,7,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Median,All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - median,8,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Median,All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - krum,0,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Krum (b=1),All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - krum,1,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Krum (b=1),All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - krum,2,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Krum (b=1),All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - krum,3,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Krum (b=1),All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - krum,4,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Krum (b=1),All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - krum,5,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Krum (b=1),All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - krum,6,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Krum (b=1),All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - krum,7,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Krum (b=1),All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - krum,8,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Krum (b=1),All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - bridge,0,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Bridge (b=1),All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - bridge,1,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Bridge (b=1),All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - bridge,2,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Bridge (b=1),All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - bridge,3,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Bridge (b=1),All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - bridge,4,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Bridge (b=1),All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - bridge,5,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Bridge (b=1),All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - bridge,6,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Bridge (b=1),All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - bridge,7,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Bridge (b=1),All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - bridge,8,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Bridge (b=1),All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - mozi,0,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Mozi (frac=0.5),All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - mozi,1,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Mozi (frac=0.5),All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - mozi,2,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Mozi (frac=0.5),All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - mozi,3,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Mozi (frac=0.5),All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - mozi,4,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Mozi (frac=0.5),All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - mozi,5,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Mozi (frac=0.5),All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - mozi,6,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Mozi (frac=0.5),All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - mozi,7,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Mozi (frac=0.5),All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - mozi,8,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Mozi (frac=0.5),All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - bristle,0,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Bristle,All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - bristle,1,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Bristle,All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - bristle,2,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Bristle,All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - bristle,3,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Bristle,All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - bristle,4,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Bristle,All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - bristle,5,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Bristle,All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - bristle,6,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Bristle,All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - bristle,7,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Bristle,All,Benign,400,-,0,10,1,<none>,0
+Figure 1.2 - bristle,8,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Bristle,All,Benign,400,-,0,10,1,<none>,0
