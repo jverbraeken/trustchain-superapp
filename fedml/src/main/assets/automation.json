@@ -47,7 +47,8 @@
     {
       "name": "Figure MinBound CIFAR-10",
       "fixedValues": {
-        "dataset": "mnist",
+        "dataset": "cifar10",
+        "batchSize": "batch_32",
         "behavior": "benign",
         "modelPoisoningAttack": "none",
         "numNodes": "1",
@@ -63,7 +64,8 @@
     {
       "name": "Figure MaxBound CIFAR-10",
       "fixedValues": {
-        "dataset": "mnist",
+        "dataset": "cifar10",
+        "batchSize": "batch_32",
         "behavior": "benign",
         "modelPoisoningAttack": "none",
         "numNodes": "1",
@@ -79,7 +81,8 @@
     {
       "name": "Figure MinBound WISDM",
       "fixedValues": {
-        "dataset": "mnist",
+        "dataset": "wisdm",
+        "batchSize": "batch_32",
         "behavior": "benign",
         "modelPoisoningAttack": "none",
         "numNodes": "1",
@@ -95,7 +98,8 @@
     {
       "name": "Figure MaxBound WISDM",
       "fixedValues": {
-        "dataset": "mnist",
+        "dataset": "wisdm",
+        "batchSize": "batch_32",
         "behavior": "benign",
         "modelPoisoningAttack": "none",
         "numNodes": "1",
@@ -174,7 +178,6 @@
       "name": "Figure 0.3",
       "fixedValues": {
         "dataset": "mnist",
-        "maxIterations": "iter_200",
         "behavior": "benign",
         "modelPoisoningAttack": "none",
         "numNodes": "5",
@@ -249,13 +252,16 @@
       "fixedValues": {
         "dataset": "cifar10",
         "batchSize": "batch_32",
-        "maxIterations": "iter_300",
+        "maxIterations": "iter_10000",
         "behavior": "benign",
         "modelPoisoningAttack": "none",
         "numNodes": "10",
         "numAttackers": "num_0"
       },
       "tests": [
+        {
+          "gar": "bristle"
+        },
         {
           "gar": "average"
         },
@@ -270,9 +276,6 @@
         },
         {
           "gar": "mozi"
-        },
-        {
-          "gar": "bristle"
         }
       ],
       "iteratorDistributions": [
@@ -331,8 +334,8 @@
       "name": "Figure 3.1",
       "fixedValues": {
         "dataset": "mnist",
-        "behavior": "noise",
-        "modelPoisoningAttack": "none",
+        "behavior": "benign",
+        "modelPoisoningAttack": "noise",
         "numNodes": "10",
         "numAttackers": "num_4"
       },
@@ -541,8 +544,8 @@
       "name": "Figure 4.1",
       "fixedValues": {
         "dataset": "mnist",
-        "behavior": "noise",
-        "modelPoisoningAttack": "none",
+        "behavior": "benign",
+        "modelPoisoningAttack": "noise",
         "numNodes": "10",
         "numAttackers": "num_2"
       },
@@ -583,8 +586,8 @@
       "name": "Figure 4.2",
       "fixedValues": {
         "dataset": "mnist",
-        "behavior": "noise",
-        "modelPoisoningAttack": "none",
+        "behavior": "benign",
+        "modelPoisoningAttack": "noise",
         "numNodes": "10",
         "numAttackers": "num_4"
       },
@@ -625,8 +628,8 @@
       "name": "Figure 4.3",
       "fixedValues": {
         "dataset": "mnist",
-        "behavior": "noise",
-        "modelPoisoningAttack": "none",
+        "behavior": "benign",
+        "modelPoisoningAttack": "noise",
         "numNodes": "10",
         "numAttackers": "num_8"
       },

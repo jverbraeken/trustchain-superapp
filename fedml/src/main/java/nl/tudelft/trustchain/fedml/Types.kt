@@ -6,10 +6,7 @@ import nl.tudelft.trustchain.fedml.ai.dataset.cifar.CustomCifar10DataSetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.mnist.CustomMnistDataSetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.wisdm.WISDMDataSetIterator
 import nl.tudelft.trustchain.fedml.ai.gar.*
-import nl.tudelft.trustchain.fedml.ai.modelPoisoningAttack.Fang2020Krum
-import nl.tudelft.trustchain.fedml.ai.modelPoisoningAttack.Fang2020TrimmedMean
-import nl.tudelft.trustchain.fedml.ai.modelPoisoningAttack.ModelPoisoningAttack
-import nl.tudelft.trustchain.fedml.ai.modelPoisoningAttack.NoAttack
+import nl.tudelft.trustchain.fedml.ai.modelPoisoningAttack.*
 import org.deeplearning4j.datasets.iterator.impl.EmnistDataSetIterator
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
@@ -276,7 +273,8 @@ enum class ModelPoisoningAttacks(val id: String, val text: String, val obj: Mode
     NONE("none", "<none>", NoAttack()),
     FANG_2020_TRIMMED_MEAN("fang_2020_trimmed_mean", "Fang 2020 (trimmed mean)", Fang2020TrimmedMean(2)),
     FANG_2020_MEDIAN("fang_2020_median", "Fang 2020 (median)", Fang2020TrimmedMean(2)), // Attack is the same as for mean
-    FANG_2020_KRUM("fang_2020_krum", "Fang 2020 (krum)", Fang2020Krum(2))
+    FANG_2020_KRUM("fang_2020_krum", "Fang 2020 (krum)", Fang2020Krum(2)),
+    NOISE("noise", "Noise", Noise())
 }
 
 fun loadModelPoisoningAttack(modelPoisoningAttack: String?) =
