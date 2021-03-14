@@ -103,7 +103,7 @@ class WISDMDataFetcher(
                 logger.debug { "4" }
 
                 shuffledSamplesTrain = allSamples.subList(0, (0.7 * allSamples.size).toInt()).toTypedArray()
-                shuffledSamplesTest = allSamples.subList(0, (0.7 * allSamples.size).toInt()).toTypedArray()
+                shuffledSamplesTest = allSamples.subList((0.7 * allSamples.size).toInt(), allSamples.size).toTypedArray()
                 logger.debug { "asdf: ${shuffledSamplesTrain!!.toList().toMap().map { Pair(it.key, it.value.size) }}" }
             } else {
                 val allSamples = ArrayList<Pair<Int, Array<DoubleArray>>>()
