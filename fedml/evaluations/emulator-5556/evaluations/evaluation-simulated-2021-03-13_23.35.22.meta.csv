@@ -1,0 +1,11 @@
+name,simulationIndex,transfer,dataset,optimizer,learning rate,momentum,l2,batchSize,iteratorDistribution,maxTestSamples,gar,communicationPattern,behavior,numEpochs,slowdown,joiningLate,iterationsBeforeEvaluation,iterationsBeforeSending,local model poisoning attack,#attackers
+Figure 1.2 - bristle - transfer,0,true,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-0-0-0-0-0-0],10,Bristle,All,Benign,10000,-,0,10,1,<none>,0
+Figure 1.2 - bristle - transfer,1,true,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[0-250-250-250-250-0-0-0-0-0],10,Bristle,All,Benign,10000,-,0,10,1,<none>,0
+Figure 1.2 - bristle - transfer,2,true,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[0-0-250-250-250-250-0-0-0-0],10,Bristle,All,Benign,10000,-,0,10,1,<none>,0
+Figure 1.2 - bristle - transfer,3,true,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[0-0-0-250-250-250-250-0-0-0],10,Bristle,All,Benign,10000,-,0,10,1,<none>,0
+Figure 1.2 - bristle - transfer,4,true,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[0-0-0-0-250-250-250-250-0-0],10,Bristle,All,Benign,10000,-,0,10,1,<none>,0
+Figure 1.2 - bristle - transfer,5,true,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[0-0-0-0-0-250-250-250-250-0],10,Bristle,All,Benign,10000,-,0,10,1,<none>,0
+Figure 1.2 - bristle - transfer,6,true,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[0-0-0-0-0-0-250-250-250-250],10,Bristle,All,Benign,10000,-,0,10,1,<none>,0
+Figure 1.2 - bristle - transfer,7,true,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-0-0-0-0-0-0-250-250-250],10,Bristle,All,Benign,10000,-,0,10,1,<none>,0
+Figure 1.2 - bristle - transfer,8,true,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-0-0-0-0-0-0-250-250],10,Bristle,All,Benign,10000,-,0,10,1,<none>,0
+Figure 1.2 - bristle - transfer,9,true,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-0-0-0-0-0-0-250],10,Bristle,All,Benign,10000,-,0,10,1,<none>,0
