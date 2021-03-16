@@ -14,7 +14,7 @@
   },
   "figures": [
     {
-      "name": "Figure MinBound MNIST - noniid",
+      "name": "Figure MinBound MNIST _ noniid",
       "fixedValues": {
         "dataset": "mnist",
         "behavior": "benign",
@@ -30,7 +30,7 @@
       ]
     },
     {
-      "name": "Figure MinBound MNIST - full",
+      "name": "Figure MinBound MNIST _ full",
       "fixedValues": {
         "dataset": "mnist",
         "behavior": "benign",
@@ -46,7 +46,7 @@
       ]
     },
     {
-      "name": "Figure MaxBound MNIST - noniid",
+      "name": "Figure MaxBound MNIST _ noniid",
       "fixedValues": {
         "dataset": "mnist",
         "behavior": "benign",
@@ -62,7 +62,7 @@
       ]
     },
     {
-      "name": "Figure MaxBound MNIST - full",
+      "name": "Figure MaxBound MNIST _ full",
       "fixedValues": {
         "dataset": "mnist",
         "behavior": "benign",
@@ -78,7 +78,7 @@
       ]
     },
     {
-      "name": "Figure MinBound CIFAR-10 - noniid",
+      "name": "Figure MinBound CIFAR-10 _ noniid",
       "fixedValues": {
         "dataset": "cifar10",
         "batchSize": "batch_32",
@@ -95,7 +95,7 @@
       ]
     },
     {
-      "name": "Figure MinBound CIFAR-10 - full",
+      "name": "Figure MinBound CIFAR-10 _ full",
       "fixedValues": {
         "dataset": "cifar10",
         "batchSize": "batch_32",
@@ -112,7 +112,7 @@
       ]
     },
     {
-      "name": "Figure MaxBound CIFAR-10 - noniid",
+      "name": "Figure MaxBound CIFAR-10 _ noniid",
       "fixedValues": {
         "dataset": "cifar10",
         "batchSize": "batch_32",
@@ -129,7 +129,7 @@
       ]
     },
     {
-      "name": "Figure MaxBound CIFAR-10",
+      "name": "Figure MaxBound CIFAR-10 _ full",
       "fixedValues": {
         "dataset": "cifar10",
         "batchSize": "batch_32",
@@ -146,7 +146,7 @@
       ]
     },
     {
-      "name": "Figure MinBound WISDM - noniid",
+      "name": "Figure MinBound WISDM _ noniid",
       "fixedValues": {
         "dataset": "wisdm",
         "batchSize": "batch_32",
@@ -163,7 +163,7 @@
       ]
     },
     {
-      "name": "Figure MinBound WISDM - full",
+      "name": "Figure MinBound WISDM _ full",
       "fixedValues": {
         "dataset": "wisdm",
         "batchSize": "batch_32",
@@ -180,7 +180,7 @@
       ]
     },
     {
-      "name": "Figure MaxBound WISDM - noniid",
+      "name": "Figure MaxBound WISDM _ noniid",
       "fixedValues": {
         "dataset": "wisdm",
         "batchSize": "batch_32",
@@ -197,7 +197,7 @@
       ]
     },
     {
-      "name": "Figure MaxBound WISDM - full",
+      "name": "Figure MaxBound WISDM _ full",
       "fixedValues": {
         "dataset": "wisdm",
         "batchSize": "batch_32",
@@ -668,7 +668,7 @@
         "behavior": "benign",
         "modelPoisoningAttack": "fang_2020_krum",
         "numNodes": "10",
-        "numAttackers": "num_20"
+        "numAttackers": "num_4"
       },
       "tests": [
         {
@@ -710,7 +710,7 @@
         "behavior": "benign",
         "modelPoisoningAttack": "fang_2020_trimmed_mean",
         "numNodes": "10",
-        "numAttackers": "num_20"
+        "numAttackers": "num_4"
       },
       "tests": [
         {
@@ -860,7 +860,7 @@
         "behavior": "benign",
         "modelPoisoningAttack": "fang_2020_krum",
         "numNodes": "10",
-        "numAttackers": "num_20"
+        "numAttackers": "num_4"
       },
       "tests": [
         {
@@ -902,7 +902,7 @@
         "behavior": "benign",
         "modelPoisoningAttack": "fang_2020_trimmed_mean",
         "numNodes": "10",
-        "numAttackers": "num_20"
+        "numAttackers": "num_4"
       },
       "tests": [
         {

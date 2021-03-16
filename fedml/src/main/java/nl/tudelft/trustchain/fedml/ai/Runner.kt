@@ -416,7 +416,7 @@ abstract class Runner {
             seed + 2,
             CustomDataSetType.FULL_TEST,
             baseDirectory,
-            behavior,
+            Behaviors.BENIGN,
             false,
         )
         logger.debug { "Loaded fullTestDataSetIterator" }
