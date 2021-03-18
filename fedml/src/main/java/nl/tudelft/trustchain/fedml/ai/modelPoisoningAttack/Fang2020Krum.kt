@@ -5,6 +5,7 @@ import nl.tudelft.trustchain.fedml.NumAttackers
 import nl.tudelft.trustchain.fedml.ai.gar.getKrum
 import org.bytedeco.javacpp.indexer.FloatRawIndexer
 import org.nd4j.linalg.api.ndarray.INDArray
+import org.nd4j.linalg.api.shape.Shape
 import org.nd4j.linalg.cpu.nativecpu.NDArray
 import kotlin.math.sqrt
 import kotlin.random.Random
@@ -32,12 +33,14 @@ class Fang2020Krum(private val b: Int) : ModelPoisoningAttack() {
         val modelsAsArrays = models.map { toFloatArray(it) }.toTypedArray()
 
         // w1
-        val s = FloatArray(modelsAsArrays[0].size)
+        val s = Array(modelsAsArrays[0].size) { FloatArray(modelsAsArrays[0][0].size) }
         val fm = toFloatArray(gradient)
         for (i in fm.indices) {
-            s[i] = if (fm[i] < 0) -1f else 1f
+            for (j in fm[0].indices) {
+                s[i][j] = if (fm[i][j] < 0) -1f else 1f
+            }
         }
-        val ns = NDArray(Array(1) { s })
+        val ns = NDArray(s)
 
         val d = modelsAsArrays[0].size.toFloat()
         val m = otherModels.size + numAttackers.num
@@ -50,7 +53,7 @@ class Fang2020Krum(private val b: Int) : ModelPoisoningAttack() {
             otherModels.values
                 .map { it.distance2(oldModel) }.toTypedArray()
                 .maxOrNull()!!
-        logger.debug { "lambda 1: $lambda" }
+//        logger.debug { "lambda 1: $lambda" }
 
         while (lambda >= 1e-5) {
             val w1 = oldModel.sub(ns.mul(lambda))
@@ -65,21 +68,24 @@ class Fang2020Krum(private val b: Int) : ModelPoisoningAttack() {
             }
             lambda /= 2
         }
-        logger.debug { "lambda 2: $lambda" }
+//        logger.debug { "lambda 2: $lambda" }
         val w1 = oldModel.sub(ns.mul(lambda))
         val newModels = Array<INDArray>(c) { w1 }
 
-        logger.debug { "${newModels.map { it.minNumber() }}; ${newModels.map { it.maxNumber() }}" }
+//        logger.debug { "${newModels.map { it.minNumber() }}; ${newModels.map { it.maxNumber() }}" }
         return transformToResult(newModels)
     }
 
-    private fun toFloatArray(first: INDArray): FloatArray {
+    private fun toFloatArray(first: INDArray): Array<FloatArray> {
         val data = first.data()
-        val length = data.length().toInt()
+        val array = Array(first.rows()) { FloatArray(first.columns()) }
         val indexer = data.indexer() as FloatRawIndexer
-        val array = FloatArray(length)
-        for (i in 0 until length) {
-            array[i] = indexer.getRaw(i.toLong())
+        val shape = first.shapeInfoJava()
+        for (i in 0 until first.rows()) {
+            for (j in 0 until first.columns()) {
+                val offset = Shape.getOffset(shape, i, j)
+                array[i][j] = indexer.getRaw(offset)
+            }
         }
         return array
     }
