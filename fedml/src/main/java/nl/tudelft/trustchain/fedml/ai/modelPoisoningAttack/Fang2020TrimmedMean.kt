@@ -4,6 +4,7 @@ import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.NumAttackers
 import org.bytedeco.javacpp.indexer.FloatRawIndexer
 import org.nd4j.linalg.api.ndarray.INDArray
+import org.nd4j.linalg.api.shape.Shape
 import org.nd4j.linalg.cpu.nativecpu.NDArray
 import kotlin.random.Random
 
@@ -33,65 +34,70 @@ class Fang2020TrimmedMean(private val b: Int) : ModelPoisoningAttack() {
         return transformToResult(result)
     }
 
-    private fun toFloatArray(first: INDArray): FloatArray {
+    private fun toFloatArray(first: INDArray): Array<FloatArray> {
         val data = first.data()
-        val length = data.length().toInt()
+        val array = Array(first.rows()) { FloatArray(first.columns()) }
         val indexer = data.indexer() as FloatRawIndexer
-        val array = FloatArray(length)
-        for (i in 0 until length) {
-            array[i] = indexer.getRaw(i.toLong())
+        val shape = first.shapeInfoJava()
+        for (i in 0 until first.rows()) {
+            for (j in 0 until first.columns()) {
+                val offset = Shape.getOffset(shape, i, j)
+                array[i][j] = indexer.getRaw(offset)
+            }
         }
         return array
     }
 
     private fun generateAttackVector(
         numAttackers: Int,
-        modelsAsArrays: Array<FloatArray>,
+        modelsAsArrays: Array<Array<FloatArray>>,
         gradient: INDArray,
         random: Random,
         b: Int
     ): Array<INDArray> {
-        val newMatrices = Array(numAttackers) { Array(1) { FloatArray(modelsAsArrays[0].size) }}
+        val newMatrices = Array(numAttackers) { Array(modelsAsArrays[0].size) { FloatArray(modelsAsArrays[0][0].size) }}
         val data = gradient.data()
+        val indexer = data.indexer() as FloatRawIndexer
+        val shape = gradient.shapeInfoJava()
         for (i in modelsAsArrays[0].indices) {
-            val elements = FloatArray(modelsAsArrays.size)
-            modelsAsArrays.forEachIndexed { j, modelsAsArray -> elements[j] = modelsAsArray[i] }
-            val v = data.getFloat(i.toLong())
-            if (v < 0) {
-                /**
-                 * Writing minOrNull and maxOrNull functions out completely as micro-optimization
-                 * because this is extremely computationally expensive
-                 */
-                var max = elements[0]
-                for (j in 1..elements.lastIndex) {
-                    max = if (max >= elements[j]) max else elements[j]
-                }
-                if (max > 0) {
-                    val size = if (max > 10) 0f else (b * max + EPSILON) - (max)
-                    newMatrices.forEach { it[0][i] = max + random.nextFloat() * size }
-                }
-                else {
-                    val size = (max / b) - (max - EPSILON)
-                    newMatrices.forEach { it[0][i] = max - EPSILON + random.nextFloat() * size }
-                }
-            } else {
-                var min = elements[0]
-                for (j in 1..elements.lastIndex) {
-                    val e = elements[j]
-                    min = if (min < e) min else e
-                }
-                if (min.isNaN()) {
-                    min = 0.0f
-                    logger.error { "Found NaN!!!!!!!!!!" }
-                }
-                if (min > 0) {
-                    val size = (min + EPSILON) - (min / b)
-                    newMatrices.forEach { it[0][i] = min / b + random.nextFloat() * size }
-                }
-                else {
-                    min = if (min < -10) -10f else min
-                    val size = (min) - (b * min - EPSILON)
-                    newMatrices.forEach { it[0][i] = b * min - EPSILON + random.nextFloat() * size }
+            for (j in modelsAsArrays[0][0].indices) {
+                val offset = Shape.getOffset(shape, i, j)
+                val v = indexer.getRaw(offset)
+                if (v < 0) {
+                    /**
+                     * Writing minOrNull and maxOrNull functions out completely as micro-optimization
+                     * because this is extremely computationally expensive
+                     */
+                    var max = modelsAsArrays[0][i][j]
+                    for (k in 1..modelsAsArrays.lastIndex) {
+                        val n = modelsAsArrays[k][i][j]
+                        max = if (max >= n) max else n
+                    }
+                    if (max > 0) {
+                        val size = if (max > 10) 0f else (b * max + EPSILON) - (max)
+                        newMatrices.forEach { it[i][j] = max + random.nextFloat() * size }
+                    } else {
+                        val size = (max / b) - (max - EPSILON)
+                        newMatrices.forEach { it[i][j] = max - EPSILON + random.nextFloat() * size }
+                    }
+                } else {
+                    var min = modelsAsArrays[0][i][j]
+                    for (k in 1..modelsAsArrays.lastIndex) {
+                        val n = modelsAsArrays[k][i][j]
+                        min = if (min < n) min else n
+                    }
+                    if (min.isNaN()) {
+                        min = 0.0f
+                        logger.error { "Found NaN!!!!!!!!!!" }
+                    }
+                    if (min > 0) {
+                        val size = (min + EPSILON) - (min / b)
+                        newMatrices.forEach { it[i][j] = min / b + random.nextFloat() * size }
+                    } else {
+                        min = if (min < -10) -10f else min
+                        val size = (min) - (b * min - EPSILON)
+                        newMatrices.forEach { it[i][j] = b * min - EPSILON + random.nextFloat() * size }
+                    }
                 }
             }
         }
