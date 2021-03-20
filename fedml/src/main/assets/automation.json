@@ -213,6 +213,12 @@
         }
       ]
     },
+
+
+
+
+
+
     {
       "name": "Figure 0.1",
       "fixedValues": {
@@ -306,6 +312,11 @@
         }
       ]
     },
+
+
+
+
+
     {
       "name": "Figure 1.1",
       "fixedValues": {
@@ -434,12 +445,19 @@
         "[10, 10, 10, 10, 10, 10]"
       ]
     },
+
+
+
+
+
+
+
     {
       "name": "Figure 2.1",
       "fixedValues": {
         "dataset": "mnist",
-        "behavior": "benign",
-        "modelPoisoningAttack": "noise",
+        "behavior": "label_flip_all",
+        "modelPoisoningAttack": "none",
         "numNodes": "10",
         "numAttackers": "num_4"
       },
@@ -481,8 +499,8 @@
       "fixedValues": {
         "dataset": "cifar10",
         "batchSize": "batch_32",
-        "behavior": "benign",
-        "modelPoisoningAttack": "noise",
+        "behavior": "label_flip_all",
+        "modelPoisoningAttack": "none",
         "numNodes": "10",
         "numAttackers": "num_4"
       },
@@ -524,8 +542,8 @@
       "fixedValues": {
         "dataset": "wisdm",
         "batchSize": "batch_32",
-        "behavior": "benign",
-        "modelPoisoningAttack": "noise",
+        "behavior": "label_flip_all",
+        "modelPoisoningAttack": "none",
         "numNodes": "10",
         "numAttackers": "num_4"
       },
@@ -619,8 +637,8 @@
       "name": "Figure 3.3",
       "fixedValues": {
         "dataset": "mnist",
-        "behavior": "label_flip_all",
-        "modelPoisoningAttack": "none",
+        "behavior": "benign",
+        "modelPoisoningAttack": "noise",
         "numNodes": "14",
         "numAttackers": "num_4"
       },
@@ -761,6 +779,52 @@
 
 
 
+    {
+      "name": "Figure 4.1",
+      "fixedValues": {
+        "dataset": "mnist",
+        "behavior": "benign",
+        "modelPoisoningAttack": "noise",
+        "numNodes": "14",
+        "numAttackers": "num_4"
+      },
+      "tests": [
+        {
+          "gar": "average"
+        },
+        {
+          "gar": "median"
+        },
+        {
+          "gar": "krum"
+        },
+        {
+          "gar": "bridge"
+        },
+        {
+          "gar": "mozi"
+        },
+        {
+          "gar": "bristle"
+        }
+      ],
+      "iteratorDistributions": [
+        "[10, 10, 10, 10, 0, 0, 0, 0, 0, 0]",
+        "[0, 10, 10, 10, 10, 0, 0, 0, 0, 0]",
+        "[0, 0, 10, 10, 10, 10, 0, 0, 0, 0]",
+        "[0, 0, 0, 10, 10, 10, 10, 0, 0, 0]",
+        "[0, 0, 0, 0, 10, 10, 10, 10, 0, 0]",
+        "[0, 0, 0, 0, 0, 10, 10, 10, 10, 0]",
+        "[0, 0, 0, 0, 0, 0, 10, 10, 10, 10]",
+        "[10, 0, 0, 0, 0, 0, 0, 10, 10, 10]",
+        "[10, 10, 0, 0, 0, 0, 0, 0, 10, 10]",
+        "[10, 10, 10, 0, 0, 0, 0, 0, 0, 10]",
+        "[10, 10, 10, 10, 0, 0, 0, 0, 0, 0]",
+        "[0, 10, 10, 10, 10, 0, 0, 0, 0, 0]",
+        "[0, 0, 10, 10, 10, 10, 0, 0, 0, 0]",
+        "[0, 0, 0, 10, 10, 10, 10, 0, 0, 0]"
+      ]
+    },
     {
       "name": "Figure 4.2",
       "fixedValues": {
@@ -960,8 +1024,8 @@
       "name": "Figure 5.1",
       "fixedValues": {
         "dataset": "mnist",
-        "behavior": "benign",
-        "modelPoisoningAttack": "noise",
+        "behavior": "label_flip_all",
+        "modelPoisoningAttack": "none",
         "numNodes": "10",
         "numAttackers": "num_2"
       },
@@ -1002,8 +1066,8 @@
       "name": "Figure 5.2",
       "fixedValues": {
         "dataset": "mnist",
-        "behavior": "benign",
-        "modelPoisoningAttack": "noise",
+        "behavior": "label_flip_all",
+        "modelPoisoningAttack": "none",
         "numNodes": "10",
         "numAttackers": "num_4"
       },
@@ -1044,8 +1108,8 @@
       "name": "Figure 5.3",
       "fixedValues": {
         "dataset": "mnist",
-        "behavior": "benign",
-        "modelPoisoningAttack": "noise",
+        "behavior": "label_flip_all",
+        "modelPoisoningAttack": "none",
         "numNodes": "10",
         "numAttackers": "num_8"
       },

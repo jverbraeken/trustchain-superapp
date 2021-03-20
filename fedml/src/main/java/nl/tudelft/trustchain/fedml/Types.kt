@@ -226,7 +226,7 @@ enum class GARs(
 ) {
     NONE("none", "None", NoAveraging(), ModelPoisoningAttacks.NONE),
     AVERAGE("average", "Simple average", Average(), ModelPoisoningAttacks.NONE),
-    MEDIAN("median", "Median", Median(), ModelPoisoningAttacks.FANG_2020_MEDIAN),
+    MEDIAN("median", "Median", Median(), ModelPoisoningAttacks.FANG_2020_TRIMMED_MEAN),
     KRUM("krum", "Krum (b=1)", Krum(4), ModelPoisoningAttacks.FANG_2020_KRUM),
     BRIDGE("bridge", "Bridge (b=1)", Bridge(4), ModelPoisoningAttacks.FANG_2020_TRIMMED_MEAN),
     MOZI("mozi", "Mozi (frac=0.5)", Mozi(0.5), ModelPoisoningAttacks.NONE),
@@ -272,7 +272,6 @@ fun loadTransmissionRound(transmissionRound: String?) = TransmissionRounds.value
 enum class ModelPoisoningAttacks(val id: String, val text: String, val obj: ModelPoisoningAttack) {
     NONE("none", "<none>", NoAttack()),
     FANG_2020_TRIMMED_MEAN("fang_2020_trimmed_mean", "Fang 2020 (trimmed mean)", Fang2020TrimmedMean(2)),
-    FANG_2020_MEDIAN("fang_2020_median", "Fang 2020 (median)", Fang2020TrimmedMean(2)), // Attack is the same as for mean
     FANG_2020_KRUM("fang_2020_krum", "Fang 2020 (krum)", Fang2020Krum(2)),
     NOISE("noise", "Noise", Noise())
 }

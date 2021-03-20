@@ -30,7 +30,7 @@ fun loadAutomation(baseDirectory: File): Automation {
     return Json.decodeFromString(string)
 }
 
-private val ISOLATED_FIGURE_NAME = arrayOf("Figure 3.5")
+private val ISOLATED_FIGURE_NAME = arrayOf("Figure 3.3")
 private val ISOLATED_FIGURE_GAR = arrayOf("bristle")
 
 /**
@@ -59,8 +59,18 @@ fun generateConfigs(
     val myFigures =
         if (automationPart == -1)
             figures.filter { it.name in ISOLATED_FIGURE_NAME }
-        else
-            figures.subList(automationPart + if (automationPart == 0) 0 else 12, (automationPart + 1) * ((figures.size - 4) / 16) + 12)
+        else {
+            when (automationPart) {
+                0 -> figures.subList(0, 12)
+                1 -> figures.subList(12, 14)
+                2 -> figures.subList(14, 16)
+                3 -> figures.subList(16, 18)
+                4 -> figures.subList(18, 20)
+                5 -> figures.subList(20, 22)
+                6 -> listOf(figures[22], figures[31])
+                else -> figures.subList(23, 31).union(listOf(figures[32])).toList()
+            }
+        }
     logger.debug { "myFigures: ${myFigures.map { it.name }}" }
 
     for (figure in myFigures) {
