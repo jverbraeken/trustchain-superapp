@@ -32,8 +32,11 @@ class CustomMnistManager(
         val labelIndexMapping = when (behavior) {
             Behaviors.LABEL_FLIP_2 -> {
                 val labelIndexMapping2 = labelIndexMappingTemp.map { it.copyOf() }.toTypedArray()
-                labelIndexMapping2[0] = labelIndexMappingTemp[1]
-                labelIndexMapping2[1] = labelIndexMappingTemp[0]
+                val usedIndices = iteratorDistribution.mapIndexed { index, num -> Pair(index, num) }.filter { (_, num) -> num > 0 }
+                val first = usedIndices[0].first
+                val second = usedIndices[1].first
+                labelIndexMapping2[first] = labelIndexMappingTemp[second]
+                labelIndexMapping2[second] = labelIndexMappingTemp[first]
                 labelIndexMapping2
             }
             Behaviors.LABEL_FLIP_ALL -> {

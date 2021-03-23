@@ -30,11 +30,12 @@ class Bridge(private val b: Int) : AggregationRule() {
     ): INDArray {
         logger.d(logging) { formatName("BRIDGE") }
         val models = HashMap<Int, INDArray>()
-        models[-1] = oldModel.sub(gradient)
+        val newModel = oldModel.sub(gradient)
+        models[-1] = newModel
         models.putAll(newOtherModels)
         logger.d(logging) { "Found ${models.size} models in total" }
         return if (models.size < minimumModels) {
-            oldModel
+            newModel
         } else {
             val modelsAsArrays = models.map { toFloatArray(it.value) }.toTypedArray()
             val newVector = FloatArray(modelsAsArrays[0].size)
