@@ -67,8 +67,8 @@ fun generateConfigs(
                 3 -> figures.subList(16, 18)
                 4 -> figures.subList(18, 20)
                 5 -> figures.subList(20, 22)
-                6 -> listOf(figures[22], figures[31])
-                else -> listOf(figures.subList(23, 31).union(listOf(figures[32])).toList()[automationPart - 7])
+                6 -> listOf(figures[22]/*, figures[27]*/)
+                else -> listOf(figures/*.subList(23, 27).union(figures.subList(28, 32)).toList()*/.subList(23, 32)[automationPart - 7])
             }
         }
     logger.debug { "myFigures: ${myFigures.map { it.name }}" }
