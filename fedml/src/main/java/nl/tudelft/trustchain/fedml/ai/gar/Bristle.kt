@@ -9,7 +9,7 @@ import org.nd4j.evaluation.classification.Evaluation
 import org.nd4j.linalg.api.ndarray.INDArray
 import kotlin.math.*
 
-private const val NUM_MODELS_EXPLOITATION = 50
+private const val NUM_MODELS_EXPLOITATION = 20
 private const val NUM_MODELS_EXPLORATION = 5
 private const val MIN_NUMBER_MODELS_FOR_DISTANCE_SCREENING = 20
 
