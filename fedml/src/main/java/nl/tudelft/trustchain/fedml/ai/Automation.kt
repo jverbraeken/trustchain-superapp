@@ -87,6 +87,7 @@ fun generateConfigs(
         val overrideIteratorDistribution = figure.iteratorDistributions
         val overrideBatchSize = figure.fixedValues["batchSize"]
         val overrideIteratorDistributionSoft = figure.fixedValues["iteratorDistribution"]
+        val overrideCommunicationPattern = figure.fixedValues["communicationPattern"]
 
         for (test in figure.tests) {
             val gar = loadGAR(test.gar)!!
@@ -138,7 +139,7 @@ fun generateConfigs(
                     TrainConfiguration(
                         maxIteration = loadMaxIteration(overrideMaxIterations) ?: maxIterations,
                         gar = gar,
-                        communicationPattern = communicationPattern,
+                        communicationPattern = loadCommunicationPattern(overrideCommunicationPattern) ?: communicationPattern,
                         behavior = if (node < numNodes - numAttackers.num) Behaviors.BENIGN else behavior,
                         slowdown = slowdown,
                         joiningLate = if (node == 0 && firstNodeJoiningLate) TransmissionRounds.N150 else TransmissionRounds.N0,

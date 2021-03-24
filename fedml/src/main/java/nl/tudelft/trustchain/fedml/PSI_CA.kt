@@ -11,7 +11,7 @@ import nl.tudelft.trustchain.fedml.ipv8.MsgPsiCaServerToClient
 import java.math.BigInteger
 import java.util.concurrent.CopyOnWriteArrayList
 
-private const val MIN_PSI_CA = 3
+private const val MIN_PSI_CA = 1
 private const val SIZE_BLOOM_FILTER = 1000
 private val logger = KotlinLogging.logger("PSI_CA")
 

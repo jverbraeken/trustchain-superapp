@@ -47,7 +47,7 @@ class SimulatedRunner : Runner() {
                 val figureName = figureNames[figure]
                 val figureConfig = configs[figure]
 
-                for (transfer in booleanArrayOf(true, false)) {
+                for (transfer in booleanArrayOf(true/*, false*/)) {
 
                     for (test in figureConfig.indices) {
                         val testConfig = figureConfig[test]
