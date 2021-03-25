@@ -221,14 +221,8 @@ class WISDMDataFetcher(
 
     companion object {
         const val TEST_BATCH_SIZE = 10
-        /*private const val REMOTE_DATA_URL_REGULAR = "https://api.onedrive.com/v1.0/shares/s!AvNMRY4ml2WPgaEo6NyGY9o7BwLlDQ/root/content"
-        private const val REMOTE_DATA_URL_TRANSFER = "https://api.onedrive.com/v1.0/shares/s!AvNMRY4ml2WPgaBQ2on0dU-zWnGL9A/root/content"
-        private const val LOCAL_CACHE_NAME_REGULAR = "mobiact"
-        private const val LOCAL_CACHE_NAME_TRANSFER = "wisdm"
-        private const val LOCAL_FILE_NAME_REGULAR = "MobiAct.zip"
-        private const val LOCAL_FILE_NAME_TRANSFER = "WISDM_ar_v1.1_raw.zip"*/
-        private const val REMOTE_DATA_URL_TRANSFER = "https://api.onedrive.com/v1.0/shares/s!AvNMRY4ml2WPgaEo6NyGY9o7BwLlDQ/root/content"
-        private const val REMOTE_DATA_URL_REGULAR = "https://api.onedrive.com/v1.0/shares/s!AvNMRY4ml2WPgaBQ2on0dU-zWnGL9A/root/content"
+        private const val REMOTE_DATA_URL_TRANSFER = "https://api.onedrive.com/v1.0/shares/s!AvNMRY4ml2WPgaEoWa2PWE1pVlUpow/root/content"
+        private const val REMOTE_DATA_URL_REGULAR = "https://api.onedrive.com/v1.0/shares/s!AvNMRY4ml2WPgaBQC8V4EXrmBaLwPg/root/content"
         private const val LOCAL_CACHE_NAME_TRANSFER = "mobiact"
         private const val LOCAL_CACHE_NAME_REGULAR = "wisdm"
         private const val LOCAL_FILE_NAME_TRANSFER = "MobiAct.zip"
@@ -240,7 +234,7 @@ class WISDMDataFetcher(
     }
 }
 
-private inline fun String.fastsplit(): Triple<Int, Int, DoubleArray> {
+private fun String.fastsplit(): Triple<Int, Int, DoubleArray> {
     /*val labels = arrayOf(
         "Walking",
         "Jogging",
@@ -293,7 +287,7 @@ private inline fun String.fastsplit(): Triple<Int, Int, DoubleArray> {
     return Triple(activity, human, data)
 }
 
-private inline fun String.fastSplitMobi(): DoubleArray {
+private fun String.fastSplitMobi(): DoubleArray {
     val data = DoubleArray(3)
     var start = 0
     var count = 0

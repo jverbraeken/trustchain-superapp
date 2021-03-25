@@ -163,8 +163,8 @@ class CustomCifar10Fetcher {
     companion object {
         private const val LOCAL_CACHE_NAME_REGULAR = "cifar10"
         private const val LOCAL_CACHE_NAME_TRANSFER = "cifar100"
-        private const val REMOTE_DATA_URL_REGULAR = "https://api.onedrive.com/v1.0/shares/s!AvNMRY4ml2WPgZpmYiFDOhNyFgakRQ/root/content"
-        private const val REMOTE_DATA_URL_TRANSFER = "https://api.onedrive.com/v1.0/shares/s!AvNMRY4ml2WPgaA98zlT5itmCF0s8w/root/content"
+        private const val REMOTE_DATA_URL_REGULAR = "https://api.onedrive.com/v1.0/shares/s!AvNMRY4ml2WPgZpm_9vDHA4CEsz1OQ/root/content"
+        private const val REMOTE_DATA_URL_TRANSFER = "https://api.onedrive.com/v1.0/shares/s!AvNMRY4ml2WPgaA9_ddGNOJmWS47_A/root/content"
         private const val LOCAL_FILE_NAME_REGULAR = "cifar10_dl4j.v1.zip"
         private const val LOCAL_FILE_NAME_TRANSFER = "cifar100_dl4j.v1.zip"
         const val INPUT_WIDTH = 32
