@@ -459,7 +459,7 @@
         "behavior": "label_flip_all",
         "modelPoisoningAttack": "none",
         "numNodes": "10",
-        "numAttackers": "num_4"
+        "numAttackers": "num_3"
       },
       "tests": [
         {
@@ -502,7 +502,7 @@
         "behavior": "label_flip_all",
         "modelPoisoningAttack": "none",
         "numNodes": "10",
-        "numAttackers": "num_4"
+        "numAttackers": "num_3"
       },
       "tests": [
         {
@@ -545,7 +545,7 @@
         "behavior": "label_flip_all",
         "modelPoisoningAttack": "none",
         "numNodes": "10",
-        "numAttackers": "num_4"
+        "numAttackers": "num_3"
       },
       "tests": [
         {
@@ -594,7 +594,7 @@
         "behavior": "label_flip_2",
         "modelPoisoningAttack": "none",
         "numNodes": "10",
-        "numAttackers": "num_4"
+        "numAttackers": "num_3"
       },
       "tests": [
         {
@@ -635,8 +635,8 @@
         "dataset": "mnist",
         "behavior": "benign",
         "modelPoisoningAttack": "noise",
-        "numNodes": "6",
-        "numAttackers": "num_4"
+        "numNodes": "7",
+        "numAttackers": "num_3"
       },
       "tests": [
         {
@@ -659,6 +659,7 @@
         }
       ],
       "iteratorDistributions": [
+        "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
         "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
         "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
         "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
@@ -673,8 +674,8 @@
         "dataset": "mnist",
         "behavior": "benign",
         "modelPoisoningAttack": "fang_2020_krum",
-        "numNodes": "6",
-        "numAttackers": "num_4"
+        "numNodes": "7",
+        "numAttackers": "num_3"
       },
       "tests": [
         {
@@ -697,6 +698,7 @@
         }
       ],
       "iteratorDistributions": [
+        "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
         "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
         "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
         "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
@@ -711,8 +713,8 @@
         "dataset": "mnist",
         "behavior": "benign",
         "modelPoisoningAttack": "fang_2020_trimmed_mean",
-        "numNodes": "6",
-        "numAttackers": "num_4"
+        "numNodes": "7",
+        "numAttackers": "num_3"
       },
       "tests": [
         {
@@ -735,6 +737,7 @@
         }
       ],
       "iteratorDistributions": [
+        "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
         "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
         "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
         "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
@@ -766,7 +769,7 @@
         "behavior": "benign",
         "modelPoisoningAttack": "noise",
         "numNodes": "10",
-        "numAttackers": "num_7"
+        "numAttackers": "num_5"
       },
       "tests": [
         {
@@ -807,8 +810,8 @@
         "dataset": "mnist",
         "behavior": "label_flip_2",
         "modelPoisoningAttack": "none",
-        "numNodes": "17",
-        "numAttackers": "num_7"
+        "numNodes": "15",
+        "numAttackers": "num_5"
       },
       "tests": [
         {
@@ -841,8 +844,6 @@
         "[10, 0, 0, 0, 0, 0, 0, 10, 10, 10]",
         "[10, 10, 0, 0, 0, 0, 0, 0, 10, 10]",
         "[10, 10, 10, 0, 0, 0, 0, 0, 0, 10]",
-        "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
-        "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
         "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
         "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
         "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
@@ -856,8 +857,8 @@
         "dataset": "mnist",
         "behavior": "label_flip_all",
         "modelPoisoningAttack": "none",
-        "numNodes": "17",
-        "numAttackers": "num_7"
+        "numNodes": "15",
+        "numAttackers": "num_5"
       },
       "tests": [
         {
@@ -890,8 +891,6 @@
         "[10, 0, 0, 0, 0, 0, 0, 10, 10, 10]",
         "[10, 10, 0, 0, 0, 0, 0, 0, 10, 10]",
         "[10, 10, 10, 0, 0, 0, 0, 0, 0, 10]",
-        "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
-        "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
         "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
         "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
         "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
@@ -906,7 +905,7 @@
         "behavior": "benign",
         "modelPoisoningAttack": "fang_2020_krum",
         "numNodes": "10",
-        "numAttackers": "num_7"
+        "numAttackers": "num_5"
       },
       "tests": [
         {
@@ -948,7 +947,7 @@
         "behavior": "benign",
         "modelPoisoningAttack": "fang_2020_trimmed_mean",
         "numNodes": "10",
-        "numAttackers": "num_7"
+        "numAttackers": "num_5"
       },
       "tests": [
         {
@@ -1008,8 +1007,8 @@
         "dataset": "mnist",
         "behavior": "label_flip_all",
         "modelPoisoningAttack": "none",
-        "numNodes": "12",
-        "numAttackers": "num_2"
+        "numNodes": "11",
+        "numAttackers": "num_1"
       },
       "tests": [
         {
@@ -1042,7 +1041,6 @@
         "[10, 0, 0, 0, 0, 0, 0, 10, 10, 10]",
         "[10, 10, 0, 0, 0, 0, 0, 0, 10, 10]",
         "[10, 10, 10, 0, 0, 0, 0, 0, 0, 10]",
-        "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
         "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]"
       ]
     },
@@ -1052,8 +1050,8 @@
         "dataset": "mnist",
         "behavior": "label_flip_all",
         "modelPoisoningAttack": "none",
-        "numNodes": "50",
-        "numAttackers": "num_40"
+        "numNodes": "20",
+        "numAttackers": "num_10"
       },
       "tests": [
         {
@@ -1095,13 +1093,49 @@
         "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
         "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
         "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
-        "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
-        "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
-        "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
-        "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
-        "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
-        "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
-        "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
+        "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]"
+      ]
+    },
+    {
+      "name": "Figure 5.4",
+      "fixedValues": {
+        "dataset": "mnist",
+        "behavior": "label_flip_all",
+        "modelPoisoningAttack": "none",
+        "numNodes": "34",
+        "numAttackers": "num_24"
+      },
+      "tests": [
+        {
+          "gar": "bristle"
+        },
+        {
+          "gar": "average"
+        },
+        {
+          "gar": "median"
+        },
+        {
+          "gar": "krum"
+        },
+        {
+          "gar": "bridge"
+        },
+        {
+          "gar": "mozi"
+        }
+      ],
+      "iteratorDistributions": [
+        "[10, 10, 10, 10, 0, 0, 0, 0, 0, 0]",
+        "[0, 10, 10, 10, 10, 0, 0, 0, 0, 0]",
+        "[0, 0, 10, 10, 10, 10, 0, 0, 0, 0]",
+        "[0, 0, 0, 10, 10, 10, 10, 0, 0, 0]",
+        "[0, 0, 0, 0, 10, 10, 10, 10, 0, 0]",
+        "[0, 0, 0, 0, 0, 10, 10, 10, 10, 0]",
+        "[0, 0, 0, 0, 0, 0, 10, 10, 10, 10]",
+        "[10, 0, 0, 0, 0, 0, 0, 10, 10, 10]",
+        "[10, 10, 0, 0, 0, 0, 0, 0, 10, 10]",
+        "[10, 10, 10, 0, 0, 0, 0, 0, 0, 10]",
         "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
         "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
         "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
@@ -1358,8 +1392,8 @@
         "dataset": "mnist",
         "behavior": "label_flip_all",
         "modelPoisoningAttack": "none",
-        "numNodes": "17",
-        "numAttackers": "num_7"
+        "numNodes": "15",
+        "numAttackers": "num_5"
       },
       "tests": [
         {
@@ -1396,8 +1430,6 @@
         "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
         "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
         "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
-        "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
-        "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
         "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]"
       ]
     },
@@ -1407,8 +1439,8 @@
         "dataset": "mnist",
         "behavior": "label_flip_all",
         "modelPoisoningAttack": "none",
-        "numNodes": "17",
-        "numAttackers": "num_7"
+        "numNodes": "15",
+        "numAttackers": "num_5"
       },
       "tests": [
         {
@@ -1441,8 +1473,6 @@
         "[10, 10, 10, 0, 0, 0, 0, 10, 10, 10]",
         "[10, 10, 10, 10, 0, 0, 0, 0, 10, 10]",
         "[10, 10, 10, 10, 10, 0, 0, 0, 0, 10]",
-        "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
-        "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
         "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
         "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
         "[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]",
