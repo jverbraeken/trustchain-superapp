@@ -1,0 +1,101 @@
+name,simulationIndex,transfer,dataset,optimizer,learning rate,momentum,l2,batchSize,iteratorDistribution,maxTestSamples,gar,communicationPattern,behavior,numEpochs,slowdown,joiningLate,iterationsBeforeEvaluation,iterationsBeforeSending,local model poisoning attack,#attackers
+Figure 5.3 - bristle - transfer,0,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-0-0-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,1,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-10-10-10-10-0-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,2,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-10-10-10-10-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,3,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-10-10-10-10-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,4,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-10-10-10-10-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,5,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-10-10-10-10-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,6,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-10-10-10-10],10,Bristle,All,Benign,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,7,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-0-0-0-0-0-0-10-10-10],10,Bristle,All,Benign,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,8,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-0-0-0-0-0-0-10-10],10,Bristle,All,Benign,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,9,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-0-0-0-0-0-0-10],10,Bristle,All,Benign,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,10,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,11,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,12,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,13,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,14,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,15,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,16,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,17,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,18,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,19,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,20,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,21,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,22,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,23,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,24,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,25,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,26,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,27,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,28,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,29,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,30,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,31,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,32,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,33,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,34,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,35,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,36,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,37,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,38,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,39,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,40,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,41,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,42,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,43,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,44,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,45,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,46,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,47,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,48,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - bristle - transfer,49,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,0,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-0-0-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,1,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-10-10-10-10-0-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,2,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-10-10-10-10-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,3,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-10-10-10-10-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,4,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-10-10-10-10-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,5,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-10-10-10-10-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,6,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-10-10-10-10],10,Simple average,All,Benign,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,7,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-0-0-0-0-0-0-10-10-10],10,Simple average,All,Benign,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,8,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-0-0-0-0-0-0-10-10],10,Simple average,All,Benign,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,9,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-0-0-0-0-0-0-10],10,Simple average,All,Benign,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,10,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,11,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,12,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,13,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,14,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,15,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,16,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,17,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,18,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,19,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,20,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,21,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,22,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,23,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,24,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,25,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,26,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,27,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,28,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,29,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,30,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,31,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,32,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,33,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,34,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,35,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,36,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,37,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,38,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,39,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,40,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,41,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,42,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,43,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,44,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,45,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,46,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,47,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,48,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40
+Figure 5.3 - average - transfer,49,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,40

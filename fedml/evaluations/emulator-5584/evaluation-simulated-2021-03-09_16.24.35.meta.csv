@@ -1,3 +1,0 @@
-name,simulationIndex,transfer,dataset,optimizer,learning rate,momentum,l2,batchSize,iteratorDistribution,maxTestSamples,gar,communicationPattern,behavior,numEpochs,slowdown,joiningLate,iterationsBeforeEvaluation,iterationsBeforeSending,local model poisoning attack,#attackers
-Figure MinBound WISDM - average - transfer,0,true,MNIST,Adam,1e-3,<none>,5e-3,5,[20-20-20-20-20-20],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
-Figure MinBound WISDM - average - regular,0,false,MNIST,Adam,1e-3,<none>,5e-3,5,[20-20-20-20-20-20],10,Simple average,All,Benign,300,-,0,10,1,<none>,0

@@ -285,6 +285,7 @@ enum class NumAttackers(val id: String, val text: String, val num: Int) {
     NUM_2("num_2", "2", 2),
     NUM_3("num_3", "3", 3),
     NUM_4("num_4", "4", 4),
+    NUM_7("num_7", "7", 7),
     NUM_8("num_8", "8", 8),
     NUM_9("num_9", "9", 9),
     NUM_10("num_10", "10", 10),

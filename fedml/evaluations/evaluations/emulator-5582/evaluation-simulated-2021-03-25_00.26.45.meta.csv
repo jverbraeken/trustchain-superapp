@@ -1,0 +1,11 @@
+name,simulationIndex,transfer,dataset,optimizer,learning rate,momentum,l2,batchSize,iteratorDistribution,maxTestSamples,gar,communicationPattern,behavior,numEpochs,slowdown,joiningLate,iterationsBeforeEvaluation,iterationsBeforeSending,local model poisoning attack,#attackers
+Figure 2.3 - average - transfer,0,true,WISDM,Adam,1e-3,<none>,5e-3,32,[10-10-10-10-10-10],10,Simple average,All,Benign,300,-,0,10,1,<none>,4
+Figure 2.3 - average - transfer,1,true,WISDM,Adam,1e-3,<none>,5e-3,32,[10-10-10-10-10-10],10,Simple average,All,Benign,300,-,0,10,1,<none>,4
+Figure 2.3 - average - transfer,2,true,WISDM,Adam,1e-3,<none>,5e-3,32,[10-10-10-10-10-10],10,Simple average,All,Benign,300,-,0,10,1,<none>,4
+Figure 2.3 - average - transfer,3,true,WISDM,Adam,1e-3,<none>,5e-3,32,[10-10-10-10-10-10],10,Simple average,All,Benign,300,-,0,10,1,<none>,4
+Figure 2.3 - average - transfer,4,true,WISDM,Adam,1e-3,<none>,5e-3,32,[10-10-10-10-10-10],10,Simple average,All,Benign,300,-,0,10,1,<none>,4
+Figure 2.3 - average - transfer,5,true,WISDM,Adam,1e-3,<none>,5e-3,32,[10-10-10-10-10-10],10,Simple average,All,Benign,300,-,0,10,1,<none>,4
+Figure 2.3 - average - transfer,6,true,WISDM,Adam,1e-3,<none>,5e-3,32,[10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,4
+Figure 2.3 - average - transfer,7,true,WISDM,Adam,1e-3,<none>,5e-3,32,[10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,4
+Figure 2.3 - average - transfer,8,true,WISDM,Adam,1e-3,<none>,5e-3,32,[10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,4
+Figure 2.3 - average - transfer,9,true,WISDM,Adam,1e-3,<none>,5e-3,32,[10-10-10-10-10-10],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,4

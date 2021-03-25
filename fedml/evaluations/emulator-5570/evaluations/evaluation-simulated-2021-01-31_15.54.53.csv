@@ -1,4 +1,0 @@
-environment, simulationIndex, elapsedTime, epoch, iteration, accuracy, f1, precision, recall, gmeasure, mcc, score, before or after averaging, #peers included in current batch, before or after averaging, #peers included in current batch
-Figure 3.1 - average, 0, 38462, 0, 0, 0.18, 0.18493836187241536, 0.14030030730929316, 0.18000000000000002, 0.10721232881043281, NaN, 7.35945361466885, after, 
-Figure 3.1 - average, 0, 48688, 0, 10, 0.34, 0.5032662578340859, 0.4594535519125683, 0.33999999999999997, 0.26554158131296013, NaN, 4.284798044026621, after, 
-Figure 3.1 - average, 0, 54310, 0, 20, 0.56, 0.5978542686857591, 0.7895129561796228, 0.5599999999999999, 0.5793715033147498, NaN, 3.8607151751616664, after, 
