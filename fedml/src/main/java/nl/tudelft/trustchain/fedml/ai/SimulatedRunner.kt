@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
+import nl.tudelft.ipv8.Peer
 import nl.tudelft.trustchain.fedml.*
 import nl.tudelft.trustchain.fedml.ipv8.MsgPsiCaClientToServer
 import nl.tudelft.trustchain.fedml.ipv8.MsgPsiCaServerToClient
@@ -19,6 +20,10 @@ private val logger = KotlinLogging.logger("SimulatedRunner")
 
 class SimulatedRunner : Runner() {
     private lateinit var nodes: List<Node>
+    private var peersRR: MutableMap<Int, MutableList<Node>?> = HashMap()
+    private var peersRing: MutableMap<Int, MutableList<Node>?> = HashMap()
+    private var ringCounter: MutableMap<Int, Int> = HashMap()
+
     override fun run(baseDirectory: File, _unused: Int, _unused2: MLConfiguration) {
         simulate(baseDirectory, 0)
     }
@@ -93,6 +98,9 @@ class SimulatedRunner : Runner() {
                 ::shareModel,
                 transfer
             )
+        }
+        testConfig.forEachIndexed { i, _ ->
+            ringCounter[i] = 0
         }
         val countPerPeers = getCountPerPeers(testConfig, nodes)
         nodes.forEachIndexed { i, node -> node.setCountPerPeer(countPerPeers.getValue(i)) }
@@ -192,8 +200,30 @@ class SimulatedRunner : Runner() {
             CommunicationPatterns.RANDOM -> nodes
                 .filter { it.getNodeIndex() != nodeIndex && (if (trainConfiguration.gar == GARs.BRISTLE) it.getNodeIndex() in countPerPeer.keys else true) }
                 .random().addNetworkMessage(nodeIndex, message)
-            CommunicationPatterns.RR -> throw IllegalArgumentException("Not implemented yet")
-            CommunicationPatterns.RING -> throw IllegalArgumentException("Not implemented yet")
+            CommunicationPatterns.RR -> {
+                if (peersRR[nodeIndex].isNullOrEmpty()) {
+                    peersRR[nodeIndex] = nodes.filter { it.getNodeIndex() != nodeIndex && (if (trainConfiguration.gar == GARs.BRISTLE) it.getNodeIndex() in countPerPeer.keys else true) }.toMutableList()
+                    val index = peersRR[nodeIndex]!!.indexOfFirst { it.getNodeIndex() > nodeIndex }
+                    for (i in 0 until index) {
+                        peersRR[nodeIndex]!!.add(peersRR[nodeIndex]!!.removeAt(0))
+                    }
+                }
+                peersRR[nodeIndex]!!.removeAt(0)
+            }
+            CommunicationPatterns.RING -> {
+                if (peersRing[nodeIndex].isNullOrEmpty() || peersRing[nodeIndex]!!.size < ringCounter[nodeIndex]!!) {
+                    peersRing[nodeIndex] = nodes.filter { it.getNodeIndex() != nodeIndex && (if (trainConfiguration.gar == GARs.BRISTLE) it.getNodeIndex() in countPerPeer.keys else true) }.toMutableList()
+                    val index = peersRing[nodeIndex]!!.indexOfFirst { it.getNodeIndex() > nodeIndex }
+                    for (i in 0 until index) {
+                        peersRing[nodeIndex]!!.add(peersRing[nodeIndex]!!.removeAt(0))
+                    }
+                }
+                for (i in 0 until ringCounter[nodeIndex]!! - 1) {
+                    peersRing[nodeIndex]!!.removeAt(0)
+                }
+                ringCounter[nodeIndex] = ringCounter[nodeIndex]!! * 2
+                peersRing[nodeIndex]!!.removeAt(0)
+            }
         }
     }
 }
