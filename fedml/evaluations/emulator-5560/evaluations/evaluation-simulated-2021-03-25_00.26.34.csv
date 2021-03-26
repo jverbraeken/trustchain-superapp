@@ -1,0 +1,13 @@
+environment, simulationIndex, elapsedTime, epoch, iteration, accuracy, f1, precision, recall, gmeasure, mcc, score, before or after averaging, #peers included in current batch, before or after averaging, #peers included in current batch
+Figure 3.4 - average - transfer, 0, 4684, 0, 0, 0.1, 0.18181818181818182, 0.1, 0.1, 0.03162277660168379, NaN, 0.0, before, 0
+Figure 3.4 - average - transfer, 0, 4860, 0, 0, 0.16, 0.2425133689839572, 0.24836309523809524, 0.16, 0.10983865420361985, NaN, 2.302585220336914, after, 0
+Figure 3.4 - average - transfer, 1, 4969, 0, 0, 0.1, 0.18181818181818182, 0.1, 0.1, 0.03162277660168379, NaN, 0.0, before, 0
+Figure 3.4 - average - transfer, 1, 5076, 0, 0, 0.29, 0.49497332039776865, 0.44186507936507935, 0.29, 0.2131756507537163, NaN, 2.302585220336914, after, 0
+Figure 3.4 - average - transfer, 2, 5160, 0, 0, 0.1, 0.18181818181818182, 0.1, 0.1, 0.03162277660168379, NaN, 0.0, before, 0
+Figure 3.4 - average - transfer, 2, 5283, 0, 0, 0.3, 0.49609719359441895, 0.3815891472868217, 0.3, 0.21149622244473773, NaN, 2.302585220336914, after, 0
+Figure 3.4 - average - transfer, 3, 5371, 0, 0, 0.1, 0.18181818181818182, 0.1, 0.1, 0.03162277660168379, NaN, 0.0, before, 0
+Figure 3.4 - average - transfer, 3, 5478, 0, 0, 0.35, 0.5095322069235113, 0.4213232323232323, 0.35, 0.26676795920478275, NaN, 2.302585220336914, after, 0
+Figure 3.4 - average - transfer, 4, 5595, 0, 0, 0.1, 0.18181818181818182, 0.1, 0.1, 0.03162277660168379, NaN, 0.0, before, 0
+Figure 3.4 - average - transfer, 4, 5712, 0, 0, 0.29, 0.43384262796027506, 0.33523882113821135, 0.29, 0.19100796810038123, NaN, 2.302585220336914, after, 0
+Figure 3.4 - average - transfer, 5, 5791, 0, 0, 0.1, 0.18181818181818182, 0.1, 0.1, 0.03162277660168379, NaN, 0.0, before, 0
+Figure 3.4 - average - transfer, 5, 5899, 0, 0, 0.31, 0.3905167885418438, 0.30639324960753533, 0.30999999999999994, 0.21143704993685347, NaN, 2.302585220336914, after, 0

@@ -1,0 +1,35 @@
+name,simulationIndex,transfer,dataset,optimizer,learning rate,momentum,l2,batchSize,iteratorDistribution,maxTestSamples,gar,communicationPattern,behavior,numEpochs,slowdown,joiningLate,iterationsBeforeEvaluation,iterationsBeforeSending,local model poisoning attack,#attackers
+Figure 5.4 - bristle - transfer,0,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-0-0-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,24
+Figure 5.4 - bristle - transfer,1,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-10-10-10-10-0-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,24
+Figure 5.4 - bristle - transfer,2,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-10-10-10-10-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,24
+Figure 5.4 - bristle - transfer,3,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-10-10-10-10-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,24
+Figure 5.4 - bristle - transfer,4,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-10-10-10-10-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,24
+Figure 5.4 - bristle - transfer,5,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-10-10-10-10-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,24
+Figure 5.4 - bristle - transfer,6,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-10-10-10-10],10,Bristle,All,Benign,300,-,0,10,1,<none>,24
+Figure 5.4 - bristle - transfer,7,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-0-0-0-0-0-0-10-10-10],10,Bristle,All,Benign,300,-,0,10,1,<none>,24
+Figure 5.4 - bristle - transfer,8,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-0-0-0-0-0-0-10-10],10,Bristle,All,Benign,300,-,0,10,1,<none>,24
+Figure 5.4 - bristle - transfer,9,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-0-0-0-0-0-0-10],10,Bristle,All,Benign,300,-,0,10,1,<none>,24
+Figure 5.4 - bristle - transfer,10,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,24
+Figure 5.4 - bristle - transfer,11,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,24
+Figure 5.4 - bristle - transfer,12,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,24
+Figure 5.4 - bristle - transfer,13,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,24
+Figure 5.4 - bristle - transfer,14,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,24
+Figure 5.4 - bristle - transfer,15,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,24
+Figure 5.4 - bristle - transfer,16,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,24
+Figure 5.4 - bristle - transfer,17,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,24
+Figure 5.4 - bristle - transfer,18,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,24
+Figure 5.4 - bristle - transfer,19,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,24
+Figure 5.4 - bristle - transfer,20,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,24
+Figure 5.4 - bristle - transfer,21,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,24
+Figure 5.4 - bristle - transfer,22,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,24
+Figure 5.4 - bristle - transfer,23,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,24
+Figure 5.4 - bristle - transfer,24,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,24
+Figure 5.4 - bristle - transfer,25,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,24
+Figure 5.4 - bristle - transfer,26,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,24
+Figure 5.4 - bristle - transfer,27,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,24
+Figure 5.4 - bristle - transfer,28,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,24
+Figure 5.4 - bristle - transfer,29,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,24
+Figure 5.4 - bristle - transfer,30,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,24
+Figure 5.4 - bristle - transfer,31,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,24
+Figure 5.4 - bristle - transfer,32,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,24
+Figure 5.4 - bristle - transfer,33,true,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-10-10-10-10-10-10],10,Bristle,All,Label flip all,300,-,0,10,1,<none>,24
