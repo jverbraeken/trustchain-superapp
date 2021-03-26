@@ -30,8 +30,8 @@ fun loadAutomation(baseDirectory: File): Automation {
     return Json.decodeFromString(string)
 }
 
-private val ISOLATED_FIGURE_NAME = arrayOf("Figure 3.4")
-private val ISOLATED_FIGURE_GAR = arrayOf("average")
+private val ISOLATED_FIGURE_NAME = arrayOf("Figure 8.1")
+private val ISOLATED_FIGURE_GAR = arrayOf("bristle")
 
 /**
  * @return 1. the configuration per node, per test, per figure ; 2. the names of the figures
@@ -68,7 +68,7 @@ fun generateConfigs(
                 4 -> figures.subList(18, 20)
                 5 -> figures.subList(20, 22)
                 6 -> listOf(figures[22]/*, figures[27]*/)
-                else -> listOf(figures/*.subList(23, 27).union(figures.subList(28, 32)).toList()*/.subList(23, 32)[automationPart - 7])
+                else -> listOf(figures/*.subList(23, 27).union(figures.subList(28, 32)).toList()*/.subList(23, figures.size)[automationPart - 7])
             }
         }
     logger.debug { "myFigures: ${myFigures.map { it.name }}" }

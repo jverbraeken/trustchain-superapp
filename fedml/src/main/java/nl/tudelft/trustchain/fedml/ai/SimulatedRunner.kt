@@ -3,6 +3,7 @@ package nl.tudelft.trustchain.fedml.ai
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import nl.tudelft.trustchain.fedml.*
 import nl.tudelft.trustchain.fedml.ipv8.MsgPsiCaClientToServer
@@ -28,7 +29,7 @@ class SimulatedRunner : Runner() {
     ) {
         val job = SupervisorJob()
         val scope = CoroutineScope(Dispatchers.Default + job)
-//        scope.launch {
+        scope.launch {
         val evaluationProcessor = EvaluationProcessor(
             baseDirectory,
             "simulated",
@@ -64,7 +65,7 @@ class SimulatedRunner : Runner() {
             evaluationProcessor.error(e)
             e.printStackTrace()
         }
-//        }
+        }
     }
 
     private fun performTest(

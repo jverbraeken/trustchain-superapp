@@ -102,6 +102,10 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
         buttonsBinding.btnRunDistrSim17.setOnClickListener { onBtnSimulateDistributedLocallyClicked(17) }
         buttonsBinding.btnRunDistrSim18.setOnClickListener { onBtnSimulateDistributedLocallyClicked(18) }
         buttonsBinding.btnRunDistrSim19.setOnClickListener { onBtnSimulateDistributedLocallyClicked(19) }
+        buttonsBinding.btnRunDistrSim20.setOnClickListener { onBtnSimulateDistributedLocallyClicked(20) }
+        buttonsBinding.btnRunDistrSim21.setOnClickListener { onBtnSimulateDistributedLocallyClicked(21) }
+        buttonsBinding.btnRunDistrSim22.setOnClickListener { onBtnSimulateDistributedLocallyClicked(22) }
+        buttonsBinding.btnRunDistrSim23.setOnClickListener { onBtnSimulateDistributedLocallyClicked(23) }
 
         bindSpinner(view, datasetBinding.spnDataset, datasets)
         bindSpinner(view, iteratorBinding.spnBatchSize, batchSizes)

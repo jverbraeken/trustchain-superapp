@@ -130,6 +130,26 @@
                 android:id="@+id/btnRunDistrSim19"
                 style="@style/button"
                 android:text="19" />
+
+            <Button
+                android:id="@+id/btnRunDistrSim20"
+                style="@style/button"
+                android:text="20" />
+
+            <Button
+                android:id="@+id/btnRunDistrSim21"
+                style="@style/button"
+                android:text="21" />
+
+            <Button
+                android:id="@+id/btnRunDistrSim22"
+                style="@style/button"
+                android:text="22" />
+
+            <Button
+                android:id="@+id/btnRunDistrSim23"
+                style="@style/button"
+                android:text="23" />
         </GridLayout>
     </LinearLayout>
 </merge>
