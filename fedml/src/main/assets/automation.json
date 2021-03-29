@@ -1015,7 +1015,7 @@
         "dataset": "mnist",
         "behavior": "label_flip_all",
         "modelPoisoningAttack": "none",
-        "numNodes": "11",
+        "numNodes": "10",
         "numAttackers": "num_1"
       },
       "tests": [
