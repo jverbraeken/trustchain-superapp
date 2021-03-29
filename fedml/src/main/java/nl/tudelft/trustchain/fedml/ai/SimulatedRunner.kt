@@ -202,13 +202,13 @@ class SimulatedRunner : Runner() {
                 .random().addNetworkMessage(nodeIndex, message)
             CommunicationPatterns.RR -> {
                 if (peersRR[nodeIndex].isNullOrEmpty()) {
-                    peersRR[nodeIndex] = nodes.filter { it.getNodeIndex() != nodeIndex && (if (trainConfiguration.gar == GARs.BRISTLE) it.getNodeIndex() in countPerPeer.keys else true) }.toMutableList()
+                    peersRR[nodeIndex] = nodes.filter { it.getNodeIndex() != nodeIndex && (if (trainConfiguration.gar == GARs.BRISTLE) countPerPeer[it.getNodeIndex()]!! >= 2 else true) }.toMutableList()
                     val index = peersRR[nodeIndex]!!.indexOfFirst { it.getNodeIndex() > nodeIndex }
                     for (i in 0 until index) {
                         peersRR[nodeIndex]!!.add(peersRR[nodeIndex]!!.removeAt(0))
                     }
                 }
-                peersRR[nodeIndex]!!.removeAt(0)
+                peersRR[nodeIndex]!!.removeAt(0).addNetworkMessage(nodeIndex, message)
             }
             CommunicationPatterns.RING -> {
                 if (peersRing[nodeIndex].isNullOrEmpty() || peersRing[nodeIndex]!!.size < ringCounter[nodeIndex]!!) {
@@ -222,7 +222,7 @@ class SimulatedRunner : Runner() {
                     peersRing[nodeIndex]!!.removeAt(0)
                 }
                 ringCounter[nodeIndex] = ringCounter[nodeIndex]!! * 2
-                peersRing[nodeIndex]!!.removeAt(0)
+                peersRing[nodeIndex]!!.removeAt(0).addNetworkMessage(nodeIndex, message)
             }
         }
     }
