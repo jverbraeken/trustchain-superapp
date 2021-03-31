@@ -317,14 +317,15 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
                 l2 = l2
             ),
             TrainConfiguration(
-                maxIteration = maxIteration,
-                gar = gar,
-                communicationPattern = communicationPattern,
-                behavior = behavior,
-                slowdown = Slowdowns.NONE,
-                joiningLate = TransmissionRounds.N0,
-                iterationsBeforeSending = 1,
-                iterationsBeforeEvaluation = 10,
+                    maxIteration = maxIteration,
+                    gar = gar,
+                    communicationPattern = communicationPattern,
+                    behavior = behavior,
+                    slowdown = Slowdowns.NONE,
+                    joiningLate = TransmissionRounds.N0,
+                    iterationsBeforeEvaluation = 10,
+                    iterationsBeforeSending = 1,
+                    transfer = true,
             ),
             ModelPoisoningConfiguration(
                 attack = modelPoisoningAttack,

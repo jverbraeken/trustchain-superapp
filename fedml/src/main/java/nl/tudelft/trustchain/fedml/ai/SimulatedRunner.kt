@@ -52,17 +52,9 @@ class SimulatedRunner : Runner() {
             for (figure in configs.indices) {
                 val figureName = figureNames[figure]
                 val figureConfig = configs[figure]
-
-                for (transfer in booleanArrayOf(true/*, false*/)) {
-
-                    for (test in figureConfig.indices) {
-                        val testConfig = figureConfig[test]
-                        if (!transfer && testConfig[0].trainConfiguration.gar == GARs.BRISTLE) {
-                            // BRISTLE can only work with transfer learning; otherwise all layers except for its outputlayer will stay 0
-                            continue
-                        }
-                        performTest(baseDirectory, transfer, figureName, testConfig, evaluationProcessor)
-                    }
+                for (test in figureConfig.indices) {
+                    val testConfig = figureConfig[test]
+                    performTest(baseDirectory, figureName, testConfig, evaluationProcessor)
                 }
             }
             logger.error { "All tests finished" }
@@ -75,11 +67,11 @@ class SimulatedRunner : Runner() {
 
     private fun performTest(
         baseDirectory: File,
-        transfer: Boolean,
         figureName: String,
         testConfig: List<MLConfiguration>,
         evaluationProcessor: EvaluationProcessor
     ) {
+        val transfer = testConfig[0].trainConfiguration.transfer
         val fullFigureName = "$figureName - ${testConfig[0].trainConfiguration.gar.id} - ${if (transfer) "transfer" else "regular"}"
         logger.error { "Going to test: $fullFigureName" }
 
@@ -95,8 +87,7 @@ class SimulatedRunner : Runner() {
                 baseDirectory,
                 evaluationProcessor,
                 start,
-                ::shareModel,
-                transfer
+                ::shareModel
             )
         }
         testConfig.forEachIndexed { i, _ ->

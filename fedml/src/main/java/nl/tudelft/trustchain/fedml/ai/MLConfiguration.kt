@@ -31,7 +31,8 @@ data class TrainConfiguration(
     val slowdown: Slowdowns,
     val joiningLate: TransmissionRounds,
     val iterationsBeforeEvaluation: Int,
-    val iterationsBeforeSending: Int
+    val iterationsBeforeSending: Int,
+    val transfer: Boolean
 )
 
 data class ModelPoisoningConfiguration(

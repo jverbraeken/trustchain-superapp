@@ -29,7 +29,6 @@ class Node(
     private val evaluationProcessor: EvaluationProcessor,
     private val start: Long,
     val shareModel: (params: INDArray, trainConfiguration: TrainConfiguration, random: Random, nodeIndex: Int, countPerPeer: Map<Int, Int>) -> Unit,
-    fromTransfer: Boolean
 ) {
     val formatter = NDArrayStrings2()
     private val dataset = testConfig.dataset
@@ -55,6 +54,7 @@ class Node(
     private var joiningLateRemainingIterations: Int
     private val slowdown: Slowdowns
     private val gar: GARs
+    private val fromTransfer: Boolean
 
     private val modelPoisoningConfiguration: ModelPoisoningConfiguration
     private val modelPoisoningAttack: ModelPoisoningAttacks
@@ -87,6 +87,7 @@ class Node(
         joiningLateRemainingIterations = trainConfiguration.joiningLate.rounds * iterationsBeforeSending
         slowdown = trainConfiguration.slowdown
         gar = trainConfiguration.gar
+        fromTransfer = trainConfiguration.transfer
 
         modelPoisoningConfiguration = testConfig.modelPoisoningConfiguration
         modelPoisoningAttack = modelPoisoningConfiguration.attack

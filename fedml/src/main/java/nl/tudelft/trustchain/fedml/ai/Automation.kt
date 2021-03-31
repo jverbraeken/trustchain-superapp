@@ -123,35 +123,43 @@ fun generateConfigs(
                     if ((node == 0 && firstNodeSpeed == -2) || (node != 0 && firstNodeSpeed == 2)) Slowdowns.D2
                     else if ((node == 0 && firstNodeSpeed == -5) || (node != 0 && firstNodeSpeed == 5)) Slowdowns.D5
                     else Slowdowns.NONE
-                val configuration = MLConfiguration(
-                    dataset,
-                    DatasetIteratorConfiguration(
-                        batchSize = loadBatchSize(overrideBatchSize) ?: batchSize,
-                        maxTestSamples = maxTestSample,
-                        distribution = distribution.toList()
-                    ),
-                    NNConfiguration(
-                        optimizer = optimizer,
-                        learningRate = learningRate,
-                        momentum = momentum,
-                        l2 = l2Regularization
-                    ),
-                    TrainConfiguration(
-                        maxIteration = loadMaxIteration(overrideMaxIterations) ?: maxIterations,
-                        gar = gar,
-                        communicationPattern = loadCommunicationPattern(overrideCommunicationPattern) ?: communicationPattern,
-                        behavior = if (node < numNodes - numAttackers.num) Behaviors.BENIGN else behavior,
-                        slowdown = slowdown,
-                        joiningLate = if (node == 0 && firstNodeJoiningLate) TransmissionRounds.N150 else TransmissionRounds.N0,
-                        iterationsBeforeEvaluation = iterationsBeforeEvaluation,
-                        iterationsBeforeSending = iterationsBeforeSending
-                    ),
-                    ModelPoisoningConfiguration(
-                        attack = modelPoisoningAttack,
-                        numAttackers = numAttackers
+                for (transfer in booleanArrayOf(true, false)) {
+                    if (gar == GARs.BRISTLE && !transfer) {
+                        // BRISTLE can only work with transfer learning; otherwise all layers except for its outputlayer will stay 0
+                        continue
+                    }
+                    val configuration = MLConfiguration(
+                        dataset,
+                        DatasetIteratorConfiguration(
+                            batchSize = loadBatchSize(overrideBatchSize) ?: batchSize,
+                            maxTestSamples = maxTestSample,
+                            distribution = distribution.toList()
+                        ),
+                        NNConfiguration(
+                            optimizer = optimizer,
+                            learningRate = learningRate,
+                            momentum = momentum,
+                            l2 = l2Regularization
+                        ),
+                        TrainConfiguration(
+                            maxIteration = loadMaxIteration(overrideMaxIterations) ?: maxIterations,
+                            gar = gar,
+                            communicationPattern = loadCommunicationPattern(overrideCommunicationPattern)
+                                ?: communicationPattern,
+                            behavior = if (node < numNodes - numAttackers.num) Behaviors.BENIGN else behavior,
+                            slowdown = slowdown,
+                            joiningLate = if (node == 0 && firstNodeJoiningLate) TransmissionRounds.N150 else TransmissionRounds.N0,
+                            iterationsBeforeEvaluation = iterationsBeforeEvaluation,
+                            iterationsBeforeSending = iterationsBeforeSending,
+                            transfer = transfer
+                        ),
+                        ModelPoisoningConfiguration(
+                            attack = modelPoisoningAttack,
+                            numAttackers = numAttackers
+                        )
                     )
-                )
-                 configurations.last().last().add(configuration)
+                    configurations.last().last().add(configuration)
+                }
             }
         }
     }

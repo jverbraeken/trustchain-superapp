@@ -106,7 +106,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
          */
 
         val gar = trainConfiguration.gar
-        var epoch = -1
+        var epoch = 0
         val start = System.currentTimeMillis()
         val cw = network.outputLayer.paramTable().getValue("W").dup()
 
@@ -364,7 +364,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                     listOf(mlConfiguration),
                     false
                 )
-                val fromTransfer = true
+                val fromTransfer = mlConfiguration.trainConfiguration.transfer
                 val network = if (fromTransfer) {
                     loadFromTransferNetwork(File(baseDirectory, "transfer-${dataset.id}"), mlConfiguration.nnConfiguration, seed, dataset.architecture)
                 } else {
