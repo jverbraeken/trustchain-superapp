@@ -10,10 +10,11 @@ import nl.tudelft.trustchain.fedml.*
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
 import nl.tudelft.trustchain.fedml.ipv8.*
 import nl.tudelft.trustchain.fedml.ipv8.FedMLCommunity.MessageId
+import org.deeplearning4j.nn.conf.MultiLayerConfiguration
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener
+import org.deeplearning4j.util.ModelSerializer
 import org.nd4j.linalg.api.ndarray.INDArray
-import org.nd4j.linalg.cpu.nativecpu.NDArray
 import java.io.File
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -28,7 +29,7 @@ private val psiRequests = ConcurrentHashMap.newKeySet<Int>()
 class DistributedRunner(private val community: FedMLCommunity) : Runner(), MessageListener {
     internal lateinit var baseDirectory: File
     private val newOtherModels = ConcurrentHashMap<Int, MsgParamUpdate>()
-    private val recentOtherModels = ArrayDeque<Pair<Int, INDArray>>()
+    private val recentOtherModelsBuffer = ArrayDeque<Pair<Int, INDArray>>()
     private val psiCaMessagesFromServers = CopyOnWriteArrayList<MsgPsiCaServerToClient>()
     private lateinit var random: Random
     private lateinit var labels: List<String>
@@ -73,9 +74,6 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
             delay(200)
             count += 200
             logger.debug { "PSI_CA found ${psiCaMessagesFromServers.size} out of $numPeers" }
-//            if (count > 8000) {
-//                throw IllegalArgumentException("Didn't succeed in finding similar peers")
-//            }
         }
 
         return clientReceivesServerResponses(
@@ -90,156 +88,106 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         network: MultiLayerNetwork,
 
         // Training the network
-        trainDataSetIterator: CustomDataSetIterator,
+        iterTrain: CustomDataSetIterator,
         trainConfiguration: TrainConfiguration,
         modelPoisoningConfiguration: ModelPoisoningConfiguration,
 
         // Evaluation results
         evaluationProcessor: EvaluationProcessor,
-        fullTestDataSetIterator: CustomDataSetIterator,
+        iterTestFull: CustomDataSetIterator,
 
         // Integrating and distributing information to peers
-        testDataSetIterator: CustomDataSetIterator,
+        iterTest: CustomDataSetIterator,
         countPerPeer: Map<Int, Int>,
+        usedClassIndices: List<Int>,
     ) {
         /**
          * Joining late logic...
          */
 
-        val gar = trainConfiguration.gar.obj
-        var epochEnd = true
+        val gar = trainConfiguration.gar
         var epoch = -1
         val start = System.currentTimeMillis()
-        var oldParams: INDArray = NDArray()
+        val cw = network.outputLayer.paramTable().getValue("W").dup()
+
+        var oldParams = if (gar == GARs.BRISTLE) network.outputLayer.paramTable().getValue("W").dup() else network.params().dup()
+        var newParams: INDArray
+        var gradient: INDArray
         val udpEndpoint = community.endpoint.udpEndpoint!!
         val joiningLateRounds = trainConfiguration.joiningLate.rounds
         val slowdown = ((1.0 / trainConfiguration.slowdown.multiplier) - 1).toInt()
 
-        if (joiningLateRounds > 0) {
-            while (newOtherModels.none { it.value.iteration >= joiningLateRounds }) {
-                logger.debug { "Joining late: ${newOtherModels.map { it.value.iteration }.maxOrNull()};$joiningLateRounds" }
-                delay(500)
-            }
-        }
-        var iterationTimeStart: Long? = null
-        var iterationTimeEnd: Long? = null
+        val iterationsBeforeSending = trainConfiguration.iterationsBeforeSending
+        val iterationsBeforeEvaluation = trainConfiguration.iterationsBeforeEvaluation
+        val behavior = trainConfiguration.behavior
+        val communicationPattern = trainConfiguration.communicationPattern
+        val modelPoisoningAttack = modelPoisoningConfiguration.attack
+        val numAttackers = modelPoisoningConfiguration.numAttackers
 
-        for (iteration in 0 until (trainConfiguration.maxIteration.value * trainConfiguration.slowdown.multiplier).toInt()) {
-            if (epochEnd) {
-                epoch++
-                logger.debug { "Epoch: $epoch" }
-                epochEnd = false
-                trainDataSetIterator.reset()
-                oldParams = network.params().dup()
-            }
+//        TODO slowdown and joiningLateRounds
+        for (iteration in 0 until trainConfiguration.maxIteration.value) {
             logger.debug { "Iteration: $iteration" }
+            newParams = if (gar == GARs.BRISTLE) network.outputLayer.paramTable().getValue("W").dup() else network.params().dup()
+            gradient = oldParams.sub(newParams)
 
-            try {
-                network.fit(trainDataSetIterator.next())
-            } catch (e: NoSuchElementException) {
-                epochEnd = true
-            }
-            val newParams = network.params().dup()
-            val gradient = oldParams.sub(newParams)
-
-            if (iteration % trainConfiguration.iterationsBeforeEvaluation!! == 0) {
-                // Test
-                logger.debug { "Evaluating network " }
-                val elapsedTime = System.currentTimeMillis() - start
-                val extraElements = mapOf(
-                    Pair("before or after averaging", "before"),
-                    Pair("#peers included in current batch", "-")
-                )
-                sendEvaluationToMaster(
-                    evaluationProcessor.evaluate(
-                        fullTestDataSetIterator,
-                        network,
-                        extraElements,
-                        elapsedTime,
-                        iteration,
-                        epoch,
-                        0,
-                        true
-                    )
-                )
-            }
-
-            if (iteration % trainConfiguration.iterationsBeforeSending!! == 0) {
-                if (iterationTimeStart != null) {
-                    if (iterationTimeEnd == null) {
-                        iterationTimeEnd = System.currentTimeMillis()
-                        logger.debug { "iterationTimeEnd: $iterationTimeEnd" }
-                    }
-                    val delay = (iterationTimeEnd - iterationTimeStart) * slowdown
-                    logger.debug { "Slowdown delay: $delay" }
-                    delay(delay)
-                }
-                // Send new parameters to other peers
-                val message = craftMessage(newParams.dup(), trainConfiguration.behavior, random)
-                sendModelToPeers(message, iteration, trainConfiguration.communicationPattern, countPerPeer)
-
-
-
-                // Wait for parameters of other peers to be received
-//                while (community.getPeers().map { newOtherModels.get(it.address.port) }.any { it == null }) {
-//                    delay(100)
-//                    logger.debug { "peers: ${community.getPeers().map { it.address.port }} => newOtherModels: ${newOtherModels.keys}" }
-//                }
-
-
-
-
-
-
-                var newOtherModelsWI = newOtherModels.map { Pair(it.key, it.value.array) }.toMap()
-                // Attack
-                val attack = modelPoisoningConfiguration.attack
-                val attackVectors = attack.obj.generateAttack(
-                    modelPoisoningConfiguration.numAttackers,
+            val newOtherModelBuffer = newOtherModels.map { Pair(it.key, it.value.array) }.toMap().toMutableMap()
+            // ADD ATTACKS
+            if (iteration % iterationsBeforeSending == 0) {
+                val attackVectors = modelPoisoningAttack.obj.generateAttack(
+                    numAttackers,
                     oldParams,
                     gradient,
-                    newOtherModelsWI,
+                    newOtherModelBuffer,
                     random
-                ).map { Pair(it.key, MsgParamUpdate(it.value, -1)) }
-                newOtherModels.putAll(attackVectors)
-                newOtherModelsWI = newOtherModels.map { Pair(it.key, it.value.array) }.toMap()
+                ).map { Pair(it.key, it.value) }
+                newOtherModelBuffer.putAll(attackVectors)
+            }
 
-                // Integrate parameters of other peers
-                val numPeers = newOtherModels.size + 1
-                val averageParams: INDArray
-                if (numPeers == 1) {
-                    logger.debug { "No received params => skipping integration evaluation" }
-                    averageParams = newParams
-                    network.setParameters(averageParams)
-                } else {
-                    logger.debug { "Params received => executing aggregation rule" }
-                    averageParams = gar.integrateParameters(
-                        network,
-                        oldParams,
-                        gradient,
-                        newOtherModelsWI,
-                        recentOtherModels,
-                        testDataSetIterator,
-                        countPerPeer,
-                        true
-                    )
-                    recentOtherModels.addAll(newOtherModelsWI.toList())
-                    while (recentOtherModels.size > SIZE_RECENT_OTHER_MODELS) {
-                        recentOtherModels.removeFirst()
+            // INTEGRATE PARAMETERS
+            val numPeers = newOtherModels.size + 1
+            if (numPeers > 1) {
+                logger.debug { "Params received => executing aggregation rule" }
+                val averageParams = gar.obj.integrateParameters(
+                    network,
+                    oldParams,
+                    gradient,
+                    newOtherModelBuffer,
+                    recentOtherModelsBuffer,
+                    iterTest,
+                    countPerPeer,
+                    true
+                )
+                if (behavior == Behaviors.BENIGN) {
+                    if (gar == GARs.BRISTLE) {
+                        for (index in 0 until cw.columns()) {
+                            cw.putColumn(index, averageParams.getColumn(index.toLong()).dup())
+                        }
+                        for (index in 0 until cw.columns()) {
+                            cw.putColumn(index, cw.getColumn(index.toLong()).sub(cw.getColumn(index.toLong()).meanNumber()))
+                        }
+                    } else {
+                        network.setParameters(averageParams)
                     }
-                    newOtherModels.clear()
-                    network.setParameters(averageParams)
                 }
+                recentOtherModelsBuffer.addAll(newOtherModelBuffer.toList())
+                while (recentOtherModelsBuffer.size > SIZE_RECENT_OTHER_MODELS) {
+                    recentOtherModelsBuffer.removeFirst()
+                }
+            } else {
+                logger.debug { "No received params => skipping integration evaluation" }
+            }
 
-                if (iteration % trainConfiguration.iterationsBeforeEvaluation == 0) {
+            // EVALUATION BEFORE
+            if (iteration % iterationsBeforeEvaluation == 0) {
+                val evaluationScript = {
                     val elapsedTime2 = System.currentTimeMillis() - start
                     val extraElements2 = mapOf(
-                        Pair("before or after averaging", "after"),
-                        Pair("#peers included in current batch", numPeers.toString())
+                        Pair("before or after averaging", "before"),
+                        Pair("#peers included in current batch", newOtherModelBuffer.size.toString())
                     )
                     sendEvaluationToMaster(
                         evaluationProcessor.evaluate(
-                            fullTestDataSetIterator,
+                            iterTestFull,
                             network,
                             extraElements2,
                             elapsedTime2,
@@ -250,17 +198,77 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                         )
                     )
                 }
+                if (gar == GARs.BRISTLE) {
+                    val tw = network.outputLayer.paramTable()
+                    for (index in 0 until tw["W"]!!.columns()) {
+                        tw.getValue("W").putColumn(index, cw.getColumn(index.toLong()).dup())
+                    }
+                    network.outputLayer.setParamTable(tw)
+                    evaluationScript.invoke()
+                } else {
+                    evaluationScript.invoke()
+                }
+            }
+            newOtherModels.clear()
 
+            // RESET TW
+            if (gar == GARs.BRISTLE) {
+                val tw = network.outputLayer.paramTable()
+                for (index in 0 until cw.columns()) {
+                    tw.getValue("W").putColumn(index, cw.getColumn(index.toLong()).dup())
+                }
+                network.outputLayer.setParamTable(tw)
+            }
+
+            oldParams = if (gar == GARs.BRISTLE) network.outputLayer.paramTable().getValue("W").dup() else network.params().dup()
+
+
+            // FIT NETWORK
+            try {
+                network.fit(iterTrain.next())
+            } catch (e: NoSuchElementException) {
+                iterTrain.reset()
+                epoch++
+            }
+
+            // UPDATE CW
+            if (gar == GARs.BRISTLE) {
+                val tw = network.outputLayer.paramTable().getValue("W")
+                for (index in usedClassIndices) {
+                    cw.putColumn(index, tw.getColumn(index.toLong()).dup())
+                }
+            }
+
+            // SHARE MODEL
+            if (iteration % iterationsBeforeSending == 0) {
+                val message = craftMessage(if (gar == GARs.BRISTLE) cw.dup() else network.params().dup(), behavior, random)
+                sendModelToPeers(message, iteration, communicationPattern, countPerPeer)
                 while (!udpEndpoint.noPendingTFTPMessages()) {
-                    logger.debug { "Waiting for all TFTP messages to be sent" }
+                    logger.debug { "Waiting for all messages to be sent" }
                     delay(200)
                 }
+            }
 
-
-                if (iterationTimeStart == null) {
-                    iterationTimeStart = System.currentTimeMillis()
-                    logger.debug { "iterationTimeStart: $iterationTimeStart" }
-                }
+            if (iteration % iterationsBeforeEvaluation == 0) {
+                // Test
+                logger.debug { "Evaluating network " }
+                val elapsedTime = System.currentTimeMillis() - start
+                val extraElements = mapOf(
+                    Pair("before or after averaging", "before"),
+                    Pair("#peers included in current batch", "-")
+                )
+                sendEvaluationToMaster(
+                    evaluationProcessor.evaluate(
+                        iterTestFull,
+                        network,
+                        extraElements,
+                        elapsedTime,
+                        iteration,
+                        epoch,
+                        0,
+                        true
+                    )
+                )
             }
         }
         logger.debug { "Done training the network" }
@@ -356,12 +364,13 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                     listOf(mlConfiguration),
                     false
                 )
-                val network = generateNetwork(
-                    mlConfiguration.dataset.architecture,
-                    mlConfiguration.nnConfiguration,
-                    seed,
-                    NNConfigurationMode.REGULAR
-                )
+                val fromTransfer = true
+                val network = if (fromTransfer) {
+                    loadFromTransferNetwork(File(baseDirectory, "transfer-${dataset.id}"), mlConfiguration.nnConfiguration, seed, dataset.architecture)
+                } else {
+                    generateNetwork(dataset.architecture, mlConfiguration.nnConfiguration, seed, NNConfigurationMode.REGULAR)
+                }
+                network.outputLayer.params().muli(0)
                 network.setListeners(ScoreIterationListener(printScoreIterations))
 
                 val port = community.myEstimatedWan.port
@@ -375,6 +384,9 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 }
                 logger.debug { "All peers finished PSI_CA!" }
 
+                val distribution = datasetIteratorConfiguration.distribution
+                val usedClassIndices = distribution.mapIndexed { ind, v -> if (v > 0) ind else null }.filterNotNull()
+
                 trainTestSendNetwork(
                     network,
 
@@ -386,10 +398,22 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                     iterTestFull,
 
                     iterTest,
-                    countPerPeer
+                    countPerPeer,
+                    usedClassIndices
                 )
             }
             else -> throw Exception("Other messages should not be listened to...")
         }
+    }
+
+    private fun loadFromTransferNetwork(transferFile: File, nnConfiguration: NNConfiguration, seed: Int, generateArchitecture: (nnConfiguration: NNConfiguration, seed: Int, mode: NNConfigurationMode) -> MultiLayerConfiguration): MultiLayerNetwork {
+        val transferNetwork = ModelSerializer.restoreMultiLayerNetwork(transferFile)
+        val frozenNetwork = generateNetwork(generateArchitecture, nnConfiguration, seed, NNConfigurationMode.FROZEN)
+        for ((k, v) in transferNetwork.paramTable()) {
+            if (k.split("_")[0].toInt() < transferNetwork.layers.size - 1) {
+                frozenNetwork.setParam(k, v.dup())
+            }
+        }
+        return frozenNetwork
     }
 }

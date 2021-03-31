@@ -30,8 +30,8 @@ data class TrainConfiguration(
     val behavior: Behaviors,
     val slowdown: Slowdowns,
     val joiningLate: TransmissionRounds,
-    val iterationsBeforeEvaluation: Int? = null,
-    val iterationsBeforeSending: Int? = null
+    val iterationsBeforeEvaluation: Int,
+    val iterationsBeforeSending: Int
 )
 
 data class ModelPoisoningConfiguration(

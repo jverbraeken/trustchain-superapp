@@ -40,6 +40,7 @@ class Node(
     private val sraKeyPair = SRAKeyPair.create(bigPrime, java.util.Random(nodeIndex.toLong()))
 
     private var network: MultiLayerNetwork
+    private val labels: List<String>
 
     private val datasetIteratorConfiguration: DatasetIteratorConfiguration
     private val distribution: List<Int>
@@ -71,7 +72,6 @@ class Node(
     private lateinit var countPerPeer: Map<Int, Int>
     private var slowdownRemainingIterations = 0
 
-    private val labels: List<String>
 
     init {
         datasetIteratorConfiguration = testConfig.datasetIteratorConfiguration
@@ -82,8 +82,8 @@ class Node(
 
         trainConfiguration = testConfig.trainConfiguration
         behavior = trainConfiguration.behavior
-        iterationsBeforeEvaluation = trainConfiguration.iterationsBeforeEvaluation!!
-        iterationsBeforeSending = trainConfiguration.iterationsBeforeSending!!
+        iterationsBeforeEvaluation = trainConfiguration.iterationsBeforeEvaluation
+        iterationsBeforeSending = trainConfiguration.iterationsBeforeSending
         joiningLateRemainingIterations = trainConfiguration.joiningLate.rounds * iterationsBeforeSending
         slowdown = trainConfiguration.slowdown
         gar = trainConfiguration.gar
@@ -129,7 +129,6 @@ class Node(
                 frozenNetwork.setParam(k, v.dup())
             }
         }
-        oldParams = frozenNetwork.outputLayer.paramTable().getValue("W").dup()
         return frozenNetwork
     }
 
@@ -145,14 +144,14 @@ class Node(
         }
 
         logger.t(logging) { "5 - outputlayer $nodeIndex: ${formatter.format(network.outputLayer.paramTable().getValue("W"))}" }
-        if (iteration % iterationsBeforeSending == 0) {
-            if (behavior == Behaviors.BENIGN) {
+        if (behavior == Behaviors.BENIGN) {
+            if (iteration % iterationsBeforeSending == 0) {
                 addPotentialAttacks()
-                potentiallyIntegrateParameters(iteration)
-                potentiallyEvaluate(epoch, iteration, "before")
             }
-            newOtherModelBuffer.clear()
+            potentiallyIntegrateParameters(iteration)
+            potentiallyEvaluate(epoch, iteration, "before")
         }
+        newOtherModelBuffer.clear()
 
         logger.t(logging) { "4 - outputlayer $nodeIndex: ${formatter.format(network.outputLayer.paramTable().getValue("W"))}" }
         if (gar == GARs.BRISTLE) {
@@ -170,15 +169,6 @@ class Node(
         logger.t(logging) { "2 - outputlayer $nodeIndex: ${formatter.format(cw)}" }
 
         if (iteration % iterationsBeforeSending == 0) {
-            /*if (gar == GARs.BRISTLE) {
-                logger.t(logging) { "1... - outputlayer $nodeIndex: ${formatter.format(network.outputLayer.paramTable().getValue("W")) }"}
-                val tw = network.outputLayer.paramTable()
-                for (index in 0 until tw["W"]!!.columns()) {
-                    tw["W"]!!.putColumn(index, cw.getColumn(index.toLong()).dup())
-                }
-                network.outputLayer.setParamTable(tw)
-                logger.t(logging) { "1 - outputlayer $nodeIndex: ${formatter.format(network.outputLayer.paramTable().getValue("W"))}" }
-            }*/
             logger.t(logging) { "1... - cw $nodeIndex: ${formatter.format(cw) }"}
             shareModel(
                 if (gar == GARs.BRISTLE) cw.dup() else network.params().dup(),

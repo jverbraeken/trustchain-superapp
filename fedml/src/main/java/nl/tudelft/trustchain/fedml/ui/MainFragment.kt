@@ -322,7 +322,9 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
                 communicationPattern = communicationPattern,
                 behavior = behavior,
                 slowdown = Slowdowns.NONE,
-                joiningLate = TransmissionRounds.N0
+                joiningLate = TransmissionRounds.N0,
+                iterationsBeforeSending = 1,
+                iterationsBeforeEvaluation = 10,
             ),
             ModelPoisoningConfiguration(
                 attack = modelPoisoningAttack,
