@@ -150,7 +150,7 @@ class Node(
                 addPotentialAttacks()
             }
             potentiallyIntegrateParameters(iteration)
-            potentiallyEvaluate(epoch, iteration, "before")
+//            potentiallyEvaluate(epoch, iteration, "before")
         }
         newOtherModelBuffer.clear()
 
