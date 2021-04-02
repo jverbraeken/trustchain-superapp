@@ -371,9 +371,6 @@
       },
       "tests": [
         {
-          "gar": "bristle"
-        },
-        {
           "gar": "average"
         },
         {
@@ -387,6 +384,9 @@
         },
         {
           "gar": "mozi"
+        },
+        {
+          "gar": "bristle"
         }
       ],
       "iteratorDistributions": [

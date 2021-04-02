@@ -103,41 +103,41 @@ fun generateConfigs(
             val gar = loadGAR(test.gar)!!
             if (automationPart == -1 && gar.id !in ISOLATED_FIGURE_GAR) continue
 
-            configurations.last().add(arrayListOf())
 
-            for (node in 0 until numNodes) {
-                val overrideIteratorDistributionForNode =
-                    overrideIteratorDistribution?.get(node % overrideIteratorDistribution.size)
-                val distribution = if (overrideIteratorDistributionForNode != null) {
-                    if (overrideIteratorDistributionForNode.startsWith('[')) {
-                        overrideIteratorDistributionForNode
-                            .substring(1, overrideIteratorDistributionForNode.length - 1)
-                            .split(", ")
-                            .map { it.toInt() }
-                            .toIntArray()
-                    } else {
-                        loadIteratorDistribution(overrideIteratorDistributionForNode)!!.value
-                    }
-                } else {
-                    val d = overrideIteratorDistributionSoft ?: iteratorDistribution
-                    if (d.startsWith('[')) {
-                        d.substring(1, d.length - 1)
-                            .split(", ")
-                            .map { it.toInt() }
-                            .toIntArray()
-                    } else {
-                        loadIteratorDistribution(d)!!.value
-                    }
+            for (transfer in booleanArrayOf(true, false)) {
+                if (gar == GARs.BRISTLE && !transfer) {
+                    // BRISTLE can only work with transfer learning; otherwise all layers except for its outputlayer will stay 0
+                    continue
                 }
-                val slowdown =
-                    if ((node == 0 && firstNodeSpeed == -2) || (node != 0 && firstNodeSpeed == 2)) Slowdowns.D2
-                    else if ((node == 0 && firstNodeSpeed == -5) || (node != 0 && firstNodeSpeed == 5)) Slowdowns.D5
-                    else Slowdowns.NONE
-                for (transfer in booleanArrayOf(true, false)) {
-                    if (gar == GARs.BRISTLE && !transfer) {
-                        // BRISTLE can only work with transfer learning; otherwise all layers except for its outputlayer will stay 0
-                        continue
+                configurations.last().add(arrayListOf())
+                for (node in 0 until numNodes) {
+                    val overrideIteratorDistributionForNode =
+                        overrideIteratorDistribution?.get(node % overrideIteratorDistribution.size)
+                    val distribution = if (overrideIteratorDistributionForNode != null) {
+                        if (overrideIteratorDistributionForNode.startsWith('[')) {
+                            overrideIteratorDistributionForNode
+                                .substring(1, overrideIteratorDistributionForNode.length - 1)
+                                .split(", ")
+                                .map { it.toInt() }
+                                .toIntArray()
+                        } else {
+                            loadIteratorDistribution(overrideIteratorDistributionForNode)!!.value
+                        }
+                    } else {
+                        val d = overrideIteratorDistributionSoft ?: iteratorDistribution
+                        if (d.startsWith('[')) {
+                            d.substring(1, d.length - 1)
+                                .split(", ")
+                                .map { it.toInt() }
+                                .toIntArray()
+                        } else {
+                            loadIteratorDistribution(d)!!.value
+                        }
                     }
+                    val slowdown =
+                        if ((node == 0 && firstNodeSpeed == -2) || (node != 0 && firstNodeSpeed == 2)) Slowdowns.D2
+                        else if ((node == 0 && firstNodeSpeed == -5) || (node != 0 && firstNodeSpeed == 5)) Slowdowns.D5
+                        else Slowdowns.NONE
                     val configuration = MLConfiguration(
                         dataset,
                         DatasetIteratorConfiguration(
