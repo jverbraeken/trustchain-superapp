@@ -913,7 +913,7 @@
         "behavior": "benign",
         "modelPoisoningAttack": "fang_2020_krum",
         "numNodes": "10",
-        "numAttackers": "num_5"
+        "numAttackers": "num_4"
       },
       "tests": [
         {
