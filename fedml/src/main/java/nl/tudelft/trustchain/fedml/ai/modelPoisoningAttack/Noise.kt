@@ -18,8 +18,9 @@ class Noise : ModelPoisoningAttack() {
     ): Map<Int, INDArray> {
         logger.debug { formatName("Noise") }
         val numColumns = oldModel.columns()
+        val halfNumColumns = numColumns / 2
         val newModels =
-            Array<INDArray>(numAttackers.num) { NDArray(Array(oldModel.rows()) { FloatArray(numColumns) { random.nextFloat() / 2 - 0.2f } }) }
+            Array<INDArray>(numAttackers.num) { NDArray(Array(oldModel.rows()) { FloatArray(numColumns) { random.nextFloat() / 2 + (if (it < halfNumColumns) -0.2f else 0.2f) } }) }
         return transformToResult(newModels)
     }
 }
