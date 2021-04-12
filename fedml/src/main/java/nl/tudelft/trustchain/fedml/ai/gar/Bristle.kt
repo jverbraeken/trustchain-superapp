@@ -48,6 +48,7 @@ class Bristle : AggregationRule() {
         logger.d(logging) { "newModel: ${formatter.format(newModel)}" }
         logger.d(logging) { "otherModels: ${newOtherModels.map { it.value.getFloat(0) }.toCollection(ArrayList())}" }
 
+        val startTime = System.currentTimeMillis()
         val distances = getDistances(newModel, newOtherModels, recentOtherModels, logging)
         logger.d(logging) { "distances: $distances" }
         val exploitationModels = distances
@@ -75,7 +76,10 @@ class Bristle : AggregationRule() {
             logger.d(logging) { "combinedModel (${it.key}): ${formatter.format(it.value)}" }
         }
         val peers = combinedModels.keys.sorted().toIntArray()
+        val endTime = System.currentTimeMillis()
+        logger.error { "Timing 0: ${endTime - startTime}" }
         testDataSetIterator.reset()
+        val startTime2 = System.currentTimeMillis()
 
         val myRecalls = calculateRecallPerClass(newModel, network, testDataSetIterator)
         logger.d(logging) { "myRecallPerClass: ${myRecalls.toList()}" }
@@ -120,6 +124,8 @@ class Bristle : AggregationRule() {
 
         val result = incorporateForeignWeights(peers, weightPerSelectedPeer, combinedModels, weightedAverage, testDataSetIterator.labels, logging)
         logger.d(logging) { "result: ${formatter.format(result)}" }
+        val endTime2 = System.currentTimeMillis()
+        logger.error { "Timing 0: ${endTime2 - startTime2}" }
         return result
     }
 

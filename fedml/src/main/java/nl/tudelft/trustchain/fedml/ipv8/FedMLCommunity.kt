@@ -194,6 +194,23 @@ class FedMLCommunity(
         }
     }
 
+    internal fun sendToRandomPeer3(
+        messageID: MessageId,
+        message: Serializable,
+        priorityPeers: Set<Int>? = null,
+        reliable: Boolean = false,
+    ) {
+        logger.debug { "sendToRandomPeer" }
+        val peers = getAllowedPeers(priorityPeers)
+        if (peers.isNotEmpty()) {
+            repeat (3) {
+                val peer = peers.random()
+                logger.debug { "Peer: ${peer.address}" }
+                sendToPeer(peer, messageID, message, reliable = reliable)
+            }
+        }
+    }
+
     private fun getAllowedPeers(peers: Set<Int>?): List<Peer> {
         return getPeers().filter { if (peers == null) true else it.address.port in peers }
     }

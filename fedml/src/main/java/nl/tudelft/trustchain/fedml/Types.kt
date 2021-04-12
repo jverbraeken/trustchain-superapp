@@ -239,7 +239,8 @@ enum class CommunicationPatterns(val id: String, val text: String) {
     ALL("all", "All"),
     RANDOM("random", "Random"),
     RR("rr", "Round-robin"),
-    RING("ring", "Ring")
+    RING("ring", "Ring"),
+    RANDOM_3("random_3", "Random 3")
 }
 
 fun loadCommunicationPattern(communicationPattern: String?) =

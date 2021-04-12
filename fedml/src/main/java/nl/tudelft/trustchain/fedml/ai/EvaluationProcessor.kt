@@ -75,6 +75,7 @@ class EvaluationProcessor(
     private val fileResults = File(fileDirectory, "evaluation-$runner-${DATE_FORMAT.format(Date())}.csv")
     private var fileMeta = File(fileDirectory, "evaluation-$runner-${DATE_FORMAT.format(Date())}.meta.csv")
     private lateinit var currentName: String
+    private val startTime: Long
 
     init {
         if (!fileDirectory.exists()) {
@@ -94,6 +95,7 @@ class EvaluationProcessor(
             newEvaluationHeader[evaluationHeader.size + index] = name
         }
         evaluationLines[0] = newEvaluationHeader
+        startTime = System.currentTimeMillis()
     }
 
     private fun convertToCSV(data: Array<String>): String {
@@ -212,7 +214,8 @@ class EvaluationProcessor(
 
     fun done() {
         synchronized(evaluationLines) {
-            evaluationLines.add(Array(evaluationLines[0].size) { "DONE" })
+            val totalTime = System.currentTimeMillis() - startTime
+            evaluationLines.add(Array(evaluationLines[0].size) { if (it == 0) { totalTime.toString() } else "DONE" })
 
             PrintWriter(fileResults).use { pw ->
                 evaluationLines

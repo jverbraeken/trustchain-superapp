@@ -293,6 +293,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
         val sendMessage = when (communicationPattern) {
             CommunicationPatterns.ALL -> community::sendToAll
             CommunicationPatterns.RANDOM -> community::sendToRandomPeer
+            CommunicationPatterns.RANDOM_3 -> community::sendToRandomPeer3
             CommunicationPatterns.RR -> community::sendToNextPeerRR
             CommunicationPatterns.RING -> community::sendToNextPeerRing
         }
