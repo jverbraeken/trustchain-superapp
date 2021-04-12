@@ -57,6 +57,7 @@ class SimulatedRunner : Runner() {
                     performTest(baseDirectory, figureName, testConfig, evaluationProcessor)
                 }
             }
+            evaluationProcessor.done()
             logger.error { "All tests finished" }
         } catch (e: Exception) {
             evaluationProcessor.error(e)
@@ -215,6 +216,13 @@ class SimulatedRunner : Runner() {
                 }
                 ringCounter[nodeIndex] = ringCounter[nodeIndex]!! * 2
                 peersRing[nodeIndex]!!.removeAt(0).addNetworkMessage(nodeIndex, message)
+            }
+            CommunicationPatterns.RANDOM_3 -> {
+                repeat(3) {
+                    nodes
+                        .filter { it.getNodeIndex() != nodeIndex && (if (trainConfiguration.gar == GARs.BRISTLE) it.getNodeIndex() in countPerPeer.keys else true) }
+                        .random().addNetworkMessage(nodeIndex, message)
+                }
             }
         }
     }
