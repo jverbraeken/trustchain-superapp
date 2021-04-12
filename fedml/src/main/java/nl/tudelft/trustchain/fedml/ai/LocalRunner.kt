@@ -17,7 +17,7 @@ class LocalRunner : Runner() {
     ) {
         val iterationsBeforeEvaluation = 5
 
-        scope.launch {
+//        scope.launch {
             val trainDataSetIterator = mlConfiguration.dataset.inst(
                 mlConfiguration.datasetIteratorConfiguration,
                 seed.toLong(),
@@ -94,6 +94,6 @@ class LocalRunner : Runner() {
             }
             logger.debug { "Done training the network" }
             evaluationProcessor.done()
-        }
+//        }
     }
 }
