@@ -110,9 +110,7 @@ class SimulatedRunner : Runner() {
             logger.debug { "Iteration: $iteration" }
 
             nodes.forEach { it.applyNetworkBuffers() }
-            val endEpochs = nodes.mapIndexed { i, node ->
-                node.performIteration(epoch, iteration)
-            }
+            val endEpochs = nodes.map { it.performIteration(epoch, iteration) }
             if (endEpochs.any { it }) epochEnd = true
         }
         logger.warn { "Test finished" }

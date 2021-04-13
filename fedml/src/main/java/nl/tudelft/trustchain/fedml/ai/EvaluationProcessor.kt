@@ -149,16 +149,15 @@ class EvaluationProcessor(
             trainConfiguration.maxIteration.text,
             trainConfiguration.slowdown.text,
             trainConfiguration.joiningLate.text,
-            trainConfiguration.iterationsBeforeEvaluation ?: "<null>",
-            trainConfiguration.iterationsBeforeSending ?: "<null>",
+            trainConfiguration.iterationsBeforeEvaluation,
+            trainConfiguration.iterationsBeforeSending,
 
             modelPoisoningConfiguration.attack.text,
             modelPoisoningConfiguration.numAttackers.text,
         ).joinToString(",")
     }
 
-    fun call(
-        model: Model,
+    private fun call(
         evaluations: Array<out IEvaluation<*>>,
         simulationIndex: Int,
         score: Double,
@@ -251,7 +250,7 @@ class EvaluationProcessor(
         for (evaluation in evaluations) {
             logger.d(logging) { "${evaluation.javaClass.simpleName}:\n${evaluation.stats(false, true)}" }
         }
-        return call(network, evaluations, simulationIndex, network.score(), extraElements, elapsedTime, iterations, epoch)
+        return call(evaluations, simulationIndex, network.score(), extraElements, elapsedTime, iterations, epoch)
     }
 
     companion object {

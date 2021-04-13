@@ -77,7 +77,7 @@ class Bristle : AggregationRule() {
         }
         val peers = combinedModels.keys.sorted().toIntArray()
         val endTime = System.currentTimeMillis()
-        logger.error { "Timing 0: ${endTime - startTime}" }
+        logger.d(logging) { "Timing 0: ${endTime - startTime}" }
         testDataSetIterator.reset()
         val startTime2 = System.currentTimeMillis()
 
@@ -125,7 +125,7 @@ class Bristle : AggregationRule() {
         val result = incorporateForeignWeights(peers, weightPerSelectedPeer, combinedModels, weightedAverage, testDataSetIterator.labels, logging)
         logger.d(logging) { "result: ${formatter.format(result)}" }
         val endTime2 = System.currentTimeMillis()
-        logger.error { "Timing 0: ${endTime2 - startTime2}" }
+        logger.d(logging) { "Timing 1: ${endTime2 - startTime2}" }
         return result
     }
 
