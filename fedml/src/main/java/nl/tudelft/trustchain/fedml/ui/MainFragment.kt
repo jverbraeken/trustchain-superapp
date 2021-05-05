@@ -207,6 +207,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
                 dir.mkdirs()
             }
             copyAsset(assetManager, "automation.json")
+            copyAsset(assetManager, "automation_time.json")
             copyAsset(assetManager, "transfer-mnist")
             copyAsset(assetManager, "transfer-cifar10")
             copyAsset(assetManager, "transfer-wisdm")

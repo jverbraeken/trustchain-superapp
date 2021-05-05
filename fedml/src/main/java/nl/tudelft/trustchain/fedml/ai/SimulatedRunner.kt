@@ -17,6 +17,7 @@ import kotlin.concurrent.thread
 import kotlin.random.Random
 
 private val logger = KotlinLogging.logger("SimulatedRunner")
+private const val USE_PSI_CA = false
 
 class SimulatedRunner : Runner() {
     private lateinit var nodes: List<Node>
@@ -185,7 +186,7 @@ class SimulatedRunner : Runner() {
         val message = craftMessage(params, trainConfiguration.behavior, random)
         when (trainConfiguration.communicationPattern) {
             CommunicationPatterns.ALL -> nodes
-                .filter { it.getNodeIndex() != nodeIndex && (if (trainConfiguration.gar == GARs.BRISTLE) it.getNodeIndex() in countPerPeer.keys else true) }
+                .filter { it.getNodeIndex() != nodeIndex && (if (trainConfiguration.gar == GARs.BRISTLE && USE_PSI_CA) it.getNodeIndex() in countPerPeer.keys else true) }
                 .forEach { it.addNetworkMessage(nodeIndex, message) }
             CommunicationPatterns.RANDOM -> nodes
                 .filter { it.getNodeIndex() != nodeIndex && (if (trainConfiguration.gar == GARs.BRISTLE) it.getNodeIndex() in countPerPeer.keys else true) }

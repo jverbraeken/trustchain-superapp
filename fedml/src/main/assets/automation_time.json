@@ -1,0 +1,257 @@
+{
+  "fixedValues": {
+    "batchSize": "batch_5",
+    "iteratorDistribution": "[2, 2, 2, 2, 2, 2, 2, 2, 2, 2]",
+    "maxTestSample": "num_10",
+    "maxIterations": "iter_300",
+    "optimizer": "adam",
+    "learningRate": "rate_1em3",
+    "momentum": "none",
+    "l2Regularization": "l2_5em3",
+    "communicationPattern": "all",
+    "iterationsBeforeEvaluation": "10",
+    "iterationsBeforeSending": "1"
+  },
+  "figures": [
+    {
+      "name": "1 node",
+      "fixedValues": {
+        "dataset": "mnist",
+        "behavior": "benign",
+        "modelPoisoningAttack": "none",
+        "numNodes": "1",
+        "numAttackers": "num_0"
+      },
+      "tests": [
+        {
+          "gar": "average"
+        },
+        {
+          "gar": "median"
+        },
+        {
+          "gar": "krum"
+        },
+        {
+          "gar": "bridge"
+        },
+        {
+          "gar": "mozi"
+        },
+        {
+          "gar": "bristle"
+        }
+      ]
+    },
+    {
+      "name": "2 node",
+      "fixedValues": {
+        "dataset": "mnist",
+        "behavior": "benign",
+        "modelPoisoningAttack": "none",
+        "numNodes": "2",
+        "numAttackers": "num_0"
+      },
+      "tests": [
+        {
+          "gar": "average"
+        },
+        {
+          "gar": "median"
+        },
+        {
+          "gar": "krum"
+        },
+        {
+          "gar": "bridge"
+        },
+        {
+          "gar": "mozi"
+        },
+        {
+          "gar": "bristle"
+        }
+      ]
+    },
+    {
+      "name": "4 node",
+      "fixedValues": {
+        "dataset": "mnist",
+        "behavior": "benign",
+        "modelPoisoningAttack": "none",
+        "numNodes": "4",
+        "numAttackers": "num_0"
+      },
+      "tests": [
+        {
+          "gar": "average"
+        },
+        {
+          "gar": "median"
+        },
+        {
+          "gar": "krum"
+        },
+        {
+          "gar": "bridge"
+        },
+        {
+          "gar": "mozi"
+        },
+        {
+          "gar": "bristle"
+        }
+      ]
+    },
+    {
+      "name": "8 node",
+      "fixedValues": {
+        "dataset": "mnist",
+        "behavior": "benign",
+        "modelPoisoningAttack": "none",
+        "numNodes": "8",
+        "numAttackers": "num_0"
+      },
+      "tests": [
+        {
+          "gar": "average"
+        },
+        {
+          "gar": "median"
+        },
+        {
+          "gar": "krum"
+        },
+        {
+          "gar": "bridge"
+        },
+        {
+          "gar": "mozi"
+        },
+        {
+          "gar": "bristle"
+        }
+      ]
+    },
+    {
+      "name": "16 node",
+      "fixedValues": {
+        "dataset": "mnist",
+        "behavior": "benign",
+        "modelPoisoningAttack": "none",
+        "numNodes": "16",
+        "numAttackers": "num_0"
+      },
+      "tests": [
+        {
+          "gar": "average"
+        },
+        {
+          "gar": "median"
+        },
+        {
+          "gar": "krum"
+        },
+        {
+          "gar": "bridge"
+        },
+        {
+          "gar": "mozi"
+        },
+        {
+          "gar": "bristle"
+        }
+      ]
+    },
+    {
+      "name": "32 node",
+      "fixedValues": {
+        "dataset": "mnist",
+        "behavior": "benign",
+        "modelPoisoningAttack": "none",
+        "numNodes": "32",
+        "numAttackers": "num_0"
+      },
+      "tests": [
+        {
+          "gar": "average"
+        },
+        {
+          "gar": "median"
+        },
+        {
+          "gar": "krum"
+        },
+        {
+          "gar": "bridge"
+        },
+        {
+          "gar": "mozi"
+        },
+        {
+          "gar": "bristle"
+        }
+      ]
+    },
+    {
+      "name": "64 node",
+      "fixedValues": {
+        "dataset": "mnist",
+        "behavior": "benign",
+        "modelPoisoningAttack": "none",
+        "numNodes": "63",
+        "numAttackers": "num_0"
+      },
+      "tests": [
+        {
+          "gar": "average"
+        },
+        {
+          "gar": "median"
+        },
+        {
+          "gar": "krum"
+        },
+        {
+          "gar": "bridge"
+        },
+        {
+          "gar": "mozi"
+        },
+        {
+          "gar": "bristle"
+        }
+      ]
+    },
+    {
+      "name": "96 node",
+      "fixedValues": {
+        "dataset": "mnist",
+        "behavior": "benign",
+        "modelPoisoningAttack": "none",
+        "numNodes": "96",
+        "numAttackers": "num_0"
+      },
+      "tests": [
+        {
+          "gar": "average"
+        },
+        {
+          "gar": "median"
+        },
+        {
+          "gar": "krum"
+        },
+        {
+          "gar": "bridge"
+        },
+        {
+          "gar": "mozi"
+        },
+        {
+          "gar": "bristle"
+        }
+      ]
+    }
+  ]
+}
