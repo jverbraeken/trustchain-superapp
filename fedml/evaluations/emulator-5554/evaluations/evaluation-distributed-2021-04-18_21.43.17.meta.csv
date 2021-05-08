@@ -1,0 +1,2 @@
+name,simulationIndex,transfer,dataset,optimizer,learning rate,momentum,l2,batchSize,iteratorDistribution,maxTestSamples,gar,communicationPattern,behavior,numEpochs,slowdown,joiningLate,iterationsBeforeEvaluation,iterationsBeforeSending,local model poisoning attack,#attackers
+Figure 4.5 - bristle,0,false,MNIST,Adam,1e-3,<none>,5e-3,5,[10-10-10-10-0-0-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,Fang 2020 (trimmed mean),5

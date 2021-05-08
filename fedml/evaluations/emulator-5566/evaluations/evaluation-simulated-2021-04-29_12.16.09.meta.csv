@@ -1,0 +1,705 @@
+name,simulationIndex,transfer,dataset,optimizer,learning rate,momentum,l2,batchSize,iteratorDistribution,maxTestSamples,gar,communicationPattern,behavior,numEpochs,slowdown,joiningLate,iterationsBeforeEvaluation,iterationsBeforeSending,local model poisoning attack,#attackers
+64 node - average - transfer,0,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,1,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,2,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,3,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,4,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,5,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,6,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,7,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,8,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,9,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,10,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,11,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,12,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,13,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,14,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,15,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,16,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,17,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,18,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,19,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,20,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,21,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,22,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,23,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,24,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,25,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,26,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,27,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,28,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,29,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,30,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,31,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,32,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,33,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,34,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,35,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,36,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,37,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,38,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,39,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,40,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,41,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,42,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,43,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,44,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,45,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,46,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,47,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,48,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,49,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,50,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,51,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,52,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,53,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,54,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,55,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,56,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,57,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,58,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,59,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,60,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,61,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,62,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - transfer,63,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,0,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,1,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,2,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,3,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,4,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,5,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,6,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,7,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,8,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,9,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,10,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,11,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,12,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,13,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,14,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,15,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,16,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,17,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,18,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,19,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,20,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,21,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,22,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,23,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,24,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,25,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,26,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,27,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,28,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,29,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,30,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,31,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,32,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,33,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,34,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,35,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,36,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,37,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,38,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,39,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,40,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,41,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,42,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,43,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,44,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,45,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,46,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,47,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,48,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,49,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,50,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,51,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,52,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,53,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,54,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,55,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,56,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,57,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,58,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,59,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,60,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,61,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,62,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - average - regular,63,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,0,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,1,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,2,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,3,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,4,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,5,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,6,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,7,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,8,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,9,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,10,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,11,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,12,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,13,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,14,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,15,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,16,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,17,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,18,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,19,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,20,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,21,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,22,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,23,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,24,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,25,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,26,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,27,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,28,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,29,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,30,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,31,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,32,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,33,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,34,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,35,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,36,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,37,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,38,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,39,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,40,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,41,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,42,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,43,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,44,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,45,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,46,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,47,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,48,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,49,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,50,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,51,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,52,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,53,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,54,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,55,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,56,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,57,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,58,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,59,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,60,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,61,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,62,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - transfer,63,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,0,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,1,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,2,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,3,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,4,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,5,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,6,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,7,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,8,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,9,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,10,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,11,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,12,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,13,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,14,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,15,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,16,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,17,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,18,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,19,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,20,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,21,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,22,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,23,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,24,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,25,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,26,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,27,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,28,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,29,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,30,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,31,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,32,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,33,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,34,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,35,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,36,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,37,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,38,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,39,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,40,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,41,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,42,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,43,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,44,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,45,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,46,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,47,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,48,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,49,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,50,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,51,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,52,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,53,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,54,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,55,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,56,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,57,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,58,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,59,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,60,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,61,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,62,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - median - regular,63,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,0,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,1,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,2,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,3,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,4,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,5,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,6,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,7,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,8,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,9,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,10,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,11,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,12,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,13,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,14,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,15,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,16,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,17,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,18,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,19,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,20,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,21,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,22,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,23,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,24,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,25,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,26,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,27,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,28,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,29,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,30,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,31,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,32,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,33,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,34,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,35,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,36,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,37,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,38,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,39,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,40,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,41,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,42,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,43,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,44,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,45,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,46,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,47,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,48,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,49,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,50,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,51,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,52,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,53,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,54,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,55,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,56,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,57,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,58,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,59,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,60,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,61,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,62,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - transfer,63,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,0,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,1,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,2,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,3,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,4,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,5,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,6,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,7,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,8,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,9,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,10,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,11,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,12,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,13,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,14,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,15,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,16,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,17,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,18,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,19,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,20,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,21,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,22,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,23,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,24,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,25,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,26,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,27,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,28,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,29,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,30,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,31,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,32,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,33,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,34,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,35,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,36,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,37,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,38,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,39,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,40,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,41,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,42,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,43,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,44,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,45,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,46,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,47,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,48,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,49,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,50,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,51,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,52,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,53,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,54,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,55,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,56,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,57,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,58,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,59,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,60,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,61,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,62,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - krum - regular,63,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,0,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,1,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,2,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,3,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,4,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,5,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,6,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,7,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,8,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,9,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,10,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,11,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,12,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,13,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,14,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,15,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,16,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,17,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,18,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,19,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,20,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,21,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,22,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,23,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,24,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,25,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,26,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,27,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,28,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,29,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,30,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,31,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,32,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,33,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,34,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,35,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,36,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,37,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,38,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,39,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,40,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,41,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,42,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,43,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,44,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,45,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,46,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,47,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,48,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,49,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,50,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,51,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,52,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,53,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,54,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,55,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,56,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,57,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,58,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,59,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,60,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,61,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,62,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - transfer,63,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,0,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,1,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,2,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,3,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,4,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,5,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,6,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,7,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,8,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,9,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,10,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,11,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,12,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,13,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,14,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,15,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,16,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,17,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,18,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,19,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,20,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,21,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,22,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,23,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,24,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,25,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,26,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,27,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,28,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,29,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,30,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,31,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,32,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,33,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,34,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,35,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,36,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,37,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,38,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,39,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,40,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,41,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,42,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,43,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,44,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,45,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,46,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,47,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,48,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,49,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,50,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,51,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,52,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,53,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,54,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,55,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,56,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,57,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,58,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,59,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,60,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,61,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,62,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - bridge - regular,63,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,0,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,1,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,2,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,3,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,4,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,5,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,6,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,7,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,8,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,9,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,10,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,11,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,12,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,13,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,14,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,15,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,16,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,17,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,18,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,19,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,20,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,21,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,22,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,23,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,24,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,25,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,26,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,27,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,28,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,29,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,30,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,31,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,32,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,33,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,34,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,35,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,36,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,37,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,38,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,39,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,40,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,41,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,42,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,43,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,44,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,45,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,46,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,47,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,48,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,49,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,50,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,51,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,52,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,53,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,54,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,55,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,56,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,57,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,58,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,59,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,60,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,61,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,62,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - transfer,63,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,0,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,1,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,2,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,3,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,4,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,5,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,6,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,7,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,8,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,9,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,10,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,11,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,12,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,13,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,14,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,15,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,16,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,17,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,18,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,19,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,20,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,21,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,22,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,23,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,24,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,25,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,26,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,27,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,28,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,29,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,30,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,31,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,32,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,33,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,34,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,35,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,36,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,37,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,38,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,39,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,40,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,41,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,42,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,43,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,44,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,45,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,46,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,47,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,48,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,49,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,50,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,51,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,52,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,53,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,54,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,55,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,56,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,57,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,58,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,59,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,60,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,61,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,62,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - mozi - regular,63,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,0,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,1,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,2,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,3,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,4,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,5,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,6,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,7,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,8,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,9,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,10,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,11,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,12,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,13,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,14,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,15,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,16,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,17,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,18,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,19,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,20,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,21,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,22,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,23,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,24,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,25,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,26,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,27,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,28,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,29,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,30,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,31,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,32,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,33,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,34,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,35,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,36,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,37,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,38,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,39,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,40,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,41,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,42,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,43,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,44,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,45,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,46,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,47,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,48,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,49,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,50,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,51,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,52,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,53,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,54,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,55,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,56,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,57,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,58,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,59,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,60,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,61,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,62,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+64 node - bristle - transfer,63,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0

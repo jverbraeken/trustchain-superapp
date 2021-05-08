@@ -1,0 +1,601 @@
+name,simulationIndex,transfer,dataset,optimizer,learning rate,momentum,l2,batchSize,iteratorDistribution,maxTestSamples,gar,communicationPattern,behavior,numEpochs,slowdown,joiningLate,iterationsBeforeEvaluation,iterationsBeforeSending,local model poisoning attack,#attackers
+connection ratio 0.8 - average - transfer,0,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,1,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,2,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,3,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,4,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,5,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,6,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,7,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,8,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,9,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,10,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,11,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,12,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,13,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,14,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,15,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,16,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,17,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,18,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,19,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,20,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,21,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,22,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,23,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,24,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,25,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,26,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,27,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,28,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,29,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,30,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,31,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,32,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,33,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,34,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,35,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,36,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,37,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,38,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,39,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,40,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,41,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,42,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,43,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,44,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,45,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,46,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,47,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,48,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,49,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,50,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,51,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,52,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,53,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,54,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,55,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,56,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,57,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,58,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,59,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,60,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,61,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,62,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,63,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,64,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,65,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,66,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,67,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,68,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,69,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,70,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,71,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,72,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,73,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,74,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,75,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,76,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,77,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,78,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,79,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,80,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,81,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,82,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,83,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,84,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,85,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,86,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,87,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,88,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,89,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,90,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,91,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,92,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,93,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,94,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,95,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,96,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,97,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,98,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - average - transfer,99,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,0,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,1,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,2,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,3,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,4,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,5,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,6,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,7,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,8,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,9,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,10,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,11,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,12,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,13,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,14,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,15,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,16,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,17,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,18,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,19,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,20,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,21,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,22,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,23,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,24,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,25,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,26,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,27,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,28,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,29,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,30,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,31,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,32,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,33,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,34,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,35,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,36,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,37,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,38,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,39,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,40,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,41,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,42,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,43,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,44,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,45,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,46,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,47,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,48,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,49,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,50,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,51,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,52,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,53,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,54,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,55,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,56,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,57,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,58,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,59,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,60,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,61,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,62,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,63,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,64,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,65,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,66,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,67,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,68,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,69,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,70,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,71,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,72,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,73,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,74,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,75,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,76,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,77,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,78,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,79,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,80,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,81,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,82,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,83,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,84,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,85,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,86,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,87,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,88,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,89,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,90,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,91,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,92,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,93,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,94,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,95,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,96,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,97,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,98,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - median - transfer,99,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,0,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,1,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,2,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,3,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,4,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,5,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,6,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,7,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,8,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,9,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,10,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,11,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,12,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,13,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,14,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,15,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,16,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,17,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,18,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,19,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,20,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,21,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,22,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,23,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,24,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,25,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,26,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,27,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,28,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,29,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,30,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,31,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,32,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,33,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,34,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,35,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,36,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,37,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,38,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,39,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,40,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,41,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,42,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,43,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,44,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,45,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,46,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,47,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,48,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,49,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,50,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,51,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,52,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,53,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,54,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,55,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,56,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,57,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,58,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,59,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,60,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,61,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,62,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,63,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,64,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,65,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,66,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,67,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,68,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,69,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,70,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,71,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,72,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,73,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,74,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,75,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,76,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,77,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,78,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,79,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,80,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,81,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,82,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,83,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,84,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,85,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,86,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,87,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,88,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,89,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,90,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,91,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,92,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,93,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,94,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,95,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,96,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,97,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,98,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - krum - transfer,99,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,0,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,1,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,2,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,3,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,4,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,5,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,6,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,7,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,8,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,9,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,10,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,11,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,12,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,13,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,14,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,15,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,16,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,17,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,18,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,19,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,20,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,21,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,22,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,23,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,24,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,25,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,26,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,27,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,28,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,29,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,30,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,31,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,32,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,33,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,34,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,35,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,36,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,37,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,38,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,39,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,40,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,41,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,42,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,43,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,44,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,45,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,46,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,47,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,48,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,49,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,50,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,51,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,52,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,53,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,54,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,55,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,56,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,57,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,58,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,59,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,60,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,61,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,62,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,63,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,64,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,65,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,66,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,67,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,68,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,69,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,70,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,71,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,72,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,73,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,74,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,75,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,76,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,77,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,78,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,79,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,80,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,81,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,82,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,83,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,84,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,85,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,86,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,87,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,88,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,89,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,90,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,91,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,92,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,93,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,94,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,95,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,96,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,97,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,98,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bridge - transfer,99,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,0,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,1,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,2,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,3,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,4,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,5,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,6,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,7,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,8,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,9,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,10,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,11,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,12,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,13,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,14,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,15,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,16,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,17,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,18,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,19,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,20,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,21,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,22,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,23,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,24,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,25,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,26,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,27,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,28,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,29,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,30,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,31,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,32,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,33,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,34,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,35,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,36,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,37,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,38,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,39,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,40,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,41,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,42,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,43,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,44,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,45,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,46,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,47,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,48,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,49,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,50,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,51,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,52,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,53,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,54,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,55,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,56,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,57,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,58,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,59,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,60,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,61,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,62,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,63,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,64,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,65,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,66,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,67,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,68,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,69,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,70,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,71,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,72,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,73,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,74,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,75,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,76,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,77,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,78,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,79,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,80,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,81,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,82,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,83,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,84,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,85,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,86,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,87,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,88,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,89,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,90,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,91,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,92,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,93,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,94,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,95,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,96,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,97,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,98,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - mozi - transfer,99,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,0,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,1,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,2,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,3,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,4,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,5,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,6,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,7,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,8,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,9,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,10,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,11,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,12,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,13,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,14,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,15,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,16,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,17,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,18,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,19,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,20,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,21,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,22,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,23,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,24,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,25,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,26,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,27,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,28,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,29,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,30,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,31,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,32,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,33,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,34,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,35,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,36,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,37,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,38,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,39,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,40,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,41,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,42,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,43,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,44,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,45,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,46,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,47,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,48,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,49,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,50,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,51,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,52,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,53,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,54,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,55,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,56,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,57,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,58,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,59,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,60,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,61,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,62,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,63,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,64,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,65,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,66,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,67,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,68,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,69,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,70,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,71,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,72,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,73,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,74,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,75,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,76,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,77,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,78,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,79,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,80,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,81,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,82,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,83,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,84,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,85,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,86,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,87,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,88,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,89,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,90,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,91,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,92,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,93,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,94,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,95,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,96,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,97,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,98,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+connection ratio 0.8 - bristle - transfer,99,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0

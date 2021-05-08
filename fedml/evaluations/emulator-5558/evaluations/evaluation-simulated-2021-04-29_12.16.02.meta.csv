@@ -1,0 +1,45 @@
+name,simulationIndex,transfer,dataset,optimizer,learning rate,momentum,l2,batchSize,iteratorDistribution,maxTestSamples,gar,communicationPattern,behavior,numEpochs,slowdown,joiningLate,iterationsBeforeEvaluation,iterationsBeforeSending,local model poisoning attack,#attackers
+4 node - average - transfer,0,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+4 node - average - transfer,1,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+4 node - average - transfer,2,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+4 node - average - transfer,3,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+4 node - average - regular,0,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+4 node - average - regular,1,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+4 node - average - regular,2,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+4 node - average - regular,3,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+4 node - median - transfer,0,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+4 node - median - transfer,1,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+4 node - median - transfer,2,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+4 node - median - transfer,3,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+4 node - median - regular,0,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+4 node - median - regular,1,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+4 node - median - regular,2,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+4 node - median - regular,3,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+4 node - krum - transfer,0,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+4 node - krum - transfer,1,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+4 node - krum - transfer,2,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+4 node - krum - transfer,3,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+4 node - krum - regular,0,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+4 node - krum - regular,1,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+4 node - krum - regular,2,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+4 node - krum - regular,3,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+4 node - bridge - transfer,0,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+4 node - bridge - transfer,1,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+4 node - bridge - transfer,2,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+4 node - bridge - transfer,3,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+4 node - bridge - regular,0,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+4 node - bridge - regular,1,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+4 node - bridge - regular,2,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+4 node - bridge - regular,3,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+4 node - mozi - transfer,0,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+4 node - mozi - transfer,1,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+4 node - mozi - transfer,2,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+4 node - mozi - transfer,3,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+4 node - mozi - regular,0,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+4 node - mozi - regular,1,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+4 node - mozi - regular,2,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+4 node - mozi - regular,3,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+4 node - bristle - transfer,0,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+4 node - bristle - transfer,1,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+4 node - bristle - transfer,2,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
+4 node - bristle - transfer,3,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
