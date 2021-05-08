@@ -11,15 +11,18 @@ import nl.tudelft.trustchain.fedml.ipv8.MsgPsiCaClientToServer
 import nl.tudelft.trustchain.fedml.ipv8.MsgPsiCaServerToClient
 import org.nd4j.linalg.api.ndarray.INDArray
 import java.io.File
+import java.lang.Integer.max
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.concurrent.thread
 import kotlin.random.Random
 
 private val logger = KotlinLogging.logger("SimulatedRunner")
+private const val USE_PSI_CA = false
 
 class SimulatedRunner : Runner() {
     private lateinit var nodes: List<Node>
+    private lateinit var nodeConnectedTo: Map<Int, List<Node>>
     private var peersRR: MutableMap<Int, MutableList<Node>?> = HashMap()
     private var peersRing: MutableMap<Int, MutableList<Node>?> = HashMap()
     private var ringCounter: MutableMap<Int, Int> = HashMap()
@@ -91,6 +94,12 @@ class SimulatedRunner : Runner() {
                 ::shareModel
             )
         }
+        val numConnectedNodes = max(0, (testConfig[0].trainConfiguration.connectionRatio * nodes.size).toInt() - 1)
+        logger.debug { "nodes: $nodes" }
+        logger.debug { "numConnectedNodes: $numConnectedNodes" }
+        nodeConnectedTo = nodes.map { node ->
+            Pair(node.getNodeIndex(), nodes.filter { it.getNodeIndex() != node.getNodeIndex() }.shuffled().subList(0, numConnectedNodes))
+        }.toMap()
         testConfig.forEachIndexed { i, _ ->
             ringCounter[i] = 1
         }
@@ -184,9 +193,10 @@ class SimulatedRunner : Runner() {
     ) {
         val message = craftMessage(params, trainConfiguration.behavior, random)
         when (trainConfiguration.communicationPattern) {
-            CommunicationPatterns.ALL -> nodes
-                .filter { it.getNodeIndex() != nodeIndex && (if (trainConfiguration.gar == GARs.BRISTLE) it.getNodeIndex() in countPerPeer.keys else true) }
-                .forEach { it.addNetworkMessage(nodeIndex, message) }
+            CommunicationPatterns.ALL -> /*nodes
+                .filter { it.getNodeIndex() != nodeIndex && (if (trainConfiguration.gar == GARs.BRISTLE && USE_PSI_CA) it.getNodeIndex() in countPerPeer.keys else true) }
+                .forEach { it.addNetworkMessage(nodeIndex, message) }*/
+                nodeConnectedTo[nodeIndex]!!.forEach { it.addNetworkMessage(nodeIndex, message) }
             CommunicationPatterns.RANDOM -> nodes
                 .filter { it.getNodeIndex() != nodeIndex && (if (trainConfiguration.gar == GARs.BRISTLE) it.getNodeIndex() in countPerPeer.keys else true) }
                 .random().addNetworkMessage(nodeIndex, message)

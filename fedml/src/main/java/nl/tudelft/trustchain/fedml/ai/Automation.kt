@@ -25,7 +25,7 @@ data class Figure(
 data class Test(val gar: String)
 
 fun loadAutomation(baseDirectory: File): Automation {
-    val file = Paths.get(baseDirectory.path, "automation.json").toFile()
+    val file = Paths.get(baseDirectory.path, "automation_connection_ratio.json").toFile()
     val string = file.readLines().joinToString("")
     return Json.decodeFromString(string)
 }
@@ -60,7 +60,9 @@ fun generateConfigs(
         if (automationPart == -1)
             figures.filter { it.name in ISOLATED_FIGURE_NAME }
         else {
-            when (automationPart) {
+            if (automationPart < 7) listOf(figures[automationPart])
+            else figures.subList((automationPart - 7) * 2 + 7, (automationPart - 7) * 2 + 8)
+            /*when (automationPart) {
                 0 -> figures.subList(0, 12)
                 1 -> figures.subList(12, 14)
                 2 -> figures.subList(14, 16)
@@ -78,8 +80,7 @@ fun generateConfigs(
                 14 -> listOf(figures[35], figures[36])
                 15 -> listOf(figures[37], figures[38])
                 else -> throw RuntimeException("Impossible")
-//                else -> listOf(figures/*.subList(23, 27).union(figures.subList(28, 32)).toList()*/.subList(23, figures.size)[automationPart - 7])
-            }
+            }*/
         }
     logger.debug { "myFigures: ${myFigures.map { it.name }}" }
 
@@ -92,6 +93,8 @@ fun generateConfigs(
         val modelPoisoningAttack = loadModelPoisoningAttack(figure.fixedValues.getValue("modelPoisoningAttack"))!!
         val numNodes = figure.fixedValues.getValue("numNodes").toInt()
         val numAttackers = loadNumAttackers(figure.fixedValues.getValue("numAttackers"))!!
+        val connectionRatio = figure.fixedValues["connectionRatio"]?.toDouble() ?: 1.0
+        val latency = figure.fixedValues["latency"]?.toInt() ?: 0
         val firstNodeSpeed = figure.fixedValues["firstNodeSpeed"]?.toInt() ?: 0
         val firstNodeJoiningLate = figure.fixedValues["firstNodeJoiningLate"]?.equals("true") ?: false
         val overrideIteratorDistribution = figure.iteratorDistributions
@@ -104,7 +107,7 @@ fun generateConfigs(
             if (automationPart == -1 && gar.id !in ISOLATED_FIGURE_GAR) continue
 
 
-            for (transfer in booleanArrayOf(true, false)) {
+            for (transfer in booleanArrayOf(true/*, false*/)) {
                 if (gar == GARs.BRISTLE && !transfer) {
                     // BRISTLE can only work with transfer learning; otherwise all layers except for its outputlayer will stay 0
                     continue
@@ -161,7 +164,9 @@ fun generateConfigs(
                             joiningLate = if (node == 0 && firstNodeJoiningLate) TransmissionRounds.N150 else TransmissionRounds.N0,
                             iterationsBeforeEvaluation = iterationsBeforeEvaluation,
                             iterationsBeforeSending = iterationsBeforeSending,
-                            transfer = transfer
+                            transfer = transfer,
+                            connectionRatio = connectionRatio,
+                            latency = latency
                         ),
                         ModelPoisoningConfiguration(
                             attack = modelPoisoningAttack,
