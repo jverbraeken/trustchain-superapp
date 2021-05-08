@@ -254,7 +254,7 @@ class DistributedRunner(private val community: FedMLCommunity) : Runner(), Messa
                 logger.debug { "Evaluating network " }
                 val elapsedTime = System.currentTimeMillis() - start
                 val extraElements = mapOf(
-                    Pair("before or after averaging", "before"),
+                    Pair("before or after averaging", "after"),
                     Pair("#peers included in current batch", "-")
                 )
                 sendEvaluationToMaster(
