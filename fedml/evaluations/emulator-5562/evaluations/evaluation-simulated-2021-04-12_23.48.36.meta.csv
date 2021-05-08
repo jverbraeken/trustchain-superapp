@@ -209,3 +209,13 @@ Figure 2.2 - mozi - transfer,6,true,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-2
 Figure 2.2 - mozi - transfer,7,true,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Mozi (frac=0.5),All,Label flip all,300,-,0,10,1,<none>,3
 Figure 2.2 - mozi - transfer,8,true,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Mozi (frac=0.5),All,Label flip all,300,-,0,10,1,<none>,3
 Figure 2.2 - mozi - transfer,9,true,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Mozi (frac=0.5),All,Label flip all,300,-,0,10,1,<none>,3
+Figure 2.2 - mozi - regular,0,false,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,3
+Figure 2.2 - mozi - regular,1,false,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,3
+Figure 2.2 - mozi - regular,2,false,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,3
+Figure 2.2 - mozi - regular,3,false,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,3
+Figure 2.2 - mozi - regular,4,false,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,3
+Figure 2.2 - mozi - regular,5,false,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,3
+Figure 2.2 - mozi - regular,6,false,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,3
+Figure 2.2 - mozi - regular,7,false,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Mozi (frac=0.5),All,Label flip all,300,-,0,10,1,<none>,3
+Figure 2.2 - mozi - regular,8,false,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Mozi (frac=0.5),All,Label flip all,300,-,0,10,1,<none>,3
+Figure 2.2 - mozi - regular,9,false,CIFAR-10,Adam,1e-3,<none>,5e-3,32,[250-250-250-250-250-250-250-250-250-250],10,Mozi (frac=0.5),All,Label flip all,300,-,0,10,1,<none>,3

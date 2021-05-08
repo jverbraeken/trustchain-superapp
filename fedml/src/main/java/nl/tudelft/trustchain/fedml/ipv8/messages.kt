@@ -169,7 +169,9 @@ data class MsgNewTestCommand(val configuration: Map<String, String>, val figureN
                 joiningLate = loadTransmissionRound(configuration.getValue("joiningLate"))!!,
                 iterationsBeforeEvaluation = configuration.getValue("iterationsBeforeEvaluation").toInt(),
                 iterationsBeforeSending = configuration.getValue("iterationsBeforeSending").toInt(),
-                transfer = configuration.getValue("transfer").toBoolean()
+                transfer = configuration.getValue("transfer").toBoolean(),
+                connectionRatio = 1.0,
+                latency = 0
             ),
             ModelPoisoningConfiguration(
                 attack = loadModelPoisoningAttack(configuration.getValue("modelPoisoningAttack"))!!,

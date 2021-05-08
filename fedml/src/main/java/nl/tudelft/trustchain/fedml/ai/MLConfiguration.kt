@@ -32,7 +32,9 @@ data class TrainConfiguration(
     val joiningLate: TransmissionRounds,
     val iterationsBeforeEvaluation: Int,
     val iterationsBeforeSending: Int,
-    val transfer: Boolean
+    val transfer: Boolean,
+    val connectionRatio: Double,
+    val latency: Int
 )
 
 data class ModelPoisoningConfiguration(

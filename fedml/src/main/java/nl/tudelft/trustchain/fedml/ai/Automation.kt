@@ -25,7 +25,7 @@ data class Figure(
 data class Test(val gar: String)
 
 fun loadAutomation(baseDirectory: File): Automation {
-    val file = Paths.get(baseDirectory.path, "automation_time.json").toFile()
+    val file = Paths.get(baseDirectory.path, "automation_connection_ratio.json").toFile()
     val string = file.readLines().joinToString("")
     return Json.decodeFromString(string)
 }
@@ -60,7 +60,8 @@ fun generateConfigs(
         if (automationPart == -1)
             figures.filter { it.name in ISOLATED_FIGURE_NAME }
         else {
-            listOf(figures[automationPart])
+            if (automationPart < 7) listOf(figures[automationPart])
+            else figures.subList((automationPart - 7) * 2 + 7, (automationPart - 7) * 2 + 8)
             /*when (automationPart) {
                 0 -> figures.subList(0, 12)
                 1 -> figures.subList(12, 14)
@@ -92,6 +93,8 @@ fun generateConfigs(
         val modelPoisoningAttack = loadModelPoisoningAttack(figure.fixedValues.getValue("modelPoisoningAttack"))!!
         val numNodes = figure.fixedValues.getValue("numNodes").toInt()
         val numAttackers = loadNumAttackers(figure.fixedValues.getValue("numAttackers"))!!
+        val connectionRatio = figure.fixedValues["connectionRatio"]?.toDouble() ?: 1.0
+        val latency = figure.fixedValues["latency"]?.toInt() ?: 0
         val firstNodeSpeed = figure.fixedValues["firstNodeSpeed"]?.toInt() ?: 0
         val firstNodeJoiningLate = figure.fixedValues["firstNodeJoiningLate"]?.equals("true") ?: false
         val overrideIteratorDistribution = figure.iteratorDistributions
@@ -161,7 +164,9 @@ fun generateConfigs(
                             joiningLate = if (node == 0 && firstNodeJoiningLate) TransmissionRounds.N150 else TransmissionRounds.N0,
                             iterationsBeforeEvaluation = iterationsBeforeEvaluation,
                             iterationsBeforeSending = iterationsBeforeSending,
-                            transfer = transfer
+                            transfer = transfer,
+                            connectionRatio = connectionRatio,
+                            latency = latency
                         ),
                         ModelPoisoningConfiguration(
                             attack = modelPoisoningAttack,

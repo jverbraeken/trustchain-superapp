@@ -208,6 +208,8 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
             }
             copyAsset(assetManager, "automation.json")
             copyAsset(assetManager, "automation_time.json")
+            copyAsset(assetManager, "automation_latency.json")
+            copyAsset(assetManager, "automation_connection_ratio.json")
             copyAsset(assetManager, "transfer-mnist")
             copyAsset(assetManager, "transfer-cifar10")
             copyAsset(assetManager, "transfer-wisdm")
@@ -318,15 +320,17 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
                 l2 = l2
             ),
             TrainConfiguration(
-                    maxIteration = maxIteration,
-                    gar = gar,
-                    communicationPattern = communicationPattern,
-                    behavior = behavior,
-                    slowdown = Slowdowns.NONE,
-                    joiningLate = TransmissionRounds.N0,
-                    iterationsBeforeEvaluation = 10,
-                    iterationsBeforeSending = 1,
-                    transfer = true,
+                maxIteration = maxIteration,
+                gar = gar,
+                communicationPattern = communicationPattern,
+                behavior = behavior,
+                slowdown = Slowdowns.NONE,
+                joiningLate = TransmissionRounds.N0,
+                iterationsBeforeEvaluation = 10,
+                iterationsBeforeSending = 1,
+                transfer = true,
+                connectionRatio = 1.0,
+                latency = 0
             ),
             ModelPoisoningConfiguration(
                 attack = modelPoisoningAttack,

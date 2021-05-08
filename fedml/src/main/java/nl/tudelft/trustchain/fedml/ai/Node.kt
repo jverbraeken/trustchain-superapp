@@ -33,7 +33,7 @@ class Node(
     val formatter = NDArrayStrings2()
     private val dataset = testConfig.dataset
     private val recentOtherModelsBuffer = ArrayDeque<Pair<Int, INDArray>>()
-    private val newOtherModelBufferTemp = ConcurrentHashMap<Int, INDArray>()
+    private val newOtherModelBufferTemp = Array<MutableMap<Int, INDArray>>(testConfig.trainConfiguration.latency + 1) { ConcurrentHashMap() }
     private val newOtherModelBuffer = ConcurrentHashMap<Int, INDArray>()
     private val random = Random(nodeIndex)
     private val sraKeyPair = SRAKeyPair.create(bigPrime, java.util.Random(nodeIndex.toLong()))
@@ -310,8 +310,8 @@ class Node(
     }
 
     fun applyNetworkBuffers() {
-        newOtherModelBuffer.putAll(newOtherModelBufferTemp)
-        newOtherModelBufferTemp.clear()
+        newOtherModelBuffer.putAll(newOtherModelBufferTemp.first())
+        (0 until newOtherModelBufferTemp.size - 1).forEach { index -> newOtherModelBufferTemp[index] = newOtherModelBufferTemp[index+1] }
     }
 
     fun getNodeIndex(): Int {
@@ -319,7 +319,7 @@ class Node(
     }
 
     fun addNetworkMessage(from: Int, message: INDArray) {
-        newOtherModelBufferTemp[from] = message.dup()
+        newOtherModelBufferTemp.last()[from] = message.dup()
     }
 
     fun getSRAKeyPair(): SRAKeyPair {

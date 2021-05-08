@@ -166,6 +166,7 @@ class EvaluationProcessor(
         iterations: Int,
         epoch: Int
     ): String {
+        logger.debug { "1" }
         val accuracy = evaluations[0].getValue(Evaluation.Metric.ACCURACY)
         val f1 = evaluations[0].getValue(Evaluation.Metric.F1)
         val precision = evaluations[0].getValue(Evaluation.Metric.PRECISION)
@@ -186,16 +187,22 @@ class EvaluationProcessor(
             mcc.toString(),
             score.toString()
         )
+        logger.debug { "2" }
         evaluationLines.add(Array(dataLineElements.size + extraElements.size) { "" })
+        logger.debug { "3" }
         System.arraycopy(dataLineElements, 0, evaluationLines.last(), 0, dataLineElements.size)
+        logger.debug { "4" }
         for ((name, value) in extraElements) {
             evaluationLines.last()[dataLineElements.size + extraElementNames.indexOf(name)] = value
         }
+        logger.debug { "5" }
         PrintWriter(fileResults).use { pw ->
             evaluationLines
                 .map(::convertToCSV)
                 .forEach(pw::println)
+            logger.debug { "5.5" }
         }
+        logger.debug { "6" }
         return convertToCSV(evaluationLines.last())
     }
 
