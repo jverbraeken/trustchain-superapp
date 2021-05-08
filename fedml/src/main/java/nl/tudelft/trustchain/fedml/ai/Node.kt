@@ -149,7 +149,11 @@ class Node(
             if (iteration % iterationsBeforeSending == 0) {
                 addPotentialAttacks()
             }
+            val start = System.currentTimeMillis()
             potentiallyIntegrateParameters(iteration)
+            if (iteration < 4) {
+                logger.debug { "Measured time for ${gar.text} iteration: ${System.currentTimeMillis() - start}" }
+            }
 //            potentiallyEvaluate(epoch, iteration, "before")
         }
         newOtherModelBuffer.clear()
@@ -180,7 +184,7 @@ class Node(
             )
         }
 
-        potentiallyEvaluate(epoch, iteration, "after")
+//        potentiallyEvaluate(epoch, iteration, "after")
         return epochEnd
     }
 
