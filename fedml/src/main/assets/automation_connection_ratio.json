@@ -147,14 +147,14 @@
       ]
     },
     {
-      "name": "connection ratio 0.2",
+      "name": "connection ratio 0.02",
       "fixedValues": {
         "dataset": "mnist",
         "behavior": "benign",
         "modelPoisoningAttack": "none",
         "numNodes": "100",
         "numAttackers": "num_0",
-        "connectionRatio": "0.2"
+        "connectionRatio": "0.02"
       },
       "tests": [
         {
@@ -280,14 +280,14 @@
       ]
     },
     {
-      "name": "connection ratio 0.3",
+      "name": "connection ratio 0.04",
       "fixedValues": {
         "dataset": "mnist",
         "behavior": "benign",
         "modelPoisoningAttack": "none",
         "numNodes": "100",
         "numAttackers": "num_0",
-        "connectionRatio": "0.3"
+        "connectionRatio": "0.04"
       },
       "tests": [
         {
@@ -413,14 +413,14 @@
       ]
     },
     {
-      "name": "connection ratio 0.5",
+      "name": "connection ratio 0.08",
       "fixedValues": {
         "dataset": "mnist",
         "behavior": "benign",
         "modelPoisoningAttack": "none",
         "numNodes": "100",
         "numAttackers": "num_0",
-        "connectionRatio": "0.5"
+        "connectionRatio": "0.08"
       },
       "tests": [
         {
@@ -546,14 +546,14 @@
       ]
     },
     {
-      "name": "connection ratio 0.6",
+      "name": "connection ratio 0.1",
       "fixedValues": {
         "dataset": "mnist",
         "behavior": "benign",
         "modelPoisoningAttack": "none",
         "numNodes": "100",
         "numAttackers": "num_0",
-        "connectionRatio": "0.6"
+        "connectionRatio": "0.1"
       },
       "tests": [
         {
@@ -679,14 +679,14 @@
       ]
     },
     {
-      "name": "connection ratio 0.8",
+      "name": "connection ratio 0.12",
       "fixedValues": {
         "dataset": "mnist",
         "behavior": "benign",
         "modelPoisoningAttack": "none",
         "numNodes": "100",
         "numAttackers": "num_0",
-        "connectionRatio": "0.8"
+        "connectionRatio": "0.12"
       },
       "tests": [
         {
@@ -812,14 +812,14 @@
       ]
     },
     {
-      "name": "connection ratio 1.0",
+      "name": "connection ratio 0.14",
       "fixedValues": {
         "dataset": "mnist",
         "behavior": "benign",
         "modelPoisoningAttack": "none",
         "numNodes": "100",
         "numAttackers": "num_0",
-        "connectionRatio": "1.0"
+        "connectionRatio": "0.14"
       },
       "tests": [
         {

@@ -184,7 +184,7 @@ class Node(
             )
         }
 
-//        potentiallyEvaluate(epoch, iteration, "after")
+        potentiallyEvaluate(epoch, iteration, "after")
         return epochEnd
     }
 
