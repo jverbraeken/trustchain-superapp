@@ -25,7 +25,7 @@ data class Figure(
 data class Test(val gar: String)
 
 fun loadAutomation(baseDirectory: File): Automation {
-    val file = Paths.get(baseDirectory.path, "automation_connection_ratio.json").toFile()
+    val file = Paths.get(baseDirectory.path, "automation.json").toFile()
     val string = file.readLines().joinToString("")
     return Json.decodeFromString(string)
 }
@@ -60,9 +60,9 @@ fun generateConfigs(
         if (automationPart == -1)
             figures.filter { it.name in ISOLATED_FIGURE_NAME }
         else {
-            if (automationPart < 7) listOf(figures[automationPart])
-            else figures.subList((automationPart - 7) * 2 + 7, (automationPart - 7) * 2 + 8)
-            /*when (automationPart) {
+//            if (automationPart < 7) listOf(figures[automationPart])
+//            else figures.subList((automationPart - 7) * 2 + 7, (automationPart - 7) * 2 + 8)
+            when (automationPart) {
                 0 -> figures.subList(0, 12)
                 1 -> figures.subList(12, 14)
                 2 -> figures.subList(14, 16)
@@ -80,7 +80,7 @@ fun generateConfigs(
                 14 -> listOf(figures[35], figures[36])
                 15 -> listOf(figures[37], figures[38])
                 else -> throw RuntimeException("Impossible")
-            }*/
+            }
         }
     logger.debug { "myFigures: ${myFigures.map { it.name }}" }
 

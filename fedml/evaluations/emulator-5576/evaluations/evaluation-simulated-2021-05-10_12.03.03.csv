@@ -1,0 +1,12 @@
+environment, simulationIndex, elapsedTime, epoch, iteration, accuracy, f1, precision, recall, gmeasure, mcc, score, before or after averaging, #peers included in current batch, before or after averaging, #peers included in current batch
+"java.lang.IndexOutOfBoundsException: Index: 31, Size: 25
+	at java.util.ArrayList.get(ArrayList.java:437)
+	at nl.tudelft.trustchain.fedml.ai.AutomationKt.generateConfigs(Automation.kt:77)
+	at nl.tudelft.trustchain.fedml.ai.SimulatedRunner$simulate$1.invokeSuspend(SimulatedRunner.kt:52)
+	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+	at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:106)
+	at kotlinx.coroutines.scheduling.CoroutineScheduler.runSafely(CoroutineScheduler.kt:571)
+	at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.executeTask(CoroutineScheduler.kt:750)
+	at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.runWorker(CoroutineScheduler.kt:678)
+	at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.run(CoroutineScheduler.kt:665)
+"

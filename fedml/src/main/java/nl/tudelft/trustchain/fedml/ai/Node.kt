@@ -281,7 +281,7 @@ class Node(
     }
 
     private fun potentiallyEvaluate(epoch: Int, iteration: Int, beforeOrAfter: String) {
-        if (logging && (iteration % iterationsBeforeEvaluation == 0)) {
+        if (logging && (iteration < 20 || iteration % iterationsBeforeEvaluation == 0)) {
             val evaluationScript = {
                 val elapsedTime2 = System.currentTimeMillis() - start
                 val extraElements2 = mapOf(

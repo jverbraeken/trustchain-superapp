@@ -52,6 +52,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
     private val numAttackers = NumAttackers.values().map { it.text }
 
     private var automationPart: Int? = null
+    private var runSimulation: Int? = null
     private var dataset = Datasets.MNIST
     private var optimizer = dataset.defaultOptimizer
     private var learningRate = dataset.defaultLearningRate
@@ -181,6 +182,11 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
         if (disableExternalAutomation == null) {
             distributedRunner.baseDirectory = baseDirectory
             community.enableExternalAutomation(baseDirectory)
+        }
+        val runSimulation = extras?.getString("runSimulation")
+        if (runSimulation != null) {
+            this.runSimulation = runSimulation.toInt()
+            onBtnSimulateDistributedLocallyClicked(this.runSimulation!!)
         }
 
         this.dataset = loadDataset(extras?.getString("dataset")) ?: this.dataset
