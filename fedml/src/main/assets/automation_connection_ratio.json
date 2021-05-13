@@ -147,14 +147,14 @@
       ]
     },
     {
-      "name": "connection ratio 0.02",
+      "name": "connection ratio 0.05",
       "fixedValues": {
         "dataset": "mnist",
         "behavior": "benign",
         "modelPoisoningAttack": "none",
         "numNodes": "100",
         "numAttackers": "num_0",
-        "connectionRatio": "0.02"
+        "connectionRatio": "0.05"
       },
       "tests": [
         {

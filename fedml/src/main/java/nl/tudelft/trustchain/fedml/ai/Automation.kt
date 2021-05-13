@@ -60,27 +60,27 @@ fun generateConfigs(
         if (automationPart == -1)
             figures.filter { it.name in ISOLATED_FIGURE_NAME }
         else {
-//            if (automationPart < 7) listOf(figures[automationPart])
-//            else figures.subList((automationPart - 7) * 2 + 7, (automationPart - 7) * 2 + 8)
-            when (automationPart) {
-                0 -> figures.subList(0, 12)
-                1 -> figures.subList(12, 14)
-                2 -> figures.subList(14, 16)
-                3 -> figures.subList(16, 18)
-                4 -> figures.subList(18, 20)
-                5 -> figures.subList(20, 22)
-                6 -> listOf(figures[22], figures[23])
-                7 -> listOf(figures[24], figures[25])
-                8 -> listOf(figures[26], figures[27])
-                9 -> listOf(figures[28])
-                10 -> listOf(figures[29], figures[30])
-                11 -> listOf(figures[31])
-                12 -> listOf(figures[32])
-                13 -> listOf(figures[33], figures[34])
-                14 -> listOf(figures[35], figures[36])
-                15 -> listOf(figures[37], figures[38])
-                else -> throw RuntimeException("Impossible")
-            }
+            if (automationPart < 7) listOf(figures[automationPart])
+            else figures.subList((automationPart - 7) * 2 + 7, (automationPart - 7) * 2 + 8)
+//            when (automationPart) {
+//                0 -> figures.subList(0, 12)
+//                1 -> figures.subList(12, 14)
+//                2 -> figures.subList(14, 16)
+//                3 -> figures.subList(16, 18)
+//                4 -> figures.subList(18, 20)
+//                5 -> figures.subList(20, 22)
+//                6 -> listOf(figures[22], figures[23])
+//                7 -> listOf(figures[24], figures[25])
+//                8 -> listOf(figures[26], figures[27])
+//                9 -> listOf(figures[28])
+//                10 -> listOf(figures[29], figures[30])
+//                11 -> listOf(figures[31])
+//                12 -> listOf(figures[32])
+//                13 -> listOf(figures[33], figures[34])
+//                14 -> listOf(figures[35], figures[36])
+//                15 -> listOf(figures[37], figures[38])
+//                else -> throw RuntimeException("Impossible")
+//            }
         }
     logger.debug { "myFigures: ${myFigures.map { it.name }}" }
 
