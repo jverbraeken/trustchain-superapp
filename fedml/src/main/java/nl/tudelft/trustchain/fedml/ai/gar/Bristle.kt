@@ -15,7 +15,6 @@ private const val MIN_NUMBER_MODELS_FOR_DISTANCE_SCREENING = 20
 
 private typealias Peer = Int
 private typealias Class = Int
-private typealias SeqAttackPenalty = Double
 private typealias Score = Double
 private typealias Weight = Double
 private typealias Certainty = Double
@@ -81,42 +80,36 @@ class Bristle : AggregationRule() {
         testDataSetIterator.reset()
         val startTime2 = System.currentTimeMillis()
 
-        val myRecalls = calculateRecallPerClass(newModel, network, testDataSetIterator)
-        logger.d(logging) { "myRecallPerClass: ${myRecalls.toList()}" }
+        val myF1s = calculateF1PerClass(newModel, network, testDataSetIterator)
+        logger.d(logging) { "myF1s: ${myF1s.toList()}" }
 
-        val recallsPerPeer = calculateRecallPerClass(combinedModels, network, testDataSetIterator)
-        logger.d(logging) { "peerRecallPerClass: ${recallsPerPeer.map { Pair(it.key, it.value.toList()) }}}" }
+        val f1sPerPeer = calculateF1PerClass(combinedModels, network, testDataSetIterator)
+        logger.d(logging) { "f1sPerPeer: ${f1sPerPeer.map { Pair(it.key, it.value.toList()) }}}" }
 
-        val selectedClassesPerPeer = getBestPerformingClassesPerPeer(peers, myRecalls, recallsPerPeer, countPerPeer)
+        val selectedClassesPerPeer = getBestPerformingClassesPerPeer(peers, myF1s, f1sPerPeer, countPerPeer)
         logger.d(logging) { "selectedClassesPerPeer: ${selectedClassesPerPeer.map { Pair(it.key, it.value.toList()) }}" }
 
-        val weightedDiffsPerSelectedPeer = getWeightedDiffsPerSelectedPeer(peers, myRecalls, recallsPerPeer, selectedClassesPerPeer)
+        val weightedDiffsPerSelectedPeer = getWeightedDiffsPerSelectedPeer(peers, myF1s, f1sPerPeer, selectedClassesPerPeer)
         logger.d(logging) { "weightedDiffPerSelectedPeer: ${weightedDiffsPerSelectedPeer.map { Pair(it.key, it.value.toList()) }}" }
 
-        val seqAttackPenaltiesPerSelectedPeer = getSeqAttackPenaltiesPerSelectedPeer(peers, myRecalls, recallsPerPeer, selectedClassesPerPeer)
-        logger.d(logging) { "seqAttackPenaltyPerSelectedPeer: ${seqAttackPenaltiesPerSelectedPeer.map { Pair(it.key, it.value.toList()) }}" }
-
-        val scoresPerSelectedPeer = getScoresPerSelectedPeer(peers, myRecalls, recallsPerPeer, selectedClassesPerPeer, weightedDiffsPerSelectedPeer, seqAttackPenaltiesPerSelectedPeer, true)
+        val scoresPerSelectedPeer = getScoresPerSelectedPeer(peers, myF1s, f1sPerPeer, selectedClassesPerPeer, weightedDiffsPerSelectedPeer, true)
         logger.d(logging) { "scoresPerSelectedPeer: ${scoresPerSelectedPeer.map { Pair(it.key, it.value.toList()) }}" }
 
-        val certaintiesPerSelectedPeer = getCertaintiesPerSelectedPeer(peers, selectedClassesPerPeer, recallsPerPeer)
-        logger.d(logging) { "certaintiesPerSelectedPeer: ${certaintiesPerSelectedPeer.map { Pair(it.key, it.value.toList()) }}" }
 
 
-
-        val certaintyPerSelectedPeer = getCertaintyPerSelectedPeer(peers, recallsPerPeer, selectedClassesPerPeer)
+        val certaintyPerSelectedPeer = getCertaintyPerSelectedPeer(peers, f1sPerPeer, selectedClassesPerPeer)
         logger.d(logging) { "certaintyPerSelectedPeer: $certaintyPerSelectedPeer" }
 
 
 
-        val weightsPerSelectedPeer = getWeightsPerSelectedPeer(peers, selectedClassesPerPeer, scoresPerSelectedPeer, certaintiesPerSelectedPeer, certaintyPerSelectedPeer)
+        val weightsPerSelectedPeer = getWeightsPerSelectedPeer(peers, selectedClassesPerPeer, scoresPerSelectedPeer, certaintyPerSelectedPeer)
         logger.d(logging) { "weightsPerSelectedPeer: ${weightsPerSelectedPeer.map { Pair(it.key, it.value.toList()) }}" }
 
         val weightedAverage = weightedAverage(weightsPerSelectedPeer, combinedModels, newModel, logging, testDataSetIterator.labels)
         logger.d(logging) { "weightedAverage: ${formatter.format(weightedAverage)}" }
 
 
-        val unboundedScoresPerSelectedPeer = getScoresPerSelectedPeer(peers, myRecalls, recallsPerPeer, selectedClassesPerPeer, weightedDiffsPerSelectedPeer, seqAttackPenaltiesPerSelectedPeer, false)
+        val unboundedScoresPerSelectedPeer = getScoresPerSelectedPeer(peers, myF1s, f1sPerPeer, selectedClassesPerPeer, weightedDiffsPerSelectedPeer, false)
         logger.d(logging) { "unboundedScoresPerSelectedPeer: ${unboundedScoresPerSelectedPeer.map { Pair(it.key, it.value.toList()) }}" }
 
         val weightPerSelectedPeer = getWeightPerSelectedPeer(peers, unboundedScoresPerSelectedPeer, certaintyPerSelectedPeer)
@@ -152,7 +145,7 @@ class Bristle : AggregationRule() {
         return distances.toList().sortedBy { (_, value) -> value }.toMap()
     }
 
-    private fun calculateRecallPerClass(
+    private fun calculateF1PerClass(
         model: INDArray,
         network: MultiLayerNetwork,
         testDataSetIterator: CustomDataSetIterator,
@@ -165,33 +158,33 @@ class Bristle : AggregationRule() {
         val evaluations = arrayOf(Evaluation())
         network.doEvaluation(testDataSetIterator, *evaluations)
         return testDataSetIterator.labels.map {
-            evaluations[0].recall(it.toInt())
+            evaluations[0].f1(it.toInt())
         }.toDoubleArray()
     }
 
-    private fun calculateRecallPerClass(
+    private fun calculateF1PerClass(
         models: Map<Int, INDArray>,
         network: MultiLayerNetwork,
         testDataSetIterator: CustomDataSetIterator,
     ): Map<Peer, DoubleArray> {
         return models.map { (index, model) ->
-            Pair(index, calculateRecallPerClass(model, network, testDataSetIterator))
+            Pair(index, calculateF1PerClass(model, network, testDataSetIterator))
         }.toMap()
     }
 
     private fun getBestPerformingClassesPerPeer(
         peers: IntArray,
-        myRecallPerClass: DoubleArray,
-        peerRecallPerClass: Map<Peer, DoubleArray>,
+        myF1PerClass: DoubleArray,
+        peerF1PerClass: Map<Peer, DoubleArray>,
         countPerPeer: Map<Int, Int>
     ): Map<Peer, IntArray> {
         return peers.map { peer ->
-            val selectionSize = countPerPeer.getOrDefault(peer, myRecallPerClass.size)
-            val selectedClasses = if (selectionSize == peerRecallPerClass.getValue(peer).size)
+            val selectionSize = countPerPeer.getOrDefault(peer, myF1PerClass.size)
+            val selectedClasses = if (selectionSize == peerF1PerClass.getValue(peer).size)
                 (0 until selectionSize).toList().toIntArray()
             else
-                peerRecallPerClass.getValue(peer)
-                    .mapIndexed { label, recall -> Pair(label, recall) }
+                peerF1PerClass.getValue(peer)
+                    .mapIndexed { label, f1 -> Pair(label, f1) }
                     .sortedByDescending { it.second }
                     .take(selectionSize)  // Attackers have a negative index => assume that they have the same classes as the current peer to maximize attack strength
                     .map { it.first }
@@ -202,54 +195,32 @@ class Bristle : AggregationRule() {
 
     private fun getWeightedDiffsPerSelectedPeer(
         peers: IntArray,
-        myRecallPerClass: DoubleArray,
-        peerRecallPerClass: Map<Peer, DoubleArray>,
+        myF1PerClass: DoubleArray,
+        peerF1PerClass: Map<Peer, DoubleArray>,
         selectedClassesPerPeer: Map<Peer, IntArray>
     ): Map<Peer, Map<Class, Double>> {
         return peers.map { peer ->
             val weightDiffsPerSelectedClass = selectedClassesPerPeer.getValue(peer).map { selectedClass ->
-                Pair(selectedClass, abs(myRecallPerClass[selectedClass] - peerRecallPerClass.getValue(peer)[selectedClass]) * 10)
+                Pair(selectedClass, abs(myF1PerClass[selectedClass] - peerF1PerClass.getValue(peer)[selectedClass]) * 10)
             }.toMap()
             Pair(peer, weightDiffsPerSelectedClass)
         }.toMap()
     }
 
-    private fun getSeqAttackPenaltiesPerSelectedPeer(
-        peers: IntArray,
-        myRecallPerClass: DoubleArray,
-        peerRecallPerClass: Map<Peer, DoubleArray>,
-        selectedClassesPerPeer: Map<Peer, IntArray>
-    ): Map<Peer, Map<Class, SeqAttackPenalty>> {
-        val previousPeerRecalls = HashSet<DoubleArray>()
-        return peers.map { peer ->
-            val seqAttackPenaltiesPerSelectedClass = selectedClassesPerPeer.getValue(peer).map { selectedClass ->
-                var seqAttackPenalty = 0.0
-                for (recalls in previousPeerRecalls) {
-                    seqAttackPenalty += max(0.0, 2 * (myRecallPerClass[selectedClass] - recalls[selectedClass]))
-                }
-                Pair(selectedClass, seqAttackPenalty)
-            }.toMap()
-            previousPeerRecalls.add(peerRecallPerClass.getValue(peer))
-            Pair(peer, seqAttackPenaltiesPerSelectedClass)
-        }.toMap()
-    }
-
     private fun getScoresPerSelectedPeer(
         peers: IntArray,
-        myRecallPerClass: DoubleArray,
-        peerRecallPerClass: Map<Peer, DoubleArray>,
+        myF1PerClass: DoubleArray,
+        peerF1PerClass: Map<Peer, DoubleArray>,
         selectedClassesPerPeer: Map<Peer, IntArray>,
         weightedDiffPerSelectedPeer: Map<Peer, Map<Class, Double>>,
-        seqAttackPenaltyPerSelectedPeer: Map<Peer, Map<Class, SeqAttackPenalty>>,
         bounded: Boolean
     ): Map<Peer, Map<Class, Score>> {
         return peers.map { peer ->
             val scorePerSelectedClass = selectedClassesPerPeer.getValue(peer).map { selectedClass ->
-                val myRecall = myRecallPerClass[selectedClass]
-                val peerRecall = peerRecallPerClass.getValue(peer)[selectedClass]
+                val myF1 = myF1PerClass[selectedClass]
+                val peerF1 = peerF1PerClass.getValue(peer)[selectedClass]
                 val weightedDiff = weightedDiffPerSelectedPeer.getValue(peer).getValue(selectedClass)
-                val seqAttackPenalty = seqAttackPenaltyPerSelectedPeer.getValue(peer).getValue(selectedClass)
-                val score = if (peerRecall > myRecall) weightedDiff.pow(3 + myRecall) else -1.0 * weightedDiff.pow(4 + myRecall) * (1 + seqAttackPenalty)
+                val score = if (peerF1 > myF1) weightedDiff.pow(3 + myF1) else -1.0 * weightedDiff.pow(4 + myF1)
                 Pair(selectedClass, if (bounded) max(-100.0, score) else score)
             }.toMap()
             Pair(peer, scorePerSelectedClass)
@@ -259,11 +230,11 @@ class Bristle : AggregationRule() {
     private fun getCertaintiesPerSelectedPeer(
         peers: IntArray,
         selectedClassesPerPeer: Map<Peer, IntArray>,
-        recallsPerPeer: Map<Peer, DoubleArray>
+        f1sPerPeer: Map<Peer, DoubleArray>
     ): Map<Peer, Map<Class, Certainty>> {
         return peers.map { peer ->
             val weightPerSelectedClass = selectedClassesPerPeer.getValue(peer).map { selectedClass ->
-                val certainty = clamp((recallsPerPeer.getValue(peer)[selectedClass] - 0.2) * 4)
+                val certainty = clamp((f1sPerPeer.getValue(peer)[selectedClass] - 0.2) * 4)
                 Pair(selectedClass, certainty)
             }.toMap()
             Pair(peer, weightPerSelectedClass)
@@ -274,7 +245,6 @@ class Bristle : AggregationRule() {
         peers: IntArray,
         selectedClassesPerPeer: Map<Peer, IntArray>,
         scoresPerSelectedPeer: Map<Peer, Map<Class, Score>>,
-        certaintiesPerSelectedPeer: Map<Peer, Map<Class, Certainty>>,
         certaintyPerSelectedPeer: Map<Peer, Double>
     ): Map<Peer, Map<Class, Weight>> {
         return peers.map { peer ->
@@ -321,14 +291,14 @@ class Bristle : AggregationRule() {
 
     private fun getCertaintyPerSelectedPeer(
         peers: IntArray,
-        peerRecallPerClass: Map<Peer, DoubleArray>,
+        peerF1sPerClass: Map<Peer, DoubleArray>,
         selectedClassesPerPeer: Map<Peer, IntArray>,
     ): Map<Peer, Double> {
         return peers.map { peer ->
             val selectedClasses = selectedClassesPerPeer.getValue(peer)
-            val recallPerSelectedClasses = peerRecallPerClass.getValue(peer).sliceArray(selectedClasses.toList())
-            val average = recallPerSelectedClasses.average()
-            val std = recallPerSelectedClasses.std()
+            val f1PerSelectedClasses = peerF1sPerClass.getValue(peer).sliceArray(selectedClasses.toList())
+            val average = f1PerSelectedClasses.average()
+            val std = f1PerSelectedClasses.std()
             Pair(peer, max(0.0, average - std))
         }.toMap()
     }

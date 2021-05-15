@@ -48,7 +48,7 @@ class Node(
     private val nnConfiguration: NNConfiguration
 
     private val trainConfiguration: TrainConfiguration
-    private val behavior: Behaviors
+    public val behavior: Behaviors
     private val iterationsBeforeEvaluation: Int
     private val iterationsBeforeSending: Int
     private var joiningLateRemainingIterations: Int

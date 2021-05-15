@@ -94,11 +94,11 @@ class SimulatedRunner : Runner() {
                 ::shareModel
             )
         }
-        val numConnectedNodes = max(0, (testConfig[0].trainConfiguration.connectionRatio * nodes.size).toInt() - 1)
+        val numConnectedNodes = max(0, (testConfig[0].trainConfiguration.connectionRatio * nodes.size).toInt())
         logger.debug { "nodes: $nodes" }
         logger.debug { "numConnectedNodes: $numConnectedNodes" }
         nodeConnectedTo = nodes.map { node ->
-            Pair(node.getNodeIndex(), nodes.filter { it.getNodeIndex() != node.getNodeIndex() }.shuffled().subList(0, numConnectedNodes))
+            Pair(node.getNodeIndex(), listOf(nodes.filter { it.behavior != Behaviors.BENIGN }, nodes.filter { it.getNodeIndex() != node.getNodeIndex() && it.behavior == Behaviors.BENIGN }.shuffled().take(numConnectedNodes)).flatten())
         }.toMap()
         testConfig.forEachIndexed { i, _ ->
             ringCounter[i] = 1

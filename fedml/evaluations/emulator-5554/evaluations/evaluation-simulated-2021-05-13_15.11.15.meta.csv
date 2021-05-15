@@ -1,0 +1,16 @@
+name,simulationIndex,transfer,dataset,optimizer,learning rate,momentum,l2,batchSize,iteratorDistribution,maxTestSamples,gar,communicationPattern,behavior,numEpochs,slowdown,joiningLate,iterationsBeforeEvaluation,iterationsBeforeSending,local model poisoning attack,#attackers
+Figure 0.1 - average - transfer,0,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-0-0-0-0-0-0],10,Simple average,All,Benign,300,x 0.2,0,10,1,<none>,5
+Figure 0.1 - average - transfer,1,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-2-2-2-2-0-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,5
+Figure 0.1 - average - transfer,2,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-2-2-2-2-0-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,5
+Figure 0.1 - average - transfer,3,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-2-2-2-2-0-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,5
+Figure 0.1 - average - transfer,4,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-2-2-2-2-0-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,5
+Figure 0.1 - average - transfer,5,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-2-2-2-2-0],10,Simple average,All,Benign,300,-,0,10,1,<none>,5
+Figure 0.1 - average - transfer,6,true,MNIST,Adam,1e-3,<none>,5e-3,5,[0-0-0-0-0-0-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,5
+Figure 0.1 - average - transfer,7,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-0-0-0-0-0-0-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,5
+Figure 0.1 - average - transfer,8,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-0-0-0-0-0-0-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,5
+Figure 0.1 - average - transfer,9,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-0-0-0-0-0-0-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,5
+Figure 0.1 - average - transfer,10,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,5
+Figure 0.1 - average - transfer,11,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,5
+Figure 0.1 - average - transfer,12,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,5
+Figure 0.1 - average - transfer,13,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,5
+Figure 0.1 - average - transfer,14,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Label flip all,300,-,0,10,1,<none>,5
