@@ -126,7 +126,13 @@ class SimulatedRunner : Runner() {
     }
 
     private fun getCountPerPeers(testConfig: List<MLConfiguration>, nodes: List<Node>): Map<Int, Map<Int, Int>> {
-        val toServerMessageBuffers = testConfig.map { CopyOnWriteArrayList<MsgPsiCaClientToServer>() }.toTypedArray()
+        return nodes.indices.map { i ->
+            Pair(i, nodes.indices.map { j ->
+                    Pair(j, 3)
+                }.toMap()
+            )
+        }.toMap()
+        /*val toServerMessageBuffers = testConfig.map { CopyOnWriteArrayList<MsgPsiCaClientToServer>() }.toTypedArray()
         val toClientMessageBuffers = testConfig.map { CopyOnWriteArrayList<MsgPsiCaServerToClient>() }.toTypedArray()
         val countPerPeers = ConcurrentHashMap<Int, Map<Int, Int>>()
         val threads = testConfig.mapIndexed { i, _ ->
@@ -141,7 +147,7 @@ class SimulatedRunner : Runner() {
             }
         }
         threads.forEach { it.join() }
-        return countPerPeers
+        return countPerPeers*/
     }
 
     private fun getSimilarPeers(
