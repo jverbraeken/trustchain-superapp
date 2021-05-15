@@ -38,7 +38,7 @@ class Node(
     private val random = Random(nodeIndex)
     private val sraKeyPair = SRAKeyPair.create(bigPrime, java.util.Random(nodeIndex.toLong()))
 
-    private var network: MultiLayerNetwork
+    var network: MultiLayerNetwork
     private val labels: List<String>
 
     private val datasetIteratorConfiguration: DatasetIteratorConfiguration
@@ -60,9 +60,9 @@ class Node(
     private val modelPoisoningAttack: ModelPoisoningAttacks
     private val numAttackers: NumAttackers
 
-    private var oldParams: INDArray
-    private var newParams: INDArray
-    private var gradient: INDArray
+    var oldParams: INDArray
+    var newParams: INDArray
+    var gradient: INDArray
     private val iterTrain: CustomDataSetIterator
     private val iterTest: CustomDataSetIterator
     private val iterTestFull: CustomDataSetIterator
