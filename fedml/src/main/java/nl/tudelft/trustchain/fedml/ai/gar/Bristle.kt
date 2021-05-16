@@ -71,9 +71,6 @@ class Bristle : AggregationRule() {
         val combinedModels = HashMap<Peer, INDArray>()
         combinedModels.putAll(exploitationModels)
         combinedModels.putAll(explorationModels)
-//        combinedModels.forEach {
-//            logger.d(true) { "combinedModel (${it.key}): ${formatter.format(it.value)}" }
-//        }
         val peers = combinedModels.keys.sorted().toIntArray()
         val endTime = System.currentTimeMillis()
         logger.d(true) { "Timing 0: ${endTime - startTime}" }
@@ -94,10 +91,10 @@ class Bristle : AggregationRule() {
         val selectedClassesPerPeer = getBestPerformingClassesPerPeer(peers, myF1s, f1sPerPeer, countPerPeer)
         logger.d(true) { "selectedClassesPerPeer: ${selectedClassesPerPeer.map { Pair(it.key, it.value.toList()) }}" }
 
-        val weightedDiffsPerSelectedPeer = getWeightedDiffsPerSelectedPeer(peers, myF1s, f1sPerPeer, familiarClasses)
+        val weightedDiffsPerSelectedPeer = getWeightedDiffsPerSelectedPeer(peers, myF1s, f1sPerPeer, selectedClassesPerPeer)
         logger.d(true) { "weightedDiffPerSelectedPeer: ${weightedDiffsPerSelectedPeer.map { Pair(it.key, it.value.toList()) }}" }
 
-        val scoresPerPeer = getScoresPerPeer(peers, myF1s, f1sPerPeer, familiarClasses, weightedDiffsPerSelectedPeer, true)
+        val scoresPerPeer = getScoresPerPeer(peers, myF1s, f1sPerPeer, weightedDiffsPerSelectedPeer, true)
         logger.d(true) { "scoresPerSelectedPeer: ${scoresPerPeer.map { Pair(it.key, it.value.toList()) }}" }
 
 
@@ -114,7 +111,7 @@ class Bristle : AggregationRule() {
         logger.d(true) { "weightedAverage: ${formatter.format(weightedAverage)}" }
 
 
-        val unboundedScoresPerSelectedPeer = getScoresPerPeer(peers, myF1s, f1sPerPeer, familiarClasses, weightedDiffsPerSelectedPeer, false)
+        val unboundedScoresPerSelectedPeer = getScoresPerPeer(peers, myF1s, f1sPerPeer, weightedDiffsPerSelectedPeer, false)
         logger.d(true) { "unboundedScoresPerSelectedPeer: ${unboundedScoresPerSelectedPeer.map { Pair(it.key, it.value.toList()) }}" }
 
         val weightPerSelectedPeer = getWeightPerSelectedPeer(peers, unboundedScoresPerSelectedPeer, certaintyPerSelectedPeer)
@@ -204,11 +201,11 @@ class Bristle : AggregationRule() {
         peers: IntArray,
         myF1PerClass: Map<Class, Double>,
         peerF1PerClass: Map<Peer, Map<Class, Double>>,
-        familiarClasses: List<Class>,
+        selectedClassesPerPeer: Map<Peer, IntArray>,
     ): Map<Peer, Map<Class, Double>> {
         return peers.map { peer ->
-            val weightDiffsPerFamiliarClass = familiarClasses.map { familiarClass ->
-                Pair(familiarClass, abs(myF1PerClass.getValue(familiarClass) - peerF1PerClass.getValue(peer).getValue(familiarClass)) * 10)
+            val weightDiffsPerFamiliarClass = selectedClassesPerPeer.getValue(peer).map { selectedFamiliarClass ->
+                Pair(selectedFamiliarClass, abs(myF1PerClass.getValue(selectedFamiliarClass) - peerF1PerClass.getValue(peer).getValue(selectedFamiliarClass)) * 10)
             }.toMap()
             Pair(peer, weightDiffsPerFamiliarClass)
         }.toMap()
@@ -218,17 +215,15 @@ class Bristle : AggregationRule() {
         peers: IntArray,
         myF1PerClass: Map<Class, Double>,
         peerF1PerClass: Map<Peer, Map<Class, Double>>,
-        familiarClasses: List<Class>,
         weightedDiffPerSelectedPeer: Map<Peer, Map<Class, Double>>,
         bounded: Boolean
     ): Map<Peer, Map<Class, Score>> {
         return peers.map { peer ->
-            val scorePerFamiliarClass = familiarClasses.map { familiarClass ->
-                val myF1 = myF1PerClass.getValue(familiarClass)
-                val peerF1 = peerF1PerClass.getValue(peer).getValue(familiarClass)
-                val weightedDiff = weightedDiffPerSelectedPeer.getValue(peer).getValue(familiarClass)
+            val scorePerFamiliarClass = weightedDiffPerSelectedPeer.getValue(peer).map { (selectedFamiliarClass, weightedDiff) ->
+                val myF1 = myF1PerClass.getValue(selectedFamiliarClass)
+                val peerF1 = peerF1PerClass.getValue(peer).getValue(selectedFamiliarClass)
                 val score = if (peerF1 > myF1) weightedDiff.pow(3 + myF1) else -1.0 * weightedDiff.pow(4 + myF1)
-                Pair(familiarClass, if (bounded) max(-100.0, score) else score)
+                Pair(selectedFamiliarClass, if (bounded) max(-100.0, score) else score)
             }.toMap()
             Pair(peer, scorePerFamiliarClass)
         }.toMap()
