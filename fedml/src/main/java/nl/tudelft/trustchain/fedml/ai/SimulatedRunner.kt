@@ -5,16 +5,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
-import nl.tudelft.ipv8.Peer
 import nl.tudelft.trustchain.fedml.*
 import nl.tudelft.trustchain.fedml.ipv8.MsgPsiCaClientToServer
 import nl.tudelft.trustchain.fedml.ipv8.MsgPsiCaServerToClient
 import org.nd4j.linalg.api.ndarray.INDArray
 import java.io.File
 import java.lang.Integer.max
-import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
-import kotlin.concurrent.thread
 import kotlin.random.Random
 
 private val logger = KotlinLogging.logger("SimulatedRunner")
@@ -22,7 +19,8 @@ private const val USE_PSI_CA = false
 
 class SimulatedRunner : Runner() {
     private lateinit var nodes: List<Node>
-    private lateinit var nodeConnectedTo: Map<Int, List<Node>>
+    private lateinit var nodeGetsFrom: Map<Int, List<Node>>
+    private lateinit var nodeSendsTo: Map<Int, List<Node>>
     private var peersRR: MutableMap<Int, MutableList<Node>?> = HashMap()
     private var peersRing: MutableMap<Int, MutableList<Node>?> = HashMap()
     private var ringCounter: MutableMap<Int, Int> = HashMap()
@@ -96,10 +94,15 @@ class SimulatedRunner : Runner() {
         }
         val numConnectedNodes = max(0, (testConfig[0].trainConfiguration.connectionRatio * nodes.size).toInt())
         logger.debug { "nodes: $nodes" }
+        logger.debug { "nodes not benign: ${nodes.filter { it.behavior != Behaviors.BENIGN }}"}
         logger.debug { "numConnectedNodes: $numConnectedNodes" }
-        nodeConnectedTo = nodes.map { node ->
+        nodeGetsFrom = nodes.map { node ->
             Pair(node.getNodeIndex(), listOf(nodes.filter { it.behavior != Behaviors.BENIGN }, nodes.filter { it.getNodeIndex() != node.getNodeIndex() && it.behavior == Behaviors.BENIGN }.shuffled().take(numConnectedNodes)).flatten())
         }.toMap()
+        nodeSendsTo = nodes.map { node ->
+            Pair(node.getNodeIndex(), nodeGetsFrom.filter { node in it.value }.keys.map { nodeIndex -> nodes.filter { it.getNodeIndex() == nodeIndex }.first() })
+        }.toMap()
+        logger.debug { "connected to: ${nodeSendsTo[0]}" }
         testConfig.forEachIndexed { i, _ ->
             ringCounter[i] = 1
         }
@@ -202,7 +205,7 @@ class SimulatedRunner : Runner() {
             CommunicationPatterns.ALL -> /*nodes
                 .filter { it.getNodeIndex() != nodeIndex && (if (trainConfiguration.gar == GARs.BRISTLE && USE_PSI_CA) it.getNodeIndex() in countPerPeer.keys else true) }
                 .forEach { it.addNetworkMessage(nodeIndex, message) }*/
-                nodeConnectedTo[nodeIndex]!!.forEach { it.addNetworkMessage(nodeIndex, message) }
+                nodeSendsTo[nodeIndex]!!.forEach { it.addNetworkMessage(nodeIndex, message) }
             CommunicationPatterns.RANDOM -> nodes
                 .filter { it.getNodeIndex() != nodeIndex && (if (trainConfiguration.gar == GARs.BRISTLE) it.getNodeIndex() in countPerPeer.keys else true) }
                 .random().addNetworkMessage(nodeIndex, message)

@@ -17,7 +17,7 @@ import kotlin.random.Random
 
 private val bigPrime = BigInteger("100012421")
 private val logger = KotlinLogging.logger("Node")
-private const val ONLY_EVALUATE_FIRST_NODE = false
+private const val ONLY_EVALUATE_FIRST_NODE = true
 private const val SIZE_RECENT_OTHER_MODELS = 20
 
 class Node(
@@ -260,7 +260,7 @@ class Node(
                 recentOtherModelsBuffer,
                 iterTest,
                 countPerPeer,
-                logging && (iteration % iterationsBeforeEvaluation == 0)
+                logging/* && (iteration % iterationsBeforeEvaluation == 0)*/
             )
             if (gar == GARs.BRISTLE) {
                 for (index in 0 until cw.columns()) {

@@ -40,23 +40,23 @@ class Bristle : AggregationRule() {
         logging: Boolean,
     ): INDArray {
         val formatter = NDArrayStrings2()
-        logger.d(true) { formatName("BRISTLE") }
-        logger.d(true) { "Found ${newOtherModels.size} other models" }
-        logger.d(true) { "oldModel: ${formatter.format(oldModel)}" }
+        logger.d(logging) { formatName("BRISTLE") }
+        logger.d(logging) { "Found ${newOtherModels.size} other models" }
+        logger.d(logging) { "oldModel: ${formatter.format(oldModel)}" }
         val newModel = oldModel.sub(gradient)
-        logger.d(true) { "newModel: ${formatter.format(newModel)}" }
-        logger.d(true) { "otherModels: ${newOtherModels.map { it.value.getFloat(0) }.toCollection(ArrayList())}" }
+        logger.d(logging) { "newModel: ${formatter.format(newModel)}" }
+        logger.d(logging) { "otherModels: ${newOtherModels.map { it.value.getFloat(0) }.toCollection(ArrayList())}" }
 
         val startTime = System.currentTimeMillis()
         val distances = getDistances(newModel, newOtherModels, recentOtherModels, true)
-        logger.d(true) { "distances: $distances" }
+        logger.d(logging) { "distances: $distances" }
         val exploitationModels = distances
             .keys
             .take(NUM_MODELS_EXPLOITATION)
             .filter { it < 1000000 }
             .map { Pair(it, newOtherModels.getValue(it)) }
             .toMap()
-        logger.d(true) { "closeModels: ${exploitationModels.map { it.value.getFloat(0) }.toCollection(ArrayList())}" }
+        logger.d(logging) { "closeModels: ${exploitationModels.map { it.value.getFloat(0) }.toCollection(ArrayList())}" }
 
         val explorationModels = distances
             .keys
@@ -66,61 +66,61 @@ class Bristle : AggregationRule() {
             .shuffled()
             .take(NUM_MODELS_EXPLORATION)
             .toMap()
-        logger.d(true) { "notCloseModels: ${explorationModels.map { it.value.getFloat(0) }.toCollection(ArrayList())}" }
+        logger.d(logging) { "notCloseModels: ${explorationModels.map { it.value.getFloat(0) }.toCollection(ArrayList())}" }
 
         val combinedModels = HashMap<Peer, INDArray>()
         combinedModels.putAll(exploitationModels)
         combinedModels.putAll(explorationModels)
         val peers = combinedModels.keys.sorted().toIntArray()
         val endTime = System.currentTimeMillis()
-        logger.d(true) { "Timing 0: ${endTime - startTime}" }
+        logger.d(logging) { "Timing 0: ${endTime - startTime}" }
         testDataSetIterator.reset()
         val startTime2 = System.currentTimeMillis()
 
         val familiarClasses = testDataSetIterator.labels.map { it.toInt() }
-        logger.d(true) { "familiarClasses: $familiarClasses" }
+        logger.d(logging) { "familiarClasses: $familiarClasses" }
         val foreignLabels = (0 until newModel.columns()).subtract(familiarClasses).toList()
-        logger.d(true) { "foreignLabels: $foreignLabels" }
+        logger.d(logging) { "foreignLabels: $foreignLabels" }
 
         val myF1s = calculateF1PerClass(newModel, network, testDataSetIterator, familiarClasses)
-        logger.d(true) { "myF1s: ${myF1s.toList()}" }
+        logger.d(logging) { "myF1s: ${myF1s.toList()}" }
 
         val f1sPerPeer = calculateF1PerClass(combinedModels, network, testDataSetIterator, familiarClasses)
-        logger.d(true) { "f1sPerPeer: ${f1sPerPeer.map { Pair(it.key, it.value.toList()) }}}" }
+        logger.d(logging) { "f1sPerPeer: ${f1sPerPeer.map { Pair(it.key, it.value.toList()) }}}" }
 
         val selectedClassesPerPeer = getBestPerformingClassesPerPeer(peers, myF1s, f1sPerPeer, countPerPeer)
-        logger.d(true) { "selectedClassesPerPeer: ${selectedClassesPerPeer.map { Pair(it.key, it.value.toList()) }}" }
+        logger.d(logging) { "selectedClassesPerPeer: ${selectedClassesPerPeer.map { Pair(it.key, it.value.toList()) }}" }
 
         val weightedDiffsPerSelectedPeer = getWeightedDiffsPerSelectedPeer(peers, myF1s, f1sPerPeer, selectedClassesPerPeer)
-        logger.d(true) { "weightedDiffPerSelectedPeer: ${weightedDiffsPerSelectedPeer.map { Pair(it.key, it.value.toList()) }}" }
+        logger.d(logging) { "weightedDiffPerSelectedPeer: ${weightedDiffsPerSelectedPeer.map { Pair(it.key, it.value.toList()) }}" }
 
         val scoresPerPeer = getScoresPerPeer(peers, myF1s, f1sPerPeer, weightedDiffsPerSelectedPeer, true)
-        logger.d(true) { "scoresPerSelectedPeer: ${scoresPerPeer.map { Pair(it.key, it.value.toList()) }}" }
+        logger.d(logging) { "scoresPerSelectedPeer: ${scoresPerPeer.map { Pair(it.key, it.value.toList()) }}" }
 
 
 
         val certaintyPerSelectedPeer = getCertaintyPerSelectedPeer(peers, f1sPerPeer, selectedClassesPerPeer)
-        logger.d(true) { "certaintyPerSelectedPeer: $certaintyPerSelectedPeer" }
+        logger.d(logging) { "certaintyPerSelectedPeer: $certaintyPerSelectedPeer" }
 
 
 
         val weightsPerSelectedPeer = getWeightsPerSelectedPeer(peers, scoresPerPeer, certaintyPerSelectedPeer)
-        logger.d(true) { "weightsPerSelectedPeer: ${weightsPerSelectedPeer.map { Pair(it.key, it.value.toList()) }}" }
+        logger.d(logging) { "weightsPerSelectedPeer: ${weightsPerSelectedPeer.map { Pair(it.key, it.value.toList()) }}" }
 
         val weightedAverage = weightedAverage(weightsPerSelectedPeer, combinedModels, newModel, true, familiarClasses)
-        logger.d(true) { "weightedAverage: ${formatter.format(weightedAverage)}" }
+        logger.d(logging) { "weightedAverage: ${formatter.format(weightedAverage)}" }
 
 
         val unboundedScoresPerSelectedPeer = getScoresPerPeer(peers, myF1s, f1sPerPeer, weightedDiffsPerSelectedPeer, false)
-        logger.d(true) { "unboundedScoresPerSelectedPeer: ${unboundedScoresPerSelectedPeer.map { Pair(it.key, it.value.toList()) }}" }
+        logger.d(logging) { "unboundedScoresPerSelectedPeer: ${unboundedScoresPerSelectedPeer.map { Pair(it.key, it.value.toList()) }}" }
 
         val weightPerSelectedPeer = getWeightPerSelectedPeer(peers, unboundedScoresPerSelectedPeer, certaintyPerSelectedPeer)
-        logger.d(true) { "weightPerSelectedPeer: $weightPerSelectedPeer" }
+        logger.d(logging) { "weightPerSelectedPeer: $weightPerSelectedPeer" }
 
         val result = incorporateForeignWeights(peers, weightPerSelectedPeer, combinedModels, weightedAverage, foreignLabels, true)
-        logger.d(true) { "result: ${formatter.format(result)}" }
+        logger.d(logging) { "result: ${formatter.format(result)}" }
         val endTime2 = System.currentTimeMillis()
-        logger.d(true) { "Timing 1: ${endTime2 - startTime2}" }
+        logger.d(logging) { "Timing 1: ${endTime2 - startTime2}" }
         return result
     }
 
@@ -137,7 +137,7 @@ class Bristle : AggregationRule() {
         val distances = hashMapOf<Int, Double>()
         for ((index, otherModel) in otherModels) {
             val min = otherModel.distance2(newModel)
-            logger.d(true) { "Distance calculated: $min" }
+            logger.d(logging) { "Distance calculated: $min" }
             distances[index] = min
         }
         for (i in 0 until min(MIN_NUMBER_MODELS_FOR_DISTANCE_SCREENING - distances.size, recentOtherModels.size)) {
@@ -265,7 +265,7 @@ class Bristle : AggregationRule() {
                 totalWeights[familiarClass] += weight
             }
         }
-        logger.d(true) { "totalWeights: ${totalWeights.contentToString()}" }
+        logger.d(logging) { "totalWeights: ${totalWeights.contentToString()}" }
         totalWeights.forEachIndexed { index, weight ->
             if (weight != 1.0) {  // optimization
                 val scaledColumn = arr.getColumn(index.toLong()).div(weight)
@@ -314,7 +314,7 @@ class Bristle : AggregationRule() {
         logging: Boolean
     ): INDArray {
         val arr = weightedAverage.dup()
-        logger.d(true) { "foreignLabels: $foreignLabels" }
+        logger.d(logging) { "foreignLabels: $foreignLabels" }
         peers.forEach { peer ->
             foreignLabels.forEach { label ->
                 val targetColumn = combinedModels.getValue(peer).getColumn(label.toLong())
@@ -322,7 +322,7 @@ class Bristle : AggregationRule() {
             }
         }
         val totalWeight = weightPerSelectedPeer.values.sum() + 1   // + 1 for the current node
-        logger.d(true) { "totalWeight: $totalWeight" }
+        logger.d(logging) { "totalWeight: $totalWeight" }
         foreignLabels.forEach { label ->
             arr.putColumn(label, arr.getColumn(label.toLong()).div(totalWeight))
         }
