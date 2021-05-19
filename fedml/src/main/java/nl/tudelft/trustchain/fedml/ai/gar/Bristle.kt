@@ -9,9 +9,8 @@ import org.nd4j.evaluation.classification.Evaluation
 import org.nd4j.linalg.api.ndarray.INDArray
 import kotlin.math.*
 
-private const val NUM_MODELS_EXPLOITATION = 20
-private const val NUM_MODELS_EXPLORATION = 5
-private const val MIN_NUMBER_MODELS_FOR_DISTANCE_SCREENING = 20
+private const val MIN_NUMBER_MODELS_FOR_DISTANCE_SCREENING = 10
+private const val ALPHA = 0.4
 
 private typealias Peer = Int
 private typealias Class = Int
@@ -50,27 +49,27 @@ class Bristle : AggregationRule() {
         val startTime = System.currentTimeMillis()
         val distances = getDistances(newModel, newOtherModels, recentOtherModels, true)
         logger.d(logging) { "distances: $distances" }
-        val exploitationModels = distances
-            .keys
-            .take(NUM_MODELS_EXPLOITATION)
-            .filter { it < 1000000 }
-            .map { Pair(it, newOtherModels.getValue(it)) }
-            .toMap()
-        logger.d(logging) { "closeModels: ${exploitationModels.map { it.value.getFloat(0) }.toCollection(ArrayList())}" }
 
-        val explorationModels = distances
-            .keys
-            .drop(NUM_MODELS_EXPLOITATION)
-            .filter { it < 1000000 }
-            .map { Pair(it, newOtherModels.getValue(it)) }
-            .shuffled()
-            .take(NUM_MODELS_EXPLORATION)
-            .toMap()
-        logger.d(logging) { "notCloseModels: ${explorationModels.map { it.value.getFloat(0) }.toCollection(ArrayList())}" }
+        val split = listOf(distances.take(distances.size / 3), distances.subList(distances.size / 3, (distances.size * (2.0/3.0)).toInt()), distances.takeLast(distances.size / 3))
+
+        val fl = round((1.0 - ALPHA).pow(2) * MIN_NUMBER_MODELS_FOR_DISTANCE_SCREENING).toInt()
+        logger.d(logging) { "fl: $fl" }
+        val fm = round((-2 * ALPHA.pow(2) + 2 * ALPHA) * MIN_NUMBER_MODELS_FOR_DISTANCE_SCREENING).toInt()
+        logger.d(logging) { "fm: $fm" }
+        val fh = round(ALPHA.pow(2) * MIN_NUMBER_MODELS_FOR_DISTANCE_SCREENING).toInt()
+        logger.d(logging) { "fh: $fh" }
 
         val combinedModels = HashMap<Peer, INDArray>()
-        combinedModels.putAll(exploitationModels)
-        combinedModels.putAll(explorationModels)
+        combinedModels.putAll(distances.shuffled().take(10).map { Pair(it.first, newOtherModels.getValue(it.first)) }.toMap())
+        /*combinedModels.putAll(
+            split[0].shuffled().take(fl).map { Pair(it.first, newOtherModels.getValue(it.first)) }.toMap(),
+        )
+        combinedModels.putAll(
+            split[1].shuffled().take(fm).map { Pair(it.first, newOtherModels.getValue(it.first)) }.toMap(),
+        )
+        combinedModels.putAll(
+            split[2].shuffled().take(fh).map { Pair(it.first, newOtherModels.getValue(it.first)) }.toMap()
+        )*/
         val peers = combinedModels.keys.sorted().toIntArray()
         val endTime = System.currentTimeMillis()
         logger.d(logging) { "Timing 0: ${endTime - startTime}" }
@@ -133,18 +132,18 @@ class Bristle : AggregationRule() {
         otherModels: Map<Int, INDArray>,
         recentOtherModels: ArrayDeque<Pair<Int, INDArray>>,
         logging: Boolean,
-    ): Map<Int, Double> {
+    ): List<Pair<Int, Double>> {
         val distances = hashMapOf<Int, Double>()
         for ((index, otherModel) in otherModels) {
             val min = otherModel.distance2(newModel)
             logger.d(logging) { "Distance calculated: $min" }
             distances[index] = min
         }
-        for (i in 0 until min(MIN_NUMBER_MODELS_FOR_DISTANCE_SCREENING - distances.size, recentOtherModels.size)) {
-            val otherModel = recentOtherModels.elementAt(recentOtherModels.size - 1 - i)
-            distances[1100000 + otherModel.first] = otherModel.second.distance2(newModel)
-        }
-        return distances.toList().sortedBy { (_, value) -> value }.toMap()
+//        for (i in 0 until min(MIN_NUMBER_MODELS_FOR_DISTANCE_SCREENING - distances.size, recentOtherModels.size)) {
+//            val otherModel = recentOtherModels.elementAt(recentOtherModels.size - 1 - i)
+//            distances[1100000 + otherModel.first] = otherModel.second.distance2(newModel)
+//        }
+        return distances.toList().sortedBy { (_, value) -> value }
     }
 
     private fun calculateF1PerClass(
