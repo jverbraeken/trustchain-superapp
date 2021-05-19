@@ -1,0 +1,6 @@
+environment, simulationIndex, elapsedTime, epoch, iteration, accuracy, f1, precision, recall, gmeasure, mcc, score, before or after averaging, #peers included in current batch, before or after averaging, #peers included in current batch
+"connection ratio 1, but take 10 - bristle - transfer", 0, 7549, 0, 0, 0.34, 0.44224358974358974, 0.3618181818181818, 0.33999999999999997, 0.23864490037505517, NaN, 2.302585220336914, after, 0
+"connection ratio 1, but take 10 - bristle - transfer", 0, 11543, 0, 1, 0.38, 0.5560498468393205, 0.3996778711484594, 0.38, 0.2447893988331134, NaN, 2.1605968630781103, after, 0
+"connection ratio 1, but take 10 - bristle - transfer", 0, 18920, 0, 2, 0.38, 0.5652938652938653, 0.41430733618233617, 0.38, 0.2480233133109692, NaN, 2.1605968630781103, after, 0
+"connection ratio 1, but take 10 - bristle - transfer", 0, 25585, 1, 3, 0.38, 0.5825993676603433, 0.44265312236949106, 0.38, 0.25396772560960545, NaN, 1.8214241520364434, after, 0
+"connection ratio 1, but take 10 - bristle - transfer", 0, 33183, 1, 4, 0.38, 0.5709933651060649, 0.4240035572802975, 0.38, 0.24993618990876493, NaN, 1.7694316439786197, after, 0

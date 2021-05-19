@@ -1,0 +1,12 @@
+name,simulationIndex,transfer,dataset,optimizer,learning rate,momentum,l2,batchSize,iteratorDistribution,maxTestSamples,gar,communicationPattern,behavior,numEpochs,slowdown,joiningLate,iterationsBeforeEvaluation,iterationsBeforeSending,local model poisoning attack,#attackers
+1 node - average - transfer,0,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+1 node - average - regular,0,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Simple average,All,Benign,300,-,0,10,1,<none>,0
+1 node - median - transfer,0,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+1 node - median - regular,0,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Median,All,Benign,300,-,0,10,1,<none>,0
+1 node - krum - transfer,0,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+1 node - krum - regular,0,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Krum (b=1),All,Benign,300,-,0,10,1,<none>,0
+1 node - bridge - transfer,0,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+1 node - bridge - regular,0,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bridge (b=1),All,Benign,300,-,0,10,1,<none>,0
+1 node - mozi - transfer,0,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+1 node - mozi - regular,0,false,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Mozi (frac=0.5),All,Benign,300,-,0,10,1,<none>,0
+1 node - bristle - transfer,0,true,MNIST,Adam,1e-3,<none>,5e-3,5,[2-2-2-2-2-2-2-2-2-2],10,Bristle,All,Benign,300,-,0,10,1,<none>,0
