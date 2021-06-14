@@ -3,6 +3,7 @@ package nl.tudelft.trustchain.fedml
 import nl.tudelft.trustchain.fedml.ai.*
 import nl.tudelft.trustchain.fedml.ai.dataset.CustomDataSetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.cifar.CustomCifar10DataSetIterator
+import nl.tudelft.trustchain.fedml.ai.dataset.fashionmnist.CustomFashionMnistDataSetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.mnist.CustomMnistDataSetIterator
 import nl.tudelft.trustchain.fedml.ai.dataset.wisdm.WISDMDataSetIterator
 import nl.tudelft.trustchain.fedml.ai.gar.*
@@ -43,6 +44,20 @@ enum class Datasets(
         IteratorDistributions.DISTRIBUTION_MNIST_2,
         ::generateDefaultMNISTConfiguration,
         CustomMnistDataSetIterator::create,
+    ),
+    FASHION_MNIST(
+        "fashion_mnist",
+        "Fashion-MNIST",
+//        Optimizers.NESTEROVS,
+        Optimizers.ADAM,
+//        LearningRates.SCHEDULE1,
+        LearningRates.RATE_1EM3,
+        Momentums.NONE,
+        L2Regularizations.L2_5EM3,
+        BatchSizes.BATCH_5,
+        IteratorDistributions.DISTRIBUTION_MNIST_2,
+        ::generateDefaultMNISTConfiguration,
+        CustomFashionMnistDataSetIterator::create,
     ),
     CIFAR10(
         "cifar10",

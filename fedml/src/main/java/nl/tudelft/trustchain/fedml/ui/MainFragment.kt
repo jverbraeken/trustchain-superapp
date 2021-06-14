@@ -219,6 +219,11 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
             copyAsset(assetManager, "transfer-mnist")
             copyAsset(assetManager, "transfer-cifar10")
             copyAsset(assetManager, "transfer-wisdm")
+            val fashionMnistDir = File(File(baseDirectory, "data"), "FASHION_MNIST")
+            copyAssetToSubdir(assetManager, "t10k-images-idx3-ubyte", fashionMnistDir)
+            copyAssetToSubdir(assetManager, "t10k-labels-idx1-ubyte", fashionMnistDir)
+            copyAssetToSubdir(assetManager, "train-images-idx3-ubyte", fashionMnistDir)
+            copyAssetToSubdir(assetManager, "train-labels-idx1-ubyte", fashionMnistDir)
         } catch (e: IOException) {
             // Probably a directory
         }
@@ -245,6 +250,17 @@ class MainFragment : BaseFragment(R.layout.fragment_main), AdapterView.OnItemSel
 
     private fun copyAsset(assetManager: AssetManager, asset: String) {
         val file = File(baseDirectory, asset)
+        if (!file.exists() || ALWAYS_REPLACE) {
+            assetManager.open(asset).use { input ->
+                FileOutputStream(file).use { output ->
+                    copyFile(input, output)
+                }
+            }
+        }
+    }
+
+    private fun copyAssetToSubdir(assetManager: AssetManager, asset: String, subDir: File) {
+        val file = File(subDir, asset)
         if (!file.exists() || ALWAYS_REPLACE) {
             assetManager.open(asset).use { input ->
                 FileOutputStream(file).use { output ->
